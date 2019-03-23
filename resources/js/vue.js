@@ -14,11 +14,9 @@ Vue.use(VueRouter);
 Vue.use(Toasted);
 
 Vue.use(BootstrapVue);
-const index = Vue.component('index', require('./components/index.vue'));
-
 
 const routes = [
-    { path: '/', component: index, name: 'index'},
+    { path: '/', name: 'index',component: require('./components/index.vue').default},
 ];
 
 const router = new VueRouter({
