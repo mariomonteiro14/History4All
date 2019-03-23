@@ -17,7 +17,7 @@
                                 <input
                                     type="text" class="form-control" v-model.trim="user.email"
                                     name="emailUsername" id="inputEmailUsername"
-                                    placeholder="Email address or Username"/>
+                                    placeholder="Email address"/>
                             </div>
                             <div class="form-group">
                                 <label for="inputPassword">Password</label>
