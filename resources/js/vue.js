@@ -14,12 +14,11 @@ Vue.use(VueRouter);
 Vue.use(Toasted);
 
 Vue.use(BootstrapVue);
-const index = Vue.component('item-list', require('./components/index.vue'));
+const index = Vue.component('menu', require('./components/index.vue'));
 
 
 const routes = [
     { path: '/', component: index, name: 'index'},
-    { path: '/a', component: index, name: 'index'},
 ];
 
 const router = new VueRouter({
