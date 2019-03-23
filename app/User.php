@@ -23,6 +23,14 @@ class User extends Authenticatable implements MustVerifyEmail
         'nome', 'email', 'password', 'profile_photo', 'tipo', 'escola_id', 'turma_id'
     ];
 
+    public function escola(){
+        return $this->belongsTo(Escola::class, 'escola_id','id');
+    }
+
+    public function turma(){
+        return $this->belongsTo(Turma::class, 'turma_id','id');
+    }
+
     /**
      * The attributes that should be hidden for arrays.
      *

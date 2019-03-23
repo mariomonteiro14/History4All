@@ -19,4 +19,12 @@ class Turma extends Authenticatable
         'nome', 'escola_id'
     ];
 
+    public function users(){
+        return $this->hasMany(User::class, 'turma_id','id');
+    }
+
+    public function escola(){
+        return $this->belongsTo(Escola::class, 'escola_id','id');
+    }
+
 }
