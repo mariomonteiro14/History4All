@@ -14,7 +14,7 @@ Vue.use(VueRouter);
 Vue.use(Toasted);
 
 Vue.use(BootstrapVue);
-const index = Vue.component('menu', require('./components/index.vue'));
+const index = Vue.component('index', require('./components/index.vue'));
 
 
 const routes = [
