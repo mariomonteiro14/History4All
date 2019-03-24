@@ -36,17 +36,27 @@ class PatrimonioControllerAPI extends Controller
                 $query->where('nome', 'like', '%' . $searchNome . '%');
             });
         }
-        if ($filterByDistrito) {
+        if ($filterByDistrito && $filterByDistrito !== "Todos") {
             $query->where(function($query) use ($filterByDistrito) {
                 $query->where('distrito', $filterByDistrito);
             });
         }
-        if ($filterByEpoca) {
+        if ($filterByEpoca && $filterByEpoca !== "Todas") {
             $query->where(function($query) use ($filterByEpoca) {
                 $query->where('epoca', $filterByEpoca);
             });
         }
         $patrimonios = $query->paginate($length);
         return ['data' => $patrimonios, 'draw' => $request->input('draw')];
+    }
+
+    public function getAllDistritos()
+    {
+        return Patrimonio::distinct('distrito')->select('distrito')->get();
+    }
+
+    public function getAllEpocas()
+    {
+        return Patrimonio::distinct('epoca')->select('epoca')->get();
     }
 }

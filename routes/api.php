@@ -14,3 +14,5 @@ use Illuminate\Http\Request;
 */
 
 Route::get('patrimonios', 'PatrimonioControllerAPI@patrimoniosDataTable');
+Route::get('patrimonios/distritos', 'PatrimonioControllerAPI@getAllDistritos');
+Route::get('patrimonios/epocas', 'PatrimonioControllerAPI@getAllEpocas');

@@ -1,29 +1,45 @@
 <template>
     <div >
-        <h3>Patrimónios</h3>
+        <h3>Patrimónios / Pesquisa</h3>
+        <br>
         <div class="container-fluid">
-            <div class="row">
-                <div class="control">
-                    <select class="custom-select col-sm" v-model="tableData.length" @change="getPatrimonios()">
-                        <option v-for="(records, index) in perPage" :key="index" :value="records">{{records}}</option>
-                    </select>
+            <div id='example-3' @change="getPatrimonios()">
+                <div class="row">
+                    <h4>Ciclos:</h4>
+                    <input type="checkbox" id="check1Ciclo" value="1" v-model="tableData.ciclo" >
+                    <label for="check1Ciclo">1º ciclo</label>
+                    <input type="checkbox" id="check2Ciclo" value="2" v-model="tableData.ciclo">
+                    <label for="check2Ciclo">2º ciclo</label>
+                    <input type="checkbox" id="check3Ciclo" value="3" v-model="tableData.ciclo">
+                    <label for="check3Ciclo">3º ciclo</label>
+                    <input type="checkbox" id="checkSec" value="sec" v-model="tableData.ciclo">
+                    <label for="checkSec">Secundário</label>
                 </div>
                 <div class="row">
+                    <div class="control">
+                        <select class="custom-select col-sm" v-model="tableData.length" @change="getPatrimonios()">
+                            <option v-for="(records, index) in perPage" :key="index" :value="records">{{records}}</option>
+                        </select>
+                    </div>
+
                     <div class="col-sm">
-                        <input class="form-control" type="text" v-model="tableData.search" placeholder="Search Per Name"
+                        <input class="form-control" type="text" v-model="tableData.search" placeholder="Pesquisar por Name"
                                @input="getPatrimonios()">
                     </div>
-                    <div id='example-3' @change="getPatrimonios()">
-                        <input type="checkbox" id="check1Ciclo" value="1" v-model="tableData.ciclo" >
-                        <label for="check1Ciclo">1º ciclo</label>
-                        <input type="checkbox" id="check2Ciclo" value="2" v-model="tableData.ciclo">
-                        <label for="check2Ciclo">2º ciclo</label>
-                        <input type="checkbox" id="check3Ciclo" value="3" v-model="tableData.ciclo">
-                        <label for="check3Ciclo">3º ciclo</label>
-                        <input type="checkbox" id="checkSec" value="sec" v-model="tableData.ciclo">
-                        <label for="checkSec">Secundário</label>
-                    </div>
+                    <p>Distrito:</p>
+                    <select v-model="tableData.distrito" @change="getPatrimonios()">
+                        <option v-for="dist in distritos" :value="dist.distrito">
+                            {{ dist.distrito }}
+                        </option>
+                    </select>
+                    <p>Época histórica:</p>
+                    <select v-model="tableData.epoca" @change="getEpocas()">
+                        <option v-for="epoca in epocas" :value="epoca.epoca">
+                            {{ epoca.epoca }}
+                        </option>
+                    </select>
                 </div>
+
             </div>
 
             <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders"
@@ -54,6 +70,8 @@
         },
         created() {
             this.getPatrimonios();
+            this.getEpocas();
+            this.getDistritos();
         },
         data(){
             let sortOrders = {};
@@ -71,17 +89,20 @@
                     show:false,
                     Message:'',
                 },
+                distritos: [],
+                epocas: [],
                 patrimonios: [],
                 columns: columns,
                 sortKey: 'name',
                 sortOrders: sortOrders,
                 perPage: ['5','10', '20', '30'],
                 tableData: {
-                    date:'',
+                    distrito: '',
+                    epoca: '',
                     ciclo: ["1","2","3","sec"],
+                    search: '',
                     draw: 0,
                     length: 5,
-                    search: '',
                     column: 0,
                     dir: 'desc',
                 },
@@ -99,6 +120,18 @@
         },
 
         methods:{
+            getEpocas() {
+                axios.get('api/patrimonios/epocas').then(response => {
+                    this.epocas = (response.data);
+                    this.epocas.unshift({'epoca' : 'Todas'});//mete no inicio
+                });
+            },
+            getDistritos() {
+                axios.get('api/patrimonios/distritos').then(response => {
+                    this.distritos = (response.data);
+                    this.distritos.unshift({'distrito' : 'Todos'});//mete no inicio
+                });
+            },
             getPatrimonios(url = 'api/patrimonios') {
                 this.tableData.draw++;
                 axios.get(url, {params: this.tableData})
