@@ -16,7 +16,7 @@ class Patrimonio extends Authenticatable
      */
 
     protected $fillable = [
-        'nome', 'descricao', 'distrito'
+        'nome', 'descricao', 'distrito', 'epoca', 'ciclo'
     ];
 
 }

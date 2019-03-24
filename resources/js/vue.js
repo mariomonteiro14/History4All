@@ -15,8 +15,11 @@ Vue.use(Toasted);
 
 Vue.use(BootstrapVue);
 
+const navbar = Vue.component('navbar', require('./components/navigation.vue').default);
+
 const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},
+    { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonios.vue').default}
 ];
 
 const router = new VueRouter({

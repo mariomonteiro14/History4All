@@ -10,3 +10,7 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 /.idea
+public/js/vue.js
+public/css/app.css
+package-lock.json
+composer.lock
