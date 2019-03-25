@@ -67,7 +67,7 @@
         },
         computed: {
             formCompleted(){
-                return this.user.userOrEmail && this.user.password;
+                return this.user.email && this.user.password;
             }
         },
     }
