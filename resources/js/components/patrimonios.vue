@@ -6,13 +6,13 @@
             <div id='example-3' @change="getPatrimonios()">
                 <div class="row">
                     <h4>Ciclos:</h4>
-                    <input type="checkbox" id="check1Ciclo" value="1" v-model="tableData.ciclo" >
+                    <input type="checkbox" id="check1Ciclo" value="1º ciclo" v-model="tableData.ciclo">
                     <label for="check1Ciclo">1º ciclo</label>
-                    <input type="checkbox" id="check2Ciclo" value="2" v-model="tableData.ciclo">
+                    <input type="checkbox" id="check2Ciclo" value="2º ciclo" v-model="tableData.ciclo">
                     <label for="check2Ciclo">2º ciclo</label>
-                    <input type="checkbox" id="check3Ciclo" value="3" v-model="tableData.ciclo">
+                    <input type="checkbox" id="check3Ciclo" value="3º ciclo" v-model="tableData.ciclo">
                     <label for="check3Ciclo">3º ciclo</label>
-                    <input type="checkbox" id="checkSec" value="sec" v-model="tableData.ciclo">
+                    <input type="checkbox" id="checkSec" value="secundário" v-model="tableData.ciclo">
                     <label for="checkSec">Secundário</label>
                 </div>
                 <div class="row">
@@ -74,7 +74,6 @@
         },
         created() {
             this.getPatrimonios();
-            this.getEpocas();
             this.getDistritos();
         },
         data(){
@@ -98,12 +97,12 @@
                 epocas: [],
                 patrimonios: [],
                 columns: columns,
-                sortKey: 'name',
+                sortKey: 'nome',
                 sortOrders: sortOrders,
                 perPage: ['5','10', '20', '30'],
                 tableData: {
                     distrito: '',
-                    epoca: '',
+                    epoca: ['pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
                     ciclo: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
                     search: '',
                     draw: 0,
@@ -125,12 +124,6 @@
         },
 
         methods:{
-            getEpocas() {
-                axios.get('api/patrimonios/epocas').then(response => {
-                    this.epocas = (response.data);
-                    this.epocas.unshift('Todas');//mete no inicio
-                });
-            },
             getDistritos() {
                 axios.get('api/patrimonios/distritos').then(response => {
                     this.distritos = (response.data);

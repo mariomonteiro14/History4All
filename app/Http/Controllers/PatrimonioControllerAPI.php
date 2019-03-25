@@ -9,14 +9,14 @@ class PatrimonioControllerAPI extends Controller
 {
     public function patrimoniosDataTable(Request $request)
     {
-        $columns = ['imagem', 'nome', 'distrito', 'epoca', 'ciclo'];
+        $columns = ['nome', 'nome', 'distrito', 'epoca', 'ciclo'];
         $length = $request->input('length');
         $column = $request->input('column');
         $dir = $request->input('dir');
         $searchNome = $request->input('search');
         $filterByDistrito = $request->input('distrito');
         $filterByEpoca = $request->input('epoca');
-        $hasFilterCiclo = $request->input('ciclo.0');
+        $hasFilterCiclo = $request->input('ciclo.0') && count($request->input('ciclo')) < 4;
         $filterCiclo = [];
         if($hasFilterCiclo){
             foreach ($request->input('ciclo') as $value){
@@ -57,8 +57,4 @@ class PatrimonioControllerAPI extends Controller
         return Patrimonio::distinct('distrito')->pluck('distrito');
     }
 
-    public function getAllEpocas()
-    {
-        return Patrimonio::distinct('epoca')->pluck('epoca');
-    }
 }
