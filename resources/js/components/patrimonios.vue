@@ -94,7 +94,7 @@
                     Message:'',
                 },
                 distritos: [],
-                epocas: [],
+                epocas: ['Todas', 'pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
                 patrimonios: [],
                 columns: columns,
                 sortKey: 'nome',
@@ -102,7 +102,7 @@
                 perPage: ['5','10', '20', '30'],
                 tableData: {
                     distrito: '',
-                    epoca: ['pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
+                    epoca: '',
                     ciclo: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
                     search: '',
                     draw: 0,
@@ -135,7 +135,7 @@
                 axios.get(url, {params: this.tableData})
                     .then(response => {
                         let data = response.data;
-                        if (this.tableData.draw == data.draw) {
+                        if (this.tableData.draw == data.draw){
                             this.patrimonios = data.data.data;
                             this.configPagination(data.data);
                         }
