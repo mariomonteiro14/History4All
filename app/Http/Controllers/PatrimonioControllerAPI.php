@@ -23,7 +23,9 @@ class PatrimonioControllerAPI extends Controller
                 array_push($filterCiclo, $value);
             }
         }
-        $query = Patrimonio::orderBy($columns[$column], $dir);
+
+        $query = Patrimonio::with(['imgagens'])->orderBy($columns[$column], $dir);
+
         if($hasFilterCiclo){
             $query->where(function($query) use ($filterCiclo) {
                 foreach ($filterCiclo as $ciclo){
@@ -52,11 +54,11 @@ class PatrimonioControllerAPI extends Controller
 
     public function getAllDistritos()
     {
-        return Patrimonio::distinct('distrito')->select('distrito')->get();
+        return Patrimonio::distinct('distrito')->pluck('distrito');
     }
 
     public function getAllEpocas()
     {
-        return Patrimonio::distinct('epoca')->select('epoca')->get();
+        return Patrimonio::distinct('epoca')->pluck('epoca');
     }
 }

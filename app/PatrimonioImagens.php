@@ -20,4 +20,8 @@ class PatrimonioImagens extends Authenticatable
         'foto'
     ];
 
+    public function patrimonio(){
+        return $this->belongsTo(Patrimonio::class, 'património_id','id');
+    }
+
 }

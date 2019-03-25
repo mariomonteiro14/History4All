@@ -28,14 +28,14 @@
                     </div>
                     <p>Distrito:</p>
                     <select v-model="tableData.distrito" @change="getPatrimonios()">
-                        <option v-for="dist in distritos" :value="dist.distrito">
-                            {{ dist.distrito }}
+                        <option v-for="distrito in distritos" :value="distrito">
+                            {{ distrito }}
                         </option>
                     </select>
                     <p>Época histórica:</p>
-                    <select v-model="tableData.epoca" @change="getEpocas()">
-                        <option v-for="epoca in epocas" :value="epoca.epoca">
-                            {{ epoca.epoca }}
+                    <select v-model="tableData" @change="getEpocas()">
+                        <option v-for="epoca in epocas" :value="epoca">
+                            {{ epoca }}
                         </option>
                     </select>
                 </div>
@@ -46,6 +46,10 @@
                        @sort="sortBy">
                 <tbody>
                 <tr v-for="patrimonio in patrimonios" :key="patrimonio.id">
+                    <td>
+                        <img v-if="patrimonio.imgagens[0]" :src="'/imgPatrimonio/' + patrimonio.imgagens[0].foto" class="rounded-circle border border-warning" width="25" height="25" >
+
+                    </td>
                     <td>{{patrimonio.nome}}</td>
                     <td>{{patrimonio.distrito}}</td>
                     <td>{{patrimonio.epoca}}</td>
@@ -76,10 +80,11 @@
         data(){
             let sortOrders = {};
             let columns = [
-                {width: '7%', label: 'Nome', name: 'nome', order:true},
+                {width: '2%', label: 'Imagem', name: 'foto', order:false},
+                {width: '20%', label: 'Nome', name: 'nome', order:true},
                 {width: '7%', label: 'Distrito', name: 'distrito', order:true},
-                {width: '20%', label: 'Époda Histórica', name: 'epoca', order:true},
-                {width: '20%', label: 'Ciclo', name: 'ciclo', order:true},
+                {width: '7%', label: 'Époda Histórica', name: 'epoca', order:true},
+                {width: '7%', label: 'Ciclo', name: 'ciclo', order:true},
             ];
             columns.forEach((column) => {
                 sortOrders[column.name] = -1;
@@ -123,13 +128,13 @@
             getEpocas() {
                 axios.get('api/patrimonios/epocas').then(response => {
                     this.epocas = (response.data);
-                    this.epocas.unshift({'epoca' : 'Todas'});//mete no inicio
+                    this.epocas.unshift('Todas');//mete no inicio
                 });
             },
             getDistritos() {
                 axios.get('api/patrimonios/distritos').then(response => {
                     this.distritos = (response.data);
-                    this.distritos.unshift({'distrito' : 'Todos'});//mete no inicio
+                    this.distritos.unshift('Todos');//mete no inicio
                 });
             },
             getPatrimonios(url = 'api/patrimonios') {
