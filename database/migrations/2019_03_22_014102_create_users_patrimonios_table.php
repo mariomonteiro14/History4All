@@ -49,7 +49,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->longText('descrição');
             $table->string('distrito');
             $table->enum('epoca', ['pré-história', 'idade antiga', 'idade média', 'idade contemporânea']);
-            $table->enum('ciclo', ['1', '2', '3', 'sec']);
+            $table->enum('ciclo', ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário']);
         });
 
         Schema::create('patrimonio_imagens', function (Blueprint $table) {

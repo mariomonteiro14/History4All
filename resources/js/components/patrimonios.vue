@@ -33,7 +33,7 @@
                         </option>
                     </select>
                     <p>Época histórica:</p>
-                    <select v-model="tableData" @change="getEpocas()">
+                    <select v-model="tableData.epoca" @change="getEpocas()">
                         <option v-for="epoca in epocas" :value="epoca">
                             {{ epoca }}
                         </option>
@@ -104,7 +104,7 @@
                 tableData: {
                     distrito: '',
                     epoca: '',
-                    ciclo: ["1","2","3","sec"],
+                    ciclo: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
                     search: '',
                     draw: 0,
                     length: 5,

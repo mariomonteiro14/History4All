@@ -9,7 +9,7 @@ class PatrimonioControllerAPI extends Controller
 {
     public function patrimoniosDataTable(Request $request)
     {
-        $columns = ['nome', 'distrito', 'epoca', 'ciclo'];
+        $columns = ['imagem', 'nome', 'distrito', 'epoca', 'ciclo'];
         $length = $request->input('length');
         $column = $request->input('column');
         $dir = $request->input('dir');
