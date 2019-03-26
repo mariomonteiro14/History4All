@@ -56,6 +56,9 @@ var common = {
         getUserPhoto(url){
             return "storage/profiles/" + url;
         },
+        getPatrimonioPhoto(url){
+            return "storage/patrimonios/" + url;
+        },
     },
     computed:{
         getAuthUser: function(){

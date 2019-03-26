@@ -47,8 +47,7 @@
                 <tbody>
                 <tr v-for="patrimonio in patrimonios" :key="patrimonio.id">
                     <td>
-                        <img v-if="patrimonio.imgagens[0]" :src="'/imgPatrimonio/' + patrimonio.imgagens[0].foto" class="rounded-circle border border-warning" width="25" height="25" >
-
+                        <img class="card-img-top" v-bind:src="getPatrimonioPhoto(patrimonio.id +'.jpg')"/>
                     </td>
                     <td>{{patrimonio.nome}}</td>
                     <td>{{patrimonio.distrito}}</td>
