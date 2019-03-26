@@ -33,7 +33,7 @@
                         </option>
                     </select>
                     <p>Época histórica:</p>
-                    <select v-model="tableData.epoca" @change="getEpocas()">
+                    <select v-model="tableData.epoca" @change="getPatrimonios()">
                         <option v-for="epoca in epocas" :value="epoca">
                             {{ epoca }}
                         </option>
