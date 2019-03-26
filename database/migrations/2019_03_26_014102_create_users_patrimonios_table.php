@@ -16,7 +16,9 @@ class CreateUsersPatrimoniosTable extends Migration
         Schema::create('escolas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome')->unique();
-            $table->string('distrito');
+            $table->enum('distrito', ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
+                'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
+                'Vila Real', 'Viseu', 'Açores', 'Madeira']);
         });
 
         Schema::create('turmas', function (Blueprint $table) {
@@ -47,7 +49,9 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->increments('id');
             $table->string('nome')->unique();
             $table->longText('descrição');
-            $table->string('distrito');
+            $table->enum('distrito', ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
+                'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
+                'Vila Real', 'Viseu', 'Açores', 'Madeira']);
             $table->enum('epoca', ['pré-história', 'idade antiga', 'idade média', 'idade contemporânea']);
             $table->enum('ciclo', ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário']);
         });
