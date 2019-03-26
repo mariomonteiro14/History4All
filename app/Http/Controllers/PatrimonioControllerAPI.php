@@ -52,9 +52,4 @@ class PatrimonioControllerAPI extends Controller
         return ['data' => $patrimonios, 'draw' => $request->input('draw')];
     }
 
-    public function getAllDistritos()
-    {
-        return Patrimonio::distinct('distrito')->pluck('distrito');
-    }
-
 }

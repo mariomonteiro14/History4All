@@ -74,7 +74,6 @@
         },
         created() {
             this.getPatrimonios();
-            this.getDistritos();
         },
         data(){
             let sortOrders = {};
@@ -93,7 +92,9 @@
                     show:false,
                     Message:'',
                 },
-                distritos: [],
+                distritos: ['Todos', 'Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
+                    'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
+                    'Vila Real', 'Viseu', 'Açores', 'Madeira'],
                 epocas: ['Todas', 'pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
                 patrimonios: [],
                 columns: columns,
@@ -124,12 +125,6 @@
         },
 
         methods:{
-            getDistritos() {
-                axios.get('api/patrimonios/distritos').then(response => {
-                    this.distritos = (response.data);
-                    this.distritos.unshift('Todos');//mete no inicio
-                });
-            },
             getPatrimonios(url = 'api/patrimonios') {
                 this.tableData.draw++;
                 axios.get(url, {params: this.tableData})
