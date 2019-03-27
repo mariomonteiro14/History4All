@@ -33,7 +33,7 @@ class UserControllerAPI extends Controller
 
     public function myProfile(Request $request)
     {
-        return new UserResource($request->user());
+        return  new UserResource($request->user());
     }
 
     public function login(Request $request){
