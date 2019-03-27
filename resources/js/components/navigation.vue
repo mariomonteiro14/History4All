@@ -64,10 +64,9 @@
         methods: {
             logout() {
                 axios.get('api/logout').then(response => {
-                    this.$socket.emit('user_logout', this.$store.state.user);
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("success", "Logged out");
-                    this.$router.push({name: '/'});
+                    this.$router.push({name: 'index'});
                 }).catch(error => {
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("error", "Error on logout");
