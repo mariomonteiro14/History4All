@@ -48,7 +48,7 @@
         },
         methods: {
             login() {
-                axios.post('api/login', this.user).then(response => {
+                /*axios.post('api/login', this.user).then(response => {
                     this.$store.commit('setToken',response.data.access_token);
                     return axios.get('api/users/me');
                 }).then(response => {
@@ -62,7 +62,9 @@
                     }else{
                         this.toastPopUp("error", `${error.response.data.message}`);
                     }
-                })
+                })*/
+                this.toastPopUp("show", "Not Implemented!");
+                $('#loginModal').modal('hide');
             },
         },
         computed: {
