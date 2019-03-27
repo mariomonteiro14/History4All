@@ -55,6 +55,7 @@
                     this.$store.commit('setUser',response.data.data);
                     this.toastPopUp("success", `Welcome ${this.$store.state.user.name}`);
                     $('#loginModal').modal('hide');
+                    this.toastPopUp("success", "ja esta");
                 }).catch(error => {
                     this.$store.commit('clearUserAndToken');
                     if(error.response.status && error.response.status === 401){

@@ -17,10 +17,10 @@ use App\User;
 use App\StoreUserRequest;
 use DateTime;
 
-define('YOUR_SERVER_URL', 'http://h4a.local');
+define('YOUR_SERVER_URL', 'http://h4a.local/');
 // Check "oauth_clients" table for next 2 values:
-define('CLIENT_ID', '4');
-define('CLIENT_SECRET','IGyX0bjkHHYIzTD6YEhtRHxg3zA2SbRgKRazI5Tj');
+define('CLIENT_ID', '2');
+define('CLIENT_SECRET','9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
 
 class UserControllerAPI extends Controller
 {
@@ -39,16 +39,25 @@ class UserControllerAPI extends Controller
     public function login(Request $request){
  		$http = new \GuzzleHttp\Client;
 
- 		if(filter_var($request->input('userOrEmail'), FILTER_VALIDATE_EMAIL)){
- 			$user = User::where('email', $request->input('userOrEmail'))->first();
+ 		if(filter_var($request->email, FILTER_VALIDATE_EMAIL)){
+ 			$user = User::where('email', $request->email)->first();
  			if($user != null){
                 if($user->email_verified_at == '') abort(403, 'Account not verified');
             }else{
                 abort(403, 'Unknown user');
             }
         }
-
- 		$response = $http->post(YOUR_SERVER_URL.'/oauth/token', ['form_params' => ['grant_type' => 'password','client_id' => CLIENT_ID,'client_secret' => CLIENT_SECRET,'username' => $request->input('userOrEmail'),'password' => $request->input('password'),'scope' => ''],'exceptions' => false,]);
+        $response = $http->post(YOUR_SERVER_URL.'/oauth/token', [
+            'form_params' => [
+                'grant_type' => 'password',
+                'client_id' => CLIENT_ID,
+                'client_secret' => CLIENT_SECRET,
+                'username' => $request->email,
+                'password' => $request->password,
+                'scope' => ''
+            ],
+            'exceptions' => false,
+        ]);
 
  		$errorCode= $response->getStatusCode();
  		if ($errorCode=='200') {
