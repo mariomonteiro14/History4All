@@ -14,3 +14,6 @@ use Illuminate\Http\Request;
 */
 
 Route::get('patrimonios', 'PatrimonioControllerAPI@patrimoniosDataTable');
+Route::post('login', 'UserControllerAPI@login')->name('login');
+Route::get('logout', 'UserControllerAPI@logout');
+Route::get('users/me', 'UserControllerAPI@myProfile');
