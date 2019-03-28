@@ -14,12 +14,13 @@ class Patrimonio extends Authenticatable
      *
      * @var array
      */
+    public $timestamps = false;
 
     protected $fillable = [
         'nome', 'descricao', 'distrito', 'epoca', 'ciclo'
     ];
 
     public function imgagens(){
-        return $this->hasMany(PatrimonioImagens::class, 'património_id','id');
+        return $this->hasMany(PatrimonioImagens::class, 'patrimonio_id','id');
     }
 }
