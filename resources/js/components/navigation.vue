@@ -3,6 +3,8 @@
         <nav class="nav nav-tabs">
             <li><router-link to="/" class="nav-item nav-link"><h3>History4All</h3></router-link></li>
             <li><router-link to="/patrimonios" class="btn btn-primary navbar-btn">Patrimónios</router-link></li>
+            <li><router-link to="/createPatrimonio" class="btn btn-primary navbar-btn">Criar Patrimónios</router-link></li>
+            <li><router-link to="/editPatrimonio" class="btn btn-primary navbar-btn">Editar Patrimónios</router-link></li>
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item" v-if="!this.$store.state.user">
                     <button type="button" class="btn btn-info navbar-btn" data-toggle="modal" data-target="#loginModal">

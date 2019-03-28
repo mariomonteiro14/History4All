@@ -34,7 +34,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('profile_photo')->nullable();
+            $table->string('foto')->nullable();
             $table->enum('tipo', ['admin', 'professor', 'aluno']);
             $table->integer('escola_id')->unsigned()->nullable();
             $table->foreign('escola_id')->references('id')->on('escolas');
@@ -48,7 +48,7 @@ class CreateUsersPatrimoniosTable extends Migration
         Schema::create('patrimonios', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome')->unique();
-            $table->longText('descrição');
+            $table->longText('descricao');
             $table->enum('distrito', ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
                 'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
                 'Vila Real', 'Viseu', 'Açores', 'Madeira']);
@@ -57,8 +57,8 @@ class CreateUsersPatrimoniosTable extends Migration
         });
 
         Schema::create('patrimonio_imagens', function (Blueprint $table) {
-            $table->integer('património_id')->unsigned();
-            $table->foreign('património_id')->references('id')->on('patrimonios');
+            $table->integer('patrimonio_id')->unsigned();
+            $table->foreign('patrimonio_id')->references('id')->on('patrimonios');
             $table->string('foto');
         });
     }
