@@ -6,12 +6,18 @@ import VueRouter from 'vue-router';
 import Toasted from 'vue-toasted';
 import store from './stores/global-store';
 import BootstrapVue from 'bootstrap-vue';
+import Vuetify from 'vuetify'
+import VueCarousel from 'vue-carousel'
+
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
+import 'vuetify/dist/vuetify.min.css'
 
 Vue.use(VueRouter);
 Vue.use(Toasted);
+Vue.use(Vuetify);
+Vue.use(VueCarousel)
 
 Vue.use(BootstrapVue);
 
@@ -19,7 +25,7 @@ const navbar = Vue.component('navbar', require('./components/navigation.vue').de
 
 const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},
-    { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonios.vue').default}
+    { path: '/patrimonios', name: 'patrimonios',component: require('./components/widgets/PlainTableOrder.vue').default}
 ];
 
 const router = new VueRouter({

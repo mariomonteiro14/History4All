@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Patrimonio;
 use Illuminate\Http\Request;
+use App\Http\Resources\Patrimonio as PatrimonioResource;
 
 class PatrimonioControllerAPI extends Controller
 {
     public function patrimoniosDataTable(Request $request)
     {
-        $columns = ['nome', 'nome', 'distrito', 'epoca', 'ciclo'];
+       /* $columns = ['nome', 'nome', 'distrito', 'epoca', 'ciclo'];
         $length = $request->input('length');
         $column = $request->input('column');
         $dir = $request->input('dir');
@@ -50,6 +51,12 @@ class PatrimonioControllerAPI extends Controller
         }
         $patrimonios = $query->paginate($length);
         return ['data' => $patrimonios, 'draw' => $request->input('draw')];
+       */
+        $patrim = PatrimonioResource::collection(Patrimonio::all());
+        return response()->json([
+            'data' => $patrim,
+        ]);
+
     }
 
 }

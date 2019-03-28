@@ -51,7 +51,7 @@
 </style>
 
 <script type="text/javascript">
-    import login from './login.vue';
+    import login from './widgets/login.vue';
 
     export default {
         components: {

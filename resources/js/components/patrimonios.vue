@@ -65,7 +65,7 @@
 
 <script>
     import Datatable from './datatable.vue';
-    import Pagination from './pagination.vue';
+    import Pagination from './widgets/pagination.vue';
     export default{
         components:{
             datatable: Datatable,
