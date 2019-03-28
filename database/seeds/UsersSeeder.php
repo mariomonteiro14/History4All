@@ -96,7 +96,7 @@ class UsersSeeder extends Seeder
             'email_verified_at' => $faker->dateTimeBetween($createdAt),
             'password' => bcrypt('123'),
             'tipo' => $this->typesOfUsers[$typeOfUserIdx],
-            'profile_photo' => $newProfileFileName,
+            'foto' => $newProfileFileName,
             'remember_token' => str_random(10),
             'created_at' => $createdAt,
             'updated_at' => $faker->dateTimeBetween($createdAt),
