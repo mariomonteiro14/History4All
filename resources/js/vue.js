@@ -8,6 +8,7 @@ import store from './stores/global-store';
 import BootstrapVue from 'bootstrap-vue';
 import Vuetify from 'vuetify'
 import VueCarousel from 'vue-carousel'
+import VueAgile from 'vue-agile'
 
 
 import 'bootstrap/dist/css/bootstrap.css';
@@ -17,7 +18,8 @@ import 'vuetify/dist/vuetify.min.css'
 Vue.use(VueRouter);
 Vue.use(Toasted);
 Vue.use(Vuetify);
-Vue.use(VueCarousel)
+Vue.use(VueCarousel);
+Vue.use(VueAgile);
 Vue.use(BootstrapVue);
 
 const navbar = Vue.component('navbar', require('./components/widgets/nav.vue').default);

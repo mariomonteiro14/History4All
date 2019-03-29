@@ -6,7 +6,11 @@
 
         <v-card append float>
             <v-card-title>
-                Patrimonios
+                <v-select
+                    :items="patrimonios"
+                    label="Distrito"
+                    @change="filterDistrito"
+                ></v-select>
                 <v-spacer></v-spacer>
                 <v-text-field
                     v-model="search"
