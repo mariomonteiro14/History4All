@@ -18,7 +18,6 @@ Vue.use(VueRouter);
 Vue.use(Toasted);
 Vue.use(Vuetify);
 Vue.use(VueCarousel)
-
 Vue.use(BootstrapVue);
 
 const navbar = Vue.component('navbar', require('./components/widgets/nav.vue').default);
