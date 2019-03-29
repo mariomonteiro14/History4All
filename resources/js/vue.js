@@ -21,7 +21,7 @@ Vue.use(VueCarousel)
 
 Vue.use(BootstrapVue);
 
-const navbar = Vue.component('navbar', require('./components/navigation.vue').default);
+const navbar = Vue.component('navbar', require('./components/widgets/nav.vue').default);
 
 const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},

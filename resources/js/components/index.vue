@@ -17,7 +17,7 @@
 </style>
 
 <script type="text/javascript">
-    import navigation from './navigation.vue';
+    import navigation from './widgets/nav.vue';
     //TODO
     export default {
         components: {

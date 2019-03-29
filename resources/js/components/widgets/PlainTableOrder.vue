@@ -1,4 +1,5 @@
 <template>
+    <div>
     <v-card>
         <v-card-title>
             Patrimonios
@@ -22,13 +23,14 @@
             </template>
         </v-data-table>
     </v-card>
+    </div>
 </template>
 
 <script>
 
-
+    import BRow from "bootstrap-vue/src/components/layout/row";
     export default {
-
+        components: {BRow},
         created() {
             this.getPatrimonios();
         },
