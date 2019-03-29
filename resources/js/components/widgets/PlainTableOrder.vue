@@ -6,44 +6,39 @@
             <br>
 
             <v-card append float>
-                <v-container fluid grid-list-xl>
-                    <v-layout row wrap align-center>
-                        <v-flex xs12 sm3 d-flex>
-                            <v-autocomplete
-                                    v-model="distritoSelected"
-                                    :items="distritos"
-                                    persistent-hint
-                                    prepend-icon="mdi-city"
-                                    label="Filtrar por distrito"
-                                    class="input-group--focused"
-                            >
-                                <template v-slot:append-outer>
-                                    <v-slide-x-reverse-transition mode="out-in">
-                                    </v-slide-x-reverse-transition>
-                                </template>
-                            </v-autocomplete>
-                        </v-flex>
-                        <v-flex xs12 sm3 d-flex>
-                            <v-select
-                                    v-model="epocaSelected"
-                                    :items="epocas"
-                                    label="Filtrar por epocas históricas"
-                                    class="input-group--focused"
-                            ></v-select>
-                        </v-flex>
-                        <v-flex xs12 sm6>
-                            <v-select
-                                    v-model="cicloSelected"
-                                    :items="ciclos"
-                                    chips
-                                    label="Filtrar por ciclos"
-                                    multiple
-                                    outline
-                            ></v-select>
-                        </v-flex>
-                    </v-layout>
-                </v-container>
+
                 <v-card-title>
+                    <v-container fluid grid-list-xl>
+                        <v-layout row wrap align-center>
+                            <v-flex xs12 sm3 d-flex>
+                                <v-select
+                                        v-model="distritoSelected"
+                                        :items="distritos"
+                                        label="Filtrar por distrito"
+                                        class="input-group--focused"
+                                ></v-select>
+                            </v-flex>
+                            <v-spacer></v-spacer>
+                            <v-flex xs12 sm3 d-flex>
+                                <v-select
+                                        v-model="epocaSelected"
+                                        :items="epocas"
+                                        label="Filtrar por época históricas"
+                                        class="input-group--focused"
+                                ></v-select>
+                            </v-flex>
+                            <v-spacer></v-spacer>
+                            <v-flex xs12 sm3>
+                                <v-select
+                                        v-model="cicloSelected"
+                                        :items="ciclos"
+                                        chips
+                                        label="Filtrar por ciclos"
+                                        multiple
+                                ></v-select>
+                            </v-flex>
+                        </v-layout>
+                    </v-container>
                     Patrimonios
                     <v-spacer></v-spacer>
                     <v-text-field
@@ -54,17 +49,18 @@
                         hide-details
                     ></v-text-field>
                 </v-card-title>
-                <v-data-table :headers="headers" :items="filteredPatrimonios" :search="search">
-
-                    <template v-slot:items="props">
-                        <td class="text-xs-left">{{ }}</td>
-                        <td class="text-xs-left">{{ props.item.nome }}</td>
-                        <td class="text-xs-left">{{ props.item.distrito }}</td>
-                        <td class="text-xs-left">{{ props.item.epoca }}</td>
-                        <td class="text-xs-left">{{ props.item.ciclo }}</td>
-                    </template>
-                </v-data-table>
             </v-card>
+            <v-data-table :headers="headers" :items="filteredPatrimonios" :search="search" class="elevation-1"
+                      :pagination.sync="pagination">
+
+                <template v-slot:items="props">
+                    <td class="text-xs-left">{{ }}</td>
+                    <td class="text-xs-left">{{ props.item.nome }}</td>
+                    <td class="text-xs-left">{{ props.item.distrito }}</td>
+                    <td class="text-xs-left">{{ props.item.epoca }}</td>
+                    <td class="text-xs-left">{{ props.item.ciclo }}</td>
+                </template>
+            </v-data-table>
         </v-app>
     </div>
 </template>
@@ -81,6 +77,14 @@
         },
         data() {
             return {
+                pagination: {
+                    descending: true,
+                    page: 1,
+                    rowsPerPage: 5,
+                    sortBy: 'fat',
+                    totalItems: 0,
+                    rowsPerPageItems: [5, 10, 20]
+                },
                 distritoSelected: 'Todos',
                 epocaSelected: 'Todas',
                 cicloSelected: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
