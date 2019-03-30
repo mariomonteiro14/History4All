@@ -12,46 +12,46 @@
                         <v-layout row wrap align-center>
                             <v-flex xs12 sm3 d-flex>
                                 <v-select
-                                        v-model="distritoSelected"
-                                        :items="distritos"
-                                        label="Filtrar por distrito"
-                                        class="input-group--focused"
+                                    v-model="distritoSelected"
+                                    :items="distritos"
+                                    label="Filtrar por distrito"
+                                    class="input-group--focused"
                                 ></v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
                             <v-flex xs12 sm3 d-flex>
                                 <v-select
-                                        v-model="epocaSelected"
-                                        :items="epocas"
-                                        label="Filtrar por época históricas"
-                                        class="input-group--focused"
+                                    v-model="epocaSelected"
+                                    :items="epocas"
+                                    label="Filtrar por época históricas"
+                                    class="input-group--focused"
                                 ></v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
                             <v-flex xs12 sm3>
                                 <v-select
-                                        v-model="cicloSelected"
-                                        :items="ciclos"
-                                        chips
-                                        label="Filtrar por ciclos"
-                                        multiple
+                                    v-model="cicloSelected"
+                                    :items="ciclos"
+                                    chips
+                                    label="Filtrar por ciclos"
+                                    multiple
                                 ></v-select>
                             </v-flex>
+
+                            <v-spacer></v-spacer>
+                            <v-text-field
+                                v-model="search"
+                                append-icon="search"
+                                label="Search"
+                                single-line
+                                hide-details
+                            ></v-text-field>
                         </v-layout>
                     </v-container>
-                    Patrimonios
-                    <v-spacer></v-spacer>
-                    <v-text-field
-                        v-model="search"
-                        append-icon="search"
-                        label="Search"
-                        single-line
-                        hide-details
-                    ></v-text-field>
                 </v-card-title>
             </v-card>
             <v-data-table :headers="headers" :items="filteredPatrimonios" :search="search" class="elevation-1"
-                      :pagination.sync="pagination">
+                          :pagination.sync="pagination">
 
                 <template v-slot:items="props">
                     <tr @click="showPatrimonio(props.item)">
@@ -80,10 +80,10 @@
         data() {
             return {
                 pagination: {
-                    descending: true,
+                    descending: false,
                     page: 1,
                     rowsPerPage: 5,
-                    sortBy: 'fat',
+                    sortBy: 'nome',
                     totalItems: 0,
                     rowsPerPageItems: [5, 10, 20]
                 },
@@ -101,7 +101,7 @@
                         text: '',
                         align: 'left',
                         sortable: false,
-                        value: 'nome'
+                        value: 'image'
                     },
                     {text: 'Nome', value: 'nome'},
                     {text: 'Distrito', value: 'distrito'},
@@ -122,7 +122,7 @@
                         console.log(errors);
                     });
             },
-            showPatrimonio(patrimonio){
+            showPatrimonio(patrimonio) {
                 this.$router.push({path: '/patrimonio/' + patrimonio.id, params: {'patrimonio': patrimonio}});
             }
         },
