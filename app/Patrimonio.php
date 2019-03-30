@@ -23,4 +23,8 @@ class Patrimonio extends Authenticatable
     public function imagens(){
         return $this->hasMany(PatrimonioImagens::class, 'patrimonio_id','id');
     }
+
+    public function primeiraImagem(){
+        return PatrimonioImagens::where('patrimonio_id', $this->id)->pluck('foto')->first();
+    }
 }

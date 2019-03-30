@@ -59,11 +59,10 @@ class PatrimonioImagesSeeder extends Seeder
 	private function addPatrimonioImage(Faker\Generator $faker, $id, $image)
     {
         $item = [
-            'património_id' => $id,
+            'patrimonio_id' => $id,
             'foto' => $image,
             ];
         DB::table('patrimonio_imagens')->insert($item);
-		$contadorGlobal++;
         //$this->command->info("Created Patrimonio_image {$this->contadorGlobal}: " . $item['id'] ."/". $item['foto]);
     }
 }
