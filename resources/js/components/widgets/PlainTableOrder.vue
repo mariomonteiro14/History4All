@@ -54,11 +54,13 @@
                       :pagination.sync="pagination">
 
                 <template v-slot:items="props">
-                    <td class="text-xs-left">{{ }}</td>
-                    <td class="text-xs-left">{{ props.item.nome }}</td>
-                    <td class="text-xs-left">{{ props.item.distrito }}</td>
-                    <td class="text-xs-left">{{ props.item.epoca }}</td>
-                    <td class="text-xs-left">{{ props.item.ciclo }}</td>
+                    <tr @click="showPatrimonio(props.item)">
+                        <td class="text-xs-left">{{ }}</td>
+                        <td class="text-xs-left">{{ props.item.nome }}</td>
+                        <td class="text-xs-left">{{ props.item.distrito }}</td>
+                        <td class="text-xs-left">{{ props.item.epoca }}</td>
+                        <td class="text-xs-left">{{ props.item.ciclo }}</td>
+                    </tr>
                 </template>
             </v-data-table>
         </v-app>
@@ -120,6 +122,9 @@
                         console.log(errors);
                     });
             },
+            showPatrimonio(patrimonio){
+                this.$router.push({path: '/patrimonio/' + patrimonio.id, params: {'patrimonio': patrimonio}});
+            }
         },
         computed: {
             filteredPatrimonios() {

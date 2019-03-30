@@ -20,7 +20,7 @@ class Patrimonio extends Authenticatable
         'nome', 'descricao', 'distrito', 'epoca', 'ciclo'
     ];
 
-    public function imgagens(){
+    public function imagens(){
         return $this->hasMany(PatrimonioImagens::class, 'patrimonio_id','id');
     }
 }

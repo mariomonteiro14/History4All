@@ -17,7 +17,7 @@ class Patrimonio extends JsonResource
         return [
             'id' => $this->id,
             'nome' => $this->nome,
-            'descrição' => $this->descrição,
+            'descricao' => $this->descricao,
             'distrito' => $this->distrito,
             'epoca' => $this->epoca,
             'ciclo' => $this->ciclo,

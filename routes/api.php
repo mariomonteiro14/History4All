@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 
 Route::get('patrimonios', 'PatrimonioControllerAPI@patrimoniosDataTable');
+Route::get('patrimonios/{id}', 'PatrimonioControllerAPI@find');
 Route::post('login', 'UserControllerAPI@login')->name('login');
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'UserControllerAPI@logout');
