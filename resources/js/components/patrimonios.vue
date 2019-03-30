@@ -1,174 +1,141 @@
 <template>
-    <div >
-        <h3>Patrimónios / Pesquisa</h3>
-        <br>
-        <div class="container-fluid">
-            <div id='example-3' @change="getPatrimonios()">
-                <div class="row">
-                    <h4>Ciclos:</h4>
-                    <input type="checkbox" id="check1Ciclo" value="1º ciclo" v-model="tableData.ciclo">
-                    <label for="check1Ciclo">1º ciclo</label>
-                    <input type="checkbox" id="check2Ciclo" value="2º ciclo" v-model="tableData.ciclo">
-                    <label for="check2Ciclo">2º ciclo</label>
-                    <input type="checkbox" id="check3Ciclo" value="3º ciclo" v-model="tableData.ciclo">
-                    <label for="check3Ciclo">3º ciclo</label>
-                    <input type="checkbox" id="checkSec" value="secundário" v-model="tableData.ciclo">
-                    <label for="checkSec">Secundário</label>
-                </div>
-                <div class="row">
-                    <div class="control">
-                        <select class="custom-select col-sm" v-model="tableData.length" @change="getPatrimonios()">
-                            <option v-for="(records, index) in perPage" :key="index" :value="records">{{records}}</option>
-                        </select>
-                    </div>
+    <div>
+        <v-app id="inspire">
+            <br><br><br><br><br>
+            <h3>Patrimónios / Pesquisa</h3>
+            <br>
 
-                    <div class="col-sm">
-                        <input class="form-control" type="text" v-model="tableData.search" placeholder="Pesquisar por Name"
-                               @input="getPatrimonios()">
-                    </div>
-                    <p>Distrito:</p>
-                    <select v-model="tableData.distrito" @change="getPatrimonios()">
-                        <option v-for="distrito in distritos" :value="distrito">
-                            {{ distrito }}
-                        </option>
-                    </select>
-                    <p>Época histórica:</p>
-                    <select v-model="tableData.epoca" @change="getPatrimonios()">
-                        <option v-for="epoca in epocas" :value="epoca">
-                            {{ epoca }}
-                        </option>
-                    </select>
-                </div>
+            <v-card append float>
 
-            </div>
+                <v-card-title>
+                    <v-container fluid grid-list-xl>
+                        <v-layout row wrap align-center>
+                            <v-flex xs12 sm3 d-flex>
+                                <v-select
+                                    v-model="distritoSelected"
+                                    :items="distritos"
+                                    label="Filtrar por distrito"
+                                    class="input-group--focused"
+                                ></v-select>
+                            </v-flex>
+                            <v-spacer></v-spacer>
+                            <v-flex xs12 sm3 d-flex>
+                                <v-select
+                                    v-model="epocaSelected"
+                                    :items="epocas"
+                                    label="Filtrar por época históricas"
+                                    class="input-group--focused"
+                                ></v-select>
+                            </v-flex>
+                            <v-spacer></v-spacer>
+                            <v-flex xs12 sm3>
+                                <v-select
+                                    v-model="cicloSelected"
+                                    :items="ciclos"
+                                    chips
+                                    label="Filtrar por ciclos"
+                                    multiple
+                                ></v-select>
+                            </v-flex>
 
-            <datatable :columns="columns" :sortKey="sortKey" :sortOrders="sortOrders"
-                       @sort="sortBy">
-                <tbody>
-                <tr v-for="patrimonio in patrimonios" :key="patrimonio.id">
-                    <td>
-                        <img class="card-img-top" v-bind:src="getPatrimonioPhoto(patrimonio.id +'.jpg')"/>
-                    </td>
-                    <td>{{patrimonio.nome}}</td>
-                    <td>{{patrimonio.distrito}}</td>
-                    <td>{{patrimonio.epoca}}</td>
-                    <td>{{patrimonio.ciclo}}</td>
-                </tr>
-                </tbody>
-            </datatable>
-            <pagination :pagination="pagination" @prev="getPatrimonios(pagination.prevPageUrl)"
-                        @next="getPatrimonios(pagination.nextPageUrl)">
-            </pagination>
-        </div>
+                            <v-spacer></v-spacer>
+                            <v-text-field
+                                v-model="search"
+                                append-icon="search"
+                                label="Search"
+                                single-line
+                                hide-details
+                            ></v-text-field>
+                        </v-layout>
+                    </v-container>
+                </v-card-title>
+            </v-card>
+            <v-data-table :headers="headers" :items="filteredPatrimonios" :search="search" class="elevation-1"
+                          :pagination.sync="pagination">
+
+                <template v-slot:items="props">
+                    <tr @click="showPatrimonio(props.item)">
+                        <td class="text-xs-left">
+                            <img height="50" width="50" v-bind:src="getPatrimonioPhoto(props.item.imagens[0])"/>
+                        </td>
+                        <td class="text-xs-left">{{ props.item.nome }}</td>
+                        <td class="text-xs-left">{{ props.item.distrito }}</td>
+                        <td class="text-xs-left">{{ props.item.epoca }}</td>
+                        <td class="text-xs-left">{{ props.item.ciclo }}</td>
+                    </tr>
+                </template>
+            </v-data-table>
+        </v-app>
     </div>
 </template>
 
 <script>
-    import Datatable from './datatable.vue';
-    import Pagination from './widgets/pagination.vue';
-    export default{
-        components:{
-            datatable: Datatable,
-            pagination: Pagination,
+    import BRow from "bootstrap-vue/src/components/layout/row";
+
+    export default {
+        components: {
+            BRow,
         },
         created() {
             this.getPatrimonios();
         },
-        data(){
-            let sortOrders = {};
-            let columns = [
-                {width: '2%', label: 'Imagem', name: 'foto', order:false},
-                {width: '20%', label: 'Nome', name: 'nome', order:true},
-                {width: '7%', label: 'Distrito', name: 'distrito', order:true},
-                {width: '7%', label: 'Époda Histórica', name: 'epoca', order:true},
-                {width: '7%', label: 'Ciclo', name: 'ciclo', order:true},
-            ];
-            columns.forEach((column) => {
-                sortOrders[column.name] = -1;
-            });
-            return{
-                alertSucces:{
-                    show:false,
-                    Message:'',
+        data() {
+            return {
+                pagination: {
+                    descending: false,
+                    page: 1,
+                    rowsPerPage: 5,
+                    sortBy: 'nome',
+                    totalItems: 0,
+                    rowsPerPageItems: [5, 10, 20]
                 },
+                distritoSelected: 'Todos',
+                epocaSelected: 'Todas',
+                cicloSelected: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
                 distritos: ['Todos', 'Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
                     'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
                     'Vila Real', 'Viseu', 'Açores', 'Madeira'],
                 epocas: ['Todas', 'pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
-                patrimonios: [],
-                columns: columns,
-                sortKey: 'nome',
-                sortOrders: sortOrders,
-                perPage: ['5','10', '20', '30'],
-                tableData: {
-                    distrito: '',
-                    epoca: '',
-                    ciclo: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
-                    search: '',
-                    draw: 0,
-                    length: 5,
-                    column: 0,
-                    dir: 'desc',
-                },
-                pagination: {
-                    lastPage: '',
-                    currentPage: '',
-                    total: '',
-                    lastPageUrl: '',
-                    nextPageUrl: '',
-                    prevPageUrl: '',
-                    from: '',
-                    to: ''
-                },
+                ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
+                search: '',
+                headers: [
+                    {
+                        text: '',
+                        align: 'left',
+                        sortable: false,
+                        value: 'image'
+                    },
+                    {text: 'Nome', value: 'nome'},
+                    {text: 'Distrito', value: 'distrito'},
+                    {text: 'Epoca', value: 'epoca'},
+                    {text: 'Ciclo', value: 'ciclo'},
+                ],
+                patrimonios: []
             }
         },
-
-        methods:{
+        methods: {
             getPatrimonios(url = 'api/patrimonios') {
-                this.tableData.draw++;
-                axios.get(url, {params: this.tableData})
+
+                axios.get(url)
                     .then(response => {
-                        let data = response.data;
-                        if (this.tableData.draw == data.draw){
-                            this.patrimonios = data.data.data;
-                            this.configPagination(data.data);
-                        }
+                        this.patrimonios = response.data.data;
                     })
                     .catch(errors => {
                         console.log(errors);
                     });
             },
-            configPagination(data) {
-                this.pagination.lastPage = data.last_page;
-                this.pagination.currentPage = data.current_page;
-                this.pagination.total = data.total;
-                this.pagination.lastPageUrl = data.last_page_url;
-                this.pagination.nextPageUrl = data.next_page_url;
-                this.pagination.prevPageUrl = data.prev_page_url;
-                this.pagination.from = data.from;
-                this.pagination.to = data.to;
-            },
-            sortBy(key) {
-                this.sortKey = key;
-                this.sortOrders[key] = this.sortOrders[key] * -1;
-                this.tableData.column = this.getIndex(this.columns, 'name', key);
-                this.tableData.dir = this.sortOrders[key] === 1 ? 'asc' : 'desc';
-                this.getPatrimonios();
-            },
-            onDateSelected: function(date){
-                this.tableData.date = date;
-                this.getPatrimonios();
-            },
-            getIndex(array, key, value) {
-                return array.findIndex(i => i[key] == value)
-            },
-            buildSuccessMessage(message){
-                this.alertSucces.show = true;
-                this.alertSucces.message = message;
-                setTimeout(() => {
-                    this.alertSucces.show = false;
-                }, 2000);
-            },
+            showPatrimonio(patrimonio) {
+                this.$router.push({path: '/patrimonio/' + patrimonio.id, params: {'patrimonio': patrimonio}});
+            }
         },
-    };
+        computed: {
+            filteredPatrimonios() {
+                return this.patrimonios.filter((i) => {
+                    return (this.distritoSelected === 'Todos' || i.distrito === this.distritoSelected)
+                        && (this.epocaSelected === 'Todas' || i.epoca === this.epocaSelected)
+                        && (this.cicloSelected.indexOf(i.ciclo) > -1);
+                });
+            }
+        }
+    }
 </script>

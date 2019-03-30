@@ -26,7 +26,7 @@ const navbar = Vue.component('navbar', require('./components/widgets/nav.vue').d
 
 const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},
-    { path: '/patrimonios', name: 'patrimonios',component: require('./components/widgets/PlainTableOrder.vue').default},
+    { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonios.vue').default},
     { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/showPatrimonio.vue').default, props: true},
 ];
 
