@@ -6,14 +6,16 @@ import VueRouter from 'vue-router';
 import Toasted from 'vue-toasted';
 import store from './stores/global-store';
 import BootstrapVue from 'bootstrap-vue';
-import Vuetify from 'vuetify'
-import VueCarousel from 'vue-carousel'
-import VueAgile from 'vue-agile'
+import Vuetify from 'vuetify';
+import VueCarousel from 'vue-carousel';
+import VueAgile from 'vue-agile';
+import VueLoading from 'vue-loading';
 
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-import 'vuetify/dist/vuetify.min.css'
+import 'vuetify/dist/vuetify.min.css';
+//import 'vue-loading/dist/vue-loading.css';
 
 Vue.use(VueRouter);
 Vue.use(Toasted);
@@ -23,6 +25,7 @@ Vue.use(VueAgile);
 Vue.use(BootstrapVue);
 
 const navbar = Vue.component('navbar', require('./components/widgets/nav.vue').default);
+Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //http://greyby.github.io/vue-spinner/?ref=madewithvuejs.com
 
 const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},

@@ -28,11 +28,15 @@
                     <v-btn flat>Dashboard</v-btn>
                 </v-toolbar-items>
         <v-toolbar-items v-if="!this.$store.state.user">
-            <v-btn flat data-toggle="modal" data-target="#loginModal">
+
+            <v-btn v-if="!isLoading" flat data-toggle="modal" data-target="#loginModal">
                 Login
             </v-btn>
+            <v-layout v-else align-center  fluid justify-left>
+                <loader :color="loader_color" :size="loader_size"></loader>
+            </v-layout>
         </v-toolbar-items>
-       <div v-else>
+       <div v-if="this.$store.state.user && !this.isLoading">
         <v-menu offset-y origin="center left" nudge-left class="elelvation-1" :nudge-bottom="14" transition="scale-transition">
             <v-btn icon flat slot="activator">
                 <v-badge color="red" overlap>
@@ -70,14 +74,16 @@
     </v-toolbar>
 
         <!-- Login Modal -->
-        <login></login>
+        <login v-on:logging="logging"></login>
     </div>
 </template>
 <script>
     import login from './login.vue';
+    import BContainer from "bootstrap-vue/src/components/layout/container";
     export default {
         name: 'app-toolbar',
         components: {
+            BContainer,
             'login': login,
         },
         data: () => ({
@@ -107,6 +113,9 @@
                     }
                 }
             ],
+            isLoading: false,
+            loader_color: '#ffffff',
+            loader_size:'30px',
         }),
         computed: {
             toolbarColor () {
@@ -118,7 +127,9 @@
                 window.getApp.$emit('APP_DRAWER_TOGGLED');
             },
             logout() {
+                this.logging();
                 axios.get('api/logout').then(response => {
+                    this.logging();
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("success", "Logged out");
                     this.$router.push({name: 'index'});
@@ -126,8 +137,14 @@
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("error", "Error on logout");
                     console.log(error);
-                })
+                    this.logging();
+                });
+
             },
+            logging(){
+                this.isLoading = !this.isLoading;
+                console.log(this.isLoading);
+            }
         }
     };
 </script>

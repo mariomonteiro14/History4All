@@ -48,14 +48,17 @@
         },
         methods: {
             login() {
+                this.$emit("logging");
                 axios.post('api/login', this.user).then(response => {
                     this.$store.commit('setToken',response.data.access_token);
                     return axios.get('api/users/me');
                 }).then(response => {
+                    this.$emit("logging");
                     this.$store.commit('setUser',response.data.data);
                     this.toastPopUp("success", `Welcome ${this.$store.state.user.name}`);
                     $('#loginModal').modal('hide');
                 }).catch(error => {
+                    this.$emit("logging");
                     this.$store.commit('clearUserAndToken');
                     if(error.response.status && error.response.status === 401){
                         this.toastPopUp("error", `${error.response.data.message}`);
