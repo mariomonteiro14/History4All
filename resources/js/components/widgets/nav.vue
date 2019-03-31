@@ -36,7 +36,7 @@
                 <loader :color="loader_color" :size="loader_size"></loader>
             </v-layout>
         </v-toolbar-items>
-       <div v-if="this.$store.state.user && !this.isLoading">
+       <div v-else>
         <v-menu offset-y origin="center left" nudge-left class="elelvation-1" :nudge-bottom="14" transition="scale-transition">
             <v-btn icon flat slot="activator">
                 <v-badge color="red" overlap>
