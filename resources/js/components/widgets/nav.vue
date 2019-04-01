@@ -24,8 +24,8 @@
         >
         </v-text-field>
         <v-spacer></v-spacer>
-                <v-toolbar-items v-if="this.$store.state.user">
-                    <v-btn flat>Dashboard</v-btn>
+                <v-toolbar-items v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin'">
+                    <v-btn flat to="/dashboard">Dashboard</v-btn>
                 </v-toolbar-items>
         <v-toolbar-items v-if="!this.$store.state.user">
 
@@ -48,7 +48,7 @@
         <v-menu offset-y origin="center center" :nudge-bottom="10" transition="scale-transition">
             <v-btn icon large flat slot="activator">
                 <v-avatar size="30px">
-                    <img v-bind:src="getUserPhoto(this.$store.state.user.photo)" />
+                    <img v-bind:src="getUserPhoto(this.$store.state.user.foto)" />
                 </v-avatar>
             </v-btn>
             <v-list class="pa-0" absolute>

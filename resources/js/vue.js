@@ -31,6 +31,8 @@ const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},
     { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonios.vue').default},
     { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/showPatrimonio.vue').default, props: true},
+    { path: '/dashboard', name: 'dashboard',component: require('./components/dashboard.vue').default},
+    { path: '/patrimonios/gerir', name: 'patrimoniosGerir',component: require('./components/gerirPatrimonios.vue').default},
 ];
 
 const router = new VueRouter({
@@ -84,4 +86,7 @@ Vue.mixin(common);
 const app = new Vue({
     router,
     store,
+    created() {
+        this.$store.commit('loadTokenAndUserFromSession');
+    },
 }).$mount('#app');
