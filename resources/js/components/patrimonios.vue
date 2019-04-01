@@ -56,8 +56,8 @@
                 <template v-slot:items="props">
                     <tr @click="showPatrimonio(props.item)">
                         <td class="text-xs-center">
-                            <img  height="70" width="90" v-if="props.item.primeiraImagem"
-                                 v-bind:src="getPatrimonioPhoto(props.item.primeiraImagem)"/>
+                            <img  height="70" width="90" v-if="props.item.imagens [0]"
+                                 v-bind:src="getPatrimonioPhoto(props.item.imagens[0])"/>
                         </td>
                         <td class="text-xs-left">{{ props.item.nome }}</td>
                         <td class="text-xs-left">{{ props.item.distrito }}</td>

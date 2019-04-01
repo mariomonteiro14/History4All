@@ -20,15 +20,15 @@
                 <template v-slot:items="props">
                     <tr>
                         <td class="text-xs-center">
-                            <img  height="70" width="90" v-if="props.item.primeiraImagem"
-                                 v-bind:src="getPatrimonioPhoto(props.item.primeiraImagem)"/>
+                            <img  height="70" width="90" v-if="props.item.imagens[0]"
+                                 v-bind:src="getPatrimonioPhoto(props.item.imagens[0])"/>
                         </td>
                         <td class="text-xs-left">{{ props.item.nome }}</td>
                         <td class="text-xs-left">{{ props.item.distrito }}</td>
                         <td class="text-xs-left">{{ props.item.epoca }}</td>
                         <td class="text-xs-left">{{ props.item.ciclo }}</td>
                         <td class="justify-center layout px-0">
-                            <v-btn color="warning" @click="editar(props.item.id)">
+                            <v-btn color="warning" @click="editar(props.item)">
                                 Editar <v-icon small class="mr-2">edit</v-icon>
                             </v-btn>
                             <v-btn color="error" @click="apagar(props.item.id)">
@@ -93,8 +93,9 @@
                         console.log(errors);
                     });
             },
-            editar(id){
-
+            editar(patrimonio){
+                this.$parent.patrimonio = patrimonio;
+                this.$router.push('/admin/editarPatrimonio');
             },
             apagar(id){
 

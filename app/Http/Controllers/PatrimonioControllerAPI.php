@@ -24,4 +24,11 @@ class PatrimonioControllerAPI extends Controller
         return Patrimonio::with('imagens')->where('id', $id)->first();
     }
 
+    public function update(Request $request, $id){
+        $patrim = Patrimonio::findOrFail($id);
+        $patrim->fill($request->all());
+        $patrim->save();
+        return new PatrimonioResource($patrim);
+    }
+
 }

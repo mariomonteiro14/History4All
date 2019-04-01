@@ -10,7 +10,7 @@ import Vuetify from 'vuetify';
 import VueCarousel from 'vue-carousel';
 import VueAgile from 'vue-agile';
 import VueLoading from 'vue-loading';
-
+import CKEditor from '@ckeditor/ckeditor5-vue';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -23,6 +23,7 @@ Vue.use(Vuetify);
 Vue.use(VueCarousel);
 Vue.use(VueAgile);
 Vue.use(BootstrapVue);
+Vue.use(CKEditor);
 
 const navbar = Vue.component('navbar', require('./components/widgets/nav.vue').default);
 Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //http://greyby.github.io/vue-spinner/?ref=madewithvuejs.com
@@ -33,6 +34,7 @@ const routes = [
     { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/showPatrimonio.vue').default, props: true},
     { path: '/dashboard', name: 'dashboard',component: require('./components/dashboard.vue').default},
     { path: '/patrimonios/gerir', name: 'patrimoniosGerir',component: require('./components/gerirPatrimonios.vue').default},
+    { path: '/admin/editarPatrimonio', name: 'editarPatrimonio',component: require('./components/editarPatrimonio.vue').default},
 ];
 
 const router = new VueRouter({

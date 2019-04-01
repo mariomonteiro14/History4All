@@ -20,4 +20,5 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'UserControllerAPI@logout');
     Route::get('users/me', 'UserControllerAPI@myProfile');
 });
+Route::middleware('auth:api', 'admin')->put('patrimonios/{id}', 'PatrimonioControllerAPI@update');
 

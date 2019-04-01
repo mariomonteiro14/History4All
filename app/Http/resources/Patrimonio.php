@@ -21,8 +21,7 @@ class Patrimonio extends JsonResource
             'distrito' => $this->distrito,
             'epoca' => $this->epoca,
             'ciclo' => $this->ciclo,
-            'primeiraImagem' => $this->primeiraImagem(),
-
+            'imagens' => $this->imagens()->pluck('foto')
         ];
     }
 
