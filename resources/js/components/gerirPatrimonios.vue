@@ -38,7 +38,7 @@
                                     Editar
                                     <v-icon small class="mr-2">edit</v-icon>
                                 </v-btn>
-                                <v-btn color="error" @click="apagar(props.item.id)">
+                                <v-btn color="error" @click.stop="apagarVerificacao(props.item.id)">
                                     Apagar
                                     <v-icon small>delete_forever</v-icon>
                                 </v-btn>
@@ -48,6 +48,19 @@
                 </v-data-table>
             </v-card>
         </v-app>
+        <v-dialog v-model="dialog" max-width="290">
+            <v-card>
+                <v-card-title class="headline">Confirmação</v-card-title>
+                <v-card-text>Tem acerteza que que elimiar o património?</v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="red darken-1" flat="flat" @click="dialog = false">
+                        Não
+                    </v-btn>
+                    <v-btn color="green darken-1" flat="flat" @click="apagar()">Sim</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -89,7 +102,9 @@
                     {text: 'Ciclo', value: 'ciclo'},
                     {text: 'Ações', value: 'acoes', sortable: false}
                 ],
-                patrimonios: []
+                patrimonios: [],
+                dialog: false,
+                patrimonioAApagar: ''
             }
         },
         methods: {
@@ -106,8 +121,20 @@
                 this.$parent.patrimonio = patrimonio;
                 this.$router.push('/admin/patrimonios/editar');
             },
-            apagar(id) {
-
+            apagarVerificacao(id){
+                this.dialog = true;
+                this.patrimonioAApagar = id;
+            },
+            apagar() {
+                this.dialog = false;
+                axios.delete('api/patrimonios/' + this.patrimonioAApagar)
+                    .then(response => {
+                            this.toastPopUp("success", "Património Apagado!");
+                        this.getPatrimonios();
+                    }).catch(function (error) {
+                        this.toastPopUp("error", "Erro");
+                        console.log(error);
+                    });
             },
             criar() {
                 this.$router.push('/admin/patrimonios/criar');
