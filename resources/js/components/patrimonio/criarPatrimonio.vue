@@ -16,36 +16,36 @@
 
         <v-container fluid grid-list-xl>
             <v-layout row wrap align-center>
-                <v-flex xs12 sm3 d-flex>
-                    <p>Distrito:</p>
+                <div class="form-group modal-footer" >
                     <v-select
-                            v-model="patrimonio.distrito"
-                            :items="distritos"
-                            :rules="[v => !!v || 'Distrito é obrigatório']"
-                            class="input-group--focused"
-                            required
+                        label="Distrito"
+                        v-model="patrimonio.distrito"
+                        :items="distritos"
+                        :rules="[v => !!v || 'Distrito é obrigatório']"
+                        class="input-group--focused"
+                        required
                     ></v-select>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex xs12 sm3 d-flex>
-                    <p>Época histórica:</p>
+                </div>
+                <div class="form-group modal-footer">
                     <v-select
-                            v-model="patrimonio.epoca"
-                            :items="epocas"
-                            :rules="[v => !!v || 'Época histórica é obrigatória']"
-                            required
+                        label="Época"
+                        v-model="patrimonio.epoca"
+                        :items="epocas"
+                        :rules="[v => !!v || 'Época histórica é obrigatória']"
+                        class="input-group--focused"
+                        required
                     ></v-select>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex xs12 sm3 d-flex>
-                    <p>Ciclo:</p>
+                </div>
+                <div class="form-group modal-footer">
                     <v-select
-                            v-model="patrimonio.ciclo"
-                            :items="ciclos"
-                            :rules="[v => !!v || 'Ciclo é obrigatório']"
-                            required
+                        label="Ciclo"
+                        v-model="patrimonio.ciclo"
+                        :items="ciclos"
+                        :rules="[v => !!v || 'Ciclo é obrigatória']"
+                        class="input-group--focused"
+                        required
                     ></v-select>
-                </v-flex>
+                </div>
             </v-layout>
         </v-container>
         <div>
@@ -78,7 +78,13 @@
                     'Vila Real', 'Viseu', 'Açores', 'Madeira'],
                 epocas: ['pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
-                patrimonio: {}
+                patrimonio: {
+                    nome: "",
+                    descricao: "",
+                    distrito: "",
+                    epoca: "",
+                    ciclo: ""
+                },
             };
         },
         methods: {

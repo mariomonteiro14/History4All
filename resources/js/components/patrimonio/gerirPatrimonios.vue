@@ -2,7 +2,7 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-
+            <patrimonio-add></patrimonio-add>
             <h3>Patrimónios / Gerir</h3>
             <br>
             <v-card append float>
@@ -16,7 +16,9 @@
                             hide-details
                         ></v-text-field>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" @click="criar()">Criar património <i class="material-icons">add_box</i>
+                        <v-btn color="success" @click="criar()">Criar património <i class="material-icons">add_box</i></v-btn>
+
+                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal">Criar património <i class="material-icons">add_box</i>
                         </v-btn>
                     </v-layout>
                 </v-container>
@@ -48,12 +50,18 @@
                 </v-data-table>
             </v-card>
         </v-app>
+
     </div>
+
 </template>
 
 <script>
+    import AddPatrimonio from './adicionarPatrimonio.vue'
 
     export default {
+        components:{
+          'patrimonio-add':AddPatrimonio
+        },
         created() {
             this.getPatrimonios();
         },

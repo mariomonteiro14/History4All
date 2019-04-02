@@ -30,12 +30,12 @@ Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //ht
 
 const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},
-    { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonios.vue').default},
-    { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/showPatrimonio.vue').default, props: true},
+    { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonio/patrimonios.vue').default},
+    { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/patrimonio/showPatrimonio.vue').default, props: true},
     { path: '/admin', name: 'dashboard',component: require('./components/dashboard.vue').default},
-    { path: '/admin/patrimonios', name: 'gerirPatrimonios',component: require('./components/gerirPatrimonios.vue').default},
-    { path: '/admin/patrimonios/editar', name: 'editarPatrimonio',component: require('./components/editarPatrimonio.vue').default},
-    { path: '/admin/patrimonios/criar', name: 'criarPatrimonio',component: require('./components/criarPatrimonio.vue').default},
+    { path: '/admin/patrimonios', name: 'gerirPatrimonios',component: require('./components/patrimonio/gerirPatrimonios.vue').default},
+    { path: '/admin/patrimonios/editar', name: 'editarPatrimonio',component: require('./components/patrimonio/editarPatrimonio.vue').default},
+    { path: '/admin/patrimonios/criar', name: 'criarPatrimonio',component: require('./components/patrimonio/criarPatrimonio.vue').default},
 ];
 
 const router = new VueRouter({
