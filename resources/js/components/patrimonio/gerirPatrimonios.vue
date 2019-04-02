@@ -2,7 +2,7 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <patrimonio-add></patrimonio-add>
+            <patrimonio-add :success="getPatrimonios()"></patrimonio-add>
             <h3>Patrimónios / Gerir</h3>
             <br>
             <v-card append float>

@@ -3,7 +3,7 @@
         <!-- Modal Add Order-->
         <div class="modal fade" id="addPatrimonioModal" tabindex="-1" role="dialog" aria-labelledby="addPatrimonioModal"
              aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="addPatrimonioModal">Criar Patrimonio</h5>
@@ -34,41 +34,47 @@
                             :rules="[rules.length(3000)]"
                         ></v-textarea>
                     </div>
+                    <v-container>
+                        <v-layout class="form-group modal-footer" row align-center>
 
-                    <div class="form-group modal-footer" >
-                        <v-select
-                            label="Distrito"
-                            v-model="patrimonio.distrito"
-                            :items="distritos"
-                            :rules="[v => !!v || 'Distrito é obrigatório']"
-                            class="input-group--focused"
-                            required
-                        ></v-select>
-                    </div>
-                    <div class="form-group modal-footer">
-                        <v-select
-                            label="Época"
-                            v-model="patrimonio.epoca"
-                            :items="epocas"
-                            :rules="[v => !!v || 'Época histórica é obrigatória']"
-                            class="input-group--focused"
-                            required
-                        ></v-select>
-                    </div>
-                    <div class="form-group modal-footer">
-                        <v-select
-                            label="Ciclo"
-                            v-model="patrimonio.ciclo"
-                            :items="ciclos"
-                            :rules="[v => !!v || 'Ciclo é obrigatória']"
-                            class="input-group--focused"
-                            required
-                        ></v-select>
-                    </div>
+                            <v-select
+                                fixed
+                                label="Distrito"
+                                v-model="patrimonio.distrito"
+                                :items="distritos"
+                                :rules="[v => !!v || 'Distrito é obrigatório']"
+                                class="input-group--focused"
+                                required
+                            ></v-select>
+
+                            <v-select
+                                fixed
+                                label="Época"
+                                v-model="patrimonio.epoca"
+                                :items="epocas"
+                                :rules="[v => !!v || 'Época histórica é obrigatória']"
+                                class="input-group--focused"
+                                required
+                            ></v-select>
+
+                            <v-select
+                                fixed
+                                label="Ciclo"
+                                v-model="patrimonio.ciclo"
+                                :items="ciclos"
+                                :rules="[v => !!v || 'Ciclo é obrigatória']"
+                                class="input-group--focused"
+                                required
+                            ></v-select>
+
+                        </v-layout>
+                    </v-container>
+
                     <div class="modal-footer">
                         <button class="btn btn-info" v-on:click.prevent="save">Registar</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
+
                 </div>
 
             </div>
@@ -83,21 +89,21 @@
 
         data: function () {
             return {
-               /* valid: false,
-                editor: ClassicEditor,
-                editorData: '',
-                editorConfig: {
-                    toolbar: ['heading', '|', 'Bold', 'Italic', 'bulletedList', 'numberedList', 'blockQuote', 'Link', 'Undo', 'Redo'],
+                /* valid: false,
+                 editor: ClassicEditor,
+                 editorData: '',
+                 editorConfig: {
+                     toolbar: ['heading', '|', 'Bold', 'Italic', 'bulletedList', 'numberedList', 'blockQuote', 'Link', 'Undo', 'Redo'],
 
-                    heading: {
-                        options: [
-                            {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
-                            {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
-                            {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'},
-                            {model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3'}
-                        ]
-                    },
-                },**/
+                     heading: {
+                         options: [
+                             {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
+                             {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
+                             {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'},
+                             {model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3'}
+                         ]
+                     },
+                 },**/
                 distritos: ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
                     'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
                     'Vila Real', 'Viseu', 'Açores', 'Madeira'],
@@ -154,7 +160,7 @@
                 if (!this.hasErrors()) {
                     axios.post('/api/patrimonios', this.patrimonio).then(response => {
                         this.toastPopUp("success", "Património Criado!");
-                        this.$router.push('/admin/patrimonios');
+                        this.$emit('success');
                         $('#addPatrimonioModal').modal('hide');
                     }).catch(error => {
                         this.toastPopUp("error", `${error.response.data.message}`);
