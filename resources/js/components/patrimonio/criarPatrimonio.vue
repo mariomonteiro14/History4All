@@ -48,8 +48,9 @@
                 </div>
             </v-layout>
         </v-container>
-        <div>
-            <v-btn small @click="validate">Registar património</v-btn>
+        <div class="text-xs-center">
+            <v-btn color="success" @click="validate">Registar património</v-btn>
+            <v-btn color="error" @click="cancelar">Cancelar</v-btn>
         </div>
     </v-form>
 </template>
@@ -107,6 +108,9 @@
                     this.registar();
                 }
             },
+            cancelar(){
+                this.$router.push('/admin/patrimonios');
+            }
         }
     }
 </script>

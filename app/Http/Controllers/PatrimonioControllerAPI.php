@@ -28,7 +28,7 @@ class PatrimonioControllerAPI extends Controller
         $patrim = Patrimonio::findOrFail($id);
         $patrim->fill($request->all());
         $patrim->save();
-        return new PatrimonioResource($patrim);
+        return response()->json(new PatrimonioResource($patrim), 200);
     }
 
     public function store(Request $request){
@@ -37,4 +37,12 @@ class PatrimonioControllerAPI extends Controller
         $patrim->save();
         return response()->json(new PatrimonioResource($patrim), 201);
     }
+
+    public function destroy($id)
+    {
+        $user = Patrimonio::findOrFail($id);
+        $user->delete();
+        return response()->json(null, 204);
+    }
+
 }
