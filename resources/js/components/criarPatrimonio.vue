@@ -10,8 +10,8 @@
         ></v-text-field>
 
         <div id="app">
-            <ckeditor :editor="editor" :config="editorConfig" :value="$parent.patrimonio.descricao"
-                      v-model="editorData"  @ready="setData()"></ckeditor>
+            <ckeditor :editor="editor" :config="editorConfig" :value="editorData"
+                      v-model="editorData""></ckeditor>
         </div>
 
         <v-container fluid grid-list-xl>
@@ -49,9 +49,10 @@
             </v-layout>
         </v-container>
         <div>
-            <v-btn small v-on:click.prevent="update">Guardar</v-btn>
+            <v-btn small v-on:click.prevent="registar">Registar património</v-btn>
         </div>
     </v-form>
+
 </template>
 <script type="text/javascript">
     import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
@@ -77,33 +78,19 @@
                     'Vila Real', 'Viseu', 'Açores', 'Madeira'],
                 epocas: ['pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
-                patrimonio: {},
-            }
+                patrimonio: {}
+            };
         },
         methods: {
-            setData(){
-                this.editorData = this.$parent.patrimonio.descricao;
-            },
-            update() {
+            registar() {
                 this.patrimonio.descricao = this.editorData;
-                axios.put('/api/patrimonios/' + this.patrimonio.id, this.patrimonio).then(response=>{
+                console.log(this.patrimonio);
+                axios.post('/api/patrimonios', this.patrimonio).then(response=>{
+                    console.log(response);
                 }).catch(function (error) {
                     console.log(error);
                 });
             },
-        },
-        mounted() {
-            this.patrimonio = this.$parent.patrimonio;
-        },
-        watch: {
-            editorData: function( val ) {
-                this.$emit('input', val);
-            },
         }
     }
 </script>
-<style>
-    .ck-editor__editable {
-        min-height: 300px;
-    }
-</style>

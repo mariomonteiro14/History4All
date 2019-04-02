@@ -32,9 +32,10 @@ const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},
     { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonios.vue').default},
     { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/showPatrimonio.vue').default, props: true},
-    { path: '/dashboard', name: 'dashboard',component: require('./components/dashboard.vue').default},
-    { path: '/patrimonios/gerir', name: 'patrimoniosGerir',component: require('./components/gerirPatrimonios.vue').default},
-    { path: '/admin/editarPatrimonio', name: 'editarPatrimonio',component: require('./components/editarPatrimonio.vue').default},
+    { path: '/admin', name: 'admin',component: require('./components/dashboard.vue').default},
+    { path: '/admin/patrimonios', name: 'patrimoniosGerir',component: require('./components/gerirPatrimonios.vue').default},
+    { path: '/admin/patrimonios/editar', name: 'editarPatrimonio',component: require('./components/editarPatrimonio.vue').default},
+    { path: '/admin/patrimonios/criar', name: 'criarPatrimonio',component: require('./components/criarPatrimonio.vue').default},
 ];
 
 const router = new VueRouter({

@@ -25,7 +25,7 @@
         </v-text-field>
         <v-spacer></v-spacer>
                 <v-toolbar-items v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin'">
-                    <v-btn flat to="/dashboard">Dashboard</v-btn>
+                    <v-btn flat to="/admin">Dashboard</v-btn>
                 </v-toolbar-items>
         <v-toolbar-items v-if="!this.$store.state.user">
 

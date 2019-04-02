@@ -21,4 +21,5 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users/me', 'UserControllerAPI@myProfile');
 });
 Route::middleware('auth:api', 'admin')->put('patrimonios/{id}', 'PatrimonioControllerAPI@update');
+Route::middleware('auth:api', 'admin')->post('patrimonios', 'PatrimonioControllerAPI@store');
 

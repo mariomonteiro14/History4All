@@ -31,4 +31,10 @@ class PatrimonioControllerAPI extends Controller
         return new PatrimonioResource($patrim);
     }
 
+    public function store(Request $request){
+        $patrim = new Patrimonio();
+        $patrim->fill($request->all());
+        $patrim->save();
+        return response()->json(new PatrimonioResource($patrim), 201);
+    }
 }

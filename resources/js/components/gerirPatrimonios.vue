@@ -95,13 +95,13 @@
             },
             editar(patrimonio){
                 this.$parent.patrimonio = patrimonio;
-                this.$router.push('/admin/editarPatrimonio');
+                this.$router.push('/admin/patrimonios/editar');
             },
             apagar(id){
 
             },
             criar(){
-
+                this.$router.push('/admin/patrimonios/criar');
             }
         }
     }
