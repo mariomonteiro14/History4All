@@ -1,58 +1,68 @@
 <template>
     <v-form ref="form" v-model="valid" lazy-validation>
-        <br><br><br><br><br>
-
-        <p>Nome do património: </p>
-        <v-text-field
-                v-model="patrimonio.nome"
-                label="Nome"
-                :rules="[v => !!v || 'Nome é obrigatório']"
-                required
-        ></v-text-field>
-
-        <div id="app">
-            <ckeditor :editor="editor" :config="editorConfig" :value="$parent.patrimonio.descricao"
-                      v-model="editorData"  @ready="setData()"></ckeditor>
-        </div>
-
-        <v-container fluid grid-list-xl>
-            <v-layout row wrap align-center>
-                <v-flex xs12 sm3 d-flex>
-                    <p>Distrito:</p>
-                    <v-select
-                            v-model="patrimonio.distrito"
-                            :items="distritos"
-                            :rules="[v => !!v || 'Distrito é obrigatório']"
-                            class="input-group--focused"
-                            required
-                    ></v-select>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex xs12 sm3 d-flex>
-                    <p>Época histórica:</p>
-                    <v-select
-                            v-model="patrimonio.epoca"
-                            :items="epocas"
-                            :rules="[v => !!v || 'Época histórica é obrigatória']"
-                            required
-                    ></v-select>
-                </v-flex>
-                <v-spacer></v-spacer>
-                <v-flex xs12 sm3 d-flex>
-                    <p>Ciclo:</p>
-                    <v-select
-                            v-model="patrimonio.ciclo"
-                            :items="ciclos"
-                            :rules="[v => !!v || 'Ciclo é obrigatório']"
-                            required
-                    ></v-select>
-                </v-flex>
-            </v-layout>
-        </v-container>
-        <div class="text-xs-center">
-            <v-btn color="success" @click="validate">Guardar</v-btn>
-            <v-btn color="error" @click="cancelar">Cancelar</v-btn>
-        </div>
+        <v-app id="inspire">
+            <br><br><br><br><br>
+            <h3>Patrimónios / Editar</h3>
+            <br>
+            <v-card append float>
+                <v-card-title>
+                    <v-container fluid grid-list-xl>
+                        <v-layout row wrap align-center>
+                            <v-text-field
+                                    v-model="patrimonio.nome"
+                                    label="Nome"
+                                    :rules="[v => !!v || 'Nome é obrigatório']"
+                                    required
+                            ></v-text-field>
+                        </v-layout>
+                    </v-container>
+                    <v-container fluid grid-list-xl>
+                        <v-layout row wrap align-center>
+                            <div class="form-group" >
+                                <v-select
+                                        label="Distrito"
+                                        v-model="patrimonio.distrito"
+                                        :items="distritos"
+                                        :rules="[v => !!v || 'Distrito é obrigatório']"
+                                        class="input-group--focused"
+                                        required
+                                ></v-select>
+                            </div>
+                            <v-spacer></v-spacer>
+                            <div class="form-group">
+                                <v-select
+                                        label="Época"
+                                        v-model="patrimonio.epoca"
+                                        :items="epocas"
+                                        :rules="[v => !!v || 'Época histórica é obrigatória']"
+                                        class="input-group--focused"
+                                        required
+                                ></v-select>
+                            </div>
+                            <v-spacer></v-spacer>
+                            <div class="form-group">
+                                <v-select
+                                        label="Ciclo"
+                                        v-model="patrimonio.ciclo"
+                                        :items="ciclos"
+                                        :rules="[v => !!v || 'Ciclo é obrigatória']"
+                                        class="input-group--focused"
+                                        required
+                                ></v-select>
+                            </div>
+                        </v-layout>
+                    </v-container>
+                </v-card-title>
+                <div id="app">
+                    <ckeditor :editor="editor" :config="editorConfig" :value="$parent.patrimonio.descricao"
+                              v-model="editorData"  @ready="setData()"></ckeditor>
+                </div>
+                <div class="text-xs-center">
+                    <v-btn color="success" @click="validate">Guardar</v-btn>
+                    <v-btn color="error" @click="cancelar">Cancelar</v-btn>
+                </div>
+            </v-card>
+        </v-app>
     </v-form>
 </template>
 <script type="text/javascript">

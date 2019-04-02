@@ -1,10 +1,8 @@
 <template>
     <div>
         <br><br><br><br><br>
-        <h4 class="display-1">{{patrimonio.nome}}</h4>
-        <p>{{patrimonio.epoca}}</p>
-        <p>{{patrimonio.ciclo}}</p>
-        <p>{{patrimonio.distrito}}</p>
+        <h4 class="display-1">{{patrimonio.nome}} - {{patrimonio.distrito}}</h4>
+
         <p v-html="patrimonio.descricao"></p>
     </div>
 

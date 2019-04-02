@@ -73,7 +73,7 @@
         components:{
           'patrimonio-add':AddPatrimonio
         },
-        created() {
+        mounted() {
             this.getPatrimonios();
         },
         data() {
