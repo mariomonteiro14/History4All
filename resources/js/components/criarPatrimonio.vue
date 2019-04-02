@@ -1,17 +1,17 @@
 <template>
-    <v-form ref="form">
+    <v-form ref="form" v-model="valid" lazy-validation>
         <br><br><br><br><br>
 
         <p>Nome do património: </p>
         <v-text-field
                 v-model="patrimonio.nome"
                 label="Nome"
+                :rules="[v => !!v || 'Nome é obrigatório']"
                 required
         ></v-text-field>
 
         <div id="app">
-            <ckeditor :editor="editor" :config="editorConfig" :value="editorData"
-                      v-model="editorData""></ckeditor>
+            <ckeditor :editor="editor" :config="editorConfig" :value="editorData" v-model="editorData"></ckeditor>
         </div>
 
         <v-container fluid grid-list-xl>
@@ -21,7 +21,7 @@
                     <v-select
                             v-model="patrimonio.distrito"
                             :items="distritos"
-                            :rules="[v => !!v || 'Item is required']"
+                            :rules="[v => !!v || 'Distrito é obrigatório']"
                             class="input-group--focused"
                             required
                     ></v-select>
@@ -32,7 +32,7 @@
                     <v-select
                             v-model="patrimonio.epoca"
                             :items="epocas"
-                            :rules="[v => !!v || 'Item is required']"
+                            :rules="[v => !!v || 'Época histórica é obrigatória']"
                             required
                     ></v-select>
                 </v-flex>
@@ -42,17 +42,16 @@
                     <v-select
                             v-model="patrimonio.ciclo"
                             :items="ciclos"
-                            :rules="[v => !!v || 'Item is required']"
+                            :rules="[v => !!v || 'Ciclo é obrigatório']"
                             required
                     ></v-select>
                 </v-flex>
             </v-layout>
         </v-container>
         <div>
-            <v-btn small v-on:click.prevent="registar">Registar património</v-btn>
+            <v-btn small @click="validate">Registar património</v-btn>
         </div>
     </v-form>
-
 </template>
 <script type="text/javascript">
     import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
@@ -60,6 +59,7 @@
     export default {
         data: function(){
             return {
+                valid: false,
                 editor: ClassicEditor,
                 editorData: '',
                 editorConfig: {
@@ -84,12 +84,22 @@
         methods: {
             registar() {
                 this.patrimonio.descricao = this.editorData;
-                console.log(this.patrimonio);
                 axios.post('/api/patrimonios', this.patrimonio).then(response=>{
-                    console.log(response);
+                    this.toastPopUp("success", "Património Criado!");
+                    this.$router.push('/admin/patrimonios');
                 }).catch(function (error) {
+                    this.toastPopUp("error", "Erro");
                     console.log(error);
                 });
+            },
+            validate () {
+                if (this.$refs.form.validate()) {
+                    if (this.editorData === ""){
+                        this.toastPopUp("error", "Descrição é obrigatória");
+                    }
+                    this.valid = true;
+                    this.registar();
+                }
             },
         }
     }

@@ -32,8 +32,8 @@ const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},
     { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonios.vue').default},
     { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/showPatrimonio.vue').default, props: true},
-    { path: '/admin', name: 'admin',component: require('./components/dashboard.vue').default},
-    { path: '/admin/patrimonios', name: 'patrimoniosGerir',component: require('./components/gerirPatrimonios.vue').default},
+    { path: '/admin', name: 'dashboard',component: require('./components/dashboard.vue').default},
+    { path: '/admin/patrimonios', name: 'gerirPatrimonios',component: require('./components/gerirPatrimonios.vue').default},
     { path: '/admin/patrimonios/editar', name: 'editarPatrimonio',component: require('./components/editarPatrimonio.vue').default},
     { path: '/admin/patrimonios/criar', name: 'criarPatrimonio',component: require('./components/criarPatrimonio.vue').default},
 ];
@@ -42,6 +42,15 @@ const router = new VueRouter({
     routes:routes
 });
 
+router.beforeEach((to, from, next) => {
+    if((to.name == 'dashboard') || (to.name == 'gerirPatrimonios') || (to.name == 'editarPatrimonio') || (to.name == 'criarPatrimonio')){
+        if(!store.state.user || store.state.user.tipo != "admin"){
+            next("/");
+            return;
+        }
+    }
+    next();
+});
 
 var common = {
     methods: {
@@ -50,21 +59,21 @@ var common = {
             if(type == "show"){
                 Vue.toasted.show(msg, {
                     position: "bottom-center",
-                    duration: 3000,
+                    duration: 5000,
                 });
                 return;
             }
             if(type == "error"){
                 Vue.toasted.error(msg, {
                     position: "bottom-center",
-                    duration: 3000,
+                    duration: 10000,
                 });
                 return;
             }
             if(type == "success"){
                 Vue.toasted.success(msg, {
                     position: "bottom-center",
-                    duration: 3000,
+                    duration: 5000,
                 });
                 return;
             }

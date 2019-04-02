@@ -1,11 +1,12 @@
 <template>
-    <v-form ref="form">
+    <v-form ref="form" v-model="valid" lazy-validation>
         <br><br><br><br><br>
 
         <p>Nome do património: </p>
         <v-text-field
                 v-model="patrimonio.nome"
                 label="Nome"
+                :rules="[v => !!v || 'Nome é obrigatório']"
                 required
         ></v-text-field>
 
@@ -21,7 +22,7 @@
                     <v-select
                             v-model="patrimonio.distrito"
                             :items="distritos"
-                            :rules="[v => !!v || 'Item is required']"
+                            :rules="[v => !!v || 'Distrito é obrigatório']"
                             class="input-group--focused"
                             required
                     ></v-select>
@@ -32,7 +33,7 @@
                     <v-select
                             v-model="patrimonio.epoca"
                             :items="epocas"
-                            :rules="[v => !!v || 'Item is required']"
+                            :rules="[v => !!v || 'Época histórica é obrigatória']"
                             required
                     ></v-select>
                 </v-flex>
@@ -42,14 +43,14 @@
                     <v-select
                             v-model="patrimonio.ciclo"
                             :items="ciclos"
-                            :rules="[v => !!v || 'Item is required']"
+                            :rules="[v => !!v || 'Ciclo é obrigatório']"
                             required
                     ></v-select>
                 </v-flex>
             </v-layout>
         </v-container>
         <div>
-            <v-btn small v-on:click.prevent="update">Guardar</v-btn>
+            <v-btn small @click="validate">Guardar</v-btn>
         </div>
     </v-form>
 </template>
@@ -59,6 +60,7 @@
     export default {
         data: function(){
             return {
+                valid: false,
                 editor: ClassicEditor,
                 editorData: '',
                 editorConfig: {
@@ -87,9 +89,21 @@
             update() {
                 this.patrimonio.descricao = this.editorData;
                 axios.put('/api/patrimonios/' + this.patrimonio.id, this.patrimonio).then(response=>{
+                    this.toastPopUp("success", "Património Editado!");
+                    this.$router.push('/admin/patrimonios');
                 }).catch(function (error) {
+                    this.toastPopUp("error", "Erro");
                     console.log(error);
                 });
+            },
+            validate () {
+                if (this.$refs.form.validate()) {
+                    if (this.editorData === ""){
+                        this.toastPopUp("error", "Descrição é obrigatória");
+                    }
+                    this.valid = true;
+                    this.update();
+                }
             },
         },
         mounted() {
