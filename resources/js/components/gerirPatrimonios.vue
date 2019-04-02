@@ -2,42 +2,51 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
+
             <h3>Patrimónios / Gerir</h3>
-            <v-btn color="success" @click="criar()">Criar património <i class="material-icons">add_box</i></v-btn>
             <br>
             <v-card append float>
-                <v-text-field
-                    v-model="search"
-                    append-icon="search"
-                    label="Search"
-                    single-line
-                    hide-details
-                ></v-text-field>
-            </v-card>
+                <v-container fluid grid-list-xl>
+                    <v-layout row  align-center>
+                        <v-text-field
+                            v-model="search"
+                            append-icon="search"
+                            label="Search"
+                            single-line
+                            hide-details
+                        ></v-text-field>
+                        <v-spacer></v-spacer>
+                        <v-btn color="success" @click="criar()">Criar património <i class="material-icons">add_box</i>
+                        </v-btn>
+                    </v-layout>
+                </v-container>
 
-            <v-data-table :headers="headers" :items="patrimonios" :search="search" class="elevation-1"
-                          :pagination.sync="pagination">
-                <template v-slot:items="props">
-                    <tr>
-                        <td class="text-xs-center">
-                            <img  height="70" width="90" v-if="props.item.imagens[0]"
-                                 v-bind:src="getPatrimonioPhoto(props.item.imagens[0])"/>
-                        </td>
-                        <td class="text-xs-left">{{ props.item.nome }}</td>
-                        <td class="text-xs-left">{{ props.item.distrito }}</td>
-                        <td class="text-xs-left">{{ props.item.epoca }}</td>
-                        <td class="text-xs-left">{{ props.item.ciclo }}</td>
-                        <td class="justify-center layout px-0">
-                            <v-btn color="warning" @click="editar(props.item)">
-                                Editar <v-icon small class="mr-2">edit</v-icon>
-                            </v-btn>
-                            <v-btn color="error" @click="apagar(props.item.id)">
-                                Apagar <v-icon small>delete_forever</v-icon>
-                            </v-btn>
-                        </td>
-                    </tr>
-                </template>
-            </v-data-table>
+                <v-data-table :headers="headers" :items="patrimonios" :search="search" class="elevation-1"
+                              :pagination.sync="pagination">
+                    <template v-slot:items="props">
+                        <tr>
+                            <td class="text-xs-center">
+                                <img height="70" width="90" v-if="props.item.imagens[0]"
+                                     v-bind:src="getPatrimonioPhoto(props.item.imagens[0])"/>
+                            </td>
+                            <td class="text-xs-left">{{ props.item.nome }}</td>
+                            <td class="text-xs-left">{{ props.item.distrito }}</td>
+                            <td class="text-xs-left">{{ props.item.epoca }}</td>
+                            <td class="text-xs-left">{{ props.item.ciclo }}</td>
+                            <td class="justify-left layout px-0">
+                                <v-btn color="warning" @click="editar(props.item)">
+                                    Editar
+                                    <v-icon small class="mr-2">edit</v-icon>
+                                </v-btn>
+                                <v-btn color="error" @click="apagar(props.item.id)">
+                                    Apagar
+                                    <v-icon small>delete_forever</v-icon>
+                                </v-btn>
+                            </td>
+                        </tr>
+                    </template>
+                </v-data-table>
+            </v-card>
         </v-app>
     </div>
 </template>
@@ -93,14 +102,14 @@
                         console.log(errors);
                     });
             },
-            editar(patrimonio){
+            editar(patrimonio) {
                 this.$parent.patrimonio = patrimonio;
                 this.$router.push('/admin/patrimonios/editar');
             },
-            apagar(id){
+            apagar(id) {
 
             },
-            criar(){
+            criar() {
                 this.$router.push('/admin/patrimonios/criar');
             }
         }
