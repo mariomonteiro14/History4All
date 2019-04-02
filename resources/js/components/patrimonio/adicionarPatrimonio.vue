@@ -22,15 +22,18 @@
                     <!--<div id="app">
                         <ckeditor :editor="editor" :config="editorConfig" :value="editorData" v-model="editorData"></ckeditor>
                     </div>-->
-                    <v-text-field
-                        v-model="patrimonio.descricao"
-                        :rules="[rules.length(3000)]"
-                        box
-                        color="deep-purple"
-                        counter="3000"
-                        label="Descrição"
-                        type="text"
-                    ></v-text-field>
+
+                    <div class="form-group modal-footer">
+                        <v-textarea
+                            name="descricao"
+                            v-model="patrimonio.descricao"
+                            box
+                            label="Descrição"
+                            auto-grow
+                            counter="3000"
+                            :rules="[rules.length(3000)]"
+                        ></v-textarea>
+                    </div>
 
                     <div class="form-group modal-footer" >
                         <v-select
