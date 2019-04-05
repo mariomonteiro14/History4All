@@ -33,6 +33,18 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(Turma::class, 'turma_id','id');
     }
 
+    public function atividadeParticipantes(){
+        return $this->belongsTo(AtividadeParticipantes::class, 'user_id','id');
+    }
+
+    public function atividades(){
+        return $this->belongsTo(Atividade::class, 'coordenador','id');
+    }
+
+    public function chatMensagem(){
+        return $this->belongsTo(ChatMensagens::class, 'user_id','id');
+    }
+
     /**
      * The attributes that should be hidden for arrays.
      *
