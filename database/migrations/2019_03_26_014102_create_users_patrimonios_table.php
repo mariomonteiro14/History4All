@@ -65,8 +65,6 @@ class CreateUsersPatrimoniosTable extends Migration
         Schema::create('chats', function (Blueprint $table) {
             $table->increments('id');
             $table->boolean('privado')->default(true);
-            $table->integer('atividade_id')->unsigned();
-            $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
             $table->string('assunto')->nullable();
         });
 
@@ -98,6 +96,13 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->enum('estado', ['pedentes', 'concluida']);
             $table->primary(['atividade_id', 'user_id']);
         });
+
+        Schema::create('atividade_patrimonios', function (Blueprint $table) {
+            $table->integer('atividade_id')->unsigned();
+            $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
+            $table->integer('patrimonio_id')->unsigned();
+            $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');
+        });
     }
 
     /**
@@ -107,6 +112,7 @@ class CreateUsersPatrimoniosTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('atividade_patrimonios');
         Schema::dropIfExists('atividade_participantes');
         Schema::dropIfExists('atividades');
         Schema::dropIfExists('chat_mensagens');
