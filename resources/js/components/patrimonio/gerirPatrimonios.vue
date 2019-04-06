@@ -2,12 +2,12 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <patrimonio-add :success="getPatrimonios()"></patrimonio-add>
+            <patrimonio-add v-on:getPat="getPatrimonios()"></patrimonio-add>
             <h3>Patrimónios / Gerir</h3>
             <br>
             <v-card append float>
                 <v-container fluid grid-list-xl>
-                    <v-layout row  align-center>
+                    <v-layout row align-center>
                         <v-text-field
                             v-model="search"
                             append-icon="search"
@@ -16,9 +16,11 @@
                             hide-details
                         ></v-text-field>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" @click="criar()">Criar património <i class="material-icons">add_box</i></v-btn>
+                        <v-btn color="success" @click="criar()">Criar património <i class="material-icons">add_box</i>
+                        </v-btn>
 
-                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal">Criar património <i class="material-icons">add_box</i>
+                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal">Criar património <i
+                            class="material-icons">add_box</i>
                         </v-btn>
                     </v-layout>
                 </v-container>
@@ -70,8 +72,8 @@
     import AddPatrimonio from './adicionarPatrimonio.vue'
 
     export default {
-        components:{
-          'patrimonio-add':AddPatrimonio
+        components: {
+            'patrimonio-add': AddPatrimonio
         },
         mounted() {
             this.getPatrimonios();
@@ -127,7 +129,7 @@
                 this.$parent.patrimonio = patrimonio;
                 this.$router.push('/admin/patrimonios/editar');
             },
-            apagarVerificacao(id){
+            apagarVerificacao(id) {
                 this.dialog = true;
                 this.patrimonioAApagar = id;
             },
@@ -135,12 +137,12 @@
                 this.dialog = false;
                 axios.delete('api/patrimonios/' + this.patrimonioAApagar)
                     .then(response => {
-                            this.toastPopUp("success", "Património Apagado!");
+                        this.toastPopUp("success", "Património Apagado!");
                         this.getPatrimonios();
                     }).catch(function (error) {
-                        this.toastPopUp("error", "Erro");
-                        console.log(error);
-                    });
+                    this.toastPopUp("error", "`${error.response.data.message}`");
+                    console.log(error);
+                });
             },
             criar() {
                 this.$router.push('/admin/patrimonios/criar');

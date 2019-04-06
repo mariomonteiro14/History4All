@@ -2,10 +2,11 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+//use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class PatrimonioImagens extends Authenticatable
+class PatrimonioImagens extends Model
 {
     use Notifiable;
 
@@ -15,9 +16,10 @@ class PatrimonioImagens extends Authenticatable
      * @var array
      */
     protected $table = 'patrimonio_imagens';
+    public $timestamps = false;
 
     protected $fillable = [
-        'foto'
+        'patrimonio_id','foto'
     ];
 
     public function patrimonio(){

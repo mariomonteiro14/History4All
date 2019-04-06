@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Atividade extends Authenticatable
+class Atividade extends Model
 {
     use Notifiable;
 

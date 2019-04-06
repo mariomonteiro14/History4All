@@ -9,7 +9,7 @@ import BootstrapVue from 'bootstrap-vue';
 import Vuetify from 'vuetify';
 import VueCarousel from 'vue-carousel';
 import VueAgile from 'vue-agile';
-import VueLoading from 'vue-loading';
+//import VueLoading from 'vue-loading';
 import CKEditor from '@ckeditor/ckeditor5-vue';
 
 import 'bootstrap/dist/css/bootstrap.css';

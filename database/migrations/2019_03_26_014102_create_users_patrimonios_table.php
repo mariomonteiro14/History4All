@@ -58,7 +58,7 @@ class CreateUsersPatrimoniosTable extends Migration
 
         Schema::create('patrimonio_imagens', function (Blueprint $table) {
             $table->integer('patrimonio_id')->unsigned();
-            $table->foreign('patrimonio_id')->references('id')->on('patrimonios');
+            $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');;
             $table->string('foto');
         });
 
