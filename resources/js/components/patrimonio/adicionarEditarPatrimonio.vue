@@ -94,7 +94,7 @@
                                            @onselectmultipleimage="onSelectMultipleImage">
                          </vue-select-image>-->
                         <v-container v-if="patrimonio.imagens && patrimonio.imagens.length > 0">
-                            <h3> Selecione imagens a remover</h3>
+                            <h4>{{getTextRemoveFiles()}}</h4>
                             <v-layout class="form-group" fluid wrap align-center>
 
                                 <div v-for="image in patrimonio.imagens">
@@ -191,6 +191,16 @@
                 return this.attachments.length + " imagens Carregadas";
 
             },
+            getTextRemoveFiles(){
+                if(this.removeImagesSelected.length == 0){
+                    return "Selecione imagens a remover"
+                }
+                if(this.removeImagesSelected.length == 0) {
+                    return "1 Imagem a Remover";
+                }
+                return this.removeImagesSelected.length + " Imagens a Remover";
+            },
+
             handleFile: function (e) {
                 let files = e.target.files || e.dataTransfer.files;
 
