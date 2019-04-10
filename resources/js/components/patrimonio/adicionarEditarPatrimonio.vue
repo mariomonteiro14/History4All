@@ -293,6 +293,7 @@
                 this.patrimonio.distrito = "";
                 this.patrimonio.epoca = "";
                 this.patrimonio.ciclo = "";
+                this.patrimonio.imagens= undefined;
                 this.attachments = [];
                 this.removeImagesSelected = [];
             }
