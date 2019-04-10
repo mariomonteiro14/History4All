@@ -26,7 +26,7 @@ class PatrimonioControllerAPI extends Controller
 
         $request->validate([
             'nome' => 'required|min:3|max:255',
-            'descricao' => 'required|min:30|max:3000',
+            'descricao' => 'required|min:30|max:10000',
             'distrito' => 'required',
             'epoca' => 'required',
             'ciclo' => 'required',
@@ -66,7 +66,7 @@ class PatrimonioControllerAPI extends Controller
 
         $request->validate([
             'nome' => 'required|min:3|max:255',
-            'descricao' => 'required|min:30|max:3000',
+            'descricao' => 'required|min:30|max:10000',
             'distrito' => 'required',
             'epoca' => 'required',
             'ciclo' => 'required',
