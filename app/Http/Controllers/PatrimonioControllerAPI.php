@@ -13,9 +13,6 @@ class PatrimonioControllerAPI extends Controller
     public function patrimoniosDataTable(Request $request)
     {
         $patrim = PatrimonioResource::collection(Patrimonio::all());
-        /*foreach ($patrim as $patr){
-            $patr['foto'] = PatrimonioImagens::where('patrimonio_id', $patr->id)->first()->foto;
-        }*/
         return response()->json([
             'data' => $patrim,
         ]);
@@ -26,6 +23,17 @@ class PatrimonioControllerAPI extends Controller
     }
 
     public function update(Request $request, $id){
+
+        $request->validate([
+            'nome' => 'required|min:3|max:255',
+            'descricao' => 'required|min:30|max:3000',
+            'distrito' => 'required',
+            'epoca' => 'required',
+            'ciclo' => 'required',
+            'imagens.*' => 'nullable|file|mimes:jpeg,bmp,png,jpg',
+            'novas_imagens.*' => 'nullable|file|mimes:jpeg,bmp,png,jpg',
+            'eliminar_imagens.*' => 'nullable',
+        ]);
 
         $patrim = Patrimonio::findOrFail($id);
         $patrim->fill($request->all());
@@ -45,10 +53,9 @@ class PatrimonioControllerAPI extends Controller
         };
 
         if($request->has('eliminar_imagens')) {
-            foreach ($request->novas_imagens as $image_nome) {
-                $image = PatrimonioImagens::where('foto', '$image_nome')->get();
+            foreach ($request->eliminar_imagens as $image_nome) {
+                PatrimonioImagens::where('foto', $image_nome)->delete();
                 Storage::disk('public')->delete('patrimonios/'.$image_nome);
-                $image->delete();
             }
         }
 

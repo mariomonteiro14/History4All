@@ -2,7 +2,7 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <patrimonio-add :patrimonio="patrimonio_atual" v-on:getPat="getPatrimonios()"></patrimonio-add>
+            <patrimonio-add-edit :patrimonio="patrimonio_atual" v-on:getPat="getPatrimonios()"></patrimonio-add-edit>
             <h3>Patrimónios / Gerir</h3>
             <br>
             <v-card append float>
@@ -73,11 +73,11 @@
 </template>
 
 <script>
-    import AddPatrimonio from './adicionarPatrimonio.vue'
+    import AddEditPatrimonio from './adicionarEditarPatrimonio.vue'
 
     export default {
         components: {
-            'patrimonio-add': AddPatrimonio
+            'patrimonio-add-edit': AddEditPatrimonio
         },
         mounted() {
             this.getPatrimonios();

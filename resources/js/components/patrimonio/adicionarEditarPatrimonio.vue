@@ -21,11 +21,8 @@
                                           required
                             ></v-text-field>
                         </div>
-                        <!--<div id="app">
-                            <ckeditor :editor="editor" :config="editorConfig" :value="editorData" v-model="editorData"></ckeditor>
-                        </div>-->
 
-                        <div class="form-group">
+                        <!--<div class="form-group">
                             <v-textarea
                                 name="descricao"
                                 v-model="patrimonio.descricao"
@@ -36,7 +33,13 @@
                                 :rules="[rules.length(3000)]"
                                 required
                             ></v-textarea>
+                        </div>-->
+
+                        <div id="app">
+                            <ckeditor :editor="editor" :config="editorConfig" :value="patrimonio.descricao"
+                                      v-model="patrimonio.descricao" required></ckeditor>
                         </div>
+
                         <v-container>
                             <v-layout class="form-group" row align-center>
 
@@ -81,11 +84,39 @@
                         </div>
                         <br>
                         <div class="custom-file">
-
                             <input id="upload-file2" type="file" accept=".png, .jpg, .jpeg" multiple
                                    class="form-control custom-file-input"
                                    @change="handleFile">
                         </div>
+                        <!-- <vue-select-image :dataImages="dataImages"
+                                           :is-multiple="true"
+                                           :selectedImages="initialSelected"
+                                           @onselectmultipleimage="onSelectMultipleImage">
+                         </vue-select-image>-->
+                        <v-container v-if="!isCreated()">
+                            <h3> Selecione imagens a remover</h3>
+                            <v-layout class="form-group" fluid wrap align-center>
+
+                                <div v-for="image in patrimonio.imagens">
+                                    <input v-model="removeImagesSelected" type="checkbox" :value="image"
+                                           @change="showLog"/>
+                                    <label>
+                                        <img class="preview" v-bind:src="getPatrimonioPhoto(image)">
+                                    </label>
+                                </div>
+                            </v-layout>
+                        </v-container>
+
+                        <!--<v-list-tile v-for="(image, index) in patrimonio.imagens" :key="image">
+                            <v-list-tile-content>
+                                <v-checkbox :value="image"
+                                            :key="image"
+                                            :src="getPatrimonioPhoto(image)"
+                                            v-model="removeImagesSelected">
+                                    <img class="preview" v-bind:src="getPatrimonioPhoto(image)">
+                                </v-checkbox>
+                            </v-list-tile-content>
+                        </v-list-tile>-->
                     </div>
 
                     <div class="modal-footer">
@@ -102,30 +133,28 @@
 </template>
 
 <script>
-    //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-    module.exports = {
+    export default {
 
         props: ['patrimonio'],
 
 
         data: function () {
             return {
-                /* valid: false,
-                 editor: ClassicEditor,
-                 editorData: '',
-                 editorConfig: {
-                     toolbar: ['heading', '|', 'Bold', 'Italic', 'bulletedList', 'numberedList', 'blockQuote', 'Link', 'Undo', 'Redo'],
+                editor: ClassicEditor,
+                editorConfig: {
+                    toolbar: ['heading', '|', 'Bold', 'Italic', 'bulletedList', 'numberedList', 'blockQuote', 'Link', 'Undo', 'Redo'],
 
-                     heading: {
-                         options: [
-                             {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
-                             {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
-                             {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'},
-                             {model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3'}
-                         ]
-                     },
-                 },**/
+                    heading: {
+                        options: [
+                            {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
+                            {model: 'heading1', view: 'h1', title: 'Heading 1', class: 'ck-heading_heading1'},
+                            {model: 'heading2', view: 'h2', title: 'Heading 2', class: 'ck-heading_heading2'},
+                            {model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3'}
+                        ]
+                    },
+                },
                 distritos: ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
                     'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
                     'Vila Real', 'Viseu', 'Açores', 'Madeira'],
@@ -137,6 +166,7 @@
                     required: v => !!v || 'Este campo é necessário'
                 },
                 attachments: [],
+                removeImagesSelected: [],
             };
         },
         methods: {
@@ -148,6 +178,9 @@
             },
 
             getFilesText() {
+                if (!this.isCreated() && this.attachments.length == 0) {
+                    return "Adicionar Imagens"
+                }
                 if (this.attachments.length == 0) {
                     return "Carregar Imagens"
                 }
@@ -175,10 +208,8 @@
                     }
                     this.attachments.push(files[i]);
                 }
-
-                console.log(this.attachments);
-
             },
+
             formCreate: function () {
                 let formData = new FormData();
                 formData.append('nome', this.patrimonio.nome);
@@ -190,9 +221,12 @@
                     for (let i = 0; i < this.attachments.length; i++) {
                         formData.append('imagens[]', this.attachments[i]);
                     }
-                }else{
+                } else {
                     for (let i = 0; i < this.attachments.length; i++) {
                         formData.append('novas_imagens[]', this.attachments[i]);
+                    }
+                    for (let i = 0; i < this.removeImagesSelected.length; i++) {
+                        formData.append('eliminar_imagens[]', this.removeImagesSelected[i]);
                     }
                 }
 
@@ -251,6 +285,16 @@
                 this.patrimonio.ciclo = "";
                 this.attachments = [];
             }
-        },
+        }
+        ,
     };
+
 </script>
+<style>
+    img.preview {
+        width: 200px;
+        background-color: white;
+        border: 1px solid #DDD;
+        padding: 5px;
+    }
+</style>
