@@ -26,9 +26,32 @@ class PatrimonioControllerAPI extends Controller
     }
 
     public function update(Request $request, $id){
+
         $patrim = Patrimonio::findOrFail($id);
         $patrim->fill($request->all());
         $patrim->save();
+
+        if($request->has('novas_imagens')) {
+            foreach ($request->novas_imagens as $image) {
+                $filename = str_random(8) . '.' . $image->getClientOriginalExtension();;
+                Storage::disk('public')->putFileAs('patrimonios', $image, $filename);
+                $patrim_image = new PatrimonioImagens();
+
+                $patrim_image->patrimonio_id = $patrim->id;
+                $patrim_image->foto = $filename;
+
+                $patrim_image->save();
+            }
+        };
+
+        if($request->has('eliminar_imagens')) {
+            foreach ($request->novas_imagens as $image_nome) {
+                $image = PatrimonioImagens::where('foto', '$image_nome')->get();
+                Storage::disk('public')->delete('patrimonios/'.$image_nome);
+                $image->delete();
+            }
+        }
+
         return response()->json(new PatrimonioResource($patrim), 200);
     }
 

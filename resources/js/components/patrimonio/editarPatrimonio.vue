@@ -99,7 +99,7 @@
             },
             update() {
                 this.patrimonio.descricao = this.editorData;
-                axios.put('/api/patrimonios/' + this.patrimonio.id, this.patrimonio).then(response=>{
+                axios.post('/api/patrimonios/' + this.patrimonio.id, this.patrimonio).then(response=>{
                     this.toastPopUp("success", "Património Editado!");
                     this.$router.push('/admin/patrimonios');
                 }).catch(function (error) {

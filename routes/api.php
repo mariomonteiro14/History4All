@@ -16,11 +16,27 @@ use Illuminate\Http\Request;
 Route::get('patrimonios', 'PatrimonioControllerAPI@patrimoniosDataTable');
 Route::get('patrimonios/{id}', 'PatrimonioControllerAPI@find');
 Route::post('login', 'UserControllerAPI@login')->name('login');
+
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'UserControllerAPI@logout');
     Route::get('users/me', 'UserControllerAPI@myProfile');
+
+    Route::group(['middleware' => 'admin'], function() {
+        Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');
+        Route::delete('patrimonios/{id}', 'PatrimonioControllerAPI@destroy');
+        Route::post('patrimonios', 'PatrimonioControllerAPI@store');
+        Route::get('users/professores', 'UserControllerAPI@professores');
+        Route::get('users/alunos', 'UserControllerAPI@alunos');
+    });
+
+    Route::group(['middleware' => 'professor'], function() {
+
+    });
+
+    Route::group(['middleware' => 'aluno'], function() {
+
+    });
+
+
 });
-Route::middleware(['auth:api', 'admin'])->put('patrimonios/{id}', 'PatrimonioControllerAPI@update');
-Route::middleware(['auth:api', 'admin'])->delete('patrimonios/{id}', 'PatrimonioControllerAPI@destroy');
-Route::middleware(['auth:api', 'admin'])->post('patrimonios', 'PatrimonioControllerAPI@store');
 

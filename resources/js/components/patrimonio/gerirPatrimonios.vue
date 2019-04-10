@@ -2,7 +2,7 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <patrimonio-add v-on:getPat="getPatrimonios()"></patrimonio-add>
+            <patrimonio-add :patrimonio="patrimonio_atual" v-on:getPat="getPatrimonios()"></patrimonio-add>
             <h3>Patrimónios / Gerir</h3>
             <br>
             <v-card append float>
@@ -39,6 +39,10 @@
                             <td class="text-xs-left">{{ props.item.ciclo }}</td>
                             <td class="justify-left layout px-0">
                                 <v-btn color="warning" @click="editar(props.item)">
+                                    Editar
+                                    <v-icon small class="mr-2">edit</v-icon>
+                                </v-btn>
+                                <v-btn color="warning" @click="showEdit(props.item)">
                                     Editar
                                     <v-icon small class="mr-2">edit</v-icon>
                                 </v-btn>
@@ -80,6 +84,15 @@
         },
         data() {
             return {
+                patrimonio_atual: {
+                    id: undefined,
+                    nome: "",
+                    descricao: "",
+                    distrito: "",
+                    epoca: "",
+                    ciclo: ""
+                },
+
                 pagination: {
                     descending: false,
                     page: 1,
@@ -116,6 +129,14 @@
             }
         },
         methods: {
+            saveEdit(){
+              console.log(this.patrimonio_atual);
+            },
+            showEdit($pat){
+                this.patrimonio_atual = Object.assign({}, $pat);
+                $('#addPatrimonioModal').modal('show');
+
+            },
             getPatrimonios(url = 'api/patrimonios') {
                 axios.get(url)
                     .then(response => {

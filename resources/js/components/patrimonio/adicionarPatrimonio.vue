@@ -6,71 +6,73 @@
             <div class="modal-dialog modal-lg" role="document">
                 <div class="modal-content">
                     <div class="container box">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="addPatrimonioModal">Criar Patrimonio</h5>
-                        <button type="button" @click="item=null" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="form-group">
-                        <v-text-field id="inputNome"
-                                      v-model="patrimonio.nome"
-                                      label="Nome"
-                                      :rules="[v => !!v || 'Nome é obrigatório']"
-                                      required
-                        ></v-text-field>
-                    </div>
-                    <!--<div id="app">
-                        <ckeditor :editor="editor" :config="editorConfig" :value="editorData" v-model="editorData"></ckeditor>
-                    </div>-->
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addPatrimonioModal">{{getTitle()}}</h5>
+                            <button type="button" @click="cancel()" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <v-text-field id="inputNome"
+                                          v-model="patrimonio.nome"
+                                          label="Nome"
+                                          :rules="[v => !!v || 'Nome é obrigatório']"
+                                          required
+                            ></v-text-field>
+                        </div>
+                        <!--<div id="app">
+                            <ckeditor :editor="editor" :config="editorConfig" :value="editorData" v-model="editorData"></ckeditor>
+                        </div>-->
 
-                    <div class="form-group">
-                        <v-textarea
-                            name="descricao"
-                            v-model="patrimonio.descricao"
-                            box
-                            label="Descrição"
-                            auto-grow
-                            counter="3000"
-                            :rules="[rules.length(3000)]"
-                        ></v-textarea>
-                    </div>
-                    <v-container>
-                        <v-layout class="form-group" row align-center>
-
-                            <v-select
-                                fixed
-                                label="Distrito"
-                                v-model="patrimonio.distrito"
-                                :items="distritos"
-                                :rules="[v => !!v || 'Distrito é obrigatório']"
-                                class="input-group--focused"
+                        <div class="form-group">
+                            <v-textarea
+                                name="descricao"
+                                v-model="patrimonio.descricao"
+                                box
+                                label="Descrição"
+                                auto-grow
+                                counter="3000"
+                                :rules="[rules.length(3000)]"
                                 required
-                            ></v-select>
-                            <v-spacer></v-spacer>
-                            <v-select
-                                fixed
-                                label="Época"
-                                v-model="patrimonio.epoca"
-                                :items="epocas"
-                                :rules="[v => !!v || 'Época histórica é obrigatória']"
-                                class="input-group--focused"
-                                required
-                            ></v-select>
+                            ></v-textarea>
+                        </div>
+                        <v-container>
+                            <v-layout class="form-group" row align-center>
 
-                            <v-spacer></v-spacer>
-                            <v-select
-                                fixed
-                                label="Ciclo"
-                                v-model="patrimonio.ciclo"
-                                :items="ciclos"
-                                :rules="[v => !!v || 'Ciclo é obrigatória']"
-                                class="input-group--focused"
-                                required
-                            ></v-select>
+                                <v-select
+                                    fixed
+                                    label="Distrito"
+                                    v-model="patrimonio.distrito"
+                                    :items="distritos"
+                                    :rules="[v => !!v || 'Distrito é obrigatório']"
+                                    class="input-group--focused"
+                                    required
+                                ></v-select>
+                                <v-spacer></v-spacer>
+                                <v-select
+                                    fixed
+                                    label="Época"
+                                    v-model="patrimonio.epoca"
+                                    :items="epocas"
+                                    :rules="[v => !!v || 'Época histórica é obrigatória']"
+                                    class="input-group--focused"
+                                    required
+                                ></v-select>
 
-                        </v-layout>
-                    </v-container>
+                                <v-spacer></v-spacer>
+                                <v-select
+                                    fixed
+                                    label="Ciclo"
+                                    v-model="patrimonio.ciclo"
+                                    :items="ciclos"
+                                    :rules="[v => !!v || 'Ciclo é obrigatória']"
+                                    class="input-group--focused"
+                                    required
+                                ></v-select>
+
+                            </v-layout>
+                        </v-container>
 
                         <div class="custom-file">
                             <label class="custom-file-label" for="upload-files">{{getFilesText()}}</label>
@@ -80,12 +82,15 @@
                         <br>
                         <div class="custom-file">
 
-                            <input id="upload-file2" type="file" multiple class="form-control custom-file-input" @change="handleFile">
+                            <input id="upload-file2" type="file" accept=".png, .jpg, .jpeg" multiple
+                                   class="form-control custom-file-input"
+                                   @change="handleFile">
                         </div>
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-info" v-on:click.prevent="save">Registar</button>
+                        <button v-if="isCreated()" class="btn btn-info" v-on:click.prevent="save">Registar</button>
+                        <button v-else class="btn btn-info" v-on:click.prevent="update">Guardar</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
 
@@ -100,6 +105,9 @@
     //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
     module.exports = {
+
+        props: ['patrimonio'],
+
 
         data: function () {
             return {
@@ -123,13 +131,7 @@
                     'Vila Real', 'Viseu', 'Açores', 'Madeira'],
                 epocas: ['pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
-                patrimonio: {
-                    nome: "",
-                    descricao: "",
-                    distrito: "",
-                    epoca: "",
-                    ciclo: ""
-                },
+
                 rules: {
                     length: len => v => (v || '').length <= len || `Numero de caracteres invalido, Maximo ${len}`,
                     required: v => !!v || 'Este campo é necessário'
@@ -138,11 +140,22 @@
             };
         },
         methods: {
-            getFilesText(){
-                if (this.attachments.length == 0){
+            isCreated() {
+                return this.patrimonio.id > 0 ? false : true;
+            },
+            getTitle() {
+                return this.isCreated() ? "Criar Patrimonio" : "Editar Patrimonio";
+            },
+
+            getFilesText() {
+                if (this.attachments.length == 0) {
                     return "Carregar Imagens"
                 }
-                    return this.attachments.length + " imagens Carregadas";
+                if (this.attachments.length == 1) {
+                    return "1 Imagem Carregada"
+                }
+
+                return this.attachments.length + " imagens Carregadas";
 
             },
             handleFile: function (e) {
@@ -173,10 +186,16 @@
                 formData.append('distrito', this.patrimonio.distrito);
                 formData.append('ciclo', this.patrimonio.ciclo);
                 formData.append('epoca', this.patrimonio.epoca);
-                for (let i = 0; i < this.attachments.length; i++) {
-                    formData.append('imagens[]', this.attachments[i]);
+                if (this.isCreated()) {
+                    for (let i = 0; i < this.attachments.length; i++) {
+                        formData.append('imagens[]', this.attachments[i]);
+                    }
+                }else{
+                    for (let i = 0; i < this.attachments.length; i++) {
+                        formData.append('novas_imagens[]', this.attachments[i]);
+                    }
                 }
-                console.log(formData);
+
                 return formData;
             },
             hasErrors: function () {
@@ -190,13 +209,31 @@
                     const config = {
                         headers: {'content-type': 'multipart/form-data'}
                     };
-                    axios.post('/api/patrimonios', this.formCreate(), config).then(response => {
+                    axios.post('/api/patrimonios', this.patrimonio, config).then(response => {
                         this.toastPopUp("success", "Património Criado!");
+                        this.cleanForm();
                         this.$emit('getPat');
                         $('#addPatrimonioModal').modal('hide');
                     }).catch(error => {
                         this.toastPopUp("error", `${error.response.data.message}`);
                     })
+                }
+            },
+            update() {
+                if (!this.hasErrors()) {
+                    const config = {
+                        headers: {'content-type': 'multipart/form-data'}
+                    };
+                    axios.post('/api/patrimonios/' + this.patrimonio.id, this.formCreate(), config).then(response => {
+                        this.toastPopUp("success", "Património Editado!");
+                        this.cleanForm();
+                        this.$emit('getPat');
+                        $('#addPatrimonioModal').modal('hide');
+
+                    }).catch(function (error) {
+                        this.toastPopUp("error", `${error.response.data.message}`);
+                        console.log(error);
+                    });
                 }
             },
 
@@ -206,6 +243,7 @@
                 $('#addPatrimonioModal').modal('hide');
             },
             cleanForm: function () {
+                this.patrimonio.id = undefined;
                 this.patrimonio.nome = "";
                 this.patrimonio.descricao = "";
                 this.patrimonio.distrito = "";

@@ -31,6 +31,21 @@ class UserControllerAPI extends Controller
         ]);
     }
 
+    public function alunos(Request $request){
+        $users = UserResource::collection(User::where('tipo','aluno')->get());
+        return response()->json([
+            'data' => $users,
+        ]);
+    }
+
+    public function professores(Request $request){
+        $users = UserResource::collection(User::where('tipo','professor')->get());
+        return response()->json([
+            'data' => $users,
+        ]);
+    }
+
+
     public function myProfile(Request $request)
     {
         return  new UserResource($request->user());
