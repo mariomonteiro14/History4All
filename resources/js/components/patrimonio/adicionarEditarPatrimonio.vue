@@ -93,7 +93,7 @@
                                            :selectedImages="initialSelected"
                                            @onselectmultipleimage="onSelectMultipleImage">
                          </vue-select-image>-->
-                        <v-container v-if="!isCreated()">
+                        <v-container v-if="patrimonio.imagens && patrimonio.imagens.length > 0">
                             <h3> Selecione imagens a remover</h3>
                             <v-layout class="form-group" fluid wrap align-center>
 
@@ -284,6 +284,7 @@
                 this.patrimonio.epoca = "";
                 this.patrimonio.ciclo = "";
                 this.attachments = [];
+                this.removeImagesSelected = [];
             }
         }
         ,
