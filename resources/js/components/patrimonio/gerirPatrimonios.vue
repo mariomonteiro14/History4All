@@ -3,7 +3,7 @@
         <v-app id="inspire">
             <br><br><br><br><br>
             <patrimonio-add-edit :patrimonio="patrimonio_atual" v-on:getPat="getPatrimonios()"></patrimonio-add-edit>
-            <h3>Patrimónios / Gerir</h3>
+            <h3> <a href="#/patrimonios">Patrimónios </a>/ Gerir</h3>
             <br>
             <v-card append float>
                 <v-container fluid grid-list-xl>
