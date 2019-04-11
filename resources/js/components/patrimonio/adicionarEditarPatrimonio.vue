@@ -96,14 +96,9 @@
                         <v-container v-if="patrimonio.imagens && patrimonio.imagens.length > 0">
                             <h4>{{getTextRemoveFiles()}}</h4>
                             <v-layout class="form-group" fluid wrap align-center>
-
-                                <div v-for="image in patrimonio.imagens">
-                                    <input v-model="removeImagesSelected" type="checkbox" :value="image"
-                                           @change="showLog"/>
-                                    <label>
-                                        <img class="preview" v-bind:src="getPatrimonioPhoto(image)">
-                                    </label>
-                                </div>
+                                <span class="border" v-for="image in patrimonio.imagens" v-bind:id="image" @click="selectImage(image)">
+                                    <img class="preview" v-bind:src="getPatrimonioPhoto(image)">
+                                </span>
                             </v-layout>
                         </v-container>
 
@@ -296,7 +291,17 @@
                 this.patrimonio.imagens= undefined;
                 this.attachments = [];
                 this.removeImagesSelected = [];
-            }
+            },
+            selectImage(imagem){
+                var index = this.removeImagesSelected.indexOf(imagem);
+                if (index !== -1){
+                    this.removeImagesSelected.splice(index, 1);
+                    document.getElementById(imagem).classList.remove("border-success");
+                } else{
+                    this.removeImagesSelected.push(imagem);
+                    document.getElementById(imagem).classList.add("border-success");
+                }
+            },
         }
         ,
     };
