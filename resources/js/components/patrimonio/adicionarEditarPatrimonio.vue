@@ -302,8 +302,20 @@
                     document.getElementById(imagem).classList.add("border-success");
                 }
             },
+        },
+        watch: {
+            patrimonio: function (oldPatrim, newPatrim) {
+                this.removeImagesSelected = [];
+                if (newPatrim.id) {
+                    newPatrim.imagens.forEach(function (img) {
+                        if (document.getElementById(img)) {
+                            document.getElementById(img).classList.remove("border-success");
+                        }
+
+                    });
+                }
+            }
         }
-        ,
     };
 
 </script>
