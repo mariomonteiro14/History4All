@@ -93,7 +93,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users');
-            $table->enum('estado', ['pedentes', 'concluida']);
+            $table->enum('estado', ['pendente', 'concluida']);
             $table->primary(['atividade_id', 'user_id']);
         });
 

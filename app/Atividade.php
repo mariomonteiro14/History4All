@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -21,7 +22,8 @@ class Atividade extends Model
     ];
 
     public function coordenador(){
-        return $this->belongsTo(User::class, 'coordenador','id');
+        return $this->belongsTo(User::class, 'coordenador','id')
+            ->select('id' ,'nome', 'email', 'foto')->first();
     }
 
     public function chat(){
@@ -29,10 +31,32 @@ class Atividade extends Model
     }
 
     public function atividadeParticipantes(){
-        return $this->hasMany(AtividadeParticipantes::class, 'atividade_id','id');
+        return $this->hasMany(AtividadeParticipantes::class, 'atividade_id','id')
+            ->select('user_id' ,'estado');
     }
 
     public function atividadePatrimonios(){
-        return $this->hasMany(AtividadePatrimonios::class, 'patrimonio_id','id');
+        return $this->hasMany(AtividadePatrimonios::class, 'atividade_id','id')
+            ->pluck('patrimonio_id');
+    }
+
+    public function ciclo(){
+        return $this->join('atividade_patrimonios', 'atividade_id', 'id')
+            ->join('patrimonios as p', 'patrimonio_id','p.id')
+            ->where('atividade_id', $this->id)
+            ->distinct('ciclo')
+            ->pluck('ciclo');
+    }
+
+    public function epoca(){
+        return $this->join('atividade_patrimonios', 'atividade_id', 'id')
+            ->join('patrimonios as p', 'patrimonio_id','p.id')
+            ->where('atividade_id', $this->id)
+            ->distinct('epoca')
+            ->pluck('epoca');
+    }
+
+    public function patrimonioImagem(){
+        return PatrimonioImagens::where('patrimonio_id', $this->atividadePatrimonios()->first())->pluck('foto')->first();
     }
 }

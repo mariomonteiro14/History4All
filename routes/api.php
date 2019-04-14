@@ -20,6 +20,9 @@ Route::post('login', 'UserControllerAPI@login')->name('login');
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'UserControllerAPI@logout');
     Route::get('users/me', 'UserControllerAPI@myProfile');
+    Route::get('atividades', 'AtividadeControllerAPI@getTodas');
+    Route::get('users/{id}/atividades/pendentes', 'AtividadeControllerAPI@getPendentes');
+    Route::get('users/{id}/atividades/concluidas', 'AtividadeControllerAPI@getConcluidas');
 
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');

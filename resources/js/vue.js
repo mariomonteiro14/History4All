@@ -36,6 +36,7 @@ const routes = [
     { path: '/admin/patrimonios', name: 'gerirPatrimonios',component: require('./components/patrimonio/gerirPatrimonios.vue').default},
     { path: '/admin/patrimonios/editar', name: 'editarPatrimonio',component: require('./components/patrimonio/editarPatrimonio.vue').default},
     { path: '/admin/patrimonios/criar', name: 'criarPatrimonio',component: require('./components/patrimonio/criarPatrimonio.vue').default},
+    { path: '/atividades', name: 'atividades',component: require('./components/atividades.vue').default},
 ];
 
 const router = new VueRouter({
