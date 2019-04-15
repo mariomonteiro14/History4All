@@ -30,6 +30,9 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::post('patrimonios', 'PatrimonioControllerAPI@store');
         Route::get('users/professores', 'UserControllerAPI@professores');
         Route::get('users/alunos', 'UserControllerAPI@alunos');
+        Route::get('users', 'UserControllerAPI@users');
+        Route::delete('users/{id}', 'UserControllerAPI@destroy');
+
     });
 
     Route::group(['middleware' => 'professor'], function() {

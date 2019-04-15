@@ -12,7 +12,7 @@
         <!--</v-toolbar-items>-->
         <v-toolbar-items>
             <v-btn flat to="/patrimonios">Patrimonios</v-btn>
-            <v-btn to="/atividades" v-if="this.$store.state.user" flat>Atividades</v-btn>
+            <v-btn to="/atividades" v-if="this.$store.state.user && this.$store.state.user.tipo !== 'admin'" flat>Atividades</v-btn>
         </v-toolbar-items>
         <v-spacer></v-spacer>
         <v-text-field

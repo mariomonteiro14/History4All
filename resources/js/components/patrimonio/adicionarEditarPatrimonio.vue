@@ -188,12 +188,12 @@
             },
             getTextRemoveFiles(){
                 if(this.removeImagesSelected.length == 0){
-                    return "Selecione imagens a remover"
+                    return "Selecione imagens para remover"
                 }
                 if(this.removeImagesSelected.length == 0) {
-                    return "1 Imagem a Remover";
+                    return "1 imagem a remover";
                 }
-                return this.removeImagesSelected.length + " Imagens a Remover";
+                return this.removeImagesSelected.length + " imagens a remover";
             },
 
             handleFile: function (e) {

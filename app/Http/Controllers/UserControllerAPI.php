@@ -260,9 +260,6 @@ class UserControllerAPI extends Controller
 
     public function destroy($id)
     {
-        if (!Auth::user()->isManager()){
-            return response()->json('You dont have permissions', 500);
-        }
         $user = User::findOrFail($id);
         $user->delete();
         return response()->json(null, 204);

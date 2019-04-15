@@ -51,8 +51,8 @@ class PatrimonioImagesSeeder extends Seeder
 		$this->addPatrimonioImage($this->faker, 17, '0033.jpg');
 		$this->addPatrimonioImage($this->faker, 18, '0034.jpg');
 		$this->addPatrimonioImage($this->faker, 19, '0035.jpg');
-		$this->addPatrimonioImage($this->faker, 20, '0036.jpg');
-		$this->addPatrimonioImage($this->faker, 20, '0037.jpg');
+		$this->addPatrimonioImage($this->faker, 19, '0036.jpg');
+		$this->addPatrimonioImage($this->faker, 19, '0037.jpg');
 
     }
 

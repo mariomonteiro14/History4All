@@ -48,7 +48,7 @@ class PatrimoniosSeeder extends Seeder
     {
         $item = [
             'nome' => $nome,
-            'descricao' => $faker->realText(200),
+            'descricao' => $faker->realText(5000),
             'distrito' => $distrito,
             'epoca' => $epoca,
             'ciclo' => $ciclo,

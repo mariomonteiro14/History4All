@@ -37,6 +37,7 @@ const routes = [
     { path: '/admin/patrimonios/editar', name: 'editarPatrimonio',component: require('./components/patrimonio/editarPatrimonio.vue').default},
     { path: '/admin/patrimonios/criar', name: 'criarPatrimonio',component: require('./components/patrimonio/criarPatrimonio.vue').default},
     { path: '/atividades', name: 'atividades',component: require('./components/atividades.vue').default},
+    { path: '/admin/users', name: 'gestor_users',component: require('./components/users/users.vue').default},
 ];
 
 const router = new VueRouter({
@@ -44,8 +45,9 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+    let user = store.state.user;
     if((to.name == 'dashboard') || (to.name == 'gerirPatrimonios') || (to.name == 'editarPatrimonio') || (to.name == 'criarPatrimonio')){
-        if(!store.state.user || store.state.user.tipo != "admin"){
+        if(!user || user.tipo !== "admin"){
             next("/");
             return;
         }
