@@ -4,8 +4,11 @@
             <br><br><br><br><br>
             <h3>Utilizadores / Gestão</h3>
             <br>
+            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar património <i
+                class="material-icons">add_box</i>
+            </v-btn>
 
-            <v-card append float>
+                <v-card append float>
 
                 <v-card-title>
                     <v-container fluid grid-list-xl>
@@ -72,15 +75,20 @@
             </v-card>
         </v-dialog>
         <br><br>
+        <add-user v-on:getUsers="getUsers"></add-user>
+
     </div>
 </template>
 
 <script>
     import BRow from "bootstrap-vue/src/components/layout/row";
 
+    import AddUser from './adicionarUser.vue';
+
     export default {
         components: {
             BRow,
+            'add-user': AddUser,
         },
         created() {
             this.getUsers();

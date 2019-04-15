@@ -17,7 +17,7 @@ class Escola extends Model
      */
 
     protected $fillable = [
-        'nome', 'distrito'
+        'id', 'nome', 'distrito'
     ];
 
     public function users(){
@@ -25,6 +25,7 @@ class Escola extends Model
     }
 
     public function turmas(){
+
         return $this->hasMany(Turma::class, 'escola_id','id');
     }
 

@@ -23,6 +23,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('atividades', 'AtividadeControllerAPI@getTodas');
     Route::get('users/{id}/atividades/pendentes', 'AtividadeControllerAPI@getPendentes');
     Route::get('users/{id}/atividades/concluidas', 'AtividadeControllerAPI@getConcluidas');
+    Route::get('escolas', 'EscolaControllerAPI@escolas');
 
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');
@@ -31,6 +32,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('users/professores', 'UserControllerAPI@professores');
         Route::get('users/alunos', 'UserControllerAPI@alunos');
         Route::get('users', 'UserControllerAPI@users');
+        Route::post('users', 'UserControllerAPI@store');
         Route::delete('users/{id}', 'UserControllerAPI@destroy');
 
     });

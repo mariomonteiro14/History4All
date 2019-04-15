@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Escola;
+use App\Turma;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Jsonable;
 
@@ -82,18 +84,15 @@ class UserControllerAPI extends Controller
  		}
  	}
 
- 	public function register(Request $request){
+ 	public function store(Request $request){
 
-        if (!Auth::user()->isManager()){
-            return response()->json('You dont have permissions', 500);
-        }
+
  		$validator = Validator::make($request->all(), [
- 			'name' => 'required|string',
-            'username' => 'required|string|unique:users',
+ 			'nome' => 'required|string',
             'email' => 'required|string|email|unique:users',
-            'type' => 'required|in:manager,cook,cashier,waiter',
-            'photo' => 'nullable|file|mimes:jpeg,bmp,png,jpg',
-            'intern' => 'required',
+            'tipo' => 'required|in:admin,professor,aluno',
+            'escola' => 'nullable',
+            'turma' => 'nullable',
  		]);
 
         if($validator->fails()){
@@ -103,25 +102,27 @@ class UserControllerAPI extends Controller
         }
 
         $user = new User([
-            'name' => $request->input('name'),
-            'username' => $request->input('username'),
+            'nome' => $request->input('nome'),
             'email' => $request->input('email'),
-            'type' => $request->input('type'),
-            'photo_url' => null,
+            'tipo' => $request->input('tipo'),
             'password' => 'secret',
-            'email_verified_at' => date("Y-m-d h:i:s"),
-            'intern' => $request->input('intern')
         ]);
+        if ($user->tipo == "admin"){
+            $user->escola_id = null;
+            $user->turma_id = null;
 
-        if($request->has('photo') && $request->input('photo') != null){
-        	$file = $request->file('photo');
-            $file_url = str_random(16).'.'.$file->getClientOriginalExtension();
-            $user->photo_url = $file_url;
-        	Storage::disk('public')->putFileAs('profiles', $file, $file_url);
+        }elseif ($user->tipo == "aluno"){
+            $escola = Escola::where('nome', $request->escola)->first();
+            $turma= Turma::where('escola_id', $escola->id)->where('nome', $request->turma)->first();
+            $user->escola_id = $escola->id;
+            $user->turma_id = $turma->id;
+        }else{
+            $escola = Escola::where('nome', $request->escola)->first();
+            $user->escola_id =$escola->id;
+            $user->turma_id = null;
         }
 
         $user->save();
-        $user->notify(new RegisterActivate($user));
         return response()->json([
             'message' => 'Successfully created user!'
         ], 201);
