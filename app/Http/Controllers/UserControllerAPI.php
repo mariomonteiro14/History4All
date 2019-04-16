@@ -143,7 +143,7 @@ class UserControllerAPI extends Controller
     }
 
     public function getUserByToken(Request $request, $token){
-        return User::where('remember_token', $token)->first();
+        return User::where('remember_token', $token)->where('password', 'secret')->where('email_verified_at', null)->first();
     }
 
  	public function logout()
