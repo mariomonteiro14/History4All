@@ -4,9 +4,10 @@
             <br><br><br><br><br>
             <h3>Utilizadores / Gestão</h3>
             <br>
-            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar utilizadores<i
+            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar utilizador <i
                 class="material-icons">add_box</i>
             </v-btn>
+            <v-btn color="success" @click="getUsersTrashed()">Utilizadores Apagados</v-btn>
 
                 <v-card append float>
 
@@ -121,10 +122,22 @@
                 users: [],
                 userAApagar: '',
                 dialog: false,
+
             }
         },
         methods: {
             getUsers(url = 'api/users') {
+
+                axios.get(url)
+                    .then(response => {
+                        this.users = response.data.data;
+                    })
+                    .catch(errors => {
+                        console.log(errors);
+                    });
+            },
+
+            getUsersTrashed(url = 'api/usersTrashed') {
 
                 axios.get(url)
                     .then(response => {

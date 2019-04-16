@@ -25,7 +25,7 @@
                             <v-text-field id="inputEmail"
                                           v-model="user.email"
                                           label="Email"
-                                          :rules="[v => !!v || 'Email é obrigatório']"
+                                          :rules="emailRules"
                                           clearable
                                           required
                             ></v-text-field>
@@ -96,6 +96,10 @@
                 },
                 escolas: [],
                 userTipos: ['admin', 'professor', 'aluno'],
+                emailRules: [
+                    (v) => !!v || 'E-mail is required',
+                    (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
+                ],
             };
         },
         methods: {

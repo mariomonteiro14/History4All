@@ -17,6 +17,7 @@ Route::get('users/token/{token}','UserControllerAPI@getUserByToken');
 Route::get('patrimonios', 'PatrimonioControllerAPI@patrimoniosDataTable');
 Route::get('patrimonios/{id}', 'PatrimonioControllerAPI@find');
 Route::post('login', 'UserControllerAPI@login')->name('login');
+Route::post('register/activate/{id}', 'UserControllerAPI@activateAccount');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'UserControllerAPI@logout');
@@ -33,6 +34,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('users/professores', 'UserControllerAPI@professores');
         Route::get('users/alunos', 'UserControllerAPI@alunos');
         Route::get('users', 'UserControllerAPI@users');
+        Route::get('usersTrashed', 'UserControllerAPI@usersTrashed');
         Route::post('users', 'UserControllerAPI@store');
         Route::delete('users/{id}', 'UserControllerAPI@destroy');
 

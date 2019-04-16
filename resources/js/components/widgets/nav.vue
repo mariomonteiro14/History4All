@@ -47,8 +47,9 @@
         </v-menu>
         <v-menu offset-y origin="center center" :nudge-bottom="10" transition="scale-transition">
             <v-btn icon large flat slot="activator">
-                <v-avatar size="30px">
-                    <img v-bind:src="getUserPhoto(this.$store.state.user.foto)" />
+                <v-avatar size="30px" class="bg-success">
+                    <img v-if="this.$store.state.user.foto" v-bind:src="getUserPhoto(this.$store.state.user.foto)"/>
+                    <span v-else>{{this.$store.state.user.nome[0]}}</span>
                 </v-avatar>
             </v-btn>
             <v-list class="pa-0" absolute>

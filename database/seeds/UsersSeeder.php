@@ -2,12 +2,13 @@
 
 use App\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class UsersSeeder extends Seeder
 {
     private $photoPath = 'public/profiles';
     private $typesOfUsers = ['admin', 'professor', 'aluno'];
-    private $numberOfUsers = [5,10,20];
+    private $numberOfUsers = [5,30,400];
     private $numberOfSoftDeletedUsers = [1,5,10];
     private $typesOfUsersPrefix = ['a', 'p', 'e'];
     private $malePhotos = [];
