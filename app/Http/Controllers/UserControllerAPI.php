@@ -10,7 +10,6 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Jsonable;
 
 use App\Http\Resources\User as UserResource;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
@@ -27,7 +26,7 @@ use DateTime;
 define('YOUR_SERVER_URL', 'http://h4a.local/');
 // Check "oauth_clients" table for next 2 values:
 define('CLIENT_ID', '2');
-define('CLIENT_SECRET','9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
+define('CLIENT_SECRET', '9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
 
 class UserControllerAPI extends Controller
 {
@@ -41,9 +40,9 @@ class UserControllerAPI extends Controller
 
     public function usersTrashed(Request $request)
     {
-        //$users = UserResource::collection(User::onlyTrashed());
+        $users = UserResource::collection(User::onlyTrashed()->get());
         return response()->json([
-            'data' => User::onlyTrashed(),
+            'data' => $users,
         ]);
     }
 
@@ -77,7 +76,7 @@ class UserControllerAPI extends Controller
         if (filter_var($request->email, FILTER_VALIDATE_EMAIL)) {
             $user = User::where('email', $request->email)->first();
             if ($user != null) {
-                if ($user->email_verified_at == '') abort(403, 'Account not verified');
+                if ($user->email_verified_at == '') abort(403, 'Conta não verificada');
             } else {
                 abort(403, 'Unknown user');
             }
@@ -294,8 +293,19 @@ class UserControllerAPI extends Controller
 
     public function destroy($id)
     {
-        $user = User::findOrFail($id);
-        $user->delete();
+        $user = User::withTrashed()->find($id);
+        if ($user->trashed()) {
+            $user->forceDelete();
+        } else {
+            $user->delete();
+        }
         return response()->json(null, 204);
+    }
+
+    public function restore($id)
+    {
+        $user = User::onlyTrashed()->find($id);
+        $user->restore();
+        return response()->json("user restored", 201);
     }
 }

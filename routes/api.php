@@ -37,6 +37,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('usersTrashed', 'UserControllerAPI@usersTrashed');
         Route::post('users', 'UserControllerAPI@store');
         Route::delete('users/{id}', 'UserControllerAPI@destroy');
+        Route::put('users/restaurar/{id}', 'UserControllerAPI@restore');
 
     });
 

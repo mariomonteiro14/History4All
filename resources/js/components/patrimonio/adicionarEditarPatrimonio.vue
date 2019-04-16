@@ -248,7 +248,7 @@
                     const config = {
                         headers: {'content-type': 'multipart/form-data'}
                     };
-                    axios.post('/api/patrimonios', this.patrimonio, config).then(response => {
+                    axios.post('/api/patrimonios', this.formCreate(), config).then(response => {
                         this.toastPopUp("success", "Património Criado!");
                         this.cleanForm();
                         this.$emit('getPat');

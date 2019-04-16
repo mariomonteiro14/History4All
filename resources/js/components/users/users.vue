@@ -4,11 +4,6 @@
             <br><br><br><br><br>
             <h3>Utilizadores / Gestão</h3>
             <br>
-            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar utilizador <i
-                class="material-icons">add_box</i>
-            </v-btn>
-            <v-btn color="success" @click="getUsersTrashed()">Utilizadores Apagados</v-btn>
-
                 <v-card append float>
 
                 <v-card-title>
@@ -30,6 +25,13 @@
                                 single-line
                                 hide-details
                             ></v-text-field>
+                            <v-spacer></v-spacer>
+                            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar utilizador <i
+                                class="material-icons">add_box</i>
+                            </v-btn>
+                            <v-btn v-if="trashed" color="warning" @click="getUsers()">Utilizadores Ativos</v-btn>
+                            <v-btn v-else color="warning" @click="getUsersTrashed()">Utilizadores Apagados</v-btn>
+
                         </v-layout>
                     </v-container>
                 </v-card-title>
@@ -47,8 +49,8 @@
                         <td class="text-xs-left">{{ props.item.nome }}</td>
                         <td class="text-xs-left">{{ props.item.email }}</td>
                         <td class="text-xs-center">{{ props.item.tipo }}</td>
-                        <td class="text-xs-center" v-if="$store.state.user.id != props.item.id">
-                            <v-btn color="warning" @click="showEdit(props.item)">
+                        <td class="text-xs-center" v-if="!trashed && $store.state.user.id != props.item.id ">
+                            <v-btn v-if="props.item.tipo!='admin'" color="warning" @click="showEdit(props.item)">
                                 Editar
                                 <v-icon small class="mr-2">edit</v-icon>
                             </v-btn>
@@ -57,7 +59,19 @@
                                 <v-icon small>delete_forever</v-icon>
                             </v-btn>
                         </td>
-                        <td v-else></td>
+                        <td v-if="$store.state.user.id == props.item.id"></td>
+                        <td class="text-xs-center" v-if="trashed">
+                            <v-btn color="warning" @click="restaurarUser(props.item)">
+                                Restaurar
+                                <v-icon small class="mr-2"></v-icon>
+                            </v-btn>
+                            <v-btn color="error" @click.stop="showDeleteVerif(props.item.id)">
+                                Apagar
+                                <v-icon small>delete_forever</v-icon>
+                            </v-btn>
+                        </td>
+
+
                     </tr>
                 </template>
             </v-data-table>
@@ -122,6 +136,7 @@
                 users: [],
                 userAApagar: '',
                 dialog: false,
+                trashed:false,
 
             }
         },
@@ -131,6 +146,7 @@
                 axios.get(url)
                     .then(response => {
                         this.users = response.data.data;
+                        this.trashed=false;
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -138,13 +154,19 @@
             },
 
             getUsersTrashed(url = 'api/usersTrashed') {
-
                 axios.get(url)
                     .then(response => {
-                        this.users = response.data.data;
+                        if (!response.data.data.length){
+                            this.toastPopUp('warning', 'Nao existem utilizadores apagados')
+                        } else{
+                            this.users = response.data.data;
+                            this.trashed = true;
+                        }
+
                     })
                     .catch(errors => {
                         console.log(errors);
+                        this.toastPopUp("error", "`${error.response.data.message}`");
                     });
             },
 
@@ -160,8 +182,21 @@
                 axios.delete('api/users/' + this.userAApagar)
                     .then(response => {
                         this.toastPopUp("success", "Utilizador Apagado!");
-                        this.getUsers();
+                        if (this.trashed == true) {
+                            this.getUsersTrashed();
+                        }else{
+                            this.getUsers();
+                        }
                     }).catch(function (error) {
+                    this.toastPopUp("error", "`${error.response.data.message}`");
+                    console.log(error);
+                });
+            },
+            restaurarUser($user){
+                axios.put('api/users/restaurar/' + $user.id).then(res =>{
+                    this.toastPopUp("success", "Uilizador restaurado");
+                    this.getUsersTrashed();
+                }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);
                 });
