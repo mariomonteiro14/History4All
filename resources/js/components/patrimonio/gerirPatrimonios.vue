@@ -14,6 +14,7 @@
                             label="Search"
                             single-line
                             hide-details
+                            clearable
                         ></v-text-field>
                         <v-spacer></v-spacer>
                         <v-btn color="success" @click="criar()">Criar património <i class="material-icons">add_box</i>

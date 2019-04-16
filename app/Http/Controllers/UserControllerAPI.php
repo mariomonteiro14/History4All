@@ -230,11 +230,11 @@ class UserControllerAPI extends Controller
         }
         $user = User::findOrFail($id);
 
-        if ($request->has('escola')) {
+        if ($request->has('escola') && $user->tipo != "admin") {
             $escola = Escola::where('nome', $request->escola)->first();
             $user->escola_id = $escola->id;
 
-            if ($request->has('turma')) {
+            if ($request->has('turma') && $user->tipo == "aluno") {
                 $turma = Turma::where('escola_id', $escola->id)->where('nome', $request->turma)->first();
                 $user->turma_id = $turma->id;
             }
@@ -315,6 +315,7 @@ class UserControllerAPI extends Controller
     {
         $user = User::withTrashed()->find($id);
         if ($user->trashed()) {
+            Storage::disk('public')->delete('profiles/'.$user->foto);
             $user->forceDelete();
         } else {
             $user->delete();

@@ -115,8 +115,8 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button v-if="isCreated()" class="btn btn-info" v-on:click.prevent="save">Registar</button>
-                        <button v-else class="btn btn-info" v-on:click.prevent="update">Guardar</button>
+                        <button v-if="isCreated()" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Registar</button>
+                        <button v-else class="btn btn-info" v-on:click.prevent="update" :disabled="hasErrors">Guardar</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
 
@@ -186,11 +186,11 @@
                 return this.attachments.length + " imagens Carregadas";
 
             },
-            getTextRemoveFiles(){
-                if(this.removeImagesSelected.length == 0){
+            getTextRemoveFiles() {
+                if (this.removeImagesSelected.length == 0) {
                     return "Selecione imagens para remover"
                 }
-                if(this.removeImagesSelected.length == 0) {
+                if (this.removeImagesSelected.length == 0) {
                     return "1 imagem a remover";
                 }
                 return this.removeImagesSelected.length + " imagens a remover";
@@ -237,43 +237,34 @@
 
                 return formData;
             },
-            hasErrors: function () {
-                if (!this.patrimonio.nome || !this.patrimonio.ciclo || !this.patrimonio.epoca || !this.patrimonio.distrito || !this.patrimonio.descricao) {
-                    return true;
-                }
-                return false;
-            },
             save: function () {
-                if (!this.hasErrors()) {
-                    const config = {
-                        headers: {'content-type': 'multipart/form-data'}
-                    };
-                    axios.post('/api/patrimonios', this.formCreate(), config).then(response => {
-                        this.toastPopUp("success", "Património Criado!");
-                        this.cleanForm();
-                        this.$emit('getPat');
-                        $('#addPatrimonioModal').modal('hide');
-                    }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                    })
-                }
+                const config = {
+                    headers: {'content-type': 'multipart/form-data'}
+                };
+                axios.post('/api/patrimonios', this.formCreate(), config).then(response => {
+                    this.toastPopUp("success", "Património Criado!");
+                    this.cleanForm();
+                    this.$emit('getPat');
+                    $('#addPatrimonioModal').modal('hide');
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                })
             },
             update() {
-                if (!this.hasErrors()) {
-                    const config = {
-                        headers: {'content-type': 'multipart/form-data'}
-                    };
-                    axios.post('/api/patrimonios/' + this.patrimonio.id, this.formCreate(), config).then(response => {
-                        this.toastPopUp("success", "Património Editado!");
-                        this.cleanForm();
-                        this.$emit('getPat');
-                        $('#addPatrimonioModal').modal('hide');
+                const config = {
+                    headers: {'content-type': 'multipart/form-data'}
+                };
+                axios.post('/api/patrimonios/' + this.patrimonio.id, this.formCreate(), config).then(response => {
+                    this.toastPopUp("success", "Património Editado!");
+                    this.cleanForm();
+                    this.$emit('getPat');
+                    $('#addPatrimonioModal').modal('hide');
 
-                    }).catch(function (error) {
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                        console.log(error);
-                    });
-                }
+                }).catch(function (error) {
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                    console.log(error);
+                });
+
             },
 
 
@@ -288,16 +279,16 @@
                 this.patrimonio.distrito = "";
                 this.patrimonio.epoca = "";
                 this.patrimonio.ciclo = "";
-                this.patrimonio.imagens= undefined;
+                this.patrimonio.imagens = undefined;
                 this.attachments = [];
                 this.removeImagesSelected = [];
             },
-            selectImage(imagem){
+            selectImage(imagem) {
                 var index = this.removeImagesSelected.indexOf(imagem);
-                if (index !== -1){
+                if (index !== -1) {
                     this.removeImagesSelected.splice(index, 1);
                     document.getElementById(imagem).classList.remove("border-success");
-                } else{
+                } else {
                     this.removeImagesSelected.push(imagem);
                     document.getElementById(imagem).classList.add("border-success");
                 }
@@ -315,6 +306,14 @@
                     });
                 }
             }
+        },
+        computed: {
+            hasErrors: function () {
+                if (!this.patrimonio.nome || !this.patrimonio.ciclo || !this.patrimonio.epoca || !this.patrimonio.distrito || !this.patrimonio.descricao) {
+                    return true;
+                }
+                return false;
+            },
         }
     };
 

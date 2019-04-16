@@ -21,6 +21,7 @@
             label="Search"
             class="hidden-sm-and-down align-center"
             color="white"
+            clearable
         >
         </v-text-field>
         <v-spacer></v-spacer>

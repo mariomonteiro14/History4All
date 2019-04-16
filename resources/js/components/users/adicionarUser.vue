@@ -69,7 +69,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-info" v-on:click.prevent="save">Registar</button>
+                        <button class="btn btn-info" :disabled="hasErrors" v-on:click.prevent="save">Registar</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
 
@@ -91,7 +91,7 @@
                     nome: '',
                     email: '',
                     tipo: '',
-                    escola: {},
+                    escola: '',
                     turma: '',
                 },
                 escolas: [],
@@ -104,31 +104,16 @@
         },
         methods: {
 
-            hasErrors: function () {
-                if (!this.user.nome || !this.user.email || !this.user.tipo) {
-                    return true;
-                }
-                if (this.user.tipo === "professor" && !this.user.escola) {
-                    return true;
-                }
-                if (this.user.tipo === "aluno" && (!this.user.escola || !this.user.turma)) {
-                    return true;
-                }
-                return false;
-            },
             save: function () {
-                if (!this.hasErrors()) {
-                    console.log(this.user);
-                    axios.post('/api/users', this.user).then(response => {
-                        this.toastPopUp("success", "Utilizador Criado!");
-                        this.cleanForm();
-                        this.$emit('getUsers');
-                        $('#addUserModal').modal('hide');
-                    }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                    })
-                }
-
+                console.log(this.user);
+                axios.post('/api/users', this.user).then(response => {
+                    this.toastPopUp("success", "Utilizador Criado!");
+                    this.cleanForm();
+                    this.$emit('getUsers');
+                    $('#addUserModal').modal('hide');
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                })
             },
 
             cancel: function () {
@@ -157,6 +142,27 @@
                         return this.escolas[i].turmas;
                     }
                 }
+            }, hasErrors: function () {
+                if (!this.user.nome || !this.user.email || !this.user.tipo) {
+                    return true;
+                }
+                var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if(!re.test(String(this.user.email).toLowerCase())){
+                    return true;
+                }
+                if (this.user.tipo === "professor" && !this.user.escola) {
+                    return true;
+                }
+                if (this.user.tipo === "aluno" && (!this.user.escola || !this.user.turma)) {
+                    return true;
+                }
+                return false;
+            },
+        },
+        watch:{
+            'user.escola' : function (newVal, oldVal){
+                this.user.escola = newVal;
+                this.user.turma = undefined;
             }
         }
     }

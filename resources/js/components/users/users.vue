@@ -23,6 +23,7 @@
                                 label="Search"
                                 single-line
                                 hide-details
+                                clearable
                             ></v-text-field>
                             <v-spacer></v-spacer>
                             <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar utilizador <i
@@ -103,7 +104,7 @@
                     </div>
                     <div class="modal-body">
                         <div class="container box">
-                            <div class="form-group" v-if="userAtual.tipo && userAtual.tipo != 'admin'">
+                            <div class="form-group" v-if="userAtual.tipo != 'admin'">
                                 <v-select
                                     fixed
                                     label="Escola"
@@ -115,7 +116,7 @@
                                     required
                                 ></v-select>
                             </div>
-                            <div class="form-group" v-if="userAtual.tipo == 'aluno'">
+                            <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola">
                                 <v-select
                                     fixed
                                     label="Turma"
@@ -129,7 +130,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-info" v-on:click.prevent="saveEdit">Guardar</button>
+                        <button class="btn btn-info" v-on:click.prevent="saveEdit"
+                                :disabled="!userAtual.escola  || (userAtual.tipo=='aluno' && !userAtual.turma)">Guardar</button>
                     </div>
                 </div>
             </div>
@@ -296,7 +298,14 @@
                         return this.escolas[i].turmas;
                     }
                 }
-            }
+            },
         },
+
+        watch:{
+            'userAtual.escola' : function (newVal, oldVal){
+                this.userAtual.escola = newVal;
+                this.userAtual.turma = undefined;
+            }
+        }
     }
 </script>
