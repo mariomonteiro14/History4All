@@ -191,7 +191,6 @@ class UserControllerAPI extends Controller
 
     }
 
-
     public function changePassword(Request $request)
     {
         if ($request->has('email') && $request->has('curPassword') && $request->has('newPassword')) {
@@ -224,9 +223,30 @@ class UserControllerAPI extends Controller
         }
     }
 
-    public function editProfile(Request $request)
+    public function update($id, Request $request)
     {
-        if ($request->has('username')) {
+        if (Auth::user()->tipo != "admin" && Auth::id() != $id){
+            return response()->json('You dont have permissions', 500);
+        }
+        $user = User::findOrFail($id);
+
+        if ($request->has('escola')) {
+            $escola = Escola::where('nome', $request->escola)->first();
+            $user->escola_id = $escola->id;
+
+            if ($request->has('turma')) {
+                $turma = Turma::where('escola_id', $escola->id)->where('nome', $request->turma)->first();
+                $user->turma_id = $turma->id;
+            }
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Successfully updated user!'
+        ], 201);
+
+        /*if ($request->has('username')) {
             $user = User::where('username', $request->input('username'))->first();
 
             if (Auth::id() != $user->id && !Auth::user()->isManager()) {
@@ -287,7 +307,7 @@ class UserControllerAPI extends Controller
             return response()->json([
                 'message' => 'Bad request',
             ], 400);
-        }
+        }*/
     }
 
 

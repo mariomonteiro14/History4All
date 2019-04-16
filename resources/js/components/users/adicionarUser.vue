@@ -157,7 +157,6 @@
                         return this.escolas[i].turmas;
                     }
                 }
-
             }
         }
     }

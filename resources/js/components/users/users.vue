@@ -4,8 +4,7 @@
             <br><br><br><br><br>
             <h3>Utilizadores / Gestão</h3>
             <br>
-                <v-card append float>
-
+            <v-card append float>
                 <v-card-title>
                     <v-container fluid grid-list-xl>
                         <v-layout row wrap align-center>
@@ -92,6 +91,51 @@
         <br><br>
         <add-user v-on:getUsers="getUsers"></add-user>
 
+        <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editUserModal">Editar Utilizador</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container box">
+                            <div class="form-group" v-if="userAtual.tipo && userAtual.tipo != 'admin'">
+                                <v-select
+                                    fixed
+                                    label="Escola"
+                                    v-model="userAtual.escola"
+                                    :items="escolas"
+                                    item-text="nome"
+                                    :rules="[v => !!v || 'Escola é obrigatório']"
+                                    class="input-group--focused"
+                                    required
+                                ></v-select>
+                            </div>
+                            <div class="form-group" v-if="userAtual.tipo == 'aluno'">
+                                <v-select
+                                    fixed
+                                    label="Turma"
+                                    v-model="userAtual.turma"
+                                    :items="turmas"
+                                    :rules="[v => !!v || 'Turma é obrigatório']"
+                                    class="input-group--focused"
+                                    required
+                                ></v-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-info" v-on:click.prevent="saveEdit">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 </template>
 
@@ -107,6 +151,7 @@
         },
         created() {
             this.getUsers();
+            this.getEscolas();
         },
         data() {
             return {
@@ -128,7 +173,7 @@
                     {text: 'Nome', value: 'nome'},
                     {text: 'Email', value: 'email'},
                     {text: 'Tipo', value: 'tipo', align: 'center'},
-                    {text: 'Actions', value: '', align: 'center'},
+                    {text: 'Actions', value: '', sortable: false, align: 'center'},
                 ],
                 search: '',
                 tipoUser: 'Todos',
@@ -136,7 +181,9 @@
                 users: [],
                 userAApagar: '',
                 dialog: false,
-                trashed:false,
+                trashed: false,
+                userAtual: {},
+                escolas: [],
 
             }
         },
@@ -146,7 +193,7 @@
                 axios.get(url)
                     .then(response => {
                         this.users = response.data.data;
-                        this.trashed=false;
+                        this.trashed = false;
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -156,9 +203,9 @@
             getUsersTrashed(url = 'api/usersTrashed') {
                 axios.get(url)
                     .then(response => {
-                        if (!response.data.data.length){
+                        if (!response.data.data.length) {
                             this.toastPopUp('warning', 'Nao existem utilizadores apagados')
-                        } else{
+                        } else {
                             this.users = response.data.data;
                             this.trashed = true;
                         }
@@ -170,21 +217,26 @@
                     });
             },
 
-            showEdit() {
+            showEdit($user) {
+                this.userAtual = Object.assign({}, $user);
+                this.userAtual.escola = this.userAtual.escola[0];
+                this.userAtual.turma = this.userAtual.turma[0];
+                console.log(this.userAtual);
+                $('#editUserModal').modal('show');
 
             },
-            showDeleteVerif(user_id){
+            showDeleteVerif(user_id) {
                 this.dialog = true;
                 this.userAApagar = user_id;
             },
-            apagar(){
+            apagar() {
                 this.dialog = false;
                 axios.delete('api/users/' + this.userAApagar)
                     .then(response => {
                         this.toastPopUp("success", "Utilizador Apagado!");
                         if (this.trashed == true) {
                             this.getUsersTrashed();
-                        }else{
+                        } else {
                             this.getUsers();
                         }
                     }).catch(function (error) {
@@ -192,8 +244,19 @@
                     console.log(error);
                 });
             },
-            restaurarUser($user){
-                axios.put('api/users/restaurar/' + $user.id).then(res =>{
+            saveEdit() {
+                axios.post('api/users/' + this.userAtual.id, this.userAtual)
+                    .then(response => {
+                        this.toastPopUp("success", "Utilizador Atualizado");
+                        this.getUsers();
+                        $('#editUserModal').modal('hide');
+                    }).catch(function (error) {
+                    this.toastPopUp("error", "`${error.response.data.message}`");
+                    console.log(error);
+                });
+            },
+            restaurarUser($user) {
+                axios.put('api/users/restaurar/' + $user.id).then(res => {
                     this.toastPopUp("success", "Uilizador restaurado");
                     this.getUsersTrashed();
                 }).catch(function (error) {
@@ -211,14 +274,29 @@
 
                 return "alert-secondary";
 
-            }
+            },
+
+            getEscolas: function () {
+                axios.get("api/escolas").then(response => {
+                    this.escolas = response.data.data;
+                }).catch(errors => {
+                    console.log(errors);
+                });
+            },
         },
         computed: {
             filteredUsers() {
                 return this.users.filter((i) => {
                     return (this.tipoUser === 'Todos' || i.tipo === this.tipoUser)
                 });
+            },
+            turmas: function () {
+                for (let i in this.escolas) {
+                    if (this.escolas[i].nome === this.userAtual.escola) {
+                        return this.escolas[i].turmas;
+                    }
+                }
             }
-        }
+        },
     }
 </script>

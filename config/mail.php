@@ -57,7 +57,7 @@ return [
 
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'example.dae.estg@gmail.com'),
-        'name' => env('MAIL_FROM_NAME', 'Do Dot Reply'),
+        'name' => env('MAIL_FROM_NAME', 'Do Not Reply'),
     ],
 
     /*

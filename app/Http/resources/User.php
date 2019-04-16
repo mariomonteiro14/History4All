@@ -20,6 +20,8 @@ class User extends JsonResource
             'email' => $this->email,
             'foto' => $this->foto,
             'tipo' => $this->tipo,
+            'escola' => $this->escola()->pluck('nome'),
+            'turma' => $this->turma()->pluck('nome'),
         ];
     }
 
