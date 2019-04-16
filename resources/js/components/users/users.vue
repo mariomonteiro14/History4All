@@ -4,7 +4,7 @@
             <br><br><br><br><br>
             <h3>Utilizadores / Gestão</h3>
             <br>
-            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar património <i
+            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar utilizadores<i
                 class="material-icons">add_box</i>
             </v-btn>
 

@@ -82,9 +82,7 @@
                                         </v-container>
                                     </v-img>
                                     <v-card-title>
-                                        <div>
-                                            <span class="grey--text">{{atividade.coordenador.nome}}</span><br>
-                                        </div>
+                                        <span class="grey--text">{{atividade.coordenador.nome}}</span><br>
                                     </v-card-title>
                                 </v-card>
                             </v-hover>

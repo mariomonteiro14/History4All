@@ -3,14 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Escola;
+use App\Mail\SendMailable;
+use App\Notifications\RegistarPassword;
 use App\Turma;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Support\Jsonable;
 
 use App\Http\Resources\User as UserResource;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -122,11 +127,24 @@ class UserControllerAPI extends Controller
             $user->turma_id = null;
         }
 
+        $user->setRememberToken(Str::random(10));
         $user->save();
+
+        //enviar email
+        Mail::to($user->email)->send(new SendMailable($user->name, 'api/users/registarPassword/' . $user->getRememberToken()));
+
         return response()->json([
             'message' => 'Successfully created user!'
         ], 201);
  	}
+
+    public function irParaRegistarPassword(Request $request, $token){
+        return redirect()->away(URL::to('/') .'/#/users/registarPassword/' . $token);
+    }
+
+    public function getUserByToken(Request $request, $token){
+        return User::where('remember_token', $token)->first();
+    }
 
  	public function logout()
 	{

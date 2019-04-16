@@ -38,6 +38,8 @@ const routes = [
     { path: '/admin/patrimonios/criar', name: 'criarPatrimonio',component: require('./components/patrimonio/criarPatrimonio.vue').default},
     { path: '/atividades', name: 'atividades',component: require('./components/atividades.vue').default},
     { path: '/admin/users', name: 'gestor_users',component: require('./components/users/users.vue').default},
+    { path: '/users/registarPassword/:token', name: 'registarPassword',component: require('./components/users/registarPassword.vue').default, props: true},
+
 ];
 
 const router = new VueRouter({

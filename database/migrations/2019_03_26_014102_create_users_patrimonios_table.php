@@ -26,6 +26,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->string('nome');
             $table->integer('escola_id')->unsigned();
             $table->foreign('escola_id')->references('id')->on('escolas');
+            $table->enum('ciclo', ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário']);
         });
 
         Schema::create('users', function (Blueprint $table) {
