@@ -17,15 +17,19 @@ class Turma extends Model
      */
 
     protected $fillable = [
-        'nome', 'escola_id'
+        'nome', 'escola_id', 'professor_id'
     ];
 
-    public function users(){
-        return $this->hasMany(User::class, 'turma_id','id');
+    public function alunos(){
+        return $this->hasMany(User::class, 'turma_id','id')->get();
     }
 
     public function escola(){
         return $this->belongsTo(Escola::class, 'escola_id','id');
+    }
+
+    public function professor(){
+        return $this->belongsTo(User::class, 'professor_id','id')->get();
     }
 
 }

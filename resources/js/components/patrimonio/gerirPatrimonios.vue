@@ -60,7 +60,7 @@
         <v-dialog v-model="dialog" max-width="290">
             <v-card>
                 <v-card-title class="headline">Confirmação</v-card-title>
-                <v-card-text>Tem acerteza que que elimiar o património?</v-card-text>
+                <v-card-text>Tem a certeza que que elimiar o património?</v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="red darken-1" flat="flat" @click="dialog = false">
@@ -98,7 +98,7 @@
                 pagination: {
                     descending: false,
                     page: 1,
-                    rowsPerPage: 5,
+                    rowsPerPage: 10,
                     sortBy: 'nome',
                     totalItems: 0,
                     rowsPerPageItems: [5, 10, 20]

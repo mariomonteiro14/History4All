@@ -122,6 +122,7 @@
                                     label="Turma"
                                     v-model="userAtual.turma"
                                     :items="turmas"
+                                    item-text="nome"
                                     :rules="[v => !!v || 'Turma é obrigatório']"
                                     class="input-group--focused"
                                     required
@@ -160,7 +161,7 @@
                 pagination: {
                     descending: false,
                     page: 1,
-                    rowsPerPage: 5,
+                    rowsPerPage: 10,
                     sortBy: 'tipo',
                     totalItems: 0,
                     rowsPerPageItems: [5, 10, 20]

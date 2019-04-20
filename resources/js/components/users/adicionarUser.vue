@@ -60,6 +60,7 @@
                                 label="Turma"
                                 v-model="user.turma"
                                 :items="turmas"
+                                item-text="nome"
                                 :rules="[v => !!v || 'Turma é obrigatório']"
                                 class="input-group--focused"
                                 required

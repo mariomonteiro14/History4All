@@ -24,6 +24,7 @@ class CreateUsersPatrimoniosTable extends Migration
         Schema::create('turmas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome');
+            $table->bigInteger('professor_id')->unsigned()->nullable();;
             $table->integer('escola_id')->unsigned();
             $table->foreign('escola_id')->references('id')->on('escolas');
             $table->enum('ciclo', ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário']);
@@ -103,6 +104,11 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
             $table->integer('patrimonio_id')->unsigned();
             $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');
+        });
+
+        Schema::table('turmas', function (Blueprint $table) {
+           // $table->bigInteger('professor_id')->unsigned();
+            $table->foreign('professor_id')->references('id')->on('users');
         });
     }
 

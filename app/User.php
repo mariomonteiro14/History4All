@@ -19,7 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
      */
 
     use SoftDeletes;
-    
+
     protected $dates = ['email_verified_at', 'created_at', 'updated_at', 'deleted_at'];
     protected $fillable = [
         'nome', 'email', 'password', 'foto', 'tipo', 'escola_id', 'turma_id'
@@ -31,6 +31,10 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function turma(){
         return $this->belongsTo(Turma::class, 'turma_id','id');
+    }
+
+    public function turmas(){
+        return $this->hasMany(Turma::class, 'professor_id','id');
     }
 
     public function atividadeParticipantes(){

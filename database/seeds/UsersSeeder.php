@@ -8,7 +8,7 @@ class UsersSeeder extends Seeder
 {
     private $photoPath = 'public/profiles';
     private $typesOfUsers = ['admin', 'professor', 'aluno'];
-    private $numberOfUsers = [5,30,400];
+    private $numberOfUsers = [5,10,100];
     private $numberOfSoftDeletedUsers = [1,5,10];
     private $typesOfUsersPrefix = ['a', 'p', 'e'];
     private $malePhotos = [];

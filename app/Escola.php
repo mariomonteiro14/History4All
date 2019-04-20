@@ -25,8 +25,7 @@ class Escola extends Model
     }
 
     public function turmas(){
-
-        return $this->hasMany(Turma::class, 'escola_id','id');
+        return $this->hasMany(Turma::class, 'escola_id','id')->get();
     }
 
 }
