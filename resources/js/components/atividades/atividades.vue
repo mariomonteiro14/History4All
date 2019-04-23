@@ -19,37 +19,37 @@
                     <v-container fluid grid-list-xl>
                         <v-layout row wrap align-center>
                             <v-text-field
-                                    v-model="search"
-                                    append-icon="search"
-                                    label="Pesquisar"
-                                    single-line
-                                    hide-details
+                                v-model="search"
+                                append-icon="search"
+                                label="Pesquisar"
+                                single-line
+                                hide-details
                             ></v-text-field>
                             <v-spacer></v-spacer>
                             <v-flex xs12 sm3 d-flex>
                                 <v-select
-                                        v-model="epocaSelected"
-                                        :items="epocas"
-                                        label="Filtrar por época históricas"
-                                        class="input-group--focused"
+                                    v-model="epocaSelected"
+                                    :items="epocas"
+                                    label="Filtrar por época históricas"
+                                    class="input-group--focused"
                                 ></v-select>
                             </v-flex>
                             <v-flex xs12 sm3>
                                 <v-select
-                                        v-model="cicloSelected"
-                                        :items="ciclos"
-                                        chips
-                                        label="Filtrar por ciclos"
-                                        multiple
+                                    v-model="cicloSelected"
+                                    :items="ciclos"
+                                    chips
+                                    label="Filtrar por ciclos"
+                                    multiple
                                 ></v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
                             <v-flex xs12 sm3 d-flex>
                                 <v-select
-                                        v-model="tipoSelected"
-                                        :items="tipos"
-                                        label="Filtrar por tipo de atividades"
-                                        class="input-group--focused"
+                                    v-model="tipoSelected"
+                                    :items="tipos"
+                                    label="Filtrar por tipo de atividades"
+                                    class="input-group--focused"
                                 ></v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
@@ -62,8 +62,8 @@
                     <v-layout row wrap>
                         <v-flex v-for="(atividade, index) in filteredAtividades" :key="index" @click="showAtividade(atividade)">
                             <v-hover>
-                                <v-card height="300" width="300" slot-scope="{ hover }" class="mx-auto">
-                                    <v-img class="white--text" max-height="250" v-if="atividade.imagem"
+                                <v-card height="200" width="200" slot-scope="{ hover }" class="mx-auto">
+                                    <v-img class="white--text" height="150" width="200" v-if="atividade.imagem"
                                            v-bind:src="getPatrimonioPhoto(atividade.imagem)">
                                         <v-expand-transition>
                                             <div v-if="hover" class="blue darken-4 v-card--reveal white--text"
@@ -74,15 +74,15 @@
                                         <v-container fill-height fluid>
                                             <v-layout fill-height>
                                                 <v-flex xs12 align-end flexbox>
-                                                    <span style="text-shadow: 2px 2px #000000">{{atividade.tipo}}</span><br>
-                                                    <span style="text-shadow: 2px 2px #000000">{{(ciclosFormatados[index])}}</span><br>
-                                                    <span style="text-shadow: 2px 2px #000000">{{(epocasFormatadas[index])}}</span><br>
+                                                    <span>{{atividade.tipo}}</span><br>
+                                                    <span>{{(ciclosFormatados[index])}}</span><br>
+                                                    <span>{{(epocasFormatadas[index])}}</span><br>
                                                 </v-flex>
                                             </v-layout>
                                         </v-container>
                                     </v-img>
                                     <v-card-title>
-                                        <span class="grey--text" style="position: absolute;">{{atividade.coordenador.nome}}</span><br>
+                                        <span class="grey--text">{{atividade.coordenador.nome}}</span><br>
                                     </v-card-title>
                                 </v-card>
                             </v-hover>
