@@ -18,6 +18,7 @@ class Turma extends JsonResource
             'id' => $this->id,
             'nome' => $this->nome,
             'professor' => $this->professor()->pluck('nome'),
+            'ciclo' => $this->ciclo,
             'alunos' => User::collection($this->alunos()),
         ];
     }

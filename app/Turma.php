@@ -15,6 +15,7 @@ class Turma extends Model
      *
      * @var array
      */
+    public $timestamps = false;
 
     protected $fillable = [
         'nome', 'escola_id', 'professor_id'

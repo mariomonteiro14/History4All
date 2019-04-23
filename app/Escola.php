@@ -15,6 +15,7 @@ class Escola extends Model
      *
      * @var array
      */
+    public $timestamps = false;
 
     protected $fillable = [
         'id', 'nome', 'distrito'

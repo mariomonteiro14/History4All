@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Escola;
+use App\Turma;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\Escola as EscolaResource;
+use App\Http\Resources\Turma as TurmaResource;
 
 class EscolaControllerAPI extends Controller
 {
@@ -17,7 +20,8 @@ class EscolaControllerAPI extends Controller
     }
 
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
         $request->validate([
             'nome' => 'required|min:3|max:255',
@@ -29,6 +33,39 @@ class EscolaControllerAPI extends Controller
         $escola->save();
 
         return response()->json(new EscolaResource($escola), 201);
+
+    }
+
+    public function criarTurma($id, Request $request)
+    {
+
+        $request->validate([
+            'nome' => 'required|min:1|max:9',
+            'ciclo' => 'required',
+            'professor' => 'nullable',
+        ]);
+
+        $escola = Escola::findOrFail($id);
+
+        if (Turma::where('escola_id', $id)->where('nome', $request->input('nome'))->first()){
+            return response()->json("Erro: Nome ja existente", 500);
+        }
+
+        $turma = new Turma();
+        $turma->fill($request->all());
+
+        if ($request->has('professor') && $request->input('professor') != "") {
+            $professor = User::where('nome', $request->input('professor'))->first();
+            if (!$professor || $professor->tipo != 'professor') {
+                return response()->json("Professor Invalido", 500);
+            }
+            $turma->professor_id = $professor->id;
+        }
+        $turma->escola_id = $escola->id;
+
+        $turma->save();
+
+        return response()->json(new TurmaResource($turma), 201);
 
     }
 

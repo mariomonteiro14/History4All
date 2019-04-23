@@ -32,11 +32,16 @@
                 <v-data-table :headers="headersEscola" :items="filteredEscolas" :search="search" class="elevation-1"
                               :pagination.sync="pagination" :expand="expand">
                     <template v-slot:items="props">
-                        <tr @click="showTurmas(props, props.item)" :class="[props.item.id == escolaAtual.id ? 'alert-success' : '' ]">
+                        <tr :class="[props.item.id == escolaAtual.id ? 'alert-success' : '' ]">
                             <td class="text-xs-left">{{ props.item.nome }}</td>
                             <td class="text-xs-left">{{ props.item.distrito }}</td>
+                            <td class="text-xs-center">
+                                <v-btn v-if="props.item.turmas[0]" color="success" @click="showTurmas(props, props.item)">Listar Turmas
+                                    <v-icon medium>list</v-icon>
+                                </v-btn>
+                            </td>
                             <td class="justify-center layout px-0">
-                                <v-btn color="success" data-toggle="modal" data-target="#addTurmaModal">Criar Turma <i
+                                <v-btn color="success" @click="showCriarTurma(props.item)">Criar Turma <i
                                     class="material-icons">add_box</i>
                                 </v-btn>
                                 <v-btn color="error" @click.stop="apagarVerificacao(props.item.id)">
@@ -52,10 +57,11 @@
                             <template v-slot:items="props">
                                 <tr class="alert-primary">
                                     <td class="text-xs-left">{{props.item.nome}}</td>
-                                    <td class="text-xs-center">{{props.item.professor}}</td>
+                                    <td class="text-xs-center">{{props.item.professor[0]}}</td>
                                     <td class="text-xs-center">{{props.item.alunos.length}}</td>
-                                    <td class="justify-center layout px-0">
-                                        <v-btn v-if="props.item.alunos[0]" color="success" data-toggle="modal" data-target="#showStudentsModal">Listar Alunos
+                                    <td class="text-xs-center">{{props.item.ciclo}}</td>
+                                    <td class="float-md-right">
+                                        <v-btn v-if="props.item.alunos[0]" color="success" @click="showTurmaAlunos(props.item)">Listar Alunos
                                             <v-icon medium>list</v-icon>
                                         </v-btn>
                                         <v-btn color="warning" data-toggle="modal" data-target="#editTurmaModal">Editar
@@ -67,6 +73,7 @@
                                             <v-icon small>delete_forever</v-icon>
                                         </v-btn>
                                     </td>
+                                    <td></td>
                                 </tr>
                             </template>
                         </v-data-table>
@@ -88,12 +95,24 @@
             </v-card>
         </v-dialog>
         <br><br>
+        <lista-alunos :turma="turmaAtual"></lista-alunos>
+        <criar-escola v-on:getEscolas="getEscolas"></criar-escola>
+        <criar-turma :escola="escolaAtual" v-on:getEscolas="getEscolas"></criar-turma>
+
     </div>
 </template>
 
 <script>
+    import listaAlunos from './showTurmaAlunos';
+    import criarEscola from './adicionarEscola';
+    import criarTurma from './adicionarTurma';
+
     export default {
-        components: {},
+        components: {
+            'lista-alunos': listaAlunos,
+            'criar-escola': criarEscola,
+            'criar-turma': criarTurma,
+        },
         mounted() {
             this.getEscolas();
         },
@@ -116,18 +135,21 @@
                 headersEscola: [
                     {text: 'Nome', value: 'nome'},
                     {text: 'Distrito', value: 'distrito'},
-                    {text: 'Ações', align:'center', value: 'acoes', sortable: false}
+                    {text: '', align:'center', value: 'turmas', sortable: false},
+                    {text: 'Ações', align:'center', value: 'acoes', sortable: false},
                 ],
-
                 headersTurma: [
                     {text: 'Nome', value: 'nome', align:'left'},
                     {text: 'Professor', align:'center', value: 'professor'},
-                    {text: 'Mumero de Alunos', align:'center', value: 'numero'},
-                    {text: 'Ações', align:'center', value: 'acoes', sortable: false}
+                    {text: 'Numero de Alunos', align:'center', value: 'numero'},
+                    {text: 'Ciclo', align:'center', value: 'ciclo'},
+                    {text: '', align:'', value: 'acoes', sortable: false},
+                    {text: '', align:'center', value: '', sortable: false}
                 ],
                 escolas: [],
                 dialog: false,
                 escolaAtual: {},
+                turmaAtual: {},
             }
         },
         methods: {
@@ -149,18 +171,27 @@
                     this.escolaAtual = {};
                 }
             },
+            showTurmaAlunos(turma){
+                this.turmaAtual = turma;
+
+                $('#turmaAlunosModal').modal('show');
+            },
+            showCriarTurma(escola){
+                this.escolaAtual = escola;
+                $('#addTurmaModal').modal('show');
+            },
 
             apagarVerificacao(id) {
                 this.dialog = true;
                 this.escolaAApagar = id;
             },
 
-            apagar(escola) {
+            apagar() {
                 this.dialog = false;
-                axios.delete('api/escolas/' + escola.id)
+                axios.delete('api/escolas/' + this.escolaAApagar)
                     .then(response => {
                         this.toastPopUp("success", "Escola Apagado!");
-                        this.getPatrimonios();
+                        this.getEscolas();
                     }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);

@@ -44,7 +44,6 @@
                             <v-layout class="form-group" row align-center>
 
                                 <v-select
-                                    fixed
                                     label="Distrito"
                                     v-model="patrimonio.distrito"
                                     :items="distritos"
@@ -54,7 +53,6 @@
                                 ></v-select>
                                 <v-spacer></v-spacer>
                                 <v-select
-                                    fixed
                                     label="Época"
                                     v-model="patrimonio.epoca"
                                     :items="epocas"
@@ -65,7 +63,6 @@
 
                                 <v-spacer></v-spacer>
                                 <v-select
-                                    fixed
                                     label="Ciclo"
                                     v-model="patrimonio.ciclo"
                                     :items="ciclos"

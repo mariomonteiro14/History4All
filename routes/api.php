@@ -35,11 +35,16 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::post('patrimonios', 'PatrimonioControllerAPI@store');
         Route::get('users/professores', 'UserControllerAPI@professores');
         Route::get('users/alunos', 'UserControllerAPI@alunos');
+        Route::get('users/professores', 'UserControllerAPI@professores');
         Route::get('users', 'UserControllerAPI@users');
         Route::get('usersTrashed', 'UserControllerAPI@usersTrashed');
         Route::post('users', 'UserControllerAPI@store');
         Route::delete('users/{id}', 'UserControllerAPI@destroy');
         Route::put('users/restaurar/{id}', 'UserControllerAPI@restore');
+
+        Route::post('escolas', 'EscolaControllerAPI@store');
+        Route::delete('escolas/{id}', 'EscolaControllerAPI@destroy');
+        Route::post('escolas/{id}/criarTurma', 'EscolaControllerAPI@criarTurma');
 
     });
 

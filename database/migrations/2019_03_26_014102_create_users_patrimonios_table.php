@@ -26,7 +26,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->string('nome');
             $table->bigInteger('professor_id')->unsigned()->nullable();;
             $table->integer('escola_id')->unsigned();
-            $table->foreign('escola_id')->references('id')->on('escolas');
+            $table->foreign('escola_id')->references('id')->on('escolas')->onDelete('cascade');
             $table->enum('ciclo', ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário']);
         });
 
@@ -39,9 +39,9 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->string('foto')->nullable();
             $table->enum('tipo', ['admin', 'professor', 'aluno']);
             $table->integer('escola_id')->unsigned()->nullable();
-            $table->foreign('escola_id')->references('id')->on('escolas');
+            $table->foreign('escola_id')->references('id')->on('escolas')->onDelete('cascade');
             $table->integer('turma_id')->unsigned()->nullable();
-            $table->foreign('turma_id')->references('id')->on('turmas');
+            $table->foreign('turma_id')->references('id')->on('turmas')->onDelete('cascade');
             $table->softDeletes();
             $table->timestamps();
             $table->rememberToken();
@@ -60,7 +60,7 @@ class CreateUsersPatrimoniosTable extends Migration
 
         Schema::create('patrimonio_imagens', function (Blueprint $table) {
             $table->integer('patrimonio_id')->unsigned();
-            $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');;
+            $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');
             $table->string('foto');
         });
 

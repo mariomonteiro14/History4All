@@ -32,7 +32,6 @@
                         </div>
                         <div class="form-group">
                             <v-select
-                                fixed
                                 label="Tipo"
                                 v-model="user.tipo"
                                 :items="userTipos"
@@ -44,7 +43,6 @@
 
                         <div class="form-group" v-if="user.tipo && user.tipo != 'admin'">
                             <v-select
-                                fixed
                                 label="Escola"
                                 v-model="user.escola"
                                 :items="escolas"
@@ -56,7 +54,6 @@
                         </div>
                         <div class="form-group" v-if="user.escola && user.tipo == 'aluno'">
                             <v-select
-                                fixed
                                 label="Turma"
                                 v-model="user.turma"
                                 :items="turmas"
