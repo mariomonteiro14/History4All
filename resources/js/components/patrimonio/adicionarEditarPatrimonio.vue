@@ -131,7 +131,6 @@
 
         props: ['patrimonio'],
 
-
         data: function () {
             return {
                 editor: ClassicEditor,

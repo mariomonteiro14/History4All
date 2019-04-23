@@ -42,7 +42,8 @@ Route::group(['middleware' => 'auth:api'], function() {
 
         Route::post('escolas', 'EscolaControllerAPI@store');
         Route::delete('escolas/{id}', 'EscolaControllerAPI@destroy');
-        Route::post('escolas/{id}/criarTurma', 'EscolaControllerAPI@criarTurma');
+        Route::post('escolas/{id}/turmas', 'EscolaControllerAPI@criarTurma');
+        Route::put('escolas/turmas/{id}', 'EscolaControllerAPI@editarTurma');
         Route::delete('escolas/turmas/{id}', 'EscolaControllerAPI@destroyTurma');
 
     });

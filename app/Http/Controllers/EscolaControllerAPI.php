@@ -38,7 +38,6 @@ class EscolaControllerAPI extends Controller
 
     public function criarTurma($id, Request $request)
     {
-
         $request->validate([
             'nome' => 'required|min:1|max:9',
             'ciclo' => 'required',
@@ -53,6 +52,7 @@ class EscolaControllerAPI extends Controller
 
         $turma = new Turma();
         $turma->fill($request->all());
+        $turma->ciclo = $request->input('ciclo');
 
         if ($request->has('professor') && $request->input('professor') != "") {
             $professor = User::where('nome', $request->input('professor'))->first();
@@ -62,6 +62,40 @@ class EscolaControllerAPI extends Controller
             $turma->professor_id = $professor->id;
         }
         $turma->escola_id = $escola->id;
+
+        $turma->save();
+
+        return response()->json(new TurmaResource($turma), 201);
+
+    }
+
+    public function editarTurma($id, Request $request)
+    {
+
+        $request->validate([
+            'nome' => 'required|min:1|max:9',
+            'ciclo' => 'required',
+            'professor' => 'nullable',
+        ]);
+
+        $turma = Turma::findOrFail($id);
+
+        if ($request->input('nome') != $turma->nome) {
+            if (Turma::where('escola_id', $turma->escola_id)->where('nome', $request->input('nome'))->first()) {
+                return response()->json("Erro: Nome ja existente", 500);
+            }
+            $turma->nome = $request->input('nome');
+        }
+
+        $turma->ciclo = $request->input('ciclo');
+
+        if ($request->has('professor') && $request->input('professor') != "") {
+            $professor = User::where('nome', $request->input('professor'))->first();
+            if (!$professor || $professor->tipo != 'professor') {
+                return response()->json("Professor Invalido", 500);
+            }
+            $turma->professor_id = $professor->id;
+        }
 
         $turma->save();
 

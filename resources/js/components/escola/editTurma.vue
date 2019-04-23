@@ -1,13 +1,13 @@
 <template>
     <div>
         <!-- Modal Add Order-->
-        <div class="modal fade" id="addTurmaModal" tabindex="-1" role="dialog" aria-labelledby="addTurmaModal"
+        <div class="modal fade" id="editTurmaModal" tabindex="-1" role="dialog" aria-labelledby="editTurmaModal"
              aria-hidden="true">
             <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
                     <div class="container box">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="addTurmaModal">{{getTitle}}</h5>
+                            <h5 class="modal-title" id="editTurmaModal">Editar Turma {{turma.nome}}</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
                                     aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -43,8 +43,8 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button v-if="!turma.id" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Registar</button>
-                        <button v-else class="btn btn-info" v-on:click.prevent="edit" :disabled="hasErrors">Guardar</button>
+                        <button class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Registar
+                        </button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
 
@@ -57,7 +57,7 @@
 
 <script>
     export default {
-        props: ['escola', 'turma'],
+        props: ['escola'],
 
         created() {
             this.getProfessores();
@@ -66,23 +66,17 @@
         data: function () {
             return {
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
+                turma: {
+                    nome: "",
+                    ciclo: ""
+                },
                 professores: [],
             };
         },
         methods: {
             save: function () {
-                axios.post('/api/escolas/' + this.escola.id + '/turmas', this.turma).then(response => {
+                axios.post('/api/escolas/' + this.escola.id + '/criarTurma', this.turma).then(response => {
                     this.toastPopUp("success", "Turma Criada!");
-                    this.cleanForm();
-                    this.$emit('getEscolas');
-                    $('#addTurmaModal').modal('hide');
-                }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
-                })
-            },
-            edit: function(){
-                axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
-                    this.toastPopUp("success", "Turma Atualizada!");
                     this.cleanForm();
                     this.$emit('getEscolas');
                     $('#addTurmaModal').modal('hide');
@@ -97,12 +91,11 @@
             },
 
             cleanForm: function () {
-                this.turma.id = undefined;
                 this.turma.nome = "";
                 this.turma.ciclo = "";
                 this.turma.professor = undefined;
             },
-            getProfessores(url = '/api/users/professores'){
+            getProfessores(url = 'api/users/professores'){
                 axios.get(url)
                     .then(response => {
                         this.professores = response.data.data;
@@ -124,9 +117,6 @@
                 return this.professores.filter((i) => {
                     return i.escola[0] === this.escola.nome;
                 });
-            },
-            getTitle(){
-                return !this.turma.id ? this.escola.nome + " - Criar Turma" : "Editar Turma " +this.turma.nome;
             }
         }
     }

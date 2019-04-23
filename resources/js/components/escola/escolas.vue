@@ -44,7 +44,7 @@
                                 <v-btn color="success" @click="showCriarTurma(props.item)">Criar Turma <i
                                     class="material-icons">add_box</i>
                                 </v-btn>
-                                <v-btn color="error" @click.stop="apagarVerificacao(props.item.id)">
+                                <v-btn color="error" @click.stop="apagarVerificacao(props.item, true)">
                                     Apagar
                                     <v-icon small>delete_forever</v-icon>
                                 </v-btn>
@@ -64,11 +64,11 @@
                                         <v-btn v-if="props.item.alunos[0]" color="success" @click="showTurmaAlunos(props.item)">Listar Alunos
                                             <v-icon medium>list</v-icon>
                                         </v-btn>
-                                        <v-btn color="warning" data-toggle="modal" data-target="#editTurmaModal">Editar
+                                        <v-btn color="warning" @click="showEditTurma(props.item)">Editar
                                             <v-icon small>edit</v-icon>
 
                                         </v-btn>
-                                        <v-btn color="error" @click.stop="apagarTurma(props.item.id)">
+                                        <v-btn color="error" @click.stop="apagarVerificacao(props.item, false)">
                                             Apagar
                                             <v-icon small>delete_forever</v-icon>
                                         </v-btn>
@@ -84,20 +84,23 @@
         <v-dialog v-model="dialog" max-width="290">
             <v-card>
                 <v-card-title class="headline">Confirmação</v-card-title>
-                <v-card-text>Se eliminar esta escola, todas as turmas, professores e alunos seram eliminados. Quer continuar?</v-card-text>
+                <v-card-text v-if="!turmaAtual.id">Se eliminar esta escola, todas as turmas, professores e alunos seram eliminados.</v-card-text>
+                <v-card-text v-else>Se eliminar esta turma, todos alunos ficaram sem turma.</v-card-text>
+                <v-card-text>Quer continuar?</v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="red darken-1" flat="flat" @click="dialog = false">
                         Não
                     </v-btn>
-                    <v-btn color="green darken-1" flat="flat" @click="apagarEscola()">Sim</v-btn>
+                    <v-btn v-if="!turmaAtual.id" color="green darken-1" flat="flat" @click="apagarEscola()">Sim</v-btn>
+                    <v-btn v-else color="green darken-1" flat="flat" @click="apagarTurma()">Sim</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
         <br><br>
         <lista-alunos :turma="turmaAtual"></lista-alunos>
         <criar-escola v-on:getEscolas="getEscolas"></criar-escola>
-        <criar-turma :escola="escolaAtual" v-on:getEscolas="getEscolas"></criar-turma>
+        <criar-turma v-bind:escola="escolaAtual" :turma="turmaAtual" v-on:getEscolas="getEscolas"></criar-turma>
 
     </div>
 </template>
@@ -149,7 +152,7 @@
                 escolas: [],
                 dialog: false,
                 escolaAtual: {},
-                turmaAtual: {},
+                turmaAtual: {}
             }
         },
         methods: {
@@ -157,7 +160,6 @@
                 axios.get(url)
                     .then(response => {
                         this.escolas = response.data.data;
-                        console.log(this.escolas);
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -179,17 +181,27 @@
             },
             showCriarTurma(escola){
                 this.escolaAtual = escola;
+                this.turmaAtual = {};
+                $('#addTurmaModal').modal('show');
+            },
+            showEditTurma(turma){
+                this.turmaAtual = Object.assign({}, turma);
+                this.turmaAtual.professor = this.turmaAtual.professor[0];
                 $('#addTurmaModal').modal('show');
             },
 
-            apagarVerificacao(id) {
+            apagarVerificacao(item, escola_boolean) {
                 this.dialog = true;
-                this.escolaAApagar = id;
+                if (escola_boolean == true) {
+                    this.escolaAtual = item;
+                }else {
+                    this.turmaAtual = item;
+                }
             },
 
             apagarEscola() {
                 this.dialog = false;
-                axios.delete('/api/escolas/' + this.escolaAApagar)
+                axios.delete('/api/escolas/' + this.escolaAtual.id)
                     .then(response => {
                         this.toastPopUp("success", "Escola Apagado!");
                         this.getEscolas();
@@ -197,18 +209,21 @@
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);
                 });
+                this.escolaAtual={};
             },
 
-            apagarTurma(turma_id) {
+            apagarTurma() {
                 this.dialog = false;
-                axios.delete('/api/escolas/turmas/' + turma_id)
+                axios.delete('/api/escolas/turmas/' + this.turmaAtual.id)
                     .then(response => {
                         this.toastPopUp("success", "Turma Apagado!");
                         this.getEscolas();
+                        this.escolaAtual = {};
                     }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);
                 });
+                this.turmaAtual = {};
             },
         },
         computed: {
