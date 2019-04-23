@@ -170,7 +170,7 @@ class UserControllerAPI extends Controller
             $user->email_verified_at = date("Y-m-d H:i:s");
             $user->remember_token = '';
 
-            if ($request->has('foto')) {
+            if ($request->has('foto') && $request->input('foto')!= "") {
                 $filename = str_random(16) . '.' . $request->foto->getClientOriginalExtension();;
                 Storage::disk('public')->putFileAs('profiles', $request->foto, $filename);
 

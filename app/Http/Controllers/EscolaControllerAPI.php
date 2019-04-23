@@ -76,4 +76,11 @@ class EscolaControllerAPI extends Controller
         return response()->json(null, 201);
     }
 
+    public function destroyTurma($id)
+    {
+        $turma = Turma::findOrFail($id);
+        $turma->delete();
+        return response()->json(null, 201);
+    }
+
 }

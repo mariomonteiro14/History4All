@@ -68,7 +68,7 @@
                                             <v-icon small>edit</v-icon>
 
                                         </v-btn>
-                                        <v-btn color="error" @click.stop="apagarVerificacao(props.item.id)">
+                                        <v-btn color="error" @click.stop="apagarTurma(props.item.id)">
                                             Apagar
                                             <v-icon small>delete_forever</v-icon>
                                         </v-btn>
@@ -90,7 +90,7 @@
                     <v-btn color="red darken-1" flat="flat" @click="dialog = false">
                         Não
                     </v-btn>
-                    <v-btn color="green darken-1" flat="flat" @click="apagar()">Sim</v-btn>
+                    <v-btn color="green darken-1" flat="flat" @click="apagarEscola()">Sim</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -153,10 +153,11 @@
             }
         },
         methods: {
-            getEscolas(url = 'api/escolas') {
+            getEscolas(url = '/api/escolas') {
                 axios.get(url)
                     .then(response => {
                         this.escolas = response.data.data;
+                        console.log(this.escolas);
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -186,11 +187,23 @@
                 this.escolaAApagar = id;
             },
 
-            apagar() {
+            apagarEscola() {
                 this.dialog = false;
-                axios.delete('api/escolas/' + this.escolaAApagar)
+                axios.delete('/api/escolas/' + this.escolaAApagar)
                     .then(response => {
                         this.toastPopUp("success", "Escola Apagado!");
+                        this.getEscolas();
+                    }).catch(function (error) {
+                    this.toastPopUp("error", "`${error.response.data.message}`");
+                    console.log(error);
+                });
+            },
+
+            apagarTurma(turma_id) {
+                this.dialog = false;
+                axios.delete('/api/escolas/turmas/' + turma_id)
+                    .then(response => {
+                        this.toastPopUp("success", "Turma Apagado!");
                         this.getEscolas();
                     }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");

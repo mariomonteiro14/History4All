@@ -95,7 +95,7 @@
                 this.turma.ciclo = "";
                 this.turma.professor = undefined;
             },
-            getProfessores(url = 'api/users/professores'){
+            getProfessores(url = '/api/users/professores'){
                 axios.get(url)
                     .then(response => {
                         this.professores = response.data.data;
