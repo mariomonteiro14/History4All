@@ -38,7 +38,7 @@
                             <v-text-field id="inputPassword"
                                           v-model="user.password"
                                           label="Nova Password"
-                                          :rules="[() => !(user.password.length > 0 && user.password.length < 4) || 'minimo 4 caracteres']"
+                                          :rules="[() => !(user.password && user.password.length >= 4) || 'minimo 4 caracteres']"
                                           :type="'password'"
                                           required
                             ></v-text-field>

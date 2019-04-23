@@ -76,8 +76,8 @@
                                             <v-layout fill-height>
                                                 <v-flex xs12 align-end flexbox>
                                                     <span style="text-shadow: 2px 2px #000000">{{atividade.tipo}}</span><br>
-                                                    <span style="text-shadow: 2px 2px #000000">{{(ciclosFormatados[index])}}</span><br>
-                                                    <span style="text-shadow: 2px 2px #000000">{{(epocasFormatadas[index])}}</span><br>
+                                                    <span style="text-shadow: 2px 2px #000000">{{atividade.ciclosFormatados}}</span><br>
+                                                    <span style="text-shadow: 2px 2px #000000">{{atividade.epocasFormatadas}}</span><br>
                                                 </v-flex>
                                             </v-layout>
                                         </v-container>
@@ -145,6 +145,8 @@
                 axios.get(url)
                     .then(response => {
                         this.atividades = response.data.data;
+                        this.ciclosFormatados();
+                        this.epocasFormatadas();
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -152,23 +154,9 @@
             },
             showAtividade(atividade) {
                 this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
-            }
-        },
-        computed: {
-            filteredAtividades() {
-                let atividadesFiltradas = this.atividades.filter((i) => {
-                    return (this.tipoSelected === 'Todos' || i.tipo === this.tipoSelected)
-                        && (this.epocaSelected === 'Todas' || i.epoca.includes(this.epocaSelected)
-                            || i.patrimonios.length === 0)//TODO temporáriamente para aceitar atividades sem patrimonios
-                        && (this.cicloSelected.length === 0 || this.cicloSelected.some(ciclo => i.ciclo.includes(ciclo))
-                            || i.patrimonios.length === 0)//TODO temporáriamente para aceitar atividades sem patrimonios
-                        && (this.search === "" || i.descricao.includes(this.search));
-                });
-                this.atividadesFiltradasLength = atividadesFiltradas.length;
-                return atividadesFiltradas.slice(0, this.limite);
             },
-            ciclosFormatados: function () {
-                return this.filteredAtividades.map(function (atividade) {
+            ciclosFormatados() {
+                let todosCiclosFormatados = this.atividades.map(function (atividade) {
                     let ciclos = atividade.ciclo;
                     let str = 'ciclos: ';
                     ciclos.sort();
@@ -184,9 +172,15 @@
                     });
                     return str;
                 });
+                Promise.all(todosCiclosFormatados).then(() => {
+                    this.atividades.forEach(function (atividade, index) {
+                        atividade.ciclosFormatados = todosCiclosFormatados[index];
+                    });
+                    this.atividades.splice(this.atividades.length - 1);//atualiza na vista
+                });
             },
-            epocasFormatadas: function () {
-                return this.filteredAtividades.map(function (atividade) {
+            epocasFormatadas() {
+                let todasEpocasFormatadas = this.atividades.map(function (atividade) {
                     let epocas = atividade.epoca;
                     let str = 'epocas: ';
                     epocas.sort();
@@ -198,7 +192,27 @@
                     });
                     return str;
                 });
+                Promise.all(todasEpocasFormatadas).then(() => {
+                    this.atividades.forEach(function (atividade, index) {
+                        atividade.epocasFormatadas = todasEpocasFormatadas[index];
+                    });
+                    this.atividades.splice(this.atividades.length - 1);//atualiza na vista
+                });
             }
+        },
+        computed: {
+            filteredAtividades() {
+                let atividadesFiltradas = this.atividades.filter((i) => {
+                    return (this.tipoSelected === 'Todos' || i.tipo === this.tipoSelected)
+                        && (this.epocaSelected === 'Todas' || i.epoca.includes(this.epocaSelected))
+                        && (this.cicloSelected.length === 0 || this.cicloSelected.length === 4 ||
+                            this.cicloSelected.some(ciclo => i.ciclo.includes(ciclo)))
+                        && (this.search === "" || i.descricao.includes(this.search));
+                });
+                this.atividadesFiltradasLength = atividadesFiltradas.length;
+                atividadesFiltradas = atividadesFiltradas.slice(0, this.limite);
+                return atividadesFiltradas;
+            },
         }
     }
 </script>

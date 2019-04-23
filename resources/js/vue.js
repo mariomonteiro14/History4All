@@ -62,7 +62,13 @@ router.beforeEach((to, from, next) => {
         }
     }
     if(to.name == 'atividades'){
-        if(!user || user.tipo === "admin"){
+        if(!user || user.tipo == "admin"){//professor e aluno
+            next("/");
+            return;
+        }
+    }
+    if(to.name == 'index'){
+        if(!user){
             next("/");
             return;
         }
@@ -105,7 +111,6 @@ var common = {
     },
     computed:{
         getAuthUser: function(){
-            console.log(this.$store.state.user);
             return this.$store.state.user;
         },
     },
