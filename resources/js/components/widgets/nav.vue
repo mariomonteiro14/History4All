@@ -130,7 +130,7 @@
             },
             logout() {
                 this.logging();
-                axios.get('api/logout').then(response => {
+                axios.get('/api/logout').then(response => {
                     this.logging();
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("success", "Logged out");

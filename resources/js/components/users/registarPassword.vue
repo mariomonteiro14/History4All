@@ -8,7 +8,7 @@
                         <div class="col-md-6 mx-auto">
                             <div class="card rounded-0">
                                 <div class="card-header">
-                                    <h3 class="mb-0">Deninir Password</h3>
+                                    <h3 class="mb-0">Definir Password</h3>
                                 </div>
                                 <div class="card-body">
                                     <form class="form" role="form" autocomplete="off" id="formLogin" novalidate="" method="POST">
@@ -54,7 +54,7 @@
         },
         methods: {
             getUser: function () {
-                axios.get("api/users/token/" + this.token).then(response => {
+                axios.get("/api/users/token/" + this.token).then(response => {
                     if (response.data === ""){//token inválido
                         this.$router.push('/');
                     }
@@ -68,7 +68,7 @@
                     const config = {
                         headers: {'content-type': 'multipart/form-data'}
                     };
-                    axios.post('api/register/activate/' + this.user.id, this.formCreate(), config).then(response => {
+                    axios.post('/api/register/activate/' + this.user.id, this.formCreate(), config).then(response => {
                         this.toastPopUp('success','Conta Ativada');
                         this.$router.push('/');
                     }).catch(error => {

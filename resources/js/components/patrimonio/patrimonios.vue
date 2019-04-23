@@ -117,7 +117,7 @@
             }
         },
         methods: {
-            getPatrimonios(url = 'api/patrimonios') {
+            getPatrimonios(url = '/api/patrimonios') {
 
                 axios.get(url)
                     .then(response => {

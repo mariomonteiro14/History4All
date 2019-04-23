@@ -44,13 +44,24 @@ const routes = [
 ];
 
 const router = new VueRouter({
+    mode: 'history',
     routes:routes
 });
 
 router.beforeEach((to, from, next) => {
+    if(!store.state.user){
+        store.commit('loadTokenAndUserFromSession');
+    }
     let user = store.state.user;
-    if((to.name == 'dashboard') || (to.name == 'gerirPatrimonios') || (to.name == 'editarPatrimonio') || (to.name == 'criarPatrimonio')){
+    if((to.name == 'dashboard') || (to.name == 'gerirPatrimonios') || (to.name == 'editarPatrimonio') ||
+        (to.name == 'gerirEscolas') || (to.name == 'gestor_users') || (to.name == 'criarPatrimonio')){
         if(!user || user.tipo !== "admin"){
+            next("/");
+            return;
+        }
+    }
+    if(to.name == 'atividades'){
+        if(!user || user.tipo === "admin"){
             next("/");
             return;
         }
@@ -85,10 +96,10 @@ var common = {
             }
         },
         getUserPhoto(url){
-            return "storage/profiles/" + url;
+            return "/storage/profiles/" + url;
         },
         getPatrimonioPhoto(url){
-            return "storage/patrimonios/" + url;
+            return "/storage/patrimonios/" + url;
         },
     },
     computed:{

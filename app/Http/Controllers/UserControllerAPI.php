@@ -142,16 +142,11 @@ class UserControllerAPI extends Controller
 
 
         //enviar email
-        Mail::to($user->email)->send(new SendMailable($user->name, 'api/users/registarPassword/' . $user->getRememberToken()));
+        Mail::to($user->email)->send(new SendMailable('/users/registarPassword/' . $user->getRememberToken()));
         $user->save();
         return response()->json([
             'message' => 'Successfully created user!'
         ], 201);
-    }
-
-    public function irParaRegistarPassword(Request $request, $token)
-    {
-        return redirect()->away(URL::to('/') . '/#/users/registarPassword/' . $token);
     }
 
     public function getUserByToken(Request $request, $token)

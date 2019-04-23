@@ -14,7 +14,10 @@
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-Route::get('/', 'VueController@index');
+Route::get('/{vue_capture?}', function () {
+    return view('vue.main');
+})->where('vue_capture', '[\/\w\.-]*');
+//Route::get('/', 'VueController@index');
 
 Auth::routes();
 

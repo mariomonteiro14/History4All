@@ -49,9 +49,9 @@
         methods: {
             login() {
                 this.$emit("logging");
-                axios.post('api/login', this.user).then(response => {
+                axios.post('/api/login', this.user).then(response => {
                     this.$store.commit('setToken',response.data.access_token);
-                    return axios.get('api/users/me');
+                    return axios.get('/api/users/me');
                 }).then(response => {
                     this.$emit("logging");
                     this.$store.commit('setUser',response.data.data);
