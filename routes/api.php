@@ -12,7 +12,6 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('users/registarPassword/{token}','UserControllerAPI@irParaRegistarPassword');
 Route::get('users/token/{token}','UserControllerAPI@getUserByToken');
 Route::get('patrimonios', 'PatrimonioControllerAPI@patrimoniosDataTable');
 Route::get('patrimonios/{id}', 'PatrimonioControllerAPI@find');

@@ -8,7 +8,7 @@
                         <div class="col-md-6 mx-auto">
                             <div class="card rounded-0">
                                 <div class="card-header">
-                                    <h3 class="mb-0">Deninir Password</h3>
+                                    <h3 class="mb-0">Definir Password</h3>
                                 </div>
                                 <div class="card-body">
                                     <form class="form" role="form" autocomplete="off" id="formLogin" novalidate="" method="POST">
