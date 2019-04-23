@@ -74,7 +74,7 @@
                 </div>
             </div>
         </div>
-        <edit-profile></edit-profile>
+        <edit-profile @reloadUser="profileUser = $store.state.user"></edit-profile>
     </div>
 </template>
 <script type="text/javascript">

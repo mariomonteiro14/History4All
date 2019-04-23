@@ -93,6 +93,7 @@
                 axios.post('/api/users/me', this.formCreate(), config).then(response => {
                     this.toastPopUp("success", "Informação Atualizada!");
                     this.$store.commit('setUser',response.data.data);
+                    this.$emit('reloadUser');
                     $('#editProfileModal').modal('hide');
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
