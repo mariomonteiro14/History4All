@@ -10,16 +10,14 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class SendMailable extends Mailable
 {
     use Queueable, SerializesModels;
-    public $nome;
     public $link;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($nome, $link)
+    public function __construct($link)
     {
-        $this->nome = $nome;
         $this->link = $link;
     }
 

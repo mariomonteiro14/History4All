@@ -205,7 +205,7 @@
             }
         },
         methods: {
-            getUsers(url = 'api/users') {
+            getUsers(url = '/api/users') {
 
                 axios.get(url)
                     .then(response => {
@@ -217,7 +217,7 @@
                     });
             },
 
-            getUsersTrashed(url = 'api/usersTrashed') {
+            getUsersTrashed(url = '/api/usersTrashed') {
                 axios.get(url)
                     .then(response => {
                         if (!response.data.data.length) {
@@ -260,7 +260,7 @@
             },
             apagar() {
                 this.dialog = false;
-                axios.delete('api/users/' + this.userAApagar)
+                axios.delete('/api/users/' + this.userAApagar)
                     .then(response => {
                         this.toastPopUp("success", "Utilizador Apagado!");
                         if (this.trashed == true) {
@@ -274,7 +274,7 @@
                 });
             },
             saveEdit() {
-                axios.post('api/users/' + this.userAtual.id, this.userAtual)
+                axios.post('/api/users/' + this.userAtual.id, this.userAtual)
                     .then(response => {
                         this.toastPopUp("success", "Utilizador Atualizado");
                         this.getUsers();
@@ -285,7 +285,7 @@
                 });
             },
             restaurarUser($user) {
-                axios.put('api/users/restaurar/' + $user.id).then(res => {
+                axios.put('/api/users/restaurar/' + $user.id).then(res => {
                     this.toastPopUp("success", "Uilizador restaurado");
                     this.getUsersTrashed();
                 }).catch(function (error) {
@@ -306,7 +306,7 @@
             },
 
             getEscolas: function () {
-                axios.get("api/escolas").then(response => {
+                axios.get("/api/escolas").then(response => {
                     this.escolas = response.data.data;
                 }).catch(errors => {
                     console.log(errors);

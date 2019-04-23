@@ -3,7 +3,7 @@
         <v-app id="inspire">
             <br><br><br><br><br>
             <patrimonio-add-edit :patrimonio="patrimonio_atual" v-on:getPat="getPatrimonios()"></patrimonio-add-edit>
-            <h3> <a href="#/patrimonios">Patrimónios </a>/ Gerir</h3>
+            <h3> <a href="/patrimonios">Patrimónios </a>/ Gerir</h3>
             <br>
             <v-card append float>
                 <v-container fluid grid-list-xl>
@@ -139,7 +139,7 @@
                 $('#addPatrimonioModal').modal('show');
 
             },
-            getPatrimonios(url = 'api/patrimonios') {
+            getPatrimonios(url = '/api/patrimonios') {
                 axios.get(url)
                     .then(response => {
                         this.patrimonios = response.data.data;
@@ -158,7 +158,7 @@
             },
             apagar() {
                 this.dialog = false;
-                axios.delete('api/patrimonios/' + this.patrimonioAApagar)
+                axios.delete('/api/patrimonios/' + this.patrimonioAApagar)
                     .then(response => {
                         this.toastPopUp("success", "Património Apagado!");
                         this.getPatrimonios();

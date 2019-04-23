@@ -5,5 +5,5 @@
     <router-view></router-view>
 @endsection
 @section('pagescript')
-    <script src="js/vue.js"></script>
+    <script src="/js/vue.js"></script>
 @stop

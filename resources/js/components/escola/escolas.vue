@@ -131,7 +131,7 @@
             }
         },
         methods: {
-            getEscolas(url = 'api/escolas') {
+            getEscolas(url = '/api/escolas') {
                 axios.get(url)
                     .then(response => {
                         this.escolas = response.data.data;
@@ -157,7 +157,7 @@
 
             apagar(escola) {
                 this.dialog = false;
-                axios.delete('api/escolas/' + escola.id)
+                axios.delete('/api/escolas/' + escola.id)
                     .then(response => {
                         this.toastPopUp("success", "Escola Apagado!");
                         this.getPatrimonios();

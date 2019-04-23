@@ -129,7 +129,7 @@
                 this.user.turma = {};
             },
             getEscolas: function () {
-                axios.get("api/escolas").then(response => {
+                axios.get("/api/escolas").then(response => {
                     this.escolas = response.data.data;
                 }).catch(errors => {
                     console.log(errors);
