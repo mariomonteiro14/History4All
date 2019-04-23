@@ -46,7 +46,6 @@ class UserControllerAPI extends Controller
         ]);
     }
 
-
     public function alunos(Request $request)
     {
         $users = UserResource::collection(User::where('tipo', 'aluno')->get());
@@ -67,6 +66,35 @@ class UserControllerAPI extends Controller
     public function myProfile(Request $request)
     {
         return new UserResource($request->user());
+    }
+
+    public function editProfile(Request $request){
+        $user = User::findOrFail(Auth::id());
+
+        if ($request->has('newEmail') && $request->input('newEmail') != "") {
+            $user->email = $request->newEmail;
+        }
+
+        if ($request->has('newPassword') && $request->input('newPassword') != "") {
+            $user->password = bcrypt($request->newPassword);
+        }
+
+        if ($request->has('newFoto')) {
+            //Delete old photo
+            Storage::disk('public')->delete('profiles/'.$user->foto);
+
+            //Store new photo
+            $filename = str_random(16) . '.' . $request->newFoto->getClientOriginalExtension();;
+            Storage::disk('public')->putFileAs('profiles', $request->newFoto, $filename);
+            $user->foto = $filename;
+        }
+
+        $user->save();
+
+        return response()->json([
+            'data' => $user
+        ], 201);
+
     }
 
     public function login(Request $request)
@@ -304,7 +332,6 @@ class UserControllerAPI extends Controller
             ], 400);
         }*/
     }
-
 
     public function destroy($id)
     {

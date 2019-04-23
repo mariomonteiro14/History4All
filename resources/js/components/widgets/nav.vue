@@ -26,7 +26,22 @@
         </v-text-field>
         <v-spacer></v-spacer>
                 <v-toolbar-items v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin'">
-                    <v-btn flat to="/admin">Dashboard</v-btn>
+                    <v-menu open-on-hover left origin="center left" top offset-y>
+                        <template v-slot:activator="{ on }">
+                            <v-btn to="/admin" flat v-on="on">Dashboard</v-btn>
+                        </template>
+                        <v-list>
+                            <v-list-tile to="/admin/patrimonios">
+                                <v-list-tile-title> <i class="material-icons sm1">build</i> Gerir Patrimónios </v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile to="/admin/users">
+                                <v-list-tile-title> <i class="material-icons vsm-icon">group</i> Gerir Utilizadores </v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile to="/admin/escolas">
+                                <v-list-tile-title> <i class="material-icons">home</i> Gerir Escolas / Turmas </v-list-tile-title>
+                            </v-list-tile>
+                        </v-list>
+                    </v-menu>
                 </v-toolbar-items>
         <v-toolbar-items v-if="!this.$store.state.user">
 
@@ -46,6 +61,7 @@
                 </v-badge>
             </v-btn>
         </v-menu>
+           <!--AVATAR-->
         <v-menu offset-y origin="center center" :nudge-bottom="10" transition="scale-transition">
             <v-btn icon large flat slot="activator">
                 <v-avatar size="30px" class="bg-success">
@@ -54,7 +70,7 @@
                 </v-avatar>
             </v-btn>
             <v-list class="pa-0" absolute>
-                <v-list-tile ripple="ripple" rel="noopener" @click="">
+                <v-list-tile ripple="ripple" rel="noopener" to="/me/perfil">
                     <v-list-tile-action >
                         <v-icon>account_circle</v-icon>
                     </v-list-tile-action>

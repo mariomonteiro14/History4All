@@ -108,7 +108,7 @@ class CreateUsersPatrimoniosTable extends Migration
 
         Schema::table('turmas', function (Blueprint $table) {
            // $table->bigInteger('professor_id')->unsigned();
-            $table->foreign('professor_id')->references('id')->on('users');
+            $table->foreign('professor_id')->references('id')->on('users')->onDelete('set null');
         });
     }
 
