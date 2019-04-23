@@ -48,7 +48,7 @@
                     </template>
                     <template v-slot:expand="props" class="alert-success">
                         <v-data-table :headers="headersTurma" :items="escolaAtual.turmas" class="alert-success elevation-1"
-                                      hide-actions>
+                                      hide-actions dark>
                             <template v-slot:items="props">
                                 <tr class="alert-primary">
                                     <td class="text-xs-left">{{props.item.nome}}</td>

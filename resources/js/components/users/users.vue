@@ -37,7 +37,7 @@
                 </v-card-title>
             </v-card>
             <v-data-table :headers="headers" :items="filteredUsers" :search="search" class="elevation-1"
-                          :pagination.sync="pagination">
+                          :pagination.sync="pagination" :expand="expand">
 
                 <template v-slot:items="props">
                     <tr v-bind:class="colorUserType(props.item.tipo)">
@@ -49,7 +49,13 @@
                         <td class="text-xs-left">{{ props.item.nome }}</td>
                         <td class="text-xs-left">{{ props.item.email }}</td>
                         <td class="text-xs-center">{{ props.item.tipo }}</td>
+                        <td class="text-sm-right">
+                            <v-btn  @click="props.expanded = !props.expanded" icon>
+                                <v-icon color="brown darken-1" medium>info</v-icon>
+                            </v-btn>
+                        </td>
                         <td class="text-xs-center" v-if="!trashed && $store.state.user.id != props.item.id ">
+
                             <v-btn v-if="props.item.tipo!='admin'" color="warning" @click="showEdit(props.item)">
                                 Editar
                                 <v-icon small class="mr-2">edit</v-icon>
@@ -58,6 +64,7 @@
                                 Apagar
                                 <v-icon small>delete_forever</v-icon>
                             </v-btn>
+
                         </td>
                         <td v-if="$store.state.user.id == props.item.id"></td>
                         <td class="text-xs-center" v-if="trashed">
@@ -71,8 +78,13 @@
                             </v-btn>
                         </td>
 
-
                     </tr>
+                </template>
+                <template v-slot:expand="props">
+                    <v-card flat v-bind:class="colorUserType">
+                        <v-card-text class="brown lighten-3">{{getDetail(props.item)}}
+                        </v-card-text>
+                    </v-card>
                 </template>
             </v-data-table>
         </v-app>
@@ -106,7 +118,6 @@
                         <div class="container box">
                             <div class="form-group" v-if="userAtual.tipo != 'admin'">
                                 <v-select
-                                    fixed
                                     label="Escola"
                                     v-model="userAtual.escola"
                                     :items="escolas"
@@ -118,7 +129,6 @@
                             </div>
                             <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola">
                                 <v-select
-                                    fixed
                                     label="Turma"
                                     v-model="userAtual.turma"
                                     :items="turmas"
@@ -132,7 +142,8 @@
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-info" v-on:click.prevent="saveEdit"
-                                :disabled="!userAtual.escola  || (userAtual.tipo=='aluno' && !userAtual.turma)">Guardar</button>
+                                :disabled="!userAtual.escola  || (userAtual.tipo=='aluno' && !userAtual.turma)">Guardar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -176,9 +187,11 @@
                     {text: 'Nome', value: 'nome'},
                     {text: 'Email', value: 'email'},
                     {text: 'Tipo', value: 'tipo', align: 'center'},
+                    {text: '', value: 'info', align: 'right', sortable: false},
                     {text: 'Actions', value: '', sortable: false, align: 'center'},
                 ],
                 search: '',
+                expand: false,
                 tipoUser: 'Todos',
                 usersTipo: ['Todos', 'admin', 'professor', 'aluno'],
                 users: [],
@@ -186,6 +199,7 @@
                 dialog: false,
                 trashed: false,
                 userAtual: {},
+                userDetail: {},
                 escolas: [],
 
             }
@@ -220,10 +234,22 @@
                     });
             },
 
-            showEdit($user) {
-                this.userAtual = Object.assign({}, $user);
-                this.userAtual.escola = this.userAtual.escola[0];
+            getDetail(user) {
+                if (user.tipo == "admin") {
+                    return "Administrador do History4All"
+                }
+                if (user.tipo == "professor") {
+                    return "Professor da " + user.escola[0];
+                }
+                if (user.tipo == "aluno") {
+                    return "Aluno da " + user.escola[0] + ", turma " + user.turma[0];
+                }
+            },
+
+            showEdit(user) {
+                this.userAtual = Object.assign({}, user);
                 this.userAtual.turma = this.userAtual.turma[0];
+                this.userAtual.escola = this.userAtual.escola[0];
                 console.log(this.userAtual);
                 $('#editUserModal').modal('show');
 
@@ -302,8 +328,8 @@
             },
         },
 
-        watch:{
-            'userAtual.escola' : function (newVal, oldVal){
+        watch: {
+            'userAtual.escola': function (newVal, oldVal) {
                 this.userAtual.escola = newVal;
                 this.userAtual.turma = undefined;
             }

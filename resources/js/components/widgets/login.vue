@@ -55,7 +55,7 @@
                 }).then(response => {
                     this.$emit("logging");
                     this.$store.commit('setUser',response.data.data);
-                    this.toastPopUp("success", `Welcome ${this.$store.state.user.name}`);
+                    this.toastPopUp("success", `Bem Vindo ${this.$store.state.user.nome}`);
                     $('#loginModal').modal('hide');
                 }).catch(error => {
                     this.$emit("logging");
