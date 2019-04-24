@@ -7,7 +7,9 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="profile-img">
-                        <img v-if="profileUser.foto != null" v-bind:src="getUserPhoto(profileUser.foto)" alt=""/>
+                        <v-avatar size="150px">
+                            <img v-if="profileUser.foto != null" v-bind:src="getUserPhoto(profileUser.foto)" alt=""/>
+                        </v-avatar>
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -20,13 +22,16 @@
                         </h6>
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item">
-                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Sobre</a>
+                                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                                   aria-controls="home" aria-selected="true">Sobre</a>
                             </li>
                         </ul>
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <button class="profile-edit-btn" name="btnAddMore" href="#editProfileModal" data-toggle="modal" data-target="#editProfileModal">Editar Perfil</button>
+                    <button class="profile-edit-btn" name="btnAddMore" href="#editProfileModal" data-toggle="modal"
+                            data-target="#editProfileModal">Editar Perfil
+                    </button>
                 </div>
             </div>
             <div class="row">
@@ -79,6 +84,7 @@
 </template>
 <script type="text/javascript">
     import editProfile from './editPerfil.vue';
+
     export default {
         components: {
             'edit-profile': editProfile,

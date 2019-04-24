@@ -8,6 +8,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\Escola as EscolaResource;
 use App\Http\Resources\Turma as TurmaResource;
+use Illuminate\Support\Facades\Auth;
 
 class EscolaControllerAPI extends Controller
 {
@@ -16,6 +17,20 @@ class EscolaControllerAPI extends Controller
         $escolas = EscolaResource::collection(Escola::all());
         return response()->json([
             'data' => $escolas,
+        ]);
+    }
+    public function escolaTurmas($id, Request $request){
+
+        return response()->json([
+            'data' => TurmaResource::collection(Turma::where('escola_id', $id)->get()),
+        ]);
+    }
+
+    public function myEscola(Request $request){
+
+        $escola = Escola::findOrFail(Auth::user()->escola_id);
+        return response()->json([
+            'data' => new EscolaResource($escola),
         ]);
     }
 

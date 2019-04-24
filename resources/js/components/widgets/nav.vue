@@ -25,12 +25,13 @@
         >
         </v-text-field>
         <v-spacer></v-spacer>
-                <v-toolbar-items v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin'">
-                    <v-menu open-on-hover bottom origin="center left" offset-y>
+                <v-toolbar-items v-if="this.$store.state.user">
+                    <v-menu open-on-hover bottom left origin="center left" top offset-y>
                         <template v-slot:activator="{ on }">
-                            <v-btn to="/admin" flat v-on="on">Dashboard</v-btn>
+                            <v-btn flat v-on="on">Dashboard</v-btn>
                         </template>
-                        <v-list>
+                        <!-- DASHBOARD ADMIN-->
+                        <v-list v-if="$store.state.user.tipo == 'admin'">
                             <v-list-tile to="/admin/patrimonios">
                                 <v-list-tile-title> <i class="material-icons sm1">build</i> Gerir Patrimónios </v-list-tile-title>
                             </v-list-tile>
@@ -38,9 +39,19 @@
                                 <v-list-tile-title> <i class="material-icons vsm-icon">group</i> Gerir Utilizadores </v-list-tile-title>
                             </v-list-tile>
                             <v-list-tile to="/admin/escolas">
-                                <v-list-tile-title> <i class="material-icons">home</i> Gerir Escolas / Turmas </v-list-tile-title>
+                                <v-list-tile-title> <i class="material-icons">home</i> Gerir Escolas | Turmas </v-list-tile-title>
                             </v-list-tile>
                         </v-list>
+                        <!-- DASHBOARD PROFESSOR-->
+                        <v-list v-if="$store.state.user.tipo == 'professor'">
+                            <v-list-tile to="/atividades">
+                                <v-list-tile-title> <i class="material-icons sm1">build</i>Minhas Atividades </v-list-tile-title>
+                            </v-list-tile>
+                            <v-list-tile to="/escola/turmas">
+                                <v-list-tile-title> <i class="material-icons vsm-icon">group</i>Minhas Turmas </v-list-tile-title>
+                            </v-list-tile>
+                        </v-list>
+
                     </v-menu>
                 </v-toolbar-items>
         <v-toolbar-items v-if="!this.$store.state.user">

@@ -29,6 +29,7 @@
                             :items="filteredProfessores"
                             item-text="nome"
                             class="input-group--focused"
+                            :disabled="this.$store.state.user.tipo != 'admin'"
                         ></v-select>
 
                         <v-select
@@ -43,8 +44,11 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button v-if="!turma.id" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Registar</button>
-                        <button v-else class="btn btn-info" v-on:click.prevent="edit" :disabled="hasErrors">Guardar</button>
+                        <button v-if="!turma.id" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">
+                            Registar
+                        </button>
+                        <button v-else class="btn btn-info" v-on:click.prevent="edit" :disabled="hasErrors">Guardar
+                        </button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
 
@@ -60,6 +64,10 @@
         props: ['escola', 'turma'],
 
         created() {
+            if (this.$store.state.user.tipo == "professor") {
+                this.turma.professor = this.$store.state.user.name;
+                return;
+            }
             this.getProfessores();
         },
 
@@ -80,7 +88,7 @@
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
-            edit: function(){
+            edit: function () {
                 axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
                     this.toastPopUp("success", "Turma Atualizada!");
                     this.cleanForm();
@@ -102,7 +110,7 @@
                 this.turma.ciclo = "";
                 this.turma.professor = undefined;
             },
-            getProfessores(url = '/api/users/professores'){
+            getProfessores(url = '/api/users/professores') {
                 axios.get(url)
                     .then(response => {
                         this.professores = response.data.data;
@@ -121,15 +129,17 @@
                 return false;
             },
             filteredProfessores() {
-                return this.professores.filter((i) => {
-                    return i.escola[0] === this.escola.nome;
-                });
+                if (this.$store.state.user.tipo == "admin") {
+                    return this.professores.filter((i) => {
+                        return i.escola[0] === this.escola.nome;
+                    });
+                }
+                return [{nome: this.turma.professor}];
             },
-            getTitle(){
-                return !this.turma.id ? this.escola.nome + " - Criar Turma" : "Editar Turma " +this.turma.nome;
-            }
+            getTitle() {
+                return !this.turma.id ? this.escola.nome + " - Criar Turma" : "Editar Turma " + this.turma.nome;
+            },
+
         }
     }
-    ;
-
 </script>
