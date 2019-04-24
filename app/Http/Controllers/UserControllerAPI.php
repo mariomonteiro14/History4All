@@ -7,15 +7,11 @@ use App\Mail\SendMailable;
 use App\Notifications\RegistarPassword;
 use App\Turma;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Support\Jsonable;
 
 use App\Http\Resources\User as UserResource;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
@@ -212,38 +208,6 @@ class UserControllerAPI extends Controller
             ], 201);
         }
 
-    }
-
-    public function changePassword(Request $request)
-    {
-        if ($request->has('email') && $request->has('curPassword') && $request->has('newPassword')) {
-            $user = User::where('email', $request->input('email'))->first();
-
-            if ($user != null) {
-                if (Auth::id() != $user->id) {
-                    return response()->json('You dont have permissions', 500);
-                }
-                if (Hash::check($request->input('curPassword'), $user->password)) {
-                    $user->password = bcrypt($request->input('newPassword'));
-                    $user->save();
-                    return response()->json([
-                        'message' => 'Password successfully changed'
-                    ], 200);
-                } else {
-                    return response()->json([
-                        'message' => 'Current password incorrect'
-                    ], 400);
-                }
-            } else {
-                return response()->json([
-                    'message' => `User doesn't exist`
-                ], 400);
-            }
-        } else {
-            return response()->json([
-                'message' => 'Invalid request'
-            ], 400);
-        }
     }
 
     public function update($id, Request $request)
