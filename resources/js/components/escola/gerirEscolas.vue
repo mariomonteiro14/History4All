@@ -160,6 +160,9 @@
                 axios.get(url)
                     .then(response => {
                         this.escolas = response.data.data;
+                        if (this.escolaAtual.id){
+                            this.escolaAtual = this.escolas.find(e => e.id === this.escolaAtual.id);
+                        }
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -218,7 +221,6 @@
                     .then(response => {
                         this.toastPopUp("success", "Turma Apagado!");
                         this.getEscolas();
-                        this.escolaAtual = {};
                     }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);

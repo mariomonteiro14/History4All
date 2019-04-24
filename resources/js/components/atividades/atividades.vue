@@ -176,7 +176,7 @@
                     this.atividades.forEach(function (atividade, index) {
                         atividade.ciclosFormatados = todosCiclosFormatados[index];
                     });
-                    this.atividades.splice(this.atividades.length - 1);//atualiza na vista
+                    this.atividades.splice(this.atividades.length);//atualiza na vista
                 });
             },
             epocasFormatadas() {
@@ -196,7 +196,7 @@
                     this.atividades.forEach(function (atividade, index) {
                         atividade.epocasFormatadas = todasEpocasFormatadas[index];
                     });
-                    this.atividades.splice(this.atividades.length - 1);//atualiza na vista
+                    this.atividades.splice(this.atividades.length);//atualiza na vista
                 });
             }
         },

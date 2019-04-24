@@ -26,7 +26,7 @@
         </v-text-field>
         <v-spacer></v-spacer>
                 <v-toolbar-items v-if="this.$store.state.user">
-                    <v-menu open-on-hover left origin="center left" top offset-y>
+                    <v-menu open-on-hover bottom left origin="center left" top offset-y>
                         <template v-slot:activator="{ on }">
                             <v-btn flat v-on="on">Dashboard</v-btn>
                         </template>
