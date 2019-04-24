@@ -30,7 +30,7 @@ Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //ht
 
 const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},
-    { path: '/me/perfil', name: 'index',component: require('./components/users/perfil.vue').default},
+    { path: '/me/perfil', name: 'perfil',component: require('./components/users/perfil.vue').default},
     { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonio/patrimonios.vue').default},
     { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/patrimonio/showPatrimonio.vue').default, props: true},
     { path: '/admin', name: 'dashboard',component: require('./components/dashboard.vue').default},
@@ -67,7 +67,7 @@ router.beforeEach((to, from, next) => {
             return;
         }
     }
-    if(to.name == 'index'){
+    if(to.name == 'perfil'){
         if(!user){
             next("/");
             return;

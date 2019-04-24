@@ -16,6 +16,7 @@ class AtividadePatrimonios extends Model
      * @var array
      */
 
+    public $timestamps = false;
     protected $fillable = [
         'atividade_id', 'patrimonio_id'
     ];

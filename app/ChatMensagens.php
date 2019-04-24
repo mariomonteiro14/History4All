@@ -16,6 +16,7 @@ class ChatMensagens extends Model
      * @var array
      */
 
+    public $timestamps = false;
     protected $fillable = [
         'chat_id', 'user_id', 'mensagem'
     ];

@@ -16,6 +16,7 @@ class AtividadeParticipantes extends Model
      * @var array
      */
 
+    public $timestamps = false;
     protected $fillable = [
         'atividade_id', 'user_id', 'estado'
     ];

@@ -16,6 +16,7 @@ class Atividade extends Model
      * @var array
      */
 
+    public $timestamps = false;
     protected $dates = ['data'];
     protected $fillable = [
         'nome', 'tipo', 'descricao', 'privado', 'coordenador', 'chat_id', 'data'

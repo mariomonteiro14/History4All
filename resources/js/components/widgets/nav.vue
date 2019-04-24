@@ -161,7 +161,6 @@
             },
             logging(){
                 this.isLoading = !this.isLoading;
-                console.log(this.isLoading);
             }
         }
     };

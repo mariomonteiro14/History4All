@@ -16,6 +16,7 @@ class Chat extends Model
      * @var array
      */
 
+    public $timestamps = false;
     protected $fillable = [
         'id', 'atividade_id', 'privado', 'assunto'
     ];
