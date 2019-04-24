@@ -136,12 +136,12 @@
                         url = '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
                         break;
                     default:
-                        url = '/api/atividades';
+                        url = '/api/users/' + this.$store.state.user.id + '/atividades';
                 }
                 this.getAtividades(url);
                 this.limite = 4;
             },
-            getAtividades(url = '/api/atividades') {
+            getAtividades(url = '/api/users/' + this.$store.state.user.id + '/atividades') {
                 axios.get(url)
                     .then(response => {
                         this.atividades = response.data.data;

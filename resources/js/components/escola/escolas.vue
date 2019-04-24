@@ -221,6 +221,9 @@
                     .then(response => {
                         this.toastPopUp("success", "Turma Apagado!");
                         this.getEscolas();
+                        if (this.escolaAtual.turmas.length === 1) {
+                            this.escolaAtual = {};
+                        }
                     }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);

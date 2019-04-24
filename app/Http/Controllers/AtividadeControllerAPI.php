@@ -9,10 +9,12 @@ use Illuminate\Http\Request;
 
 class AtividadeControllerAPI extends Controller
 {
-    public function getTodas(Request $request)
+    public function getTodas(Request $request, $id)
     {
+        $collection = (Atividade::where('privado', '0')->get());
+        $participantes = (Atividade::join('atividade_participantes', 'atividade_id', 'id')->where('user_id', $id)->get());
         return response()->json([
-            'data' => AtividadeResource::collection(Atividade::where('privado', '0')->get())
+                'data' => AtividadeResource::collection($collection->diff($participantes))
         ]);
     }
 
@@ -27,8 +29,8 @@ class AtividadeControllerAPI extends Controller
     public function getConcluidas(Request $request, $id)
     {
         return response()->json([
-            'data' => AtividadeResource::collection(AtividadeParticipantes::where('user_id', $id)
-                ->where('estado', 'concluida')->get())
+            'data' => AtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
+                ->where('user_id', $id)->where('estado', 'concluida')->get())
         ]);
     }
 
