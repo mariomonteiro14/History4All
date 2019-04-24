@@ -2,15 +2,29 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <h3>Atividades / Pesquisa / {{tipoDePesquisa}}</h3>
+            <h3>Atividades / Pesquisa / {{tipoDePesquisaSelected}}
+                <span v-if="tipoDePesquisaSelected === 'Minhas atividades'">
+                    / {{minhasAtividadesSelected}}
+                </span>
+            </h3>
             <br>
-
             <v-card append float>
                 <v-container fluid grid-list-xl>
-                    <v-layout row align-center>
-                        <v-btn color="info" @click="setTipoDePesquisa('Todas')">Todas</v-btn>
-                        <v-btn color="success" @click="setTipoDePesquisa('Pendentes')">Pendentes</v-btn>
-                        <v-btn color="warning" @click="setTipoDePesquisa('Concluidas')">Concluídas</v-btn>
+                    <v-layout wrap align-center>
+                        <v-flex xs12 sm3 d-flex>
+                            <v-select
+                                    :items="tiposDePesquisa"
+                                    v-model="tipoDePesquisaSelected"
+                            ></v-select>
+                        </v-flex>
+                        <v-flex xs3 d-flex v-if="tipoDePesquisaSelected === 'Minhas atividades'">
+                            <v-select
+                                    v-model="minhasAtividadesSelected"
+                                    :items="minhasAtividades"
+                                    label="Filtrar pelo progresso"
+                                    class="input-group--focused"
+                            ></v-select>
+                        </v-flex>
                     </v-layout>
                 </v-container>
             </v-card>
@@ -121,26 +135,13 @@
                 atividades: [],
                 atividadesFiltradasLength: null,
                 limite: 4,
-                tipoDePesquisa: 'Todas'
+                tiposDePesquisa: ['Todas', 'Minhas atividades'],
+                tipoDePesquisaSelected: 'Todas',
+                minhasAtividades: ['Todas', 'Pendentes', 'Concluídas'],
+                minhasAtividadesSelected: 'Todas'
             }
         },
         methods: {
-            setTipoDePesquisa(tipo) {
-                this.tipoDePesquisa = tipo;
-                let url = '';
-                switch (tipo) {
-                    case 'Pendentes':
-                        url = '/api/users/' + this.$store.state.user.id + '/atividades/pendentes';
-                        break;
-                    case 'Concluidas':
-                        url = '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
-                        break;
-                    default:
-                        url = '/api/users/' + this.$store.state.user.id + '/atividades';
-                }
-                this.getAtividades(url);
-                this.limite = 4;
-            },
             getAtividades(url = '/api/users/' + this.$store.state.user.id + '/atividades') {
                 axios.get(url)
                     .then(response => {
@@ -212,6 +213,29 @@
                 this.atividadesFiltradasLength = atividadesFiltradas.length;
                 atividadesFiltradas = atividadesFiltradas.slice(0, this.limite);
                 return atividadesFiltradas;
+            },
+        },
+        watch: {
+            tipoDePesquisaSelected(tipo) {
+                tipo === 'Todas' ?
+                    this.getAtividades('/api/users/' + this.$store.state.user.id + '/atividades') :
+                    this.getAtividades('/api/users/' + this.$store.state.user.id + '/atividades/participadas');
+                this.limite = 4;
+            },
+            minhasAtividadesSelected(tipo) {
+                let url = '';
+                switch (tipo) {
+                    case 'Pendentes':
+                        url = '/api/users/' + this.$store.state.user.id + '/atividades/pendentes';
+                        break;
+                    case 'Concluídas':
+                        url = '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
+                        break;
+                    default:
+                        url = '/api/users/' + this.$store.state.user.id + '/atividades/participadas';
+                }
+                this.getAtividades(url);
+                this.limite = 4;
             },
         }
     }
