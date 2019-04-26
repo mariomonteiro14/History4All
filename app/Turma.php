@@ -30,7 +30,7 @@ class Turma extends Model
     }
 
     public function professor(){
-        return $this->belongsTo(User::class, 'professor_id','id')->get();
+        return $this->belongsTo(User::class, 'professor_id','id');
     }
 
 }

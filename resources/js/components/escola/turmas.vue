@@ -54,7 +54,14 @@
                     <template v-slot:items="props">
                         <tr class="alert-primary">
                             <td class="text-xs-left">{{props.item.nome}}</td>
-                            <td class="text-xs-center">{{props.item.professor[0]}}</td>
+                            <td class="text-xs-center">
+                                <div v-if="props.item.professor[0] && props.item.professor[0].foto">
+                                    <div class="zoom">
+                                        <img width="30px" height="30px" v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
+                                    </div>
+                                    {{props.item.professor[0].nome}}
+                                </div>
+                            </td>
                             <td class="text-xs-center">{{props.item.alunos.length}}</td>
                             <td class="text-xs-center">{{props.item.ciclo}}</td>
                             <td class="float-md-right">
@@ -126,7 +133,7 @@
                     totalItems: 0,
                     rowsPerPageItems: [5, 10, 20]
                 },
-                ciclosSelected: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
+                ciclosSelected: [],
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
                 search: '',
                 tipos: ['Todas', 'Minhas'],
@@ -203,7 +210,8 @@
         computed: {
             filteredTurmas() {
                 return this.myEscola.turmas.filter((i) => {
-                    return (this.ciclosSelected.indexOf(i.ciclo) > -1)
+                    return (this.ciclosSelected.length === 0 || this.ciclosSelected.length === 4 ||
+                        this.ciclosSelected.indexOf(i.ciclo) !== -1)
                         && (this.search === "" || i.nome.includes(this.search))
                         && (this.tipoSelected === "Todas" || i.professor.includes(this.$store.state.user.nome));
                 });
@@ -211,3 +219,10 @@
         }
     }
 </script>
+<style>
+    .zoom:hover {
+        -ms-transform: scale(4);
+        -webkit-transform: scale(4);
+        transform: scale(4);
+    }
+</style>

@@ -25,16 +25,29 @@
 
                         <div @click="setOpenList('professor')">
                             <v-select
-                                label="Professor"
-                                v-model="turma.professor"
-                                :items="filteredProfessores"
-                                item-text="nome"
-                                class="input-group--focused"
-                                clearable
-                                :disabled="this.$store.state.user.tipo != 'admin'"
-                                ref="selectProfessor"
-                                @click="selProfAberto=true"
-                            ></v-select>
+                                    label="Professor"
+                                    v-model="turma.professor"
+                                    :items="filteredProfessores"
+                                    item-text="nome"
+                                    item-value="email"
+                                    class="input-group--focused"
+                                    clearable
+                                    :disabled="this.$store.state.user.tipo != 'admin'"
+                                    ref="selectProfessor"
+                                    @click="selProfAberto=true"
+                            >
+                                <template slot="selection" slot-scope="data">
+                                    <v-chip :selected="data.selected"close class="chip--select-multi" @input="remove(data.item)">
+                                        {{ data.item.nome }}
+                                    </v-chip>
+                                </template>
+                                <template slot="item" slot-scope="data">
+                                    <v-list-tile-avatar>
+                                        <img width="30px" height="30px" v-bind:src="getUserPhoto(data.item.foto)"/>
+                                    </v-list-tile-avatar>
+                                    <v-list-tile-title v-html="data.item.nome"></v-list-tile-title>
+                                </template>
+                            </v-select>
                         </div>
 
                         <div @click="setOpenList('ciclo')">

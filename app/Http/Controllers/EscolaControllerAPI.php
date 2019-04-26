@@ -70,7 +70,7 @@ class EscolaControllerAPI extends Controller
         $turma->ciclo = $request->input('ciclo');
 
         if ($request->has('professor') && $request->input('professor') != "") {
-            $professor = User::where('nome', $request->input('professor'))->first();
+            $professor = User::where('email', $request->input('professor'))->first();
             if (!$professor || $professor->tipo != 'professor') {
                 return response()->json("Professor Invalido", 500);
             }
@@ -118,7 +118,7 @@ class EscolaControllerAPI extends Controller
         $turma->ciclo = $request->input('ciclo');
 
         if ($request->has('professor') && $request->input('professor') != "") {
-            $professor = User::where('nome', $request->input('professor'))->first();
+            $professor = User::where('email', $request->input('professor'))->first();
             if (!$professor || $professor->tipo != 'professor') {
                 return response()->json("Professor Invalido", 500);
             }

@@ -57,7 +57,14 @@
                             <template v-slot:items="props">
                                 <tr class="alert-primary">
                                     <td class="text-xs-left">{{props.item.nome}}</td>
-                                    <td class="text-xs-center">{{props.item.professor[0]}}</td>
+                                    <td class="text-xs-center">
+                                        <div v-if="props.item.professor[0] && props.item.professor[0].foto">
+                                            <div class="zoom">
+                                                <img width="30px" height="30px" v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
+                                            </div>
+                                            {{props.item.professor[0].nome}}
+                                        </div>
+                                    </td>
                                     <td class="text-xs-center">{{props.item.alunos.length}}</td>
                                     <td class="text-xs-center">{{props.item.ciclo}}</td>
                                     <td class="float-md-right">
