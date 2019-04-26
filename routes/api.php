@@ -29,13 +29,14 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('users/{id}', 'UserControllerAPI@update');
     Route::get('escolas', 'EscolaControllerAPI@escolas');
 
+    Route::get('users/alunos', 'UserControllerAPI@alunos');
+
 
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');
         Route::delete('patrimonios/{id}', 'PatrimonioControllerAPI@destroy');
         Route::post('patrimonios', 'PatrimonioControllerAPI@store');
         Route::get('users/professores', 'UserControllerAPI@professores');
-        Route::get('users/alunos', 'UserControllerAPI@alunos');
         Route::get('users', 'UserControllerAPI@users');
         Route::get('usersTrashed', 'UserControllerAPI@usersTrashed');
         Route::post('users', 'UserControllerAPI@store');

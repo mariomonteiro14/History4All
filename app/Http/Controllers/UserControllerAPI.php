@@ -233,68 +233,6 @@ class UserControllerAPI extends Controller
             'message' => 'Successfully updated user!'
         ], 201);
 
-        /*if ($request->has('username')) {
-            $user = User::where('username', $request->input('username'))->first();
-
-            if (Auth::id() != $user->id && !Auth::user()->isManager()) {
-                return response()->json('You dont have permissions', 403);
-            }
-
-            if ($user != null) {
-                if ($request->has('newUsername') && $request->input('newUsername') != null && $request->input('newUsername') != $user->username) {
-                    $validator = Validator::make(array('username' => $request->input('newUsername')), [
-                        'username' => 'string|unique:users',
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json([
-                            'message' => 'Invalid new username',
-                        ], 400);
-                    }
-                    $user->username = $request->input('newUsername');
-                }
-                if ($request->has('newName') && $request->input('newName') != null && $request->input('newName') != $user->name) {
-                    $validator = Validator::make(array('name' => $request->input('newName')), [
-                        'name' => 'string',
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json([
-                            'message' => 'Invalid new name',
-                        ], 400);
-                    }
-                    $user->name = $request->input('newName');
-                }
-                if ($request->has('newPhoto')) {
-                    if ($request->file('newPhoto')) {
-                        $validator = Validator::make(array('photo' => $request->file('newPhoto')), [
-                            'photo' => 'file|mimes:jpeg,bmp,png,jpg',
-                        ]);
-                        if ($validator->fails()) {
-                            return response()->json([
-                                'message' => 'Invalid new photo',
-                            ], 400);
-                        }
-                        $oldPhoto_url = $user->photo_url;
-                        $newPhoto_url = str_random(16) . '.' . $request->file('newPhoto')->getClientOriginalExtension();
-                        $user->photo_url = $newPhoto_url;
-                        Storage::disk('public')->delete('profiles/' . $oldPhoto_url);
-                        Storage::disk('public')->putFileAs('profiles', $request->file('newPhoto'), $newPhoto_url);
-                    } elseif ($request->input('newPhoto') == 'removePhoto') {
-                        Storage::disk('public')->delete('profiles/' . $user->photo_url);
-                        $user->photo_url = null;
-                    }
-                }
-                $user->save();
-                return new UserResource($user);
-            } else {
-                return response()->json([
-                    'message' => 'Unknown user',
-                ], 400);
-            }
-        } else {
-            return response()->json([
-                'message' => 'Bad request',
-            ], 400);
-        }*/
     }
 
     public function destroy($id)
