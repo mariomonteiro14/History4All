@@ -63,6 +63,8 @@
                                     deletable-chips
                                     ref="selectAlunos"
                                     autofocus
+                                    hide-no-data
+                                    :disabled="filteredAlunos.length == 0"
                                 >
                                     <!--<template v-slot:selection="data">
                                         <v-chip

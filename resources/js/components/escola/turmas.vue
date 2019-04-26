@@ -94,7 +94,7 @@
         </v-dialog>
         <br><br>
         <lista-alunos :turma="turmaAtual"></lista-alunos>
-        <criar-turma v-bind:escola="myEscola" :turma="turmaAtual" v-on:getEscolas="getMyEscola"></criar-turma>
+        <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual" v-on:getEscolas="getMyEscola"></criar-editar-turma>
     </div>
 </template>
 
@@ -105,7 +105,7 @@
     export default {
         components: {
             'lista-alunos': listaAlunos,
-            'criar-turma': criarTurma,
+            'criar-editar-turma': criarTurma,
         },
         mounted() {
             this.getMyEscola();
@@ -179,6 +179,7 @@
                     .then(response => {
                         this.toastPopUp("success", "Turma Apagado!");
                         this.getMyEscola();
+                        this.$refs.addEditTurma.getAlunos();
                     }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);

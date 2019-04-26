@@ -100,7 +100,7 @@
         <br><br>
         <lista-alunos :turma="turmaAtual"></lista-alunos>
         <criar-escola v-on:getEscolas="getEscolas"></criar-escola>
-        <criar-turma v-bind:escola="escolaAtual" :turma="turmaAtual" v-on:getEscolas="getEscolas"></criar-turma>
+        <criar-editar-turma ref="addEditTurma" v-bind:escola="escolaAtual" :turma="turmaAtual" v-on:getEscolas="getEscolas"></criar-editar-turma>
 
     </div>
 </template>
@@ -114,7 +114,7 @@
         components: {
             'lista-alunos': listaAlunos,
             'criar-escola': criarEscola,
-            'criar-turma': criarTurma,
+            'criar-editar-turma': criarTurma,
         },
         mounted() {
             this.getEscolas();
@@ -224,6 +224,7 @@
                     .then(response => {
                         this.toastPopUp("success", "Turma Apagado!");
                         this.getEscolas();
+                        this.$refs.addEditTurma.getAlunos();
                         if (this.escolaAtual.turmas.length === 1) {
                             this.escolaAtual = {};
                         }
