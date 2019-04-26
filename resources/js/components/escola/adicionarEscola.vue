@@ -4,7 +4,7 @@
         <div class="modal fade" id="addEscolaModal" tabindex="-1" role="dialog" aria-labelledby="addEscolaModal"
              aria-hidden="true">
             <div class="modal-dialog modal-md" role="document">
-                <div class="modal-content">
+                <div class="modal-content" @click="closeLists">
                     <div class="container box">
                         <div class="modal-header">
                             <h5 class="modal-title" id="addEscolaModal">Registar Escola</h5>
@@ -23,14 +23,17 @@
                             ></v-text-field>
                         </div>
 
-                        <v-select
-                            label="Distrito"
-                            v-model="escola.distrito"
-                            :items="distritos"
-                            :rules="[v => !!v || 'Distrito é obrigatório']"
-                            class="input-group--focused"
-                            required
-                        ></v-select>
+                        <div @click="setOpenList">
+                            <v-select
+                                ref="select"
+                                label="Distrito"
+                                v-model="escola.distrito"
+                                :items="distritos"
+                                :rules="[v => !!v || 'Distrito é obrigatório']"
+                                class="input-group--focused"
+                                required
+                            ></v-select>
+                        </div>
 
                     </div>
 
@@ -57,7 +60,8 @@
                 escola: {
                     nome: "",
                     distrito: "",
-                }
+                },
+                selAberto:false,
             };
         },
         methods: {
@@ -80,6 +84,24 @@
             cleanForm: function () {
                 this.escola.nome = "";
                 this.escola.distrito = "";
+            },
+
+            setOpenList() {
+                setTimeout(() => {
+                    if (this.$refs.select.isMenuActive == true ) {
+                        setTimeout(() => {
+                            this.selAberto = true;
+                        }, 30);
+                    }
+                }, 10)
+            },
+
+            closeLists() {
+                if (this.selAberto == true) {
+                    this.selAberto = false;
+                    this.$refs.select.isMenuActive = false;
+                }
+
             },
         },
 

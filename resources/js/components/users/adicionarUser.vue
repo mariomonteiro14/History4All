@@ -136,7 +136,7 @@
                 });
             },
 
-            setOpenList(lista) {
+            setOpenList() {
                 setTimeout(() => {
                     if ( this.$refs.selectT.isMenuActive == true || this.$refs.selectE.isMenuActive == true || this.$refs.selectA.isMenuActive == true) {
                         setTimeout(() => {

@@ -5,7 +5,7 @@
              aria-hidden="true">
             <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
-                    <div class="container box">
+                    <div class="container box" @click="closeLists">
                         <div class="modal-header">
                             <h5 class="modal-title" id="addTurmaModal">{{getTitle}}</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
@@ -13,86 +13,84 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <div @click="closeLists" class="size-modal-content">
-                            <br>
-                            <div class="form-group">
-                                <v-text-field id="inputNome"
-                                              v-model="turma.nome"
-                                              label="Nome"
-                                              :rules="[v => !!v || 'Nome é obrigatório']"
-                                              required
-                                ></v-text-field>
-                            </div>
+                        <br>
+                        <div class="form-group">
+                            <v-text-field id="inputNome"
+                                          v-model="turma.nome"
+                                          label="Nome"
+                                          :rules="[v => !!v || 'Nome é obrigatório']"
+                                          required
+                            ></v-text-field>
+                        </div>
 
-                            <div @click="setOpenList('professor')">
-                                <v-select
-                                    label="Professor"
-                                    v-model="turma.professor"
-                                    :items="filteredProfessores"
-                                    item-text="nome"
-                                    class="input-group--focused"
-                                    clearable
-                                    :disabled="this.$store.state.user.tipo != 'admin'"
-                                    ref="selectProfessor"
-                                    @click="selProfAberto=true"
-                                ></v-select>
-                            </div>
+                        <div @click="setOpenList('professor')">
+                            <v-select
+                                label="Professor"
+                                v-model="turma.professor"
+                                :items="filteredProfessores"
+                                item-text="nome"
+                                class="input-group--focused"
+                                clearable
+                                :disabled="this.$store.state.user.tipo != 'admin'"
+                                ref="selectProfessor"
+                                @click="selProfAberto=true"
+                            ></v-select>
+                        </div>
 
-                            <div @click="setOpenList('ciclo')">
-                                <v-select
-                                    label="Ciclo"
-                                    v-model="turma.ciclo"
-                                    :items="ciclos"
-                                    :rules="[v => !!v || 'Ciclo é obrigatório']"
-                                    class="input-group--focused"
-                                    clearable
-                                    ref="selectCiclo"
-                                    required
-                                ></v-select>
-                            </div>
+                        <div @click="setOpenList('ciclo')">
+                            <v-select
+                                label="Ciclo"
+                                v-model="turma.ciclo"
+                                :items="ciclos"
+                                :rules="[v => !!v || 'Ciclo é obrigatório']"
+                                class="input-group--focused"
+                                clearable
+                                ref="selectCiclo"
+                                required
+                            ></v-select>
+                        </div>
 
-                            <div @click="setOpenList('alunos')">
-                                <v-combobox
-                                    v-model="turma.alunos"
-                                    :items="filteredAlunos"
-                                    item-text="nome"
-                                    label="Alunos"
-                                    multiple
-                                    chips
-                                    class="input-group--focused"
-                                    deletable-chips
-                                    ref="selectAlunos"
-                                    autofocus
-                                    hide-no-data
-                                    :disabled="filteredAlunos.length == 0"
-                                >
-                                    <!--<template v-slot:selection="data">
-                                        <v-chip
-                                            :selected="data.selected"
-                                            close
-                                            @input="removeAluno(data.item)"
-                                        >
-                                            <strong>{{ data.item.nome }}</strong>&nbsp;
-                                        </v-chip>
-                                    </template>-->
-                                </v-combobox>
-                                <span v-if="filteredAlunos.length == 0">Não existem alunos disponiveis. Pode criar a turma sem alunos e adiciona-los mais tarde.</span>
-                            </div>
+                        <div @click="setOpenList('alunos')">
+                            <v-combobox
+                                v-model="turma.alunos"
+                                :items="filteredAlunos"
+                                item-text="nome"
+                                label="Alunos"
+                                multiple
+                                chips
+                                class="input-group--focused"
+                                deletable-chips
+                                ref="selectAlunos"
+                                autofocus
+                                hide-no-data
+                                :disabled="filteredAlunos.length == 0"
+                            >
+                                <!--<template v-slot:selection="data">
+                                    <v-chip
+                                        :selected="data.selected"
+                                        close
+                                        @input="removeAluno(data.item)"
+                                    >
+                                        <strong>{{ data.item.nome }}</strong>&nbsp;
+                                    </v-chip>
+                                </template>-->
+                            </v-combobox>
+                            <span v-if="filteredAlunos.length == 0">Não existem alunos disponiveis. Pode criar a turma sem alunos e adiciona-los mais tarde.</span>
                         </div>
                     </div>
 
-                    <div class="modal-footer">
-                        <button v-if="!turma.id" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">
-                            Registar
-                        </button>
-                        <button v-else class="btn btn-info" v-on:click.prevent="edit" :disabled="hasErrors">Guardar
-                        </button>
-                        <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
-                    </div>
 
+                <div class="modal-footer">
+                    <button v-if="!turma.id" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">
+                        Registar
+                    </button>
+                    <button v-else class="btn btn-info" v-on:click.prevent="edit" :disabled="hasErrors">Guardar
+                    </button>
+                    <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                 </div>
-
+                </div>
             </div>
+
         </div>
     </div>
 </template>
@@ -185,7 +183,8 @@
                         console.log(errors);
                     });
             },
-
+            ////////////////////////////////////////////////////////
+            //Metodos pra correçao de bug relacionado com os selects
             setOpenList(lista) {
                 setTimeout(() => {
                     if (lista == "ciclo" && this.$refs.selectCiclo.isMenuActive == true) {
@@ -222,6 +221,7 @@
                     this.selAlunosAberto = false;
                 }
             },
+            ////////////////////////////////////////////////////////
         },
 
         computed: {
@@ -251,16 +251,16 @@
                 return !this.turma.id ? this.escola.nome + " - Criar Turma" : "Editar Turma " + this.turma.nome;
             },
         },
-       /* watch: {
-            'turma.id': function () {
-                this.alunosSelected = [];
+        /* watch: {
+             'turma.id': function () {
+                 this.alunosSelected = [];
 
-                if(this.turma.alunos) {
-                    this.alunosSelected = this.turma.alunos.map(a => ({...a}));
-                }
-                this.removedAlunos = [];
-            },
-        }*/
+                 if(this.turma.alunos) {
+                     this.alunosSelected = this.turma.alunos.map(a => ({...a}));
+                 }
+                 this.removedAlunos = [];
+             },
+         }*/
 
 
     }
