@@ -5,8 +5,8 @@
              aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
-                    <div class="container box">
-                        <div class="modal-header">
+                    <div class="container box" @click="closeLists">
+                        <div  class="modal-header">
                             <h5 class="modal-title" id="addUserModal">Criar Utilizador</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
                                     aria-label="Close">
@@ -30,37 +30,43 @@
                                           required
                             ></v-text-field>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" @click="setOpenList">
                             <v-select
+                                ref="selectT"
                                 label="Tipo"
                                 v-model="user.tipo"
                                 :items="userTipos"
-                                :rules="[v => !!v || 'Distrito é obrigatório']"
+                                :rules="[v => !!v || 'Tipo é obrigatório']"
                                 class="input-group--focused"
+                                :disabled="$store.state.user.tipo=='professor'"
                                 required
                             ></v-select>
                         </div>
 
-                        <div class="form-group" v-if="user.tipo && user.tipo != 'admin'">
+                        <div class="form-group" v-if="user.tipo && user.tipo != 'admin'" @click="setOpenList">
                             <v-select
+                                ref="selectE"
                                 label="Escola"
                                 v-model="user.escola"
                                 :items="escolas"
                                 item-text="nome"
                                 :rules="[v => !!v || 'Escola é obrigatório']"
                                 class="input-group--focused"
+                                clearable
+                                :disabled="$store.state.user.tipo=='professor'"
                                 required
                             ></v-select>
                         </div>
-                        <div class="form-group" v-if="user.escola && user.tipo == 'aluno'">
+                        <div class="form-group" v-if="user.escola && user.tipo == 'aluno'" @click="setOpenList">
                             <v-select
+                                ref="selectT"
                                 label="Turma"
                                 v-model="user.turma"
                                 :items="turmas"
                                 item-text="nome"
-                                :rules="[v => !!v || 'Turma é obrigatório']"
                                 class="input-group--focused"
-                                required
+                                :rules="[(v) => (!!v && this.$store.state.user.tipo == 'professor') || 'Turma é obrigatório']"
+                                clearable
                             ></v-select>
                         </div>
 
@@ -80,24 +86,19 @@
 
 <script>
     export default {
+        props:['user'],
         created() {
             this.getEscolas();
         },
         data: function () {
             return {
-                user: {
-                    nome: '',
-                    email: '',
-                    tipo: '',
-                    escola: '',
-                    turma: '',
-                },
                 escolas: [],
                 userTipos: ['admin', 'professor', 'aluno'],
                 emailRules: [
                     (v) => !!v || 'E-mail is required',
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'
                 ],
+                selAberto:false,
             };
         },
         methods: {
@@ -120,10 +121,12 @@
             },
             cleanForm: function () {
                 this.user.nome = "";
-                this.user.tipo = "";
                 this.user.email = "";
-                this.user.escola = {};
-                this.user.turma = {};
+                if (this.$store.state.user.tipo == "admin") {
+                    this.user.tipo = "";
+                    this.user.escola = "";
+                }
+                this.user.turma = "";
             },
             getEscolas: function () {
                 axios.get("/api/escolas").then(response => {
@@ -132,6 +135,27 @@
                     console.log(errors);
                 });
             },
+
+            setOpenList(lista) {
+                setTimeout(() => {
+                    if ( this.$refs.selectT.isMenuActive == true || this.$refs.selectE.isMenuActive == true || this.$refs.selectA.isMenuActive == true) {
+                        setTimeout(() => {
+                            this.selAberto = true;
+                        }, 30);
+                    }
+                }, 10)
+            },
+
+            closeLists() {
+                if (this.selAberto == true) {
+                    this.selAberto = false;
+                    this.$refs.selectT.isMenuActive = false;
+                    this.$refs.selectE.isMenuActive = false;
+                    this.$refs.selectA.isMenuActive = false;
+                }
+
+            },
+
         },
         computed: {
             turmas: function () {
@@ -148,10 +172,12 @@
                 if(!re.test(String(this.user.email).toLowerCase())){
                     return true;
                 }
-                if (this.user.tipo === "professor" && !this.user.escola) {
+                if (this.user.tipo !== "admin" && this.user.escola == "") {
                     return true;
                 }
-                if (this.user.tipo === "aluno" && (!this.user.escola || !this.user.turma)) {
+
+                //obrigatorio porfessor mensionar turma ao criar aluno
+                if (this.user.turma === "" && this.$store.state.user.tipo == "professor") {
                     return true;
                 }
                 return false;

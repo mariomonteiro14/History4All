@@ -76,6 +76,7 @@
                                         </v-chip>
                                     </template>-->
                                 </v-combobox>
+                                <span v-if="filteredAlunos.length == 0">Não existem alunos disponiveis. Pode criar a turma sem alunos e adiciona-los mais tarde.</span>
                             </div>
                         </div>
                     </div>
@@ -146,7 +147,7 @@
                 axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
                     this.toastPopUp("success", "Turma Atualizada!");
                     this.cleanForm();
-                    this.getAlunos()
+                    this.getAlunos();
                     this.$emit('getEscolas');
                     $('#addTurmaModal').modal('hide');
                 }).catch(error => {

@@ -64,7 +64,8 @@ class UserControllerAPI extends Controller
         return new UserResource($request->user());
     }
 
-    public function editProfile(Request $request){
+    public function editProfile(Request $request)
+    {
         $user = User::findOrFail(Auth::id());
 
         if ($request->has('newEmail') && $request->input('newEmail') != "") {
@@ -77,7 +78,7 @@ class UserControllerAPI extends Controller
 
         if ($request->has('newFoto')) {
             //Delete old photo
-            Storage::disk('public')->delete('profiles/'.$user->foto);
+            Storage::disk('public')->delete('profiles/' . $user->foto);
 
             //Store new photo
             $filename = str_random(16) . '.' . $request->newFoto->getClientOriginalExtension();;
@@ -150,8 +151,19 @@ class UserControllerAPI extends Controller
         if ($user->tipo == "admin") {
             $user->escola_id = null;
             $user->turma_id = null;
+        } else {
+            $escola = Escola::where('nome', $request->escola)->first();
+            $user->escola_id = $escola->id;
 
-        } elseif ($user->tipo == "aluno") {
+            if ($user->tipo == "aluno" && $request->has('turma') && $request->turma != "") {
+                $turma = Turma::where('escola_id', $escola->id)->where('nome', $request->turma)->first();
+                $user->turma_id = $turma->id;
+            } else {
+                $user->turma_id = null;
+            }
+        }
+
+        /*} elseif ($user->tipo == "aluno") {
             $escola = Escola::where('nome', $request->escola)->first();
             $turma = Turma::where('escola_id', $escola->id)->where('nome', $request->turma)->first();
             $user->escola_id = $escola->id;
@@ -160,7 +172,7 @@ class UserControllerAPI extends Controller
             $escola = Escola::where('nome', $request->escola)->first();
             $user->escola_id = $escola->id;
             $user->turma_id = null;
-        }
+        }*/
 
         $user->setRememberToken(Str::random(10));
 
@@ -194,7 +206,7 @@ class UserControllerAPI extends Controller
             $user->email_verified_at = date("Y-m-d H:i:s");
             $user->remember_token = '';
 
-            if ($request->has('foto') && $request->input('foto')!= "") {
+            if ($request->has('foto') && $request->input('foto') != "") {
                 $filename = str_random(16) . '.' . $request->foto->getClientOriginalExtension();;
                 Storage::disk('public')->putFileAs('profiles', $request->foto, $filename);
 
@@ -212,8 +224,8 @@ class UserControllerAPI extends Controller
 
     public function update($id, Request $request)
     {
-        if (Auth::user()->tipo != "admin" && Auth::id() != $id){
-            return response()->json('You dont have permissions', 500);
+        if (Auth::user()->tipo != "admin") {
+            abort(403, 'Unauthorized action.');
         }
         $user = User::findOrFail($id);
 
@@ -224,6 +236,8 @@ class UserControllerAPI extends Controller
             if ($request->has('turma') && $user->tipo == "aluno") {
                 $turma = Turma::where('escola_id', $escola->id)->where('nome', $request->turma)->first();
                 $user->turma_id = $turma->id;
+            } else {
+                $user->turma_id = null;
             }
         }
 
@@ -239,7 +253,7 @@ class UserControllerAPI extends Controller
     {
         $user = User::withTrashed()->find($id);
         if ($user->trashed()) {
-            Storage::disk('public')->delete('profiles/'.$user->foto);
+            Storage::disk('public')->delete('profiles/' . $user->foto);
             $user->forceDelete();
         } else {
             $user->delete();

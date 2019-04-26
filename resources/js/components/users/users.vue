@@ -102,12 +102,12 @@
             </v-card>
         </v-dialog>
         <br><br>
-        <add-user v-on:getUsers="getUsers"></add-user>
+        <add-user :user="userForm" v-on:getUsers="getUsers"></add-user>
 
         <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal"
              aria-hidden="true">
             <div class="modal-dialog" role="document">
-                <div class="modal-content">
+                <div class="modal-content" @click="closeLists">
                     <div class="modal-header">
                         <h5 class="modal-title" id="editUserModal">Editar Utilizador</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -116,8 +116,9 @@
                     </div>
                     <div class="modal-body">
                         <div class="container box">
-                            <div class="form-group" v-if="userAtual.tipo != 'admin'">
+                            <div class="form-group" v-if="userAtual.tipo != 'admin'" @click="setOpenList">
                                 <v-select
+                                    ref="selectE"
                                     label="Escola"
                                     v-model="userAtual.escola"
                                     :items="escolas"
@@ -127,22 +128,24 @@
                                     required
                                 ></v-select>
                             </div>
-                            <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola">
+                            <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola" @click="setOpenList">
                                 <v-select
+                                    ref="selectT"
                                     label="Turma"
                                     v-model="userAtual.turma"
                                     :items="turmas"
                                     item-text="nome"
-                                    :rules="[v => !!v || 'Turma é obrigatório']"
                                     class="input-group--focused"
+                                    clearable
                                     required
+                                    @click:clear="userAtual.turma=''"
                                 ></v-select>
                             </div>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-info" v-on:click.prevent="saveEdit"
-                                :disabled="!userAtual.escola  || (userAtual.tipo=='aluno' && !userAtual.turma)">Guardar
+                                :disabled="!userAtual.escola">Guardar
                         </button>
                     </div>
                 </div>
@@ -198,9 +201,17 @@
                 userAApagar: '',
                 dialog: false,
                 trashed: false,
+                userForm: {
+                    nome: '',
+                    email: '',
+                    tipo: '',
+                    escola: '',
+                    turma: '',
+                },
                 userAtual: {},
                 userDetail: {},
                 escolas: [],
+                selAberto: false, //atributo pra corrigir bug no modal
 
             }
         },
@@ -241,9 +252,10 @@
                 if (user.tipo == "professor") {
                     return "Professor da " + user.escola[0];
                 }
-                if (user.tipo == "aluno") {
+                if (user.tipo == "aluno" && user.turma[0]) {
                     return "Aluno da " + user.escola[0] + ", turma " + user.turma[0];
                 }
+                return "Aluno da " + user.escola[0] + ", sem turma";
             },
 
             showEdit(user) {
@@ -274,7 +286,8 @@
                 });
             },
             saveEdit() {
-                axios.post('/api/users/' + this.userAtual.id, this.userAtual)
+                console.log(this.userAtual);
+                axios.put('/api/users/' + this.userAtual.id, this.userAtual)
                     .then(response => {
                         this.toastPopUp("success", "Utilizador Atualizado");
                         this.getUsers();
@@ -312,6 +325,25 @@
                     console.log(errors);
                 });
             },
+            //Metodos pra corrigir bug nos Modal
+            setOpenList(lista) {
+                setTimeout(() => {
+                    if ( this.$refs.selectT.isMenuActive == true || this.$refs.selectE.isMenuActive == true) {
+                        setTimeout(() => {
+                            this.selAberto = true;
+                        }, 30);
+                    }
+                }, 10)
+            },
+
+            closeLists() {
+                if (this.selAberto == true) {
+                    this.selAberto = false;
+                    this.$refs.selectE.isMenuActive = false;
+                    this.$refs.selectT.isMenuActive = false;
+                }
+            },
+            ////////////////////////////////////////////////
         },
         computed: {
             filteredUsers() {

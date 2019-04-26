@@ -5,6 +5,9 @@
             <h3>Turmas / Gerir</h3>
             <br>
             <v-card append float>
+                <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar Aluno <i
+                    class="material-icons">add_box</i>
+                </v-btn>
                 <v-container fluid grid-list-xl>
                     <v-layout row align-center>
                         <v-spacer></v-spacer>
@@ -95,17 +98,20 @@
         <br><br>
         <lista-alunos :turma="turmaAtual"></lista-alunos>
         <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual" v-on:getEscolas="getMyEscola"></criar-editar-turma>
+        <criar-aluno :user="userForm" v-on:getUsers="getMyEscola"></criar-aluno>
     </div>
 </template>
 
 <script>
     import listaAlunos from './showTurmaAlunos';
     import criarTurma from './adicionarTurma';
+    import criarAluno from '../users/adicionarUser';
 
     export default {
         components: {
             'lista-alunos': listaAlunos,
             'criar-editar-turma': criarTurma,
+            'criar-aluno': criarAluno,
         },
         mounted() {
             this.getMyEscola();
@@ -140,6 +146,13 @@
                 },
                 dialog: false,
                 turmaAtual: {},
+                userForm: {
+                    nome: '',
+                    email: '',
+                    tipo: 'aluno',
+                    escola: this.$store.state.user.escola[0],
+                    turma: '',
+                },
             }
         },
         methods: {

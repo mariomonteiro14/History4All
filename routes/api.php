@@ -26,7 +26,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users/{id}/atividades/participadas', 'AtividadeControllerAPI@getParticipadas');
     Route::get('users/{id}/atividades/pendentes', 'AtividadeControllerAPI@getPendentes');
     Route::get('users/{id}/atividades/concluidas', 'AtividadeControllerAPI@getConcluidas');
-    Route::post('users/{id}', 'UserControllerAPI@update');
 
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');
@@ -35,7 +34,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('users/professores', 'UserControllerAPI@professores');
         Route::get('users', 'UserControllerAPI@users');
         Route::get('usersTrashed', 'UserControllerAPI@usersTrashed');
-        Route::post('users', 'UserControllerAPI@store');
+        Route::put('users/{id}', 'UserControllerAPI@update');
         Route::delete('users/{id}', 'UserControllerAPI@destroy');
         Route::put('users/restaurar/{id}', 'UserControllerAPI@restore');
 
@@ -56,6 +55,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::delete('escolas/turmas/{id}', 'EscolaControllerAPI@destroyTurma');
 
         Route::get('users/alunos', 'UserControllerAPI@alunos');
+        Route::post('users', 'UserControllerAPI@store');
     });
 
     Route::group(['middleware' => 'aluno'], function() {
