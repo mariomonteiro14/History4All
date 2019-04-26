@@ -80,13 +80,22 @@ class EscolaControllerAPI extends Controller
 
         $turma->save();
 
+        if($request->has('alunos') && sizeof($request->alunos) > 0){
+            foreach ($request->alunos as $aluno){
+                $aluno = User::findOrFail($aluno['id']);
+                $aluno->turma_id = $turma->id;
+                $aluno->save();
+            }
+        }
+
+
+
         return response()->json(new TurmaResource($turma), 201);
 
     }
 
     public function editarTurma($id, Request $request)
     {
-
         $request->validate([
             'nome' => 'required|min:1|max:9',
             'ciclo' => 'required',
@@ -94,6 +103,10 @@ class EscolaControllerAPI extends Controller
         ]);
 
         $turma = Turma::findOrFail($id);
+        if (Auth::user()->tipo == "professor" && $turma->professor_id != Auth::id())
+        {
+            abort(403, 'Unauthorized action.');
+        }
 
         if ($request->input('nome') != $turma->nome) {
             if (Turma::where('escola_id', $turma->escola_id)->where('nome', $request->input('nome'))->first()) {
@@ -111,6 +124,20 @@ class EscolaControllerAPI extends Controller
             }
             $turma->professor_id = $professor->id;
         }
+
+        if($request->has('alunos') && sizeof($request->alunos) > 0){
+            foreach (User::where('turma_id', $turma->id)->get() as $aluno){
+                $aluno->turma_id = null;
+                $aluno->save();
+            }
+
+            foreach ($request->alunos as $aluno){
+                $aluno = User::findOrFail($aluno['id']);
+                $aluno->turma_id = $turma->id;
+                $aluno->save();
+            }
+        }
+
 
         $turma->save();
 

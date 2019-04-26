@@ -27,10 +27,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users/{id}/atividades/pendentes', 'AtividadeControllerAPI@getPendentes');
     Route::get('users/{id}/atividades/concluidas', 'AtividadeControllerAPI@getConcluidas');
     Route::post('users/{id}', 'UserControllerAPI@update');
-    Route::get('escolas', 'EscolaControllerAPI@escolas');
-
-    Route::get('users/alunos', 'UserControllerAPI@alunos');
-
 
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');
@@ -45,9 +41,7 @@ Route::group(['middleware' => 'auth:api'], function() {
 
         Route::post('escolas', 'EscolaControllerAPI@store');
         Route::delete('escolas/{id}', 'EscolaControllerAPI@destroy');
-        Route::post('escolas/{id}/turmas', 'EscolaControllerAPI@criarTurma');
-        Route::put('escolas/turmas/{id}', 'EscolaControllerAPI@editarTurma');
-        Route::delete('escolas/turmas/{id}', 'EscolaControllerAPI@destroyTurma');
+
     });
 
     Route::group(['middleware' => 'professor'], function() {
@@ -55,7 +49,17 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('me/escola', 'EscolaControllerAPI@myEscola');
     });
 
+    Route::group(['middleware' => 'adminOuProfessor'], function() {
+        Route::get('escolas', 'EscolaControllerAPI@escolas');
+        Route::post('escolas/{id}/turmas', 'EscolaControllerAPI@criarTurma');
+        Route::put('escolas/turmas/{id}', 'EscolaControllerAPI@editarTurma');
+        Route::delete('escolas/turmas/{id}', 'EscolaControllerAPI@destroyTurma');
+
+        Route::get('users/alunos', 'UserControllerAPI@alunos');
+    });
+
     Route::group(['middleware' => 'aluno'], function() {
+
     });
 
 

@@ -53,7 +53,7 @@
 
                             <div @click="setOpenList('alunos')">
                                 <v-combobox
-                                    v-model="alunosSelected"
+                                    v-model="turma.alunos"
                                     :items="filteredAlunos"
                                     item-text="nome"
                                     label="Alunos"
@@ -63,7 +63,17 @@
                                     deletable-chips
                                     ref="selectAlunos"
                                     autofocus
-                                ></v-combobox>
+                                >
+                                    <!--<template v-slot:selection="data">
+                                        <v-chip
+                                            :selected="data.selected"
+                                            close
+                                            @input="removeAluno(data.item)"
+                                        >
+                                            <strong>{{ data.item.nome }}</strong>&nbsp;
+                                        </v-chip>
+                                    </template>-->
+                                </v-combobox>
                             </div>
                         </div>
                     </div>
@@ -104,16 +114,25 @@
                 professores: [],
                 alunos: [],
                 alunosSelected: [],
+                removedAlunos: false,
+
                 selProfAberto: false,
                 selCicloAberto: false,
                 selAlunosAberto: false,
             };
         },
         methods: {
+            removeAluno(aluno) {
+                this.alunosSelected.splice(this.alunosSelected.indexOf(aluno), 1);
+                this.alunosSelected.alunos = [...this.alunosSelected];
+            },
             save: function () {
+                //this.turma.alunos = this.alunosSelected;
+                console.log(this.turma);
                 axios.post('/api/escolas/' + this.escola.id + '/turmas', this.turma).then(response => {
                     this.toastPopUp("success", "Turma Criada!");
                     this.cleanForm();
+                    this.getAlunos();
                     this.$emit('getEscolas');
                     $('#addTurmaModal').modal('hide');
                 }).catch(error => {
@@ -121,9 +140,11 @@
                 })
             },
             edit: function () {
+                //this.turma.alunos = this.alunosSelected;
                 axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
                     this.toastPopUp("success", "Turma Atualizada!");
                     this.cleanForm();
+                    this.getAlunos()
                     this.$emit('getEscolas');
                     $('#addTurmaModal').modal('hide');
                 }).catch(error => {
@@ -141,6 +162,7 @@
                 this.turma.nome = "";
                 this.turma.ciclo = "";
                 this.turma.professor = undefined;
+                this.closeLists();
             },
             getProfessores(url = '/api/users/professores') {
                 axios.get(url)
@@ -160,33 +182,33 @@
                         console.log(errors);
                     });
             },
-            setOpenList(lista){
-                setTimeout(() =>{
-                if (lista == "ciclo" && this.$refs.selectCiclo.isMenuActive == true) {
-                    setTimeout(() => {
-                        this.selCicloAberto = true;
-                    }, 30);
-                }
 
-                if (lista == "professor" && this.$refs.selectProfessor.isMenuActive == true) {
-                    setTimeout(() => {
-                        this.selProfAberto = true;
-                    }, 30);
-                }
+            setOpenList(lista) {
+                setTimeout(() => {
+                    if (lista == "ciclo" && this.$refs.selectCiclo.isMenuActive == true) {
+                        setTimeout(() => {
+                            this.selCicloAberto = true;
+                        }, 30);
+                    }
 
-                if (lista == "alunos" && this.$refs.selectAlunos.isMenuActive == true) {
-                    setTimeout(() => {
-                        this.selAlunosAberto = true;
-                    }, 30);
-                }
-                },10)
+                    if (lista == "professor" && this.$refs.selectProfessor.isMenuActive == true) {
+                        setTimeout(() => {
+                            this.selProfAberto = true;
+                        }, 30);
+                    }
+
+                    if (lista == "alunos" && this.$refs.selectAlunos.isMenuActive == true) {
+                        setTimeout(() => {
+                            this.selAlunosAberto = true;
+                        }, 30);
+                    }
+                }, 10)
             },
 
             closeLists() {
                 if (this.selCicloAberto == true) {
                     this.selCicloAberto = false;
                     this.$refs.selectCiclo.isMenuActive = false;
-                    this.turma.ciclo="";
                 }
                 if (this.selProfAberto == true) {
                     this.$refs.selectProfessor.isMenuActive = false;
@@ -206,6 +228,7 @@
                 }
                 return false;
             },
+
             filteredProfessores() {
                 if (this.$store.state.user.tipo == "admin") {
                     return this.professores.filter((i) => {
@@ -217,14 +240,25 @@
 
             filteredAlunos() {
                 return this.alunos.filter((i) => {
-                    return (i.escola[0] === this.escola.nome) && !i.turma[0];
+                    return (i.escola[0] === this.escola.nome) && (!i.turma[0] || i.turma[0] === this.turma.nome);
                 });
 
             },
             getTitle() {
                 return !this.turma.id ? this.escola.nome + " - Criar Turma" : "Editar Turma " + this.turma.nome;
             },
+        },
+       /* watch: {
+            'turma.id': function () {
+                this.alunosSelected = [];
 
-        }
+                if(this.turma.alunos) {
+                    this.alunosSelected = this.turma.alunos.map(a => ({...a}));
+                }
+                this.removedAlunos = [];
+            },
+        }*/
+
+
     }
 </script>
