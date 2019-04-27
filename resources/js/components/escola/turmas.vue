@@ -180,12 +180,12 @@
             },
             showCriarTurma() {
                 this.turmaAtual = {};
-                this.turmaAtual.professor = this.$store.state.user.email;
+                this.turmaAtual.professor = this.$store.state.user;
                 $('#addTurmaModal').modal('show');
             },
             showEditTurma(turma) {
                 this.turmaAtual = Object.assign({}, turma);
-                this.turmaAtual.professor = this.turmaAtual.professor[0].email;
+                this.turmaAtual.professor = this.turmaAtual.professor[0];
                 $('#addTurmaModal').modal('show');
             },
 

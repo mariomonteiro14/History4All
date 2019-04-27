@@ -28,8 +28,6 @@
                                     label="Professor"
                                     v-model="turma.professor"
                                     :items="filteredProfessores"
-                                    item-text="nome"
-                                    item-value="email"
                                     class="input-group--focused"
                                     clearable
                                     :disabled="this.$store.state.user.tipo != 'admin'"
