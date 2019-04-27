@@ -71,16 +71,18 @@
                                 </v-btn>
                             </td>
                             <td>
-                                <v-btn v-if="$store.state.user.email === props.item.professor[0].email" color="warning"
-                                       @click="showEditTurma(props.item)">Editar
-                                    <v-icon small>edit</v-icon>
+                                <div v-if="props.item.professor[0] && $store.state.user.email === props.item.professor[0].email">
+                                    <v-btn color="warning"
+                                           @click="showEditTurma(props.item)">Editar
+                                        <v-icon small>edit</v-icon>
 
-                                </v-btn>
-                                <v-btn v-if="$store.state.user.email === props.item.professor[0].email" color="error"
-                                       @click.stop="apagarVerificacao(props.item)">
-                                    Apagar
-                                    <v-icon small>delete_forever</v-icon>
-                                </v-btn>
+                                    </v-btn>
+                                    <v-btn color="error"
+                                           @click.stop="apagarVerificacao(props.item)">
+                                        Apagar
+                                        <v-icon small>delete_forever</v-icon>
+                                    </v-btn>
+                                </div>
                             </td>
                             <td></td>
                         </tr>
@@ -211,7 +213,8 @@
                 return this.myEscola.turmas.filter((i) => {
                     return (this.ciclosSelected.length === 0 || this.ciclosSelected.indexOf(i.ciclo) !== -1)
                         && (this.search === "" || i.nome.includes(this.search))
-                        && (this.tipoSelected === "Todas" || i.professor[0].email === this.$store.state.user.email);
+                        && (this.tipoSelected === "Todas" || i.professor.length === 0 ||
+                            i.professor[0].email === this.$store.state.user.email);
                 });
             }
         }
