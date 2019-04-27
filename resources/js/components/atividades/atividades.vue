@@ -34,7 +34,7 @@
                         <v-layout row wrap align-center>
                             <v-text-field
                                     v-model="search"
-                                    append-icon="search"
+                                    append-icon="pesquisa"
                                     label="Pesquisar pela descrição"
                                     single-line
                                     hide-details

@@ -19,8 +19,8 @@
                             <v-spacer></v-spacer>
                             <v-text-field
                                 v-model="search"
-                                append-icon="search"
-                                label="Search"
+                                append-icon="pesquisa"
+                                label="Pesquisa"
                                 single-line
                                 hide-details
                                 clearable

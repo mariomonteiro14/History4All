@@ -22,7 +22,7 @@ class EscolaControllerAPI extends Controller
     public function escolaTurmas($id, Request $request){
 
         return response()->json([
-            'data' => TurmaResource::collection(Turma::where('escola_id', $id)->get()),
+            'data' => TurmaResource::collection(Turma::findOrFail($id)),
         ]);
     }
 

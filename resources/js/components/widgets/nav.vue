@@ -18,44 +18,26 @@
         <v-text-field
             flat
             solo-inverted
-            label="Search"
+            label="Pesquisar"
             class="hidden-sm-and-down align-center"
             color="white"
             clearable
         >
         </v-text-field>
         <v-spacer></v-spacer>
-                <v-toolbar-items v-if="this.$store.state.user">
-                    <v-menu open-on-hover bottom left origin="center left" top offset-y>
-                        <template v-slot:activator="{ on }">
-                            <v-btn flat v-on="on">Dashboard</v-btn>
-                        </template>
-                        <!-- DASHBOARD ADMIN-->
-                        <v-list v-if="$store.state.user.tipo == 'admin'">
-                            <v-list-tile to="/admin/patrimonios">
-                                <v-list-tile-title> <i class="material-icons sm1">build</i> Gerir Patrimónios </v-list-tile-title>
-                            </v-list-tile>
-                            <v-list-tile to="/admin/users">
-                                <v-list-tile-title> <i class="material-icons vsm-icon">group</i> Gerir Utilizadores </v-list-tile-title>
-                            </v-list-tile>
-                            <v-list-tile to="/admin/escolas">
-                                <v-list-tile-title> <i class="material-icons">home</i> Gerir Escolas | Turmas </v-list-tile-title>
-                            </v-list-tile>
-                        </v-list>
-                        <!-- DASHBOARD PROFESSOR-->
-                        <v-list v-if="$store.state.user.tipo == 'professor'">
-                            <v-list-tile to="/atividades">
-                                <v-list-tile-title> <i class="material-icons sm1">build</i>Minhas Atividades </v-list-tile-title>
-                            </v-list-tile>
-                            <v-list-tile to="/escola/turmas">
-                                <v-list-tile-title> <i class="material-icons vsm-icon">group</i>Minhas Turmas </v-list-tile-title>
-                            </v-list-tile>
-                        </v-list>
-
-                    </v-menu>
-                </v-toolbar-items>
+            <b-dropdown v-if="this.$store.state.user" text="Outline Danger" right variant="Success" class="m-2">
+                <template slot="button-content">DASHBOARD</template>
+                <div v-if="$store.state.user.tipo === 'admin'">
+                    <b-dropdown-item to="/admin/patrimonios"><i class="material-icons sm1">build</i> Gerir Patrimónios</b-dropdown-item>
+                    <b-dropdown-item to="/admin/users"><i class="material-icons vsm-icon">group</i> Gerir Utilizadores</b-dropdown-item>
+                    <b-dropdown-item to="/admin/escolas"><i class="material-icons">home</i> Gerir Escolas | Turmas</b-dropdown-item>
+                </div>
+                <div v-if="$store.state.user.tipo === 'professor'">
+                    <b-dropdown-item to="/atividades"><i class="material-icons sm1">build</i>Minhas Atividades</b-dropdown-item>
+                    <b-dropdown-item to="/escola/turmas"><i class="material-icons vsm-icon">group</i>Minhas Turmas</b-dropdown-item>
+                </div>
+            </b-dropdown>
         <v-toolbar-items v-if="!this.$store.state.user">
-
             <v-btn v-if="!isLoading" flat data-toggle="modal" data-target="#loginModal">
                 Login
             </v-btn>
@@ -63,42 +45,44 @@
                 <loader :color="loader_color" :size="loader_size"></loader>
             </v-layout>
         </v-toolbar-items>
-       <div v-else>
-        <v-menu offset-y origin="center left" nudge-left class="elelvation-1" :nudge-bottom="14" transition="scale-transition">
-            <v-btn icon flat slot="activator">
-                <v-badge color="red" overlap>
-                    <span slot="badge">3</span>
-                    <v-icon medium>notifications</v-icon>
-                </v-badge>
-            </v-btn>
-        </v-menu>
-           <!--AVATAR-->
-        <v-menu offset-y origin="center center" :nudge-bottom="10" transition="scale-transition">
-            <v-btn icon large flat slot="activator">
-                <v-avatar size="30px" class="bg-success">
-                    <img v-if="this.$store.state.user.foto" v-bind:src="getUserPhoto(this.$store.state.user.foto)"/>
-                    <span v-else>{{this.$store.state.user.nome[0]}}</span>
-                </v-avatar>
-            </v-btn>
-            <v-list class="pa-0" absolute>
-                <v-list-tile ripple="ripple" rel="noopener" to="/me/perfil">
-                    <v-list-tile-action >
-                        <v-icon>account_circle</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Perfil</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-                <v-list-tile ripple="ripple" rel="noopener" @click="logout">
-                    <v-list-tile-action >
-                        <v-icon>fullscreen_exit</v-icon>
-                    </v-list-tile-action>
-                    <v-list-tile-content>
-                        <v-list-tile-title>Logout</v-list-tile-title>
-                    </v-list-tile-content>
-                </v-list-tile>
-            </v-list>
-        </v-menu>
+        <div v-else>
+            <v-menu offset-y origin="center left" nudge-left class="elelvation-1" :nudge-bottom="14" transition="scale-transition">
+                <v-btn icon flat slot="activator">
+                    <v-badge color="red" overlap>
+                        <span slot="badge">3</span>
+                        <v-icon medium>notifications</v-icon>
+                    </v-badge>
+                </v-btn>
+            </v-menu>
+            <!--AVATAR-->
+            <b-dropdown v-if="this.$store.state.user" right variant="Success" class="m-2">
+                <template slot="button-content" >
+                    <v-btn icon large flat slot="activator">
+                        <v-avatar size="30px" class="bg-success">
+                            <img v-if="this.$store.state.user.foto" v-bind:src="getUserPhoto(this.$store.state.user.foto)"/>
+                            <span v-else>{{this.$store.state.user.nome[0]}}</span>
+                        </v-avatar>
+                    </v-btn>
+                </template>
+                <v-list class="pa-0" absolute>
+                    <v-list-tile ripple="ripple" rel="noopener" to="/me/perfil">
+                        <v-list-tile-action >
+                            <v-icon>account_circle</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Perfil</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-list-tile ripple="ripple" rel="noopener" @click="logout">
+                        <v-list-tile-action >
+                            <v-icon>fullscreen_exit</v-icon>
+                        </v-list-tile-action>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Logout</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                </v-list>
+            </b-dropdown>
        </div>
     </v-toolbar>
 
@@ -176,3 +160,9 @@
         }
     };
 </script>
+<style>
+    .dash{
+        color:black!important
+        bold
+    }
+</style>

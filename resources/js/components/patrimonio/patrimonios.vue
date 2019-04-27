@@ -37,12 +37,11 @@
                                     multiple
                                 ></v-select>
                             </v-flex>
-
                             <v-spacer></v-spacer>
                             <v-text-field
                                 v-model="search"
-                                append-icon="search"
-                                label="Search"
+                                append-icon="pesquisa"
+                                label="Pesquisar"
                                 single-line
                                 hide-details
                                 clearable
@@ -94,7 +93,7 @@
                 },
                 distritoSelected: 'Todos',
                 epocaSelected: 'Todas',
-                cicloSelected: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
+                cicloSelected: [],
                 distritos: ['Todos', 'Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
                     'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
                     'Vila Real', 'Viseu', 'Açores', 'Madeira'],
@@ -136,7 +135,7 @@
                 return this.patrimonios.filter((i) => {
                     return (this.distritoSelected === 'Todos' || i.distrito === this.distritoSelected)
                         && (this.epocaSelected === 'Todas' || i.epoca === this.epocaSelected)
-                        && (this.cicloSelected.indexOf(i.ciclo) > -1);
+                        && (this.cicloSelected.length === 0 || this.cicloSelected.indexOf(i.ciclo) > -1);
                 });
             }
         }

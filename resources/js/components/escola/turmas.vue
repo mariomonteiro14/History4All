@@ -33,8 +33,8 @@
                         <v-flex xs12 sm3 d-flex>
                             <v-text-field
                                 v-model="search"
-                                append-icon="search"
-                                label="Search"
+                                append-icon="pesquisa"
+                                label="Pesquisar"
                                 single-line
                                 hide-details
                                 clearable
@@ -210,8 +210,7 @@
         computed: {
             filteredTurmas() {
                 return this.myEscola.turmas.filter((i) => {
-                    return (this.ciclosSelected.length === 0 || this.ciclosSelected.length === 4 ||
-                        this.ciclosSelected.indexOf(i.ciclo) !== -1)
+                    return (this.ciclosSelected.length === 0 || this.ciclosSelected.indexOf(i.ciclo) !== -1)
                         && (this.search === "" || i.nome.includes(this.search))
                         && (this.tipoSelected === "Todas" || i.professor.includes(this.$store.state.user.nome));
                 });
