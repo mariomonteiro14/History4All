@@ -55,7 +55,7 @@
                 </v-btn>
             </v-menu>
             <!--AVATAR-->
-            <b-dropdown v-if="this.$store.state.user" right variant="Success" class="m-2">
+            <b-dropdown v-if="this.$store.state.user" right variant="Success" class="m-2" no-caret>
                 <template slot="button-content" >
                     <v-btn icon large flat slot="activator">
                         <v-avatar size="30px" class="bg-success">

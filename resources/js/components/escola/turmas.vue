@@ -71,12 +71,12 @@
                                 </v-btn>
                             </td>
                             <td>
-                                <v-btn v-if="$store.state.user.nome == props.item.professor" color="warning"
+                                <v-btn v-if="$store.state.user.email === props.item.professor[0].email" color="warning"
                                        @click="showEditTurma(props.item)">Editar
                                     <v-icon small>edit</v-icon>
 
                                 </v-btn>
-                                <v-btn v-if="$store.state.user.nome == props.item.professor" color="error"
+                                <v-btn v-if="$store.state.user.email === props.item.professor[0].email" color="error"
                                        @click.stop="apagarVerificacao(props.item)">
                                     Apagar
                                     <v-icon small>delete_forever</v-icon>
@@ -174,17 +174,16 @@
             },
             showTurmaAlunos(turma) {
                 this.turmaAtual = turma;
-
                 $('#turmaAlunosModal').modal('show');
             },
             showCriarTurma() {
                 this.turmaAtual = {};
-                this.turmaAtual.professor = this.$store.state.user.nome;
+                this.turmaAtual.professor = this.$store.state.user.email;
                 $('#addTurmaModal').modal('show');
             },
             showEditTurma(turma) {
                 this.turmaAtual = Object.assign({}, turma);
-                this.turmaAtual.professor = this.turmaAtual.professor[0];
+                this.turmaAtual.professor = this.turmaAtual.professor[0].email;
                 $('#addTurmaModal').modal('show');
             },
 
@@ -212,7 +211,7 @@
                 return this.myEscola.turmas.filter((i) => {
                     return (this.ciclosSelected.length === 0 || this.ciclosSelected.indexOf(i.ciclo) !== -1)
                         && (this.search === "" || i.nome.includes(this.search))
-                        && (this.tipoSelected === "Todas" || i.professor.includes(this.$store.state.user.nome));
+                        && (this.tipoSelected === "Todas" || i.professor[0].email === this.$store.state.user.email);
                 });
             }
         }

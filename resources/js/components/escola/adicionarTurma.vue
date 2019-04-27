@@ -114,14 +114,12 @@
 
         created() {
             if (this.$store.state.user.tipo == "professor") {
-                this.turma.professor = this.$store.state.user.name;
                 this.getAlunos();
                 return;
             }
             this.getProfessores();
             this.getAlunos();
         },
-
         data: function () {
             return {
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
@@ -142,7 +140,6 @@
             },
             save: function () {
                 //this.turma.alunos = this.alunosSelected;
-                console.log(this.turma);
                 axios.post('/api/escolas/' + this.escola.id + '/turmas', this.turma).then(response => {
                     this.toastPopUp("success", "Turma Criada!");
                     this.cleanForm();
