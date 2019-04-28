@@ -186,6 +186,9 @@
             showEditTurma(turma) {
                 this.turmaAtual = Object.assign({}, turma);
                 this.turmaAtual.professor = this.turmaAtual.professor[0];
+                if(turma.alunos) {
+                    this.turmaAtual.alunos = turma.alunos.map(a => ({...a}));
+                }
                 $('#addTurmaModal').modal('show');
             },
 

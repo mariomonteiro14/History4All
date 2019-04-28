@@ -56,7 +56,7 @@ class EscolaControllerAPI extends Controller
         $request->validate([
             'nome' => 'required|min:1|max:9',
             'ciclo' => 'required',
-            'professor' => 'nullable',
+            'professor' => 'nullable|email',
         ]);
 
         $escola = Escola::findOrFail($id);
@@ -69,8 +69,8 @@ class EscolaControllerAPI extends Controller
         $turma->fill($request->all());
         $turma->ciclo = $request->input('ciclo');
 
-        if ($request->has('professor') && $request->has('professor.email') && $request->input('professor.email') != "") {
-            $professor = User::where('email', $request->input('professor.email'))->first();
+        if ($request->has('professor') && $request->input('professor') != "") {
+            $professor = User::where('email', $request->input('professor'))->first();
             if (!$professor || $professor->tipo != 'professor') {
                 return response()->json("Professor Invalido", 500);
             }
@@ -99,7 +99,7 @@ class EscolaControllerAPI extends Controller
         $request->validate([
             'nome' => 'required|min:1|max:9',
             'ciclo' => 'required',
-            'professor' => 'nullable',
+            'professor' => 'nullable|email',
         ]);
 
         $turma = Turma::findOrFail($id);
@@ -116,8 +116,9 @@ class EscolaControllerAPI extends Controller
         }
 
         $turma->ciclo = $request->input('ciclo');
-        if ($request->has('professor') && $request->has('professor.email') && $request->input('professor.email') != "") {
-            $professor = User::where('email', $request->input('professor.email'))->first();
+
+        if ($request->has('professor') && $request->input('professor') != "") {
+            $professor = User::where('email', $request->input('professor'))->first();
             if (!$professor || $professor->tipo != 'professor') {
                 return response()->json("Professor Invalido", 500);
             }

@@ -326,7 +326,7 @@
                 });
             },
             //Metodos pra corrigir bug nos Modal
-            setOpenList(lista) {
+            setOpenList() {
                 setTimeout(() => {
                     if ( this.$refs.selectT.isMenuActive == true || this.$refs.selectE.isMenuActive == true) {
                         setTimeout(() => {

@@ -65,7 +65,7 @@
                                 :items="turmas"
                                 item-text="nome"
                                 class="input-group--focused"
-                                :rules="[(v) => (!!v && this.$store.state.user.tipo == 'professor') || 'Turma é obrigatório']"
+                                :rules="[(v) => (!(!v && this.$store.state.user.tipo == 'professor')) || 'Turma é obrigatório']"
                                 clearable
                             ></v-select>
                         </div>
@@ -138,7 +138,7 @@
 
             setOpenList() {
                 setTimeout(() => {
-                    if ( this.$refs.selectT.isMenuActive == true || this.$refs.selectE.isMenuActive == true || this.$refs.selectA.isMenuActive == true) {
+                    if ((this.$refs.selectT && this.$refs.selectT.isMenuActive == true) || (this.$refs.selectE && this.$refs.selectE.isMenuActive == true) || (this.$refs.selectA && this.$refs.selectA.isMenuActive == true)) {
                         setTimeout(() => {
                             this.selAberto = true;
                         }, 30);
@@ -149,9 +149,15 @@
             closeLists() {
                 if (this.selAberto == true) {
                     this.selAberto = false;
-                    this.$refs.selectT.isMenuActive = false;
-                    this.$refs.selectE.isMenuActive = false;
-                    this.$refs.selectA.isMenuActive = false;
+                    if (this.$refs.selectT) {
+                        this.$refs.selectT.isMenuActive = false;
+                    }
+                    if (this.$refs.selectE) {
+                        this.$refs.selectE.isMenuActive = false;
+                    }
+                    if (this.$refs.selectA) {
+                        this.$refs.selectA.isMenuActive = false;
+                    }
                 }
 
             },

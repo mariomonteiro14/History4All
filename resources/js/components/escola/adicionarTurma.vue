@@ -28,20 +28,18 @@
                                     label="Professor"
                                     v-model="turma.professor"
                                     :items="filteredProfessores"
+                                    item-text="nome"
+                                    item-value="email"
                                     class="input-group--focused"
                                     clearable
                                     :disabled="this.$store.state.user.tipo != 'admin'"
                                     ref="selectProfessor"
                                     @click="selProfAberto=true"
                             >
-                                <template slot="selection" slot-scope="data">
-                                    <v-chip :selected="data.selected"close class="chip--select-multi" @input="remove(data.item)">
-                                        {{ data.item.nome }}
-                                    </v-chip>
-                                </template>
                                 <template slot="item" slot-scope="data">
                                     <v-list-tile-avatar>
-                                        <img width="30px" height="30px" v-bind:src="getUserPhoto(data.item.foto)"/>
+                                        <img v-if="data.item.foto && data.item.foto!=''"  width="30px" height="30px" v-bind:src="getUserPhoto(data.item.foto)"/>
+                                        <span v-else>{{data.item.nome[0]}}</span>
                                     </v-list-tile-avatar>
                                     <v-list-tile-title v-html="data.item.nome"></v-list-tile-title>
                                 </template>
@@ -115,6 +113,7 @@
                 this.getAlunos();
                 return;
             }
+
             this.getProfessores();
             this.getAlunos();
         },
@@ -137,8 +136,11 @@
                 this.alunosSelected.alunos = [...this.alunosSelected];
             },
             save: function () {
-                //this.turma.alunos = this.alunosSelected;
-                axios.post('/api/escolas/' + this.escola.id + '/turmas', this.turma).then(response => {
+                if (this.turma.professor.nome){
+                    this.turma.professor = this.turma.professor.email;
+                }
+
+               axios.post('/api/escolas/' + this.escola.id + '/turmas', this.turma).then(response => {
                     this.toastPopUp("success", "Turma Criada!");
                     this.cleanForm();
                     this.getAlunos();
@@ -149,7 +151,10 @@
                 })
             },
             edit: function () {
-                //this.turma.alunos = this.alunosSelected;
+                if (this.turma.professor.nome){
+                    this.turma.professor = this.turma.professor.email;
+                }
+
                 axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
                     this.toastPopUp("success", "Turma Atualizada!");
                     this.cleanForm();
@@ -246,7 +251,7 @@
                         return i.escola[0] === this.escola.nome;
                     });
                 }
-                return [{nome: this.turma.professor}];
+                return [this.turma.professor];
             },
 
             filteredAlunos() {

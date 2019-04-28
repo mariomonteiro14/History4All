@@ -163,17 +163,6 @@ class UserControllerAPI extends Controller
             }
         }
 
-        /*} elseif ($user->tipo == "aluno") {
-            $escola = Escola::where('nome', $request->escola)->first();
-            $turma = Turma::where('escola_id', $escola->id)->where('nome', $request->turma)->first();
-            $user->escola_id = $escola->id;
-            $user->turma_id = $turma->id;
-        } else {
-            $escola = Escola::where('nome', $request->escola)->first();
-            $user->escola_id = $escola->id;
-            $user->turma_id = null;
-        }*/
-
         $user->setRememberToken(Str::random(10));
 
 
