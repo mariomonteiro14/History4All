@@ -136,7 +136,7 @@
                 this.alunosSelected.alunos = [...this.alunosSelected];
             },
             save: function () {
-                if (this.turma.professor.email){
+                if (this.turma.professor && this.turma.professor.email){
                     this.turma.professor = this.turma.professor.email;
                 }
 
@@ -151,7 +151,7 @@
                 })
             },
             edit: function () {
-                if (this.turma.professor.email){
+                if (this.turma.professor && this.turma.professor.email){
                     this.turma.professor = this.turma.professor.email;
                 }
 
