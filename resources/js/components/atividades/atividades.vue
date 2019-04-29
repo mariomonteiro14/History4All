@@ -153,34 +153,31 @@
             showAtividade(atividade) {
                 this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
             },
-            ciclosFormatados(atividadesRecebidas) {
+            formatarTexto(atividadesRecebidas) {
                 atividadesRecebidas.map(atividade => {
                     let ciclos = atividade.ciclo;
-                    let str = 'ciclos: ';
+                    let cicloString = 'ciclos: ';
                     ciclos.forEach((ciclo, index) => {
                         if (ciclo.includes('ciclo')) {
-                            str += ciclo.substring(0, 2);
+                            cicloString += ciclo.substring(0, 2);
                         } else {
-                            str += ciclo;
+                            cicloString += ciclo;
                         }
                         if (index !== ciclos.length - 1) {
-                            str += ', '
+                            cicloString += ', '
                         }
                     });
-                    this.atividades.filter(a => a.id === atividade.id)[0].ciclosFormatados = str;
-                });
-            },
-            epocasFormatadas(atividadesRecebidas) {
-                atividadesRecebidas.map(atividade => {
                     let epocas = atividade.epoca;
-                    let str = 'epocas: ';
+                    let epocaString = 'epocas: ';
                     epocas.forEach((epoca, index) => {
-                        str += epoca;
+                        epocaString += epoca;
                         if (index !== epocas.length - 1) {
-                            str += ', '
+                            epocaString += ', '
                         }
                     });
-                    this.atividades.filter(a => a.id === atividade.id)[0].epocasFormatadas = str;
+                    let ativ = this.atividades.filter(a => a.id === atividade.id)[0];
+                    ativ.ciclosFormatados = cicloString;
+                    ativ.epocasFormatadas = epocaString;
                 });
             }
         },
@@ -201,8 +198,7 @@
             filteredAtividades(atividadesFiltradas){
                 let atividadesSemTextoFormatado = atividadesFiltradas.filter(a => !a.ciclosFormatados);
                 if (atividadesSemTextoFormatado.length !== 0) {
-                    this.ciclosFormatados(atividadesSemTextoFormatado);
-                    this.epocasFormatadas(atividadesSemTextoFormatado);
+                    this.formatarTexto(atividadesSemTextoFormatado);
                     this.atividades.splice(this.atividades.length);
                 }
             },

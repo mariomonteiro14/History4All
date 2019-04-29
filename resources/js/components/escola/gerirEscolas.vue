@@ -59,9 +59,11 @@
                                     <td class="text-xs-left">{{props.item.nome}}</td>
                                     <td class="text-xs-center">
                                         <div v-if="props.item.professor[0] && props.item.professor[0].foto">
-                                            <div class="zoom">
-                                                <img width="30px" height="30px" v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
-                                            </div>
+                                            <img class="zoom" width="30px" height="30px" v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
+                                        </div>
+                                    </td>
+                                    <td class="text-xs-center">
+                                        <div v-if="props.item.professor[0]">
                                             {{props.item.professor[0].nome}}
                                         </div>
                                     </td>
@@ -150,6 +152,7 @@
                 ],
                 headersTurma: [
                     {text: 'Nome', value: 'nome', align:'left'},
+                    {text: 'Foto', align:'center', sortable: false},
                     {text: 'Professor', align:'center', value: 'professor'},
                     {text: 'Numero de Alunos', align:'center', value: 'numero'},
                     {text: 'Ciclo', align:'center', value: 'ciclo'},

@@ -23,7 +23,7 @@
                             ></v-text-field>
                         </div>
 
-                        <div @click="setOpenList('professor')">
+                        <div @click="setOpenList('professor')" v-if="this.$store.state.user.tipo === 'admin'">
                             <v-select
                                     label="Professor"
                                     v-model="turma.professor"
@@ -38,7 +38,7 @@
                             >
                                 <template slot="item" slot-scope="data">
                                     <v-list-tile-avatar>
-                                        <img v-if="data.item.foto && data.item.foto!=''"  width="30px" height="30px" v-bind:src="getUserPhoto(data.item.foto)"/>
+                                        <img v-if="data.item.foto"  width="30px" height="30px" v-bind:src="getUserPhoto(data.item.foto)"/>
                                         <span v-else>{{data.item.nome[0]}}</span>
                                     </v-list-tile-avatar>
                                     <v-list-tile-title v-html="data.item.nome"></v-list-tile-title>
@@ -251,7 +251,7 @@
                         return i.escola[0] === this.escola.nome;
                     });
                 }
-                return [this.turma.professor];
+                return [this.$store.state.user];
             },
 
             filteredAlunos() {
