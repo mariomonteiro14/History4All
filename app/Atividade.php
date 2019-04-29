@@ -44,17 +44,13 @@ class Atividade extends Model
     public function ciclo(){
         return $this->join('atividade_patrimonios', 'atividade_id', 'id')
             ->join('patrimonios as p', 'patrimonio_id','p.id')
-            ->where('atividade_id', $this->id)
-            ->distinct('ciclo')
-            ->pluck('ciclo');
+            ->where('atividade_id', $this->id)->distinct('ciclo')->orderBy('ciclo')->pluck('ciclo');
     }
 
     public function epoca(){
         return $this->join('atividade_patrimonios', 'atividade_id', 'id')
             ->join('patrimonios as p', 'patrimonio_id','p.id')
-            ->where('atividade_id', $this->id)
-            ->distinct('epoca')
-            ->pluck('epoca');
+            ->where('atividade_id', $this->id)->distinct('epoca')->orderBy('epoca')->pluck('epoca');
     }
 
     public function patrimonioImagem(){

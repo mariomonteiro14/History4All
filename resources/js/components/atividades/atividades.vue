@@ -74,10 +74,9 @@
             <v-card>
                 <v-container fluid grid-list-md>
                     <v-layout row wrap>
-                        <v-flex v-for="(atividade, index) in filteredAtividades" :key="index"
-                                @click="showAtividade(atividade)">
+                        <v-flex v-for="(atividade, index) in filteredAtividades" :key="index">
                             <v-hover>
-                                <v-card height="300" width="300" slot-scope="{ hover }" class="mx-auto">
+                                <v-card @click="showAtividade(atividade)" height="300" width="300" slot-scope="{ hover }" class="mx-auto">
                                     <v-img class="white--text" max-height="250" v-if="atividade.imagem"
                                            v-bind:src="getPatrimonioPhoto(atividade.imagem)">
                                         <v-expand-transition>
@@ -146,8 +145,6 @@
                 axios.get(url)
                     .then(response => {
                         this.atividades = response.data.data;
-                        this.ciclosFormatados();
-                        this.epocasFormatadas();
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -156,12 +153,11 @@
             showAtividade(atividade) {
                 this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
             },
-            ciclosFormatados() {
-                let todosCiclosFormatados = this.atividades.map(function (atividade) {
+            ciclosFormatados(atividadesRecebidas) {
+                atividadesRecebidas.map(atividade => {
                     let ciclos = atividade.ciclo;
                     let str = 'ciclos: ';
-                    ciclos.sort();
-                    ciclos.forEach(function (ciclo, index) {
+                    ciclos.forEach((ciclo, index) => {
                         if (ciclo.includes('ciclo')) {
                             str += ciclo.substring(0, 2);
                         } else {
@@ -171,33 +167,20 @@
                             str += ', '
                         }
                     });
-                    return str;
-                });
-                Promise.all(todosCiclosFormatados).then(() => {
-                    this.atividades.forEach(function (atividade, index) {
-                        atividade.ciclosFormatados = todosCiclosFormatados[index];
-                    });
-                    this.atividades.splice(this.atividades.length);//atualiza na vista
+                    this.atividades.filter(a => a.id === atividade.id)[0].ciclosFormatados = str;
                 });
             },
-            epocasFormatadas() {
-                let todasEpocasFormatadas = this.atividades.map(function (atividade) {
+            epocasFormatadas(atividadesRecebidas) {
+                atividadesRecebidas.map(atividade => {
                     let epocas = atividade.epoca;
                     let str = 'epocas: ';
-                    epocas.sort();
-                    epocas.forEach(function (epoca, index) {
+                    epocas.forEach((epoca, index) => {
                         str += epoca;
                         if (index !== epocas.length - 1) {
                             str += ', '
                         }
                     });
-                    return str;
-                });
-                Promise.all(todasEpocasFormatadas).then(() => {
-                    this.atividades.forEach(function (atividade, index) {
-                        atividade.epocasFormatadas = todasEpocasFormatadas[index];
-                    });
-                    this.atividades.splice(this.atividades.length);//atualiza na vista
+                    this.atividades.filter(a => a.id === atividade.id)[0].epocasFormatadas = str;
                 });
             }
         },
@@ -211,11 +194,18 @@
                         && (this.search === "" || i.descricao.includes(this.search));
                 });
                 this.atividadesFiltradasLength = atividadesFiltradas.length;
-                atividadesFiltradas = atividadesFiltradas.slice(0, this.limite);
-                return atividadesFiltradas;
+                return atividadesFiltradas.slice(0, this.limite);
             },
         },
         watch: {
+            filteredAtividades(atividadesFiltradas){
+                let atividadesSemTextoFormatado = atividadesFiltradas.filter(a => !a.ciclosFormatados);
+                if (atividadesSemTextoFormatado.length !== 0) {
+                    this.ciclosFormatados(atividadesSemTextoFormatado);
+                    this.epocasFormatadas(atividadesSemTextoFormatado);
+                    this.atividades.splice(this.atividades.length);
+                }
+            },
             tipoDePesquisaSelected(tipo) {
                 tipo === 'Todas' ?
                     this.getAtividades('/api/users/' + this.$store.state.user.id + '/atividades') :

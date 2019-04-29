@@ -23,7 +23,7 @@
                             ></v-text-field>
                         </div>
 
-                        <div @click="setOpenList('professor')">
+                        <div @click="setOpenList('professor')" v-if="this.$store.state.user.tipo == 'admin'">
                             <v-select
                                     label="Professor"
                                     v-model="turma.professor"
@@ -136,7 +136,7 @@
                 this.alunosSelected.alunos = [...this.alunosSelected];
             },
             save: function () {
-                if (this.turma.professor.nome){
+                if (this.turma.professor){
                     this.turma.professor = this.turma.professor.email;
                 }
 
@@ -151,7 +151,7 @@
                 })
             },
             edit: function () {
-                if (this.turma.professor.nome){
+                if (this.turma.professor){
                     this.turma.professor = this.turma.professor.email;
                 }
 

@@ -123,6 +123,8 @@ class EscolaControllerAPI extends Controller
                 return response()->json("Professor Invalido", 500);
             }
             $turma->professor_id = $professor->id;
+        } elseif ($turma->professor_id != null){//se tinha professor e foi removido
+            $turma->professor_id = null;
         }
 
         if($request->has('alunos') && sizeof($request->alunos) > 0){
