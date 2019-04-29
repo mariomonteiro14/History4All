@@ -23,25 +23,28 @@
                             ></v-text-field>
                         </div>
 
-                        <div @click="setOpenList('professor')" v-if="this.$store.state.user.tipo === 'admin'">
+                        <div @click="setOpenList('professor')">
                             <v-select
-                                    label="Professor"
-                                    v-model="turma.professor"
-                                    :items="filteredProfessores"
-                                    item-text="nome"
-                                    item-value="email"
-                                    class="input-group--focused"
-                                    clearable
-                                    :disabled="this.$store.state.user.tipo != 'admin'"
-                                    ref="selectProfessor"
-                                    @click="selProfAberto=true"
+                                label="Professor"
+                                v-model="turma.professor"
+                                :items="filteredProfessores"
+                                item-text="nome"
+                                item-value="email"
+                                class="input-group--focused"
+                                clearable
+                                :disabled="this.$store.state.user.tipo != 'admin'"
+                                ref="selectProfessor"
+                                @click="selProfAberto=true"
                             >
-                                <template slot="item" slot-scope="data">
+                                <template slot="item" slot-scope="data" v-if="data.item">
+
                                     <v-list-tile-avatar>
-                                        <img v-if="data.item.foto"  width="30px" height="30px" v-bind:src="getUserPhoto(data.item.foto)"/>
+                                        <img v-if="data.item.foto && data.item.foto!=''" width="30px" height="30px"
+                                             v-bind:src="getUserPhoto(data.item.foto)"/>
                                         <span v-else>{{data.item.nome[0]}}</span>
                                     </v-list-tile-avatar>
                                     <v-list-tile-title v-html="data.item.nome"></v-list-tile-title>
+
                                 </template>
                             </v-select>
                         </div>
@@ -89,14 +92,14 @@
                     </div>
 
 
-                <div class="modal-footer">
-                    <button v-if="!turma.id" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">
-                        Registar
-                    </button>
-                    <button v-else class="btn btn-info" v-on:click.prevent="edit" :disabled="hasErrors">Guardar
-                    </button>
-                    <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
-                </div>
+                    <div class="modal-footer">
+                        <button v-if="!turma.id" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">
+                            Registar
+                        </button>
+                        <button v-else class="btn btn-info" v-on:click.prevent="edit" :disabled="hasErrors">Guardar
+                        </button>
+                        <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
                 </div>
             </div>
 
@@ -136,11 +139,11 @@
                 this.alunosSelected.alunos = [...this.alunosSelected];
             },
             save: function () {
-                if (this.turma.professor && this.turma.professor.email){
+                if (this.turma.professor && this.turma.professor.email) {
                     this.turma.professor = this.turma.professor.email;
                 }
 
-               axios.post('/api/escolas/' + this.escola.id + '/turmas', this.turma).then(response => {
+                axios.post('/api/escolas/' + this.escola.id + '/turmas', this.turma).then(response => {
                     this.toastPopUp("success", "Turma Criada!");
                     this.cleanForm();
                     this.getAlunos();
@@ -151,7 +154,7 @@
                 })
             },
             edit: function () {
-                if (this.turma.professor && this.turma.professor.email){
+                if (this.turma.professor && this.turma.professor.email) {
                     this.turma.professor = this.turma.professor.email;
                 }
 
@@ -264,17 +267,6 @@
                 return !this.turma.id ? this.escola.nome + " - Criar Turma" : "Editar Turma " + this.turma.nome;
             },
         },
-        /* watch: {
-             'turma.id': function () {
-                 this.alunosSelected = [];
-
-                 if(this.turma.alunos) {
-                     this.alunosSelected = this.turma.alunos.map(a => ({...a}));
-                 }
-                 this.removedAlunos = [];
-             },
-         }*/
-
 
     }
 </script>
