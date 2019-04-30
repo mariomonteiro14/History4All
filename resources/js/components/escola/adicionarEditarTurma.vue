@@ -264,7 +264,7 @@
 
             },
             getTitle() {
-                return !this.turma.id ? this.escola.nome + " - Criar Turma" : "Editar Turma " + this.turma.nome;
+                return !this.turma.id ? this.escola.nome + " - Adicionar Turma" : "Editar Turma " + this.turma.nome;
             },
         },
 

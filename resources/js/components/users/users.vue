@@ -26,7 +26,7 @@
                                 clearable
                             ></v-text-field>
                             <v-spacer></v-spacer>
-                            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar utilizador <i
+                            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Adicionar utilizador <i
                                 class="material-icons">add_box</i>
                             </v-btn>
                             <v-btn v-if="trashed" color="warning" @click="getUsers()">Utilizadores Ativos</v-btn>
@@ -61,7 +61,7 @@
                                 <v-icon small class="mr-2">edit</v-icon>
                             </v-btn>
                             <v-btn color="error" @click.stop="showDeleteVerif(props.item.id)">
-                                Apagar
+                                Eliminar
                                 <v-icon small>delete_forever</v-icon>
                             </v-btn>
 
@@ -73,7 +73,7 @@
                                 <v-icon small class="mr-2"></v-icon>
                             </v-btn>
                             <v-btn color="error" @click.stop="showDeleteVerif(props.item.id)">
-                                Apagar
+                                Eliminar
                                 <v-icon small>delete_forever</v-icon>
                             </v-btn>
                         </td>
@@ -91,7 +91,7 @@
         <v-dialog v-model="dialog" max-width="290">
             <v-card>
                 <v-card-title class="headline">Confirmação</v-card-title>
-                <v-card-text>Tem acerteza que que elimiar o utilizador?</v-card-text>
+                <v-card-text>Tem a certeza que que elimiar o utilizador?</v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="red darken-1" flat="flat" @click="dialog = false">

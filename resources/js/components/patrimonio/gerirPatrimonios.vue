@@ -17,10 +17,7 @@
                             clearable
                         ></v-text-field>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" @click="criar()">Criar património <i class="material-icons">add_box</i>
-                        </v-btn>
-
-                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal">Criar património <i
+                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal">Adicionar património <i
                             class="material-icons">add_box</i>
                         </v-btn>
                     </v-layout>
@@ -39,16 +36,12 @@
                             <td class="text-xs-left">{{ props.item.epoca }}</td>
                             <td class="text-xs-left">{{ props.item.ciclo }}</td>
                             <td class="justify-left layout px-0">
-                                <v-btn color="warning" @click="editar(props.item)">
-                                    Editar
-                                    <v-icon small class="mr-2">edit</v-icon>
-                                </v-btn>
                                 <v-btn color="warning" @click="showEdit(props.item)">
                                     Editar
                                     <v-icon small class="mr-2">edit</v-icon>
                                 </v-btn>
                                 <v-btn color="error" @click.stop="apagarVerificacao(props.item.id)">
-                                    Apagar
+                                    Eliminar
                                     <v-icon small>delete_forever</v-icon>
                                 </v-btn>
                             </td>
@@ -148,10 +141,7 @@
                         console.log(errors);
                     });
             },
-            editar(patrimonio) {
-                this.$parent.patrimonio = patrimonio;
-                this.$router.push('/admin/patrimonios/editar');
-            },
+
             apagarVerificacao(id) {
                 this.dialog = true;
                 this.patrimonioAApagar = id;
@@ -167,9 +157,6 @@
                     console.log(error);
                 });
             },
-            criar() {
-                this.$router.push('/admin/patrimonios/criar');
-            }
         }
     }
 </script>

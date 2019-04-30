@@ -36,7 +36,6 @@ const routes = [
     { path: '/admin', name: 'dashboard',component: require('./components/dashboard.vue').default},
     { path: '/admin/patrimonios', name: 'gerirPatrimonios',component: require('./components/patrimonio/gerirPatrimonios.vue').default},
     { path: '/admin/patrimonios/editar', name: 'editarPatrimonio',component: require('./components/patrimonio/editarPatrimonio.vue').default},
-    { path: '/admin/patrimonios/criar', name: 'criarPatrimonio',component: require('./components/patrimonio/criarPatrimonio.vue').default},
     { path: '/admin/escolas', name: 'gerirEscolas',component: require('./components/escola/gerirEscolas.vue').default},
     { path: '/atividades', name: 'atividades',component: require('./components/atividades/atividades.vue').default},
     { path: '/admin/users', name: 'gestor_users',component: require('./components/users/users.vue').default},

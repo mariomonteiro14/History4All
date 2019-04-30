@@ -7,7 +7,7 @@
                 <div class="modal-content">
                     <div class="container box" @click="closeLists">
                         <div  class="modal-header">
-                            <h5 class="modal-title" id="addUserModal">Criar Utilizador</h5>
+                            <h5 class="modal-title" id="addUserModal">Adicionar Utilizador</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
                                     aria-label="Close">
                                 <span aria-hidden="true">&times;</span>

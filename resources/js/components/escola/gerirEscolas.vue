@@ -23,7 +23,7 @@
                             class="input-group--focused"
                         ></v-select>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" data-toggle="modal" data-target="#addEscolaModal">Criar Escola <i
+                        <v-btn color="success" data-toggle="modal" data-target="#addEscolaModal">Adicionar Escola <i
                             class="material-icons">add_box</i>
                         </v-btn>
                     </v-layout>
@@ -41,11 +41,11 @@
                                 </v-btn>
                             </td>
                             <td class="justify-center layout px-0">
-                                <v-btn color="success" @click="showCriarTurma(props.item)">Criar Turma <i
+                                <v-btn color="success" @click="showCriarTurma(props.item)">Adicionar Turma <i
                                     class="material-icons">add_box</i>
                                 </v-btn>
                                 <v-btn color="error" @click.stop="apagarVerificacao(props.item, true)">
-                                    Apagar
+                                    Eliminar
                                     <v-icon small>delete_forever</v-icon>
                                 </v-btn>
                             </td>
@@ -78,7 +78,7 @@
 
                                         </v-btn>
                                         <v-btn color="error" @click.stop="apagarVerificacao(props.item, false)">
-                                            Apagar
+                                            Eliminar
                                             <v-icon small>delete_forever</v-icon>
                                         </v-btn>
                                     </td>
@@ -117,7 +117,7 @@
 <script>
     import listaAlunos from './showTurmaAlunos';
     import criarEscola from './adicionarEscola';
-    import criarTurma from './adicionarTurma';
+    import criarTurma from './adicionarEditarTurma';
 
     export default {
         components: {

@@ -22,19 +22,6 @@
                             ></v-text-field>
                         </div>
 
-                        <!--<div class="form-group">
-                            <v-textarea
-                                name="descricao"
-                                v-model="patrimonio.descricao"
-                                box
-                                label="Descrição"
-                                auto-grow
-                                counter="3000"
-                                :rules="[rules.length(3000)]"
-                                required
-                            ></v-textarea>
-                        </div>-->
-
                         <div id="app">
                             <ckeditor :editor="editor" :config="editorConfig" :value="patrimonio.descricao"
                                       v-model="patrimonio.descricao" required></ckeditor>
@@ -136,7 +123,7 @@
                 editor: ClassicEditor,
                 editorConfig: {
                     toolbar: ['heading', '|', 'Bold', 'Italic', 'bulletedList', 'numberedList', 'blockQuote', 'Link', 'Undo', 'Redo'],
-
+                    //resize_minHeight  : 200,
                     heading: {
                         options: [
                             {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
@@ -165,7 +152,7 @@
                 return this.patrimonio.id > 0 ? false : true;
             },
             getTitle() {
-                return this.isCreated() ? "Criar Patrimonio" : "Editar Patrimonio";
+                return this.isCreated() ? "Adicionar Patrimonio" : "Editar Patrimonio";
             },
 
             getFilesText() {

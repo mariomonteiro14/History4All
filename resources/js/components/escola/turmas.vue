@@ -5,7 +5,7 @@
             <h3>Turmas / Gerir</h3>
             <br>
             <v-card append float>
-                <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Criar Aluno <i
+                <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Adicionar Aluno <i
                     class="material-icons">add_box</i>
                 </v-btn>
                 <v-container fluid grid-list-xl>
@@ -42,7 +42,7 @@
                         </v-flex>
                         <v-spacer></v-spacer>
                         <v-flex xs12 sm3 d-flex>
-                            <v-btn color="success" @click="showCriarTurma">Criar Turma <i
+                            <v-btn color="success" @click="showCriarTurma">Adicionar Turma <i
                                 class="material-icons">add_box</i>
                             </v-btn>
                         </v-flex>
@@ -81,7 +81,7 @@
                                     </v-btn>
                                     <v-btn color="error"
                                            @click.stop="apagarVerificacao(props.item)">
-                                        Apagar
+                                        Eliminar
                                         <v-icon small>delete_forever</v-icon>
                                     </v-btn>
                                 </div>
@@ -115,7 +115,7 @@
 
 <script>
     import listaAlunos from './showTurmaAlunos';
-    import criarTurma from './adicionarTurma';
+    import criarTurma from './adicionarEditarTurma';
     import criarAluno from '../users/adicionarUser';
 
     export default {
