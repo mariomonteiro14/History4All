@@ -33,14 +33,13 @@ const routes = [
     { path: '/me/perfil', name: 'perfil',component: require('./components/users/perfil.vue').default},
     { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonio/patrimonios.vue').default},
     { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/patrimonio/showPatrimonio.vue').default, props: true},
-    { path: '/admin', name: 'dashboard',component: require('./components/dashboard.vue').default},
     { path: '/admin/patrimonios', name: 'gerirPatrimonios',component: require('./components/patrimonio/gerirPatrimonios.vue').default},
-    { path: '/admin/patrimonios/editar', name: 'editarPatrimonio',component: require('./components/patrimonio/editarPatrimonio.vue').default},
     { path: '/admin/escolas', name: 'gerirEscolas',component: require('./components/escola/gerirEscolas.vue').default},
     { path: '/atividades', name: 'atividades',component: require('./components/atividades/atividades.vue').default},
     { path: '/admin/users', name: 'gestor_users',component: require('./components/users/users.vue').default},
     { path: '/users/registarPassword/:token', name: 'registarPassword',component: require('./components/users/registarPassword.vue').default, props: true},
     { path: '/escola/turmas', name: 'turmas',component: require('./components/escola/turmas.vue').default},
+    { path: '/*', name: 'unknown'},
 
 ];
 
@@ -54,24 +53,27 @@ router.beforeEach((to, from, next) => {
         store.commit('loadTokenAndUserFromSession');
     }
     let user = store.state.user;
-    if((to.name == 'dashboard') || (to.name == 'gerirPatrimonios') || (to.name == 'editarPatrimonio') ||
-        (to.name == 'gerirEscolas') || (to.name == 'gestor_users') || (to.name == 'criarPatrimonio')){
+    if(to.name == 'gerirPatrimonios' || to.name == 'gerirEscolas' || to.name == 'gestor_users'){
         if(!user || user.tipo !== "admin"){
             next("/");
             return;
         }
     }
-    if(to.name == 'atividades'){
-        if(!user || user.tipo == "admin"){//professor e aluno
+    if(to.name == 'turmas'){
+        if(!user || user.tipo !== "professor"){
             next("/");
             return;
         }
     }
-    if(to.name == 'perfil'){
+    if(to.name == 'perfil' || to.name == 'atividades'){
         if(!user){
             next("/");
             return;
         }
+    }
+    if(to.name == 'unknown') {
+        next("/");
+        return;
     }
     next();
 });

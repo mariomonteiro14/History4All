@@ -56,6 +56,8 @@
                     this.$emit("logging");
                     this.$store.commit('setUser',response.data.data);
                     this.toastPopUp("success", `Bem Vindo ${this.$store.state.user.nome}`);
+                    this.user.email = '';
+                    this.user.password = '';
                     $('#loginModal').modal('hide');
                 }).catch(error => {
                     this.$emit("logging");

@@ -2,7 +2,7 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <patrimonio-add-edit :patrimonio="patrimonio_atual" v-on:getPat="getPatrimonios()"></patrimonio-add-edit>
+            <patrimonio-add-edit :patrimonio="patrimonioAtual" v-on:getPat="getPatrimonios()"></patrimonio-add-edit>
             <h3> <a href="/patrimonios">Patrimónios </a>/ Gerir</h3>
             <br>
             <v-card append float>
@@ -17,8 +17,8 @@
                             clearable
                         ></v-text-field>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal">Adicionar património <i
-                            class="material-icons">add_box</i>
+                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal" @click="resetPatrimonioAtual()">
+                            Adicionar património <i class="material-icons">add_box</i>
                         </v-btn>
                     </v-layout>
                 </v-container>
@@ -79,7 +79,7 @@
         },
         data() {
             return {
-                patrimonio_atual: {
+                patrimonioAtual: {
                     id: undefined,
                     nome: "",
                     descricao: "",
@@ -124,11 +124,8 @@
             }
         },
         methods: {
-            saveEdit(){
-              console.log(this.patrimonio_atual);
-            },
             showEdit($pat){
-                this.patrimonio_atual = Object.assign({}, $pat);
+                this.patrimonioAtual = Object.assign({}, $pat);
                 $('#addPatrimonioModal').modal('show');
 
             },
@@ -157,6 +154,14 @@
                     console.log(error);
                 });
             },
+            resetPatrimonioAtual(){
+                this.patrimonioAtual.id = undefined ;
+                this.patrimonioAtual.nome = "";
+                this.patrimonioAtual.descricao = "";
+                this.patrimonioAtual.distrito = "";
+                this.patrimonioAtual.epoca = "";
+                this.patrimonioAtual.ciclo = "";
+            }
         }
     }
 </script>

@@ -27,6 +27,14 @@
                                       v-model="patrimonio.descricao" required></ckeditor>
                         </div>
 
+                        <div class="form-group">
+                            <v-textarea
+                                    id="inputNome"
+                                    v-model="links"
+                                    label="Links separados por espaço"
+                            ></v-textarea>
+                        </div>
+
                         <v-container>
                             <v-layout class="form-group" row align-center>
 
@@ -122,8 +130,7 @@
             return {
                 editor: ClassicEditor,
                 editorConfig: {
-                    toolbar: ['heading', '|', 'Bold', 'Italic', 'bulletedList', 'numberedList', 'blockQuote', 'Link', 'Undo', 'Redo'],
-                    //resize_minHeight  : 200,
+                    toolbar: ['heading', '|', 'Bold', 'Italic', 'bulletedList', 'numberedList', 'blockQuote', 'Undo', 'Redo'],
                     heading: {
                         options: [
                             {model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph'},
@@ -145,6 +152,7 @@
                 },
                 attachments: [],
                 removeImagesSelected: [],
+                links: ''
             };
         },
         methods: {
@@ -197,7 +205,6 @@
                     this.attachments.push(files[i]);
                 }
             },
-
             formCreate: function () {
                 let formData = new FormData();
                 formData.append('nome', this.patrimonio.nome);
@@ -224,7 +231,7 @@
                 const config = {
                     headers: {'content-type': 'multipart/form-data'}
                 };
-                axios.post('/api/patrimonios', this.formCreate(), config).then(response => {
+                axios.post('/api/patrimonios', this.formatarDescricaoDoPatrimonio(), config).then(response => {
                     this.toastPopUp("success", "Património Criado!");
                     this.cleanForm();
                     this.$emit('getPat');
@@ -237,7 +244,7 @@
                 const config = {
                     headers: {'content-type': 'multipart/form-data'}
                 };
-                axios.post('/api/patrimonios/' + this.patrimonio.id, this.formCreate(), config).then(response => {
+                axios.post('/api/patrimonios/' + this.patrimonio.id, this.formatarDescricaoDoPatrimonio(), config).then(response => {
                     this.toastPopUp("success", "Património Editado!");
                     this.cleanForm();
                     this.$emit('getPat');
@@ -247,10 +254,7 @@
                     this.toastPopUp("error", `${error.response.data.message}`);
                     console.log(error);
                 });
-
             },
-
-
             cancel: function () {
                 this.cleanForm();
                 $('#addPatrimonioModal').modal('hide');
@@ -276,17 +280,37 @@
                     document.getElementById(imagem).classList.add("border-success");
                 }
             },
+            formatarDescricaoDoPatrimonio(){
+                let $patrimonio = this.formCreate();
+                if (this.links) {
+                    let descricao = $patrimonio.get('descricao') + "<div id='links'><h4>Links sobre o património:</h4><ul>";
+                    this.links.split(" ").forEach(link => {descricao += "<li>" + link + "</li>"});
+                    descricao += "</ul></div>";
+                    $patrimonio.set('descricao', descricao);
+                }
+                return $patrimonio;
+            }
         },
         watch: {
-            patrimonio: function (oldPatrim, newPatrim) {
+            patrimonio: function (newPatrim, oldPatrim) {
                 this.removeImagesSelected = [];
-                if (newPatrim.id) {
-                    newPatrim.imagens.forEach(function (img) {
+                if (oldPatrim.id) {
+                    oldPatrim.imagens.forEach(function (img) {
                         if (document.getElementById(img)) {
                             document.getElementById(img).classList.remove("border-success");
                         }
 
                     });
+                }
+                if (newPatrim.descricao.includes("<div id='links'><h4>Links sobre o património:</h4><ul><li>")){
+                    let linksComTags = newPatrim.descricao.split("<div id='links'><h4>Links sobre o património:</h4><ul><li>")[1].split("<li>");
+                    let linksFormatadosComEspaco = '';
+                    linksComTags.forEach((link , indice) => {
+                        linksFormatadosComEspaco += link.slice(0, link.length - 5) + ' ';
+                    });
+                    this.links = linksFormatadosComEspaco.slice(0, linksFormatadosComEspaco.length - 12);
+                    let descricaoComTag = newPatrim.descricao.split("<div id='links'>")[0];
+                    this.patrimonio.descricao = descricaoComTag.slice(0, descricaoComTag.length - 4);
                 }
             }
         },
@@ -307,5 +331,8 @@
         background-color: white;
         border: 1px solid #DDD;
         padding: 5px;
+    }
+    .ck-editor__editable {
+        min-height: 300px;
     }
 </style>
