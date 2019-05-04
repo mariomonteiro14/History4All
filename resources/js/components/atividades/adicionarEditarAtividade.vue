@@ -102,7 +102,7 @@
                         </div>
                         <div @click="setOpenList('patrimonios')">
                             <v-combobox
-                                    v-model="atividade.patrimonios"
+                                    v-model="patrimoniosSelecionados"
                                     :items="patrimonios"
                                     item-text="nome"
                                     label="Patrimonios"
@@ -152,7 +152,8 @@
                 selAlunosAberto: false,
                 selPatrimoniosAbertos: false,
                 reseted: false,
-                chatExist: false
+                chatExist: false,
+                patrimoniosSelecionados: []
             };
         },
         methods: {
@@ -160,7 +161,7 @@
                 return this.atividade.id > 0 ? false : true;
             },
             save: function () {
-                this.atividade.chatExist = this.chatExist;
+                this.prepararAtividade();
                 axios.post('/api/atividades', this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Criada!");
                     this.cleanForm();
@@ -171,7 +172,7 @@
                 })
             },
             edit: function () {
-                this.atividade.chatExist = this.chatExist;
+                this.prepararAtividade();
                 axios.put('/api/atividades/' + this.atividade.id, this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Atualizada!");
                     this.cleanForm();
@@ -181,22 +182,16 @@
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
+            prepararAtividade(){
+                this.atividade.chatExist = this.chatExist;
+                this.atividade.patrimonios = this.patrimoniosSelecionados;
+                if (this.atividade.visibilidade == 'privado'){
+                    this.participantes = [];
+                }
+            },
             cancel: function () {
                 this.cleanForm();
                 $('#addAtividadeModal').modal('hide');
-            },
-            formCreate: function () {
-                let formData = new FormData();
-                formData.append('titulo', this.atividade.titulo);
-                formData.append('descricao', this.atividade.descricao);
-                formData.append('tipo', this.atividade.tipo);
-                formData.append('numeroElementos', this.atividade.numeroElementos);
-                formData.append('chat', this.atividade.chat);
-                formData.append('data', this.atividade.data);
-                formData.append('visibilidade', this.atividade.visibilidade);
-                formData.append('participantes', this.atividade.participantes);
-                formData.append('patrimonios', this.atividade.patrimonios);
-                return formData;
             },
             cleanForm: function () {
                 this.atividade.id = null;
@@ -209,6 +204,7 @@
                 this.atividade.chat = {assunto: ""};
                 this.atividade.participantes = [];
                 this.atividade.patrimonios = [];
+                this.patrimoniosSelecionados = [];
                 this.closeLists();
                 this.chatExist = false;
                 this.reseted = true;
@@ -280,12 +276,17 @@
                 if (!this.atividade.id && !this.reseted){
                     this.cleanForm();
                 } else {
+                    if (this.atividade.id){
+                        this.patrimoniosSelecionados = this.atividade.patrimonios;
+                    }
                     this.reseted = false;
                 }
                 if (this.atividade.chat && this.atividade.chat.id){
                     this.chatExist = true;
-                } else{
-                    this.atividade.chat = {assunto: ""};
+                } else {
+                    if (!this.atividade.chat || this.atividade.chat && !this.atividade.chat.assunto){
+                        this.atividade.chat = {assunto: ""};
+                    }
                     this.chatExist = false;
                 }
             }
@@ -295,7 +296,7 @@
                 return (!this.atividade.titulo || !this.atividade.descricao ||
                     !this.atividade.tipo || !this.atividade.numeroElementos ||
                     !this.atividade.visibilidade || this.chatExist && !this.atividade.chat.assunto ||
-                    this.atividade.patrimonios.length === 0);
+                    this.patrimoniosSelecionados.length === 0);
             },
             getTitle: function() {
                 this.formatarAtividade();

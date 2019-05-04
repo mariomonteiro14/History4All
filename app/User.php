@@ -38,7 +38,7 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function atividadeParticipantes(){
-        return $this->belongsTo(AtividadeParticipantes::class, 'user_id','id');
+        return $this->hasMany(AtividadeParticipantes::class, 'user_id','id');
     }
 
     public function atividades(){

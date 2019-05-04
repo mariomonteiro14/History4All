@@ -58,7 +58,7 @@
                             <v-hover>
                                 <v-card height="300" width="300"
                                         slot-scope="{ hover }" class="mx-auto">
-                                    <v-img class="white--text" max-height="250" v-if="atividade.imagem"
+                                    <v-img class="white--text" max-height="220" v-if="atividade.imagem"
                                            v-bind:src="getPatrimonioPhoto(atividade.imagem)">
                                         <v-expand-transition>
                                             <div v-if="hover" class="blue darken-4 v-card--reveal white--text"

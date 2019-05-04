@@ -27,7 +27,7 @@ class Atividade extends JsonResource
             'chat' => $this->chat()->first(),
             'data' => $this->data,
             'patrimonios' => $patrimonios->exists() ? Patrimonio::collection($patrimonios->get()->pluck('patrimonios')) : [],
-            'participantes' => $participantes->exists() ? User::collection($participantes->get()->pluck('users')[0]) : [],
+            'participantes' => $participantes->exists() ? User::collection($participantes->get()->pluck('users')) : [],
             'ciclo' => $this->ciclo(),
             'epoca' => $this->epoca(),
             'imagem' => $this->patrimonioImagem()
