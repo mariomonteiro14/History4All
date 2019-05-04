@@ -262,7 +262,6 @@
                 this.userAtual = Object.assign({}, user);
                 this.userAtual.turma = this.userAtual.turma[0];
                 this.userAtual.escola = this.userAtual.escola[0];
-                console.log(this.userAtual);
                 $('#editUserModal').modal('show');
 
             },

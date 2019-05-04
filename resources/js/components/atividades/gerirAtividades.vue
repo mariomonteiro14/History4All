@@ -2,32 +2,12 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <h3>Atividades / Pesquisa / {{tipoDePesquisaSelected}}
-                <span v-if="tipoDePesquisaSelected === 'Minhas atividades'">
-                    / {{minhasAtividadesSelected}}
-                </span>
-            </h3>
+            <h3>Atividades / Gerir</h3>
             <br>
-            <v-card append float v-if="this.$store.state.user.tipo !== 'admin'">
-                <v-container fluid grid-list-xl>
-                    <v-layout wrap align-center>
-                        <v-flex xs12 sm3 d-flex>
-                            <v-select
-                                    :items="tiposDePesquisa"
-                                    v-model="tipoDePesquisaSelected"
-                            ></v-select>
-                        </v-flex>
-                        <v-flex xs3 d-flex v-if="tipoDePesquisaSelected === 'Minhas atividades'">
-                            <v-select
-                                    v-model="minhasAtividadesSelected"
-                                    :items="minhasAtividades"
-                                    label="Filtrar pelo progresso"
-                                    class="input-group--focused"
-                            ></v-select>
-                        </v-flex>
-                    </v-layout>
-                </v-container>
-            </v-card>
+            <v-btn color="success" data-toggle="modal" data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
+                    Criar Atividade <i class="material-icons">add_box</i>
+            </v-btn>
+            <br>
             <v-card append float>
                 <v-card-title>
                     <v-container fluid grid-list-xl>
@@ -35,7 +15,7 @@
                             <v-text-field
                                     v-model="search"
                                     append-icon="pesquisa"
-                                    label="Pesquisar por título"
+                                    label="Pesquisar pela descrição"
                                     single-line
                                     hide-details
                             ></v-text-field>
@@ -76,7 +56,8 @@
                     <v-layout row wrap>
                         <v-flex v-for="(atividade, index) in filteredAtividades" :key="index">
                             <v-hover>
-                                <v-card @click="showAtividade(atividade)" height="300" width="300" slot-scope="{ hover }" class="mx-auto">
+                                <v-card height="300" width="300"
+                                        slot-scope="{ hover }" class="mx-auto">
                                     <v-img class="white--text" max-height="250" v-if="atividade.imagem"
                                            v-bind:src="getPatrimonioPhoto(atividade.imagem)">
                                         <v-expand-transition>
@@ -97,7 +78,14 @@
                                         </v-container>
                                     </v-img>
                                     <v-card-title>
-                                        <span class="grey--text" style="position: absolute;">{{atividade.coordenador.nome}}</span><br>
+                                        <v-btn color="warning" @click="showEdit(atividade)">
+                                            Editar
+                                            <v-icon small class="mr-2">edit</v-icon>
+                                        </v-btn>
+                                        <v-btn color="error" @click.stop="apagarVerificacao(atividade.id)">
+                                            Eliminar
+                                            <v-icon small>delete_forever</v-icon>
+                                        </v-btn>
                                     </v-card-title>
                                 </v-card>
                             </v-hover>
@@ -113,11 +101,32 @@
                 </v-layout>
             </v-card>
         </v-app>
+
+        <v-dialog v-model="dialog" max-width="290">
+            <v-card>
+                <v-card-title class="headline">Confirmação</v-card-title>
+                <v-card-text>Tem a certeza que que elimiar a atividade?</v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="red darken-1" flat="flat" @click="dialog = false">
+                        Não
+                    </v-btn>
+                    <v-btn color="green darken-1" flat="flat" @click="apagar()">Sim</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <br><br>
+        <atividade-add-edit :atividade="atividadeAtual" v-on:getPat="getAtividades()"></atividade-add-edit>
     </div>
 </template>
 
 <script>
+    import adicionarEditarAtividade from './adicionarEditarAtividade.vue';
+
     export default {
+        components: {
+            'atividade-add-edit': adicionarEditarAtividade,
+        },
         created() {
             this.getAtividades();
         },
@@ -127,6 +136,7 @@
                 epocaSelected: 'Todas',
                 cicloSelected: [],
                 search: '',
+                atividadeForm: {},
                 tipos: ['Todos', 'visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio'],
                 epocas: ['Todas', 'pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
@@ -134,24 +144,38 @@
                 atividades: [],
                 atividadesFiltradasLength: null,
                 limite: 4,
-                tiposDePesquisa: ['Todas', 'Minhas atividades'],
-                tipoDePesquisaSelected: 'Todas',
-                minhasAtividades: ['Todas', 'Pendentes', 'Concluídas'],
-                minhasAtividadesSelected: 'Todas'
+                atividadeAApagar: null,
+                dialog: false,
+                atividadeAtual: {
+                    id: undefined,
+                    titulo: "",
+                    descricao: "",
+                    tipo: "",
+                    numeroElementos: "",
+                    visibilidade: "",
+                    data: "",
+                    participantes: [],
+                },
             }
         },
         methods: {
-            getAtividades(url = '/api/users/' + this.$store.state.user.id + '/atividades') {
+            criarAtividade() {
+                this.atividadeAtual = {};
+                $('#addAtividadeModal').modal('show');
+            },
+            showEdit(atividade) {
+                this.atividadeAtual = Object.assign({}, atividade);
+                $('#addAtividadeModal').modal('show');
+            },
+            getAtividades(url = '/api/users/' + this.$store.state.user.id + '/atividades/minhas') {
                 axios.get(url)
                     .then(response => {
                         this.atividades = response.data.data;
+                        this.atividades.splice(this.atividades.length);
                     })
                     .catch(errors => {
                         console.log(errors);
                     });
-            },
-            showAtividade(atividade) {
-                this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
             },
             formatarTexto(atividadesRecebidas) {
                 atividadesRecebidas.map(atividade => {
@@ -179,7 +203,26 @@
                     ativ.ciclosFormatados = cicloString;
                     ativ.epocasFormatadas = epocaString;
                 });
+            },
+            apagarVerificacao(id) {
+                this.dialog = true;
+                this.atividadeAApagar = id;
+            },
+            apagar() {
+                this.dialog = false;
+                axios.delete('/api/atividades/' + this.atividadeAApagar)
+                    .then(response => {
+                        this.toastPopUp("success", "Atividade Apagada!");
+                        this.getAtividades();
+                    }).catch(function (error) {
+                    this.toastPopUp("error", "`${error.response.data.message}`");
+                    console.log(error);
+                });
+            },
+            resetAtividadeAtual(){
+                this.atividadeAtual.id = null;
             }
+
         },
         computed: {
             filteredAtividades() {
@@ -188,40 +231,19 @@
                         && (this.epocaSelected === 'Todas' || i.epoca.includes(this.epocaSelected))
                         && (this.cicloSelected.length === 0 || this.cicloSelected.length === 4 ||
                             this.cicloSelected.some(ciclo => i.ciclo.includes(ciclo)))
-                        && (this.search === "" || i.titulo.includes(this.search));
+                        && (this.search === "" || i.descricao.includes(this.search));
                 });
                 this.atividadesFiltradasLength = atividadesFiltradas.length;
                 return atividadesFiltradas.slice(0, this.limite);
             },
         },
         watch: {
-            filteredAtividades(atividadesFiltradas){
+            filteredAtividades(atividadesFiltradas) {
                 let atividadesSemTextoFormatado = atividadesFiltradas.filter(a => !a.ciclosFormatados);
                 if (atividadesSemTextoFormatado.length !== 0) {
                     this.formatarTexto(atividadesSemTextoFormatado);
                     this.atividades.splice(this.atividades.length);
                 }
-            },
-            tipoDePesquisaSelected(tipo) {
-                tipo === 'Todas' ?
-                    this.getAtividades('/api/users/' + this.$store.state.user.id + '/atividades') :
-                    this.getAtividades('/api/users/' + this.$store.state.user.id + '/atividades/participadas');
-                this.limite = 4;
-            },
-            minhasAtividadesSelected(tipo) {
-                let url = '';
-                switch (tipo) {
-                    case 'Pendentes':
-                        url = '/api/users/' + this.$store.state.user.id + '/atividades/pendentes';
-                        break;
-                    case 'Concluídas':
-                        url = '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
-                        break;
-                    default:
-                        url = '/api/users/' + this.$store.state.user.id + '/atividades/participadas';
-                }
-                this.getAtividades(url);
-                this.limite = 4;
             },
         }
     }

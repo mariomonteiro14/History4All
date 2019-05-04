@@ -12,7 +12,7 @@
         <!--</v-toolbar-items>-->
         <v-toolbar-items>
             <v-btn flat to="/patrimonios">Patrimonios</v-btn>
-            <v-btn to="/atividades" v-if="this.$store.state.user && this.$store.state.user.tipo !== 'admin'" flat>Atividades</v-btn>
+            <v-btn to="/atividades" v-if="this.$store.state.user" flat>Atividades</v-btn>
         </v-toolbar-items>
         <v-spacer></v-spacer>
         <!--<v-text-field
@@ -33,7 +33,7 @@
                     <b-dropdown-item to="/admin/escolas"><i class="material-icons">home</i> Gerir Escolas | Turmas</b-dropdown-item>
                 </div>
                 <div v-if="$store.state.user.tipo === 'professor'">
-                    <b-dropdown-item to="/atividades"><i class="material-icons sm1">build</i>Minhas Atividades</b-dropdown-item>
+                    <b-dropdown-item to="/professor/atividades"><i class="material-icons sm1">build</i>Minhas Atividades</b-dropdown-item>
                     <b-dropdown-item to="/escola/turmas"><i class="material-icons vsm-icon">group</i>Minhas Turmas</b-dropdown-item>
                 </div>
             </b-dropdown>

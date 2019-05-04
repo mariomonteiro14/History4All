@@ -112,13 +112,10 @@
         props: ['escola', 'turma'],
 
         created() {
-            if (this.$store.state.user.tipo == "professor") {
-                this.getAlunos();
-                return;
-            }
-
-            this.getProfessores();
             this.getAlunos();
+            if (this.$store.state.user.tipo != "professor") {
+                this.getProfessores();
+            }
         },
         data: function () {
             return {

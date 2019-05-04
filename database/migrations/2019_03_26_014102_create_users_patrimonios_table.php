@@ -81,8 +81,10 @@ class CreateUsersPatrimoniosTable extends Migration
         Schema::create('atividades', function (Blueprint $table) {
             $table->increments('id');
             $table->enum('tipo', ['visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio']);
+            $table->string('titulo');
             $table->string('descricao');
-            $table->boolean('privado')->default(true);
+            $table->integer('numeroElementos');
+            $table->enum('visibilidade', ['privado', 'publico', 'visivel para a escola']);
             $table->bigInteger('coordenador')->unsigned();
             $table->foreign('coordenador')->references('id')->on('users');
             $table->integer('chat_id')->unsigned()->nullable();

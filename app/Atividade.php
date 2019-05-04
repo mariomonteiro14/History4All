@@ -19,7 +19,7 @@ class Atividade extends Model
     public $timestamps = false;
     protected $dates = ['data'];
     protected $fillable = [
-        'nome', 'tipo', 'descricao', 'privado', 'coordenador', 'chat_id', 'data'
+        'titulo', 'descricao', 'tipo', 'numeroElementos', 'visibilidade', 'coordenador', 'chat_id', 'data'
     ];
 
     public function coordenador(){
@@ -32,13 +32,11 @@ class Atividade extends Model
     }
 
     public function atividadeParticipantes(){
-        return $this->hasMany(AtividadeParticipantes::class, 'atividade_id','id')
-            ->select('user_id' ,'estado');
+        return $this->hasMany(AtividadeParticipantes::class, 'atividade_id','id')->with('users');
     }
 
     public function atividadePatrimonios(){
-        return $this->hasMany(AtividadePatrimonios::class, 'atividade_id','id')
-            ->pluck('patrimonio_id');
+        return $this->hasMany(AtividadePatrimonios::class, 'atividade_id','id')->with('patrimonios');
     }
 
     public function ciclo(){
@@ -54,6 +52,9 @@ class Atividade extends Model
     }
 
     public function patrimonioImagem(){
-        return PatrimonioImagens::where('patrimonio_id', $this->atividadePatrimonios()->first())->pluck('foto')->first();
+        $patrimonios = $this->atividadePatrimonios();
+        return $patrimonios->exists() ?
+            PatrimonioImagens::where('patrimonio_id', $patrimonios->first()->pluck('patrimonio_id'))
+                ->pluck('foto')->first() : null;
     }
 }
