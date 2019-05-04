@@ -23,7 +23,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users/me', 'UserControllerAPI@myProfile');
     Route::post('users/me', 'UserControllerAPI@editProfile');
     Route::get('users/{id}/atividades/', 'AtividadeControllerAPI@getTodas');
-    Route::get('users/{id}/atividades/participadas', 'AtividadeControllerAPI@getParticipadas');
+    Route::get('users/{id}/atividades/minhas', 'AtividadeControllerAPI@getMinhas');
     Route::get('users/{id}/atividades/pendentes', 'AtividadeControllerAPI@getPendentes');
     Route::get('users/{id}/atividades/concluidas', 'AtividadeControllerAPI@getConcluidas');
 
@@ -47,7 +47,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::group(['middleware' => 'professor'], function() {
         Route::get('escolas/{id}/turmas', 'EscolaControllerAPI@escolaTurmas');
         Route::get('me/escola', 'EscolaControllerAPI@myEscola');
-        Route::get('users/{id}/atividades/minhas', 'AtividadeControllerAPI@getMinhas');
         Route::post('atividades', 'AtividadeControllerAPI@store');
         Route::put('atividades/{id}', 'AtividadeControllerAPI@update');
         Route::delete('atividades/{id}', 'AtividadeControllerAPI@destroy');

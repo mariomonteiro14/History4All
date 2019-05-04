@@ -2,12 +2,11 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <h3>Atividades / Pesquisa / {{tipoDePesquisaSelected}}
-                <span v-if="tipoDePesquisaSelected === 'Minhas atividades'">
-                    / {{minhasAtividadesSelected}}
-                </span>
-            </h3>
+            <h3>{{getTitle}}</h3>
             <br>
+            <v-btn v-if="podeGerir" color="success" data-toggle="modal" data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
+                Criar Atividade <i class="material-icons">add_box</i>
+            </v-btn>
             <v-card append float v-if="this.$store.state.user.tipo !== 'admin'">
                 <v-container fluid grid-list-xl>
                     <v-layout wrap align-center>
@@ -17,7 +16,7 @@
                                     v-model="tipoDePesquisaSelected"
                             ></v-select>
                         </v-flex>
-                        <v-flex xs3 d-flex v-if="tipoDePesquisaSelected === 'Minhas atividades'">
+                        <v-flex xs3 d-flex v-if="tipoDePesquisaSelected === 'Minhas atividades' && this.$store.state.user.tipo === 'aluno'">
                             <v-select
                                     v-model="minhasAtividadesSelected"
                                     :items="minhasAtividades"
@@ -76,9 +75,9 @@
                     <v-layout row wrap>
                         <v-flex v-for="(atividade, index) in filteredAtividades" :key="index">
                             <v-hover>
-                                <v-card @click="showAtividade(atividade)" height="300" width="300" slot-scope="{ hover }" class="mx-auto">
-                                    <v-img class="white--text" max-height="250" v-if="atividade.imagem"
-                                           v-bind:src="getPatrimonioPhoto(atividade.imagem)">
+                                <v-card @click="mostrar(atividade)" height="300" width="300" slot-scope="{ hover }" class="mx-auto">
+                                    <v-img class="white--text" max-height="220" v-if="atividade.patrimonios[0] &&
+                                    atividade.patrimonios[0].imagens[0]" v-bind:src="getPatrimonioPhoto(atividade.patrimonios[0].imagens[0])">
                                         <v-expand-transition>
                                             <div v-if="hover" class="blue darken-4 v-card--reveal white--text"
                                                  style="height: 100%;">
@@ -97,7 +96,17 @@
                                         </v-container>
                                     </v-img>
                                     <v-card-title>
-                                        <span class="grey--text" style="position: absolute;">{{atividade.coordenador.nome}}</span><br>
+                                        <div v-if="podeGerir">
+                                            <v-btn color="warning" @click="editar(atividade)">
+                                                Editar
+                                                <v-icon small class="mr-2">edit</v-icon>
+                                            </v-btn>
+                                            <v-btn color="error" @click.stop="apagarVerificacao(atividade.id)">
+                                                Eliminar
+                                                <v-icon small>delete_forever</v-icon>
+                                            </v-btn>
+                                        </div>
+                                        <span v-else class="grey--text" style="position: absolute;">{{atividade.coordenador.nome}}</span>
                                     </v-card-title>
                                 </v-card>
                             </v-hover>
@@ -113,11 +122,30 @@
                 </v-layout>
             </v-card>
         </v-app>
+        <v-dialog v-model="dialog" max-width="290">
+            <v-card>
+                <v-card-title class="headline">Confirmação</v-card-title>
+                <v-card-text>Tem a certeza que que elimiar a atividade?</v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="red darken-1" flat="flat" @click="dialog = false">
+                        Não
+                    </v-btn>
+                    <v-btn color="green darken-1" flat="flat" @click="apagar()">Sim</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+        <atividade-add-edit :atividade="atividadeAtual" v-on:getPat="getAtividades()"></atividade-add-edit>
     </div>
 </template>
 
 <script>
+    import adicionarEditarAtividade from './adicionarEditarAtividade.vue';
+
     export default {
+        components: {
+            'atividade-add-edit': adicionarEditarAtividade,
+        },
         created() {
             this.getAtividades();
         },
@@ -137,7 +165,20 @@
                 tiposDePesquisa: ['Todas', 'Minhas atividades'],
                 tipoDePesquisaSelected: 'Todas',
                 minhasAtividades: ['Todas', 'Pendentes', 'Concluídas'],
-                minhasAtividadesSelected: 'Todas'
+                minhasAtividadesSelected: 'Todas',
+
+                atividadeAApagar: null,
+                dialog: false,
+                atividadeAtual: {
+                    id: undefined,
+                    titulo: "",
+                    descricao: "",
+                    tipo: "",
+                    numeroElementos: "",
+                    visibilidade: "",
+                    data: "",
+                    participantes: [],
+                },
             }
         },
         methods: {
@@ -150,8 +191,10 @@
                         console.log(errors);
                     });
             },
-            showAtividade(atividade) {
-                this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
+            mostrar(atividade) {
+                if (!this.podeGerir) {
+                    this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
+                }
             },
             formatarTexto(atividadesRecebidas) {
                 atividadesRecebidas.map(atividade => {
@@ -179,6 +222,33 @@
                     ativ.ciclosFormatados = cicloString;
                     ativ.epocasFormatadas = epocaString;
                 });
+            },
+            atualizar() {
+                this.getAtividades();
+                this.atividadeAtual = {};
+                $('#addAtividadeModal').modal('show');
+            },
+            editar(atividade) {
+                this.atividadeAtual = Object.assign({}, atividade);
+                $('#addAtividadeModal').modal('show');
+            },
+            apagarVerificacao(id) {
+                this.dialog = true;
+                this.atividadeAApagar = id;
+            },
+            apagar() {
+                this.dialog = false;
+                axios.delete('/api/atividades/' + this.atividadeAApagar)
+                    .then(response => {
+                        this.toastPopUp("success", "Atividade Apagada!");
+                        this.getAtividades();
+                    }).catch(function (error) {
+                    this.toastPopUp("error", "`${error.response.data.message}`");
+                    console.log(error);
+                });
+            },
+            resetAtividadeAtual(){
+                this.atividadeAtual.id = null;
             }
         },
         computed: {
@@ -193,6 +263,19 @@
                 this.atividadesFiltradasLength = atividadesFiltradas.length;
                 return atividadesFiltradas.slice(0, this.limite);
             },
+            getTitle: function() {
+                let title = "Atividades / Pesquisa / " + this.tipoDePesquisaSelected;
+                if (this.tipoDePesquisaSelected === 'Minhas atividades' && this.$store.state.user.tipo === 'professor'){
+                    title = "Atividades / Gestão";
+                }
+                if (this.tipoDePesquisaSelected === 'Minhas atividades' && this.minhasAtividadesSelected !== 'Todas'){
+                    title += " / " + this.minhasAtividadesSelected;
+                }
+                return title;
+            },
+            podeGerir: function(){
+                return this.tipoDePesquisaSelected === 'Minhas atividades' && this.$store.state.user.tipo === 'professor';
+            }
         },
         watch: {
             filteredAtividades(atividadesFiltradas){
@@ -203,25 +286,27 @@
                 }
             },
             tipoDePesquisaSelected(tipo) {
-                tipo === 'Todas' ?
-                    this.getAtividades('/api/users/' + this.$store.state.user.id + '/atividades') :
-                    this.getAtividades('/api/users/' + this.$store.state.user.id + '/atividades/participadas');
+                if (tipo === 'Todas') {
+                    this.getAtividades('/api/users/' + this.$store.state.user.id + '/atividades');
+                }
                 this.limite = 4;
             },
             minhasAtividadesSelected(tipo) {
-                let url = '';
-                switch (tipo) {
-                    case 'Pendentes':
-                        url = '/api/users/' + this.$store.state.user.id + '/atividades/pendentes';
-                        break;
-                    case 'Concluídas':
-                        url = '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
-                        break;
-                    default:
-                        url = '/api/users/' + this.$store.state.user.id + '/atividades/participadas';
+                if (this.tipoDePesquisaSelected === 'Minhas atividades') {
+                    let url = '';
+                    switch (tipo) {
+                        case 'Pendentes':
+                            url = '/api/users/' + this.$store.state.user.id + '/atividades/pendentes';
+                            break;
+                        case 'Concluídas':
+                            url = '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
+                            break;
+                        default:
+                            url = '/api/users/' + this.$store.state.user.id + '/atividades/participadas';
+                    }
+                    this.getAtividades(url);
+                    this.limite = 4;
                 }
-                this.getAtividades(url);
-                this.limite = 4;
             },
         }
     }

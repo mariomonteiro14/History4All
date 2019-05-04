@@ -63,6 +63,10 @@ class AtividadeControllerAPI extends Controller
                 'data' => AtividadeResource::collection(Atividade::where('coordenador', $id)->get())
             ]);
         }
+        return response()->json([
+            'data' => AtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
+                ->where('user_id', $id)->get())
+        ]);
     }
 
     public function store(Request $request)
@@ -185,7 +189,7 @@ class AtividadeControllerAPI extends Controller
             $patrimonios = AtividadePatrimonios::where('atividade_id', $id)->get()->pluck('patrimonio_id')->toArray();;
             foreach ($patrimoniosRecebidos as $patrimonioId) {
                 if (!in_array($patrimonioId, $patrimonios)) {
-                    $patrimonios = new AtividadeParticipantes();
+                    $patrimonios = new AtividadePatrimonios();
                     $patrimonios->fill([
                         'atividade_id' => $id,
                         'patrimonio_id' => $patrimonioId,
@@ -194,7 +198,7 @@ class AtividadeControllerAPI extends Controller
                 }
             }
             if (count($request->get('patrimonios')) != AtividadePatrimonios::where('atividade_id', $id)->count()) {
-                $patrimonios = AtividadeParticipantes::where('atividade_id', $id)->get();
+                $patrimonios = AtividadePatrimonios::where('atividade_id', $id)->get();
                 foreach ($patrimonios as $patrimonio) {
                     if (!in_array($patrimonio->patrimonio_id, $patrimoniosRecebidos)) {
                         AtividadePatrimonios::where('atividade_id', $id)

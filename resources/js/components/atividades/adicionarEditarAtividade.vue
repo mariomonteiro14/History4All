@@ -165,7 +165,7 @@
                 axios.post('/api/atividades', this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Criada!");
                     this.cleanForm();
-                    this.$emit('getAtividades');
+                    this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
@@ -176,7 +176,7 @@
                 axios.put('/api/atividades/' + this.atividade.id, this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Atualizada!");
                     this.cleanForm();
-                    this.$emit('getAtividades');
+                    this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);

@@ -25,7 +25,7 @@
         >
         </v-text-field>-->
         <v-spacer></v-spacer>
-            <b-dropdown v-if="this.$store.state.user" text="Outline Danger" right variant="Success" class="m-2">
+            <b-dropdown v-if="this.$store.state.user && $store.state.user.tipo !== 'aluno'" text="Outline Danger" right variant="Success" class="m-2">
                 <template slot="button-content">GESTÃO</template>
                 <div v-if="$store.state.user.tipo === 'admin'">
                     <b-dropdown-item to="/admin/patrimonios"><i class="material-icons sm1">build</i> Gerir Patrimónios</b-dropdown-item>
