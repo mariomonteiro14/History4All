@@ -44,7 +44,7 @@ class UserControllerAPI extends Controller
 
     public function alunos(Request $request)
     {
-        $users = UserResource::collection(User::where('tipo', 'aluno')->get());
+        $users = UserResource::collection(User::where('tipo', 'aluno')->orderBy('nome')->get());
         return response()->json([
             'data' => $users,
         ]);

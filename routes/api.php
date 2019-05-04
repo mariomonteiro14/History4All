@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::post('patrimonios', 'PatrimonioControllerAPI@store');
         Route::get('users/professores', 'UserControllerAPI@professores');
         Route::get('users', 'UserControllerAPI@users');
+        Route::get('users/alunos', 'UserControllerAPI@alunos');
         Route::get('usersTrashed', 'UserControllerAPI@usersTrashed');
         Route::put('users/{id}', 'UserControllerAPI@update');
         Route::delete('users/{id}', 'UserControllerAPI@destroy');
@@ -59,6 +60,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::delete('escolas/turmas/{id}', 'EscolaControllerAPI@destroyTurma');
 
         Route::get('users/alunos', 'UserControllerAPI@alunos');
+        Route::get('me/escola/alunos', 'EscolaControllerAPI@myEscolaAlunos');
         Route::post('users', 'UserControllerAPI@store');
     });
 

@@ -269,6 +269,7 @@
                 this.patrimonio.imagens = undefined;
                 this.attachments = [];
                 this.removeImagesSelected = [];
+                this.links = '';
             },
             selectImage(imagem) {
                 var index = this.removeImagesSelected.indexOf(imagem);

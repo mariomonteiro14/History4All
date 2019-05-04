@@ -214,6 +214,9 @@
                 this.reseted = true;
             },
             getAlunos(url = '/api/users/alunos') {
+                if (this.$store.state.user.tipo == 'professor'){
+                    url = "/api/me/escola/alunos";
+                }
                 axios.get(url)
                     .then(response => {
                         this.alunos = response.data.data;

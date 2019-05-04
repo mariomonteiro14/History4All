@@ -93,7 +93,7 @@
         <v-dialog v-model="dialog" max-width="290">
             <v-card>
                 <v-card-title class="headline">Confirmação</v-card-title>
-                <v-card-text v-if="!turmaAtual.id">Se eliminar esta escola, todas as turmas, professores e alunos seram eliminados.</v-card-text>
+                <v-card-text v-if="!turmaAtual.id">Se eliminar esta escola, todas as turmas, professores e alunos seram eliminados permanentemente.</v-card-text>
                 <v-card-text v-else>Se eliminar esta turma, todos alunos ficaram sem turma.</v-card-text>
                 <v-card-text>Quer continuar?</v-card-text>
                 <v-card-actions>

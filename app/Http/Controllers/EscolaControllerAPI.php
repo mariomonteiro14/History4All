@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\Escola as EscolaResource;
 use App\Http\Resources\Turma as TurmaResource;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\User as UserResource;
 
 class EscolaControllerAPI extends Controller
 {
@@ -31,6 +32,18 @@ class EscolaControllerAPI extends Controller
         $escola = Escola::findOrFail(Auth::user()->escola_id);
         return response()->json([
             'data' => new EscolaResource($escola),
+        ]);
+    }
+
+    public function myEscolaAlunos(Request $request)
+    {
+        $users = UserResource::collection(User::where('tipo', 'aluno')
+            ->where('escola_id',Auth::user()->escola_id)
+            ->orderBy('nome')
+            ->get()
+        );
+        return response()->json([
+            'data' => $users,
         ]);
     }
 

@@ -74,7 +74,6 @@
                                 deletable-chips
                                 ref="selectAlunos"
                                 autofocus
-                                hide-no-data
                                 :disabled="filteredAlunos.length == 0"
                             >
                                 <!--<template v-slot:selection="data">
@@ -188,6 +187,9 @@
                     });
             },
             getAlunos(url = '/api/users/alunos') {
+                if (this.$store.state.user.tipo == 'professor'){
+                    url = "/api/me/escola/alunos"
+                }
                 axios.get(url)
                     .then(response => {
                         this.alunos = response.data.data;

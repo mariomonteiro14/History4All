@@ -8,7 +8,7 @@ class UsersSeeder extends Seeder
 {
     private $photoPath = 'public/profiles';
     private $typesOfUsers = ['admin', 'professor', 'aluno'];
-    private $numberOfUsers = [5,10,100];
+    private $numberOfUsers = [5,10,150];
     private $numberOfSoftDeletedUsers = [1,5,10];
     private $typesOfUsersPrefix = ['a', 'p', 'e'];
     private $malePhotos = [];
@@ -52,16 +52,47 @@ class UsersSeeder extends Seeder
                 $this->femalePhotos[] = $filename;
             }
         }
+        $escola_prof_id = 1;
+        $count_escola_prof = 0;
+        $escola_aluno_id = 1;
+        $count_escola_aluno = 0;
+        $turma_id = null;
+        $count_turma_id = 0;
+
         for ($typeOfUserIdx = 0; $typeOfUserIdx< 3; $typeOfUserIdx++) {
             for ($i = 0; $i < $this->numberOfUsers[$typeOfUserIdx]; $i++) {
                 $contadorGlobal++;
-                $user = $this->fakeUser($faker, $typeOfUserIdx, $i);
-                DB::table('users')->insert($user);
-                $this->command->info("Created User $contadorGlobal/$totalUsers: " . $user['nome']);
-            }
-            for ($j = 0; $j < $this->numberOfSoftDeletedUsers[$typeOfUserIdx]; $j++) {
-                $contadorGlobal++;
-                $user = $this->fakeUser($faker, $typeOfUserIdx, $j + $i, true);
+
+                if ($typeOfUserIdx == 0) {
+                    $user = $this->fakeUser($faker, $typeOfUserIdx,null,null, $i);
+                }else if ($typeOfUserIdx == 1){
+                    $user = $this->fakeUser($faker, $typeOfUserIdx,$escola_prof_id,null, $i);
+                    $count_escola_prof++;
+                    if ($count_escola_prof == 5){
+                        $count_escola_prof = 0;
+                        $escola_prof_id++;
+                    }
+                }else{
+                    $user = $this->fakeUser($faker, $typeOfUserIdx,$escola_aluno_id,$turma_id, $i);
+                    $count_escola_aluno++;
+                    $count_turma_id++;
+
+                    if ($count_escola_aluno == 50){
+                        $escola_aluno_id++;
+                        $count_escola_aluno=0;
+                      /*  $turma_id=1;
+                        $count_turma_id=0;*/
+                    }
+/*
+                    if ($count_turma_id%15 == 0){
+                        $turma_id++;
+                        $count_turma_id =0;
+                    }
+                    if (50 - $count_turma_id == 5){
+                        $turma_id=null;
+                    }*/
+
+                }
                 DB::table('users')->insert($user);
                 $this->command->info("Created User $contadorGlobal/$totalUsers: " . $user['nome']);
             }
@@ -76,12 +107,9 @@ class UsersSeeder extends Seeder
         return $newFileName;
     }
 
-    private function fakeUser(Faker\Generator $faker, $typeOfUserIdx, $idx, $softDelete = false)
+    private function fakeUser(Faker\Generator $faker, $typeOfUserIdx,$escola_id, $turma_id, $idx, $softDelete = false)
     {
         $createdAt = Carbon\Carbon::now()->subDays(600);
-        $lastShiftBase = Carbon\Carbon::now()->subDays(5);
-        $lastShiftStart = $lastShiftBase->copy()->addMinutes(rand(0, 6600));
-        $lastShiftEnd =  $lastShiftStart->copy()->addMinutes(rand(360, 600));
         $gender = $faker->randomElements(['male', 'female'])[0];
         if ($gender == 'male') {
             $filename= $faker->randomElements($this->malePhotos)[0];
@@ -97,6 +125,8 @@ class UsersSeeder extends Seeder
             'email_verified_at' => $faker->dateTimeBetween($createdAt),
             'password' => bcrypt('123'),
             'tipo' => $this->typesOfUsers[$typeOfUserIdx],
+            'escola_id' => $escola_id,
+            'turma_id' => $turma_id,
             'foto' => $newProfileFileName,
             'remember_token' => str_random(10),
             'created_at' => $createdAt,
