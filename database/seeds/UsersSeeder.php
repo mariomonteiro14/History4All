@@ -3,6 +3,8 @@
 use App\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
 
 class UsersSeeder extends Seeder
 {
@@ -94,7 +96,7 @@ class UsersSeeder extends Seeder
 
                 }
                 DB::table('users')->insert($user);
-                //$this->command->info("Created User $contadorGlobal/$totalUsers: " . $user['nome']);
+                $this->command->info("Created User $contadorGlobal/$totalUsers: " . $user['nome']);
             }
         }
     }
