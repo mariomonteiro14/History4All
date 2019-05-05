@@ -108,8 +108,8 @@
         </v-dialog>
         <br><br>
         <lista-alunos :turma="turmaAtual"></lista-alunos>
-        <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual" v-on:getEscolas="getMyEscola"></criar-editar-turma>
-        <criar-aluno :user="userForm" v-on:getUsers="getMyEscola"></criar-aluno>
+        <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual" v-on:getEscolas="atualizarDados"></criar-editar-turma>
+        <criar-aluno ref="addAluno" :user="userForm" v-on:getUsers="atualizarDados"></criar-aluno>
     </div>
 </template>
 
@@ -169,6 +169,7 @@
         },
         methods: {
             getMyEscola(url = '/api/me/escola') {
+
                 axios.get(url)
                     .then(response => {
                         this.myEscola = response.data.data;
@@ -205,14 +206,19 @@
                 axios.delete('/api/escolas/turmas/' + this.turmaAtual.id)
                     .then(response => {
                         this.toastPopUp("success", "Turma Apagado!");
-                        this.getMyEscola();
-                        this.$refs.addEditTurma.getAlunos();
+                        this.atualizarDados();
                     }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);
                 });
                 this.turmaAtual = {};
             },
+            atualizarDados(){
+                this.getMyEscola();
+                this.$refs.addEditTurma.getAlunos();
+                this.$refs.addAluno.getEscolas();
+            }
+
         },
         computed: {
             filteredTurmas() {

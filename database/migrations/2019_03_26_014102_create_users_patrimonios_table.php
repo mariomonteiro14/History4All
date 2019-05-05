@@ -41,7 +41,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->integer('escola_id')->unsigned()->nullable();
             $table->foreign('escola_id')->references('id')->on('escolas')->onDelete('cascade');
             $table->integer('turma_id')->unsigned()->nullable();
-            $table->foreign('turma_id')->references('id')->on('turmas')->onDelete('cascade');
+            $table->foreign('turma_id')->references('id')->on('turmas')->onDelete('set null');
             $table->softDeletes();
             $table->timestamps();
             $table->rememberToken();
