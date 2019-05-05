@@ -1,7 +1,7 @@
 <template>
     <div>
         <br><br>
-        <div v-if="user.id"class="container py-5">
+        <div v-if="user.id" class="container py-5">
             <div class="row">
                 <div class="col-md-12">
                     <div class="row">
@@ -11,23 +11,41 @@
                                     <h3 class="mb-0">Definir Password</h3>
                                 </div>
                                 <div class="card-body">
-                                    <form class="form" role="form" autocomplete="off" id="formLogin" novalidate="" method="POST">
+                                    <form class="form" role="form" autocomplete="off" id="formLogin" novalidate=""
+                                          method="POST">
+                                        <br>
                                         <div class="form-group">
-                                            <label for="uname1">Password</label>
-                                            <input type="password" class="form-control form-control-lg rounded-0" name="uname1" id="uname1" required="" v-model.trim="user.password">
+                                            <v-text-field id="inputPassword"
+                                                          v-model="user.password"
+                                                          label="Nova Password"
+                                                          :rules="[() => !(user.password && user.password.length < 4) || 'minimo 4 caracteres']"
+                                                          :type="'password'"
+                                                          required
+                                            ></v-text-field>
                                         </div>
+
                                         <div class="form-group">
-                                            <label>Confirmar Password</label>
-                                            <input type="password" class="form-control form-control-lg rounded-0" id="pwd1" required="" autocomplete="new-password" v-model.trim="passwordConfirmation">
+                                            <v-text-field id="inputPasswordConf"
+                                                          v-model="passwordConfirmation"
+                                                          label="Confirmar Password"
+                                                          :type="'password'"
+                                                          :error-messages="passwordMatchError"
+                                                          required
+                                            ></v-text-field>
                                         </div>
                                         <br>
                                         <div class="custom-file">
-                                            <label class="custom-file-label" for="upload-files">Adicione Foto de Perfil</label>
-                                            <input id="upload-files" type="file" multiple class="form-control custom-file-input"
+                                            <label class="custom-file-label" for="upload-files">{{getFilesText}}</label>
+                                            <input id="upload-files" type="file" multiple
+                                                   class="form-control custom-file-input"
                                                    @change="handleFile">
                                         </div>
                                         <br><br>
-                                        <button type="submit" class="btn btn-success btn-lg float-right" id="btnLogin" v-on:click.prevent="formValidateAndSend" :disabled="!formCompleted">Guardar</button>
+                                        <button type="submit" class="btn btn-success btn-lg float-right" id="btnLogin"
+                                                v-on:click.prevent="formValidateAndSend" :disabled="!formCompleted">
+                                            Guardar
+                                        </button>
+
                                     </form>
                                 </div>
                             </div>
@@ -55,7 +73,7 @@
         methods: {
             getUser: function () {
                 axios.get("/api/users/token/" + this.token).then(response => {
-                    if (response.data === ""){//token inválido
+                    if (response.data === "") {//token inválido
                         this.$router.push('/');
                     }
                     this.user = response.data;
@@ -63,13 +81,13 @@
                     console.log(errors);
                 });
             },
-            formValidateAndSend(){
-                if(this.user.password == this.passwordConfirmation){
+            formValidateAndSend() {
+                if (this.user.password == this.passwordConfirmation) {
                     const config = {
                         headers: {'content-type': 'multipart/form-data'}
                     };
                     axios.post('/api/register/activate/' + this.user.id, this.formCreate(), config).then(response => {
-                        this.toastPopUp('success','Conta Ativada');
+                        this.toastPopUp('success', 'Conta Ativada');
                         this.$router.push('/');
                     }).catch(error => {
                         this.$toasted.error(`Erro ativando conta`, {
@@ -77,7 +95,7 @@
                             duration: 3000,
                         });
                     });
-                }else{
+                } else {
                     this.$toasted.error(`Passwords don't match`, {
                         position: "bottom-center",
                         duration: 3000,
@@ -92,11 +110,11 @@
                 }
 
                 if (!files[0].type.includes("image/")) {
-                    this.toastPopUp('error','Ficheiro tem de ser uma imagem');
+                    this.toastPopUp('error', 'Ficheiro tem de ser uma imagem');
                     return;
                 }
 
-                    this.foto = files[0];
+                this.foto = files[0];
             },
 
             formCreate: function () {
@@ -110,8 +128,24 @@
             },
         },
         computed: {
-            formCompleted(){
-                return this.passwordConfirmation && this.user.password;
+            formCompleted() {
+                return this.passwordConfirmation && this.user.password && this.user.password.length>=4 && this.passwordConfirmation == this.user.password;
+            },
+            passwordMatchError() {
+                if (!this.user.password || this.user.password === "") {
+                    return '';
+                }
+                if (this.passwordConfirmation === "") {
+                    return 'Confirmação obrigatoria'
+                }
+                return (this.user.password === this.passwordConfirmation) ? '' : 'Password nao combinam'
+            },
+            getFilesText() {
+                if (this.foto == "") {
+                    return "Adicione foto de perfil";
+                } else {
+                    return "Foto carregada";
+                }
             }
         },
 

@@ -190,6 +190,11 @@ class UserControllerAPI extends Controller
 
     public function activateAccount(Request $request, $id)
     {
+        $request->validate([
+            'password' => 'required|min:4',
+            'foto' => 'nullable|file|mimes:jpeg,bmp,png,jpg'
+        ]);
+
         $user = User::findOrFail($id);
         if ($user && $request->has('password')) {
             $user->password = bcrypt($request->input('password'));
