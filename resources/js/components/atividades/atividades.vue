@@ -23,7 +23,7 @@
                             ></v-select>
                         </v-flex>
                         <v-spacer></v-spacer>
-                        <v-btn v-if="podeGerir" color="success" data-toggle="modal" data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
+                        <v-btn v-if="$store.state.user.tipo=='professor'" color="success" data-toggle="modal" data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
                             Criar Atividade <i class="material-icons">add_box</i>
                         </v-btn>
                     </v-layout>
@@ -98,7 +98,7 @@
                                         </v-container>
                                     </v-img>
                                     <v-card-title>
-                                        <div v-if="podeGerir">
+                                        <div v-if="atividade.coordenador.id == $store.state.user.id">
                                             <v-btn color="warning" @click="editar(atividade)">
                                                 Editar
                                                 <v-icon small class="mr-2">edit</v-icon>
@@ -199,7 +199,7 @@
                     });
             },
             mostrar(atividade) {
-                if (!this.podeGerir) {
+                if (this.podeGerir) {
                     this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
                 }
             },
