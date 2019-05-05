@@ -78,7 +78,9 @@ class UserControllerAPI extends Controller
 
         if ($request->has('newFoto')) {
             //Delete old photo
-            Storage::disk('public')->delete('profiles/' . $user->foto);
+            if ($user->foto && $user->foto != "") {
+                Storage::disk('public')->delete('profiles/' . $user->foto);
+            }
 
             //Store new photo
             $filename = str_random(16) . '.' . $request->newFoto->getClientOriginalExtension();;
@@ -188,23 +190,27 @@ class UserControllerAPI extends Controller
 
     public function activateAccount(Request $request, $id)
     {
-
         $user = User::findOrFail($id);
         if ($user && $request->has('password')) {
             $user->password = bcrypt($request->input('password'));
             $user->email_verified_at = date("Y-m-d H:i:s");
             $user->remember_token = '';
 
-            if ($request->has('foto') && $request->input('foto') != "") {
+            if ($request->has('foto')) {
                 $filename = str_random(16) . '.' . $request->foto->getClientOriginalExtension();;
                 Storage::disk('public')->putFileAs('profiles', $request->foto, $filename);
 
                 $user->foto = $filename;
+
+                /*return response()->json([
+                    'data' => $user,
+                ], 500);*/
             }
 
             $user->save();
 
             return response()->json([
+                'data' => $user,
                 'message' => 'Account confirmed'
             ], 201);
         }

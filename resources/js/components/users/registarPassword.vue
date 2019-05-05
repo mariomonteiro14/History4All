@@ -90,13 +90,21 @@
                 if (!files.length || files.length > 1) {
                     return false;
                 }
+
+                if (!files[0].type.includes("image/")) {
+                    this.toastPopUp('error','Ficheiro tem de ser uma imagem');
+                    return;
+                }
+
                     this.foto = files[0];
             },
 
             formCreate: function () {
                 let formData = new FormData();
                 formData.append('password', this.user.password);
-                formData.append('foto', this.foto);
+                if (this.foto != '') {
+                    formData.append('foto', this.foto);
+                }
 
                 return formData;
             },
