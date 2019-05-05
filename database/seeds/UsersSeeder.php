@@ -94,7 +94,7 @@ class UsersSeeder extends Seeder
 
                 }
                 DB::table('users')->insert($user);
-                $this->command->info("Created User $contadorGlobal/$totalUsers: " . $user['nome']);
+                //$this->command->info("Created User $contadorGlobal/$totalUsers: " . $user['nome']);
             }
         }
     }
