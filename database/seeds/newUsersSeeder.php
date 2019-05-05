@@ -3,8 +3,9 @@
 use App\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
-class UsersSeeder extends Seeder
+class newUsersSeeder extends Seeder
 {
     private $photoPath = 'public/profiles';
     private $typesOfUsers = ['admin', 'professor', 'aluno'];
@@ -113,10 +114,10 @@ class UsersSeeder extends Seeder
         $gender = $faker->randomElements(['male', 'female'])[0];
         if ($gender == 'male') {
             $filename= $faker->randomElements($this->malePhotos)[0];
-            UsersSeeder::deleteArrayElement($filename, $this->malePhotos);
+            newUsersSeeder::deleteArrayElement($filename, $this->malePhotos);
         } else {
             $filename= $faker->randomElements($this->femalePhotos)[0];
-            UsersSeeder::deleteArrayElement($filename, $this->femalePhotos);
+            newUsersSeeder::deleteArrayElement($filename, $this->femalePhotos);
         }
         $newProfileFileName= $this->copyProfilePhoto($filename);
         return [
