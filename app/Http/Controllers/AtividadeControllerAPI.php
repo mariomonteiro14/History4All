@@ -29,7 +29,7 @@ class AtividadeControllerAPI extends Controller
         if ($user->tipo == "professor") {
             return response()->json([
                 'data' => AtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
-                    ->where('user_id', $id)->get())
+                    ->where('coordenador', $id)->get())
             ]);
         }
 
@@ -55,17 +55,17 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
-    public function getMinhas(Request $request, $id)
+    public function getMinhas(Request $request)
     {
-        $user = User::findOrFail($id);
+        $user = Auth::user();
         if ($user->tipo == "professor") {
             return response()->json([
-                'data' => AtividadeResource::collection(Atividade::where('coordenador', $id)->get())
+                'data' => AtividadeResource::collection(Atividade::where('coordenador', $user->id)->get())
             ]);
         }
         return response()->json([
             'data' => AtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
-                ->where('user_id', $id)->get())
+                ->where('user_id', $user->id)->get())
         ]);
     }
 
@@ -79,7 +79,7 @@ class AtividadeControllerAPI extends Controller
             'visibilidade' => 'required',
             'data' => 'nullable',
         ]);
-        if (Auth::user()->tipo == "professor") {
+        if (Auth::user()->tipo !== "professor") {
             abort(403, 'Unauthorized action.');
         }
 
@@ -94,7 +94,7 @@ class AtividadeControllerAPI extends Controller
         ]);
         if ($request->get('chatExist')) {
             $chat = new Chat();
-            $chat->assunto = $request->get('chat')->assunto;
+            $chat->assunto = $request->chat['assunto'];
             $chat->privado = $request->get('visibilidade') != 'publico';
             $chat->save();
             $atividade->chat_id = $chat->id;
@@ -103,23 +103,23 @@ class AtividadeControllerAPI extends Controller
 
         if ($request->get('visibilidade') == 'privado' && $request->has('participantes')
             && sizeof($request->get('participantes')) > 0) {
-            foreach ($request->get('participantes') as $participante) {
+            foreach ($request->participantes as $participante) {
                 $atividadeParticipante = new AtividadeParticipantes();
                 $atividadeParticipante->fill([
                     'atividade_id' => $atividade->id,
-                    'user_id' => $participante->id,
+                    'user_id' => $participante['id'],
                     'estado' => 'pendente'
                 ]);
                 $atividadeParticipante->save();
             }
         }
 
-        if ($request->has('patrimonios') && sizeof($request->get('patrimonios')) > 0) {
-            foreach ($request->get('patrimonios') as $patrimonio) {
+        if ($request->has('patrimonios') && sizeof($request->patrimonios) > 0) {
+            foreach ($request->patrimonios as $patrimonio) {
                 $atividadePatrimonio = new AtividadePatrimonios();
                 $atividadePatrimonio->fill([
                     'atividade_id' => $atividade->id,
-                    'patrimonio_id' => $patrimonio->id,
+                    'patrimonio_id' => $patrimonio['id'],
                 ]);
                 $atividadePatrimonio->save();
             }
@@ -153,7 +153,7 @@ class AtividadeControllerAPI extends Controller
 
         if (!$atividade->chat_id && $request->get('chatExist')) {
             $chat = new Chat();
-            $chat->assunto = $request->get('chat')->assunto;
+            $chat->assunto = $request->chat['assunto'];
             $chat->privado = $request->get('visibilidade') != 'publico';
             $chat->save();
             $atividade->chat_id = $chat->id;

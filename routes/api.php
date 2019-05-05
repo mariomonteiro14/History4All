@@ -23,7 +23,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users/me', 'UserControllerAPI@myProfile');
     Route::post('users/me', 'UserControllerAPI@editProfile');
     Route::get('users/{id}/atividades/', 'AtividadeControllerAPI@getTodas');
-    Route::get('users/{id}/atividades/minhas', 'AtividadeControllerAPI@getMinhas');
+    Route::get('me/atividades/', 'AtividadeControllerAPI@getMinhas');
     Route::get('users/{id}/atividades/pendentes', 'AtividadeControllerAPI@getPendentes');
     Route::get('users/{id}/atividades/concluidas', 'AtividadeControllerAPI@getConcluidas');
 

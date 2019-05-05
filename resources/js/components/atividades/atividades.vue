@@ -183,6 +183,9 @@
         },
         methods: {
             getAtividades(url = '/api/users/' + this.$store.state.user.id + '/atividades') {
+                if (this.tipoDePesquisaSelected !== 'Todas') {
+                    url = '/api/me/atividades/';
+                }
                 axios.get(url)
                     .then(response => {
                         this.atividades = response.data.data;
@@ -286,9 +289,7 @@
                 }
             },
             tipoDePesquisaSelected(tipo) {
-                if (tipo === 'Todas') {
-                    this.getAtividades('/api/users/' + this.$store.state.user.id + '/atividades');
-                }
+                this.getAtividades();
                 this.limite = 4;
             },
             minhasAtividadesSelected(tipo) {
