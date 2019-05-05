@@ -4,9 +4,7 @@
             <br><br><br><br><br>
             <h3>{{getTitle}}</h3>
             <br>
-            <v-btn v-if="podeGerir" color="success" data-toggle="modal" data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
-                Criar Atividade <i class="material-icons">add_box</i>
-            </v-btn>
+
             <v-card append float v-if="this.$store.state.user.tipo !== 'admin'">
                 <v-container fluid grid-list-xl>
                     <v-layout wrap align-center>
@@ -24,6 +22,10 @@
                                     class="input-group--focused"
                             ></v-select>
                         </v-flex>
+                        <v-spacer></v-spacer>
+                        <v-btn v-if="podeGerir" color="success" data-toggle="modal" data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
+                            Criar Atividade <i class="material-icons">add_box</i>
+                        </v-btn>
                     </v-layout>
                 </v-container>
             </v-card>
@@ -162,8 +164,8 @@
                 atividades: [],
                 atividadesFiltradasLength: null,
                 limite: 4,
-                tiposDePesquisa: ['Todas', 'Minhas atividades'],
-                tipoDePesquisaSelected: 'Todas',
+                tiposDePesquisa: ['Publicas','Minha Escola', 'Minhas Atividades'],
+                tipoDePesquisaSelected: 'Publicas',
                 minhasAtividades: ['Todas', 'Pendentes', 'Concluídas'],
                 minhasAtividadesSelected: 'Todas',
 
@@ -183,8 +185,10 @@
         },
         methods: {
             getAtividades(url = '/api/users/' + this.$store.state.user.id + '/atividades') {
-                if (this.tipoDePesquisaSelected !== 'Todas') {
+                if (this.tipoDePesquisaSelected === 'Minhas Atividades') {
                     url = '/api/me/atividades/';
+                }else if(this.tipoDePesquisaSelected === 'Minha Escola'){
+                    url='/api/me/escola/atividades/'
                 }
                 axios.get(url)
                     .then(response => {
@@ -277,7 +281,7 @@
                 return title;
             },
             podeGerir: function(){
-                return this.tipoDePesquisaSelected === 'Minhas atividades' && this.$store.state.user.tipo === 'professor';
+                return this.tipoDePesquisaSelected === 'Minhas Atividades' && this.$store.state.user.tipo === 'professor';
             }
         },
         watch: {

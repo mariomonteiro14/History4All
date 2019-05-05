@@ -24,7 +24,12 @@ class Atividade extends Model
 
     public function coordenador(){
         return $this->belongsTo(User::class, 'coordenador','id')
-            ->select('id' ,'nome', 'email', 'foto')->first();
+            ->select('id' ,'nome', 'email', 'foto', 'escola_id')->first();
+    }
+
+    public function escola(){
+        $coordenador = $this->coordenador();
+        return Escola::find($coordenador->escola_id);
     }
 
     public function chat(){

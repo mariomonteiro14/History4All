@@ -69,6 +69,15 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
+    public function minhaEscolaAtividades(){
+        return AtividadeResource::collection( Atividade::select('atividades.*')
+            ->leftJoin('atividade_participantes', 'atividade_id', 'atividades.id')
+            ->join('users','users.id','coordenador')
+            ->where('escola_id',Auth::user()->escola_id)
+            ->where('visibilidade','NOT LIKE','privado')->get());
+
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -131,7 +140,7 @@ class AtividadeControllerAPI extends Controller
     {
         $request->validate([
             'titulo' => 'required|min:3',
-            'descricao' => 'required|min:10',
+            'descricao' => 'required|min:25',
             'tipo' => 'required',
             'numeroElementos' => 'required|numeric|digits_between:1,99',
             'visibilidade' => 'required',

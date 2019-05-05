@@ -27,10 +27,13 @@
                                     id="inputDescricao"
                                     v-model="atividade.descricao"
                                     label="Descrição"
-                                    :rules="[v => !!v || 'Descrição é obrigatória']"
+                                    :rules="[v => !!v || 'Descrição é obrigatória',
+                                             v => v.length >= 25 || 'minimo 25 caracteres']"
+                                    counter="1000"
                                     required
                             ></v-textarea>
                         </div>
+                        <br>
                         <div @click="setOpenList('tipo')">
                             <v-select
                                     label="Tipo"
@@ -43,6 +46,7 @@
                                     required
                             ></v-select>
                         </div>
+                        <br>
                         <div class="form-group">
                             <v-text-field
                                     type="number"
@@ -57,22 +61,23 @@
                                     required
                             ></v-text-field>
                         </div>
-                        <div class="form-group">
+                        <v-spacer></v-spacer>
+                        <div class="form-group ">
                             <v-checkbox
                                     v-model="chatExist"
                                     label="Atividade tem Chat?"
                             ></v-checkbox>
-                        </div>
-
-                        <div class="form-group" v-if="chatExist">
                             <v-textarea
+                                    v-if="chatExist"
                                     id="inputChatAssunto"
                                     v-model="atividade.chat.assunto"
                                     label="Chat Descrição"
                                     :rules="[v => !!v || 'Assunto do chat é obrigatória']"
+                                    counter="150"
                                     required
                             ></v-textarea>
                         </div>
+                        <v-spacer></v-spacer>
                         <div @click="setOpenList('visibilidade')">
                             <v-select
                                     label="Visibilidade"
@@ -293,7 +298,7 @@
         },
         computed: {
             hasErrors: function () {
-                return (!this.atividade.titulo || !this.atividade.descricao ||
+                return (!this.atividade.titulo || !this.atividade.descricao || this.atividade.descricao.length < 25 ||
                     !this.atividade.tipo || !this.atividade.numeroElementos ||
                     !this.atividade.visibilidade || this.chatExist && !this.atividade.chat.assunto ||
                     this.patrimoniosSelecionados.length === 0);
