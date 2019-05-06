@@ -88,7 +88,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->bigInteger('coordenador')->unsigned();
             $table->foreign('coordenador')->references('id')->on('users');
             $table->integer('chat_id')->unsigned()->nullable();
-            $table->foreign('chat_id')->references('id')->on('chats');
+            $table->foreign('chat_id')->references('id')->on('chats')->onDelete('set null');
             $table->date('data')->nullable();
         });
 

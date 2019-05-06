@@ -160,9 +160,3 @@
         }
     };
 </script>
-<style>
-    .dash{
-        color:black!important
-        bold
-    }
-</style>

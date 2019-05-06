@@ -137,7 +137,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="getAtividades()"></atividade-add-edit>
+        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()"></atividade-add-edit>
     </div>
 </template>
 

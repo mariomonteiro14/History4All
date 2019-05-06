@@ -28,7 +28,7 @@
                                     v-model="atividade.descricao"
                                     label="Descrição"
                                     :rules="[v => !!v || 'Descrição é obrigatória',
-                                             v => v.length >= 25 || 'minimo 25 caracteres']"
+                                             v => v && v.length >= 25 || 'minimo 25 caracteres']"
                                     counter="1000"
                                     required
                             ></v-textarea>
@@ -70,7 +70,7 @@
                             <v-textarea
                                     v-if="chatExist"
                                     id="inputChatAssunto"
-                                    v-model="atividade.chat.assunto"
+                                    v-model="chatAssunto"
                                     label="Chat Descrição"
                                     :rules="[v => !!v || 'Assunto do chat é obrigatória']"
                                     counter="150"
@@ -158,7 +158,8 @@
                 selPatrimoniosAbertos: false,
                 reseted: false,
                 chatExist: false,
-                patrimoniosSelecionados: []
+                patrimoniosSelecionados: [],
+                chatAssunto: ''
             };
         },
         methods: {
@@ -189,6 +190,7 @@
             },
             prepararAtividade(){
                 this.atividade.chatExist = this.chatExist;
+                this.atividade.chat = {assunto: this.chatAssunto};
                 this.atividade.patrimonios = this.patrimoniosSelecionados;
                 if (this.atividade.visibilidade == 'privado'){
                     this.participantes = [];
@@ -206,18 +208,15 @@
                 this.atividade.numeroElementos = "";
                 this.atividade.visibilidade = "";
                 this.atividade.data = "";
-                this.atividade.chat = {assunto: ""};
                 this.atividade.participantes = [];
                 this.atividade.patrimonios = [];
                 this.patrimoniosSelecionados = [];
-                this.closeLists();
+                this.chatAssunto = "";
                 this.chatExist = false;
+                this.closeLists();
                 this.reseted = true;
             },
-            getAlunos(url = '/api/users/alunos') {
-                if (this.$store.state.user.tipo == 'professor'){
-                    url = "/api/me/escola/alunos";
-                }
+            getAlunos(url = '/api/me/escola/alunos') {
                 axios.get(url)
                     .then(response => {
                         this.alunos = response.data.data;
@@ -287,10 +286,11 @@
                     this.reseted = false;
                 }
                 if (this.atividade.chat && this.atividade.chat.id){
+                    this.chatAssunto = this.atividade.chat.assunto;
                     this.chatExist = true;
                 } else {
                     if (!this.atividade.chat || this.atividade.chat && !this.atividade.chat.assunto){
-                        this.atividade.chat = {assunto: ""};
+                        this.chatAssunto = "";
                     }
                     this.chatExist = false;
                 }
@@ -300,7 +300,7 @@
             hasErrors: function () {
                 return (!this.atividade.titulo || !this.atividade.descricao || this.atividade.descricao.length < 25 ||
                     !this.atividade.tipo || !this.atividade.numeroElementos ||
-                    !this.atividade.visibilidade || this.chatExist && !this.atividade.chat.assunto ||
+                    !this.atividade.visibilidade || this.chatExist && !this.chatAssunto ||
                     this.patrimoniosSelecionados.length === 0);
             },
             getTitle: function() {

@@ -160,14 +160,22 @@ class AtividadeControllerAPI extends Controller
             'visibilidade' => $request->get('visibilidade'),
         ]);
 
-        if (!$atividade->chat_id && $request->get('chatExist')) {
+        if (!$atividade->chat_id && $request->get('chatExist')) {//cria
             $chat = new Chat();
             $chat->assunto = $request->chat['assunto'];
             $chat->privado = $request->get('visibilidade') != 'publico';
             $chat->save();
             $atividade->chat_id = $chat->id;
+        } else if ($atividade->chat_id && $request->get('chatExist')){//atualiza
+            $chat = Chat::findOrFail($atividade->chat_id);
+            $chat->assunto = $request->chat['assunto'];
+            $chat->save();
+        } else if ($atividade->chat_id && !$request->get('chatExist')) {//apaga
+            $oldChatId = $atividade->chat_id;
+            $atividade->chat_id = null;
+            Chat::findOrFail($oldChatId)->delete();
         }
-
+        //participantes
         if ($request->get('visibilidade') == 'privado' && sizeof($request->get('participantes')) > 0) {
             $participantesRecebidos = array_column($request->get('participantes'), 'id');
             $participantes = AtividadeParticipantes::where('atividade_id', $id)->get()->pluck('user_id')->toArray();;
@@ -192,7 +200,7 @@ class AtividadeControllerAPI extends Controller
                 }
             }
         }
-
+        //patrimonios
         if ($request->has('patrimonios') && sizeof($request->get('patrimonios')) > 0) {
             $patrimoniosRecebidos = array_column($request->get('patrimonios'), 'id');
             $patrimonios = AtividadePatrimonios::where('atividade_id', $id)->get()->pluck('patrimonio_id')->toArray();;
