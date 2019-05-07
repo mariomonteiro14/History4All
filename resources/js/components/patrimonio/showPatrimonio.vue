@@ -72,7 +72,7 @@
         props: ['id'],
         data: function () {
             return {
-                patrimonio: [],
+                patrimonio: {},
                 showGallery: false,
             };
         },

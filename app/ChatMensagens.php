@@ -26,7 +26,7 @@ class ChatMensagens extends Model
     }
 
     public function user(){
-        return $this->hasMany(User::class, 'user_id','id');
+        return $this->hasOne(User::class, 'id', 'user_id')->select('id', 'nome', 'foto');
     }
 
 }

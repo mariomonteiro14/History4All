@@ -29,7 +29,7 @@ class Atividade extends Model
 
 
     public function chat(){
-        return $this->hasOne(Chat::class, 'id', 'chat_id');
+        return $this->hasOne(Chat::class, 'id', 'chat_id')->with('chatMensagens');
     }
 
     public function atividadeParticipantes(){
@@ -43,13 +43,13 @@ class Atividade extends Model
     public function ciclo(){
         return $this->join('atividade_patrimonios', 'atividade_id', 'id')
             ->join('patrimonios as p', 'patrimonio_id','p.id')
-            ->where('atividade_id', $this->id)->distinct('ciclo')->orderBy('ciclo')->pluck('ciclo');
+            ->where('atividade_id', $this->id)->distinct('ciclo')->pluck('ciclo');
     }
 
     public function epoca(){
         return $this->join('atividade_patrimonios', 'atividade_id', 'id')
             ->join('patrimonios as p', 'patrimonio_id','p.id')
-            ->where('atividade_id', $this->id)->distinct('epoca')->orderBy('epoca')->pluck('epoca');
+            ->where('atividade_id', $this->id)->distinct('epoca')->pluck('epoca');
     }
 
     public function imagem(){

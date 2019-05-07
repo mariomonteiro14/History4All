@@ -84,9 +84,8 @@
                         <v-flex v-for="(atividade, index) in filteredAtividades" :key="index">
                             <v-hover>
                                 <v-card height="300" width="300" slot-scope="{ hover }" class="mx-auto">
-                                    <v-img @click="mostrar(atividade)" class="white--text" max-height="220"
-                                           v-if="atividade.imagem"
-                                           v-bind:src="getPatrimonioPhoto(atividade.imagem)">
+                                    <v-img @click="mostrar(atividade.id)" class="white--text" max-height="220"
+                                           v-if="atividade.imagem" v-bind:src="getPatrimonioPhoto(atividade.imagem)">
                                         <v-expand-transition>
                                             <div v-if="hover" class="blue darken-4 v-card--reveal white--text"
                                                  style="height: 100%;">
@@ -107,7 +106,7 @@
                                         <strong
                                             v-if="atividade.coordenador.escola">{{atividade.coordenador.escola[0]}}</strong>
                                         <div v-if="atividade.coordenador.id == $store.state.user.id">
-                                            <v-btn color="warning" @click="editar(atividade)">
+                                            <v-btn color="warning" @click="editar(atividade.id)">
                                                 Editar
                                                 <v-icon small class="mr-2">edit</v-icon>
                                             </v-btn>
@@ -202,15 +201,15 @@
                     });
 
             },
-            mostrar(atividade) {
-                this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
+            mostrar(id) {
+                this.$router.push('/atividade/' + id);
             },
             atualizar() {
                 this.getAtividades();
                 $('#addAtividadeModal').modal('show');
             },
-            editar(atividade) {
-                axios.get('/api/atividades/' + atividade.id)
+            editar(id) {
+                axios.get('/api/atividades/' + id)
                     .then(response => {
                         this.atividadeAtual = response.data;
                         $('#addAtividadeModal').modal('show');

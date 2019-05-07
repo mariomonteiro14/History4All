@@ -26,7 +26,7 @@ class Chat extends Model
     }
 
     public function chatMensagens(){
-        return $this->hasMany(ChatMensagens::class, 'chat_id','id');
+        return $this->hasMany(ChatMensagens::class, 'chat_id','id')->with('user');
     }
 
 }
