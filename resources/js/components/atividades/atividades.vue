@@ -10,20 +10,22 @@
                     <v-layout wrap align-center>
                         <v-flex xs12 sm3 d-flex>
                             <v-select
-                                    :items="tiposDePesquisa"
-                                    v-model="tipoDePesquisaSelected"
+                                :items="tiposDePesquisa"
+                                v-model="tipoDePesquisaSelected"
                             ></v-select>
                         </v-flex>
-                        <v-flex xs3 d-flex v-if="tipoDePesquisaSelected == 'Minhas Atividades' && this.$store.state.user.tipo == 'aluno'">
+                        <v-flex xs3 d-flex
+                                v-if="tipoDePesquisaSelected == 'Minhas Atividades' && this.$store.state.user.tipo == 'aluno'">
                             <v-select
-                                    v-model="minhasAtividadesSelected"
-                                    :items="minhasAtividades"
-                                    label="Filtrar pelo progresso"
-                                    class="input-group--focused"
+                                v-model="minhasAtividadesSelected"
+                                :items="minhasAtividades"
+                                label="Filtrar pelo progresso"
+                                class="input-group--focused"
                             ></v-select>
                         </v-flex>
                         <v-spacer></v-spacer>
-                        <v-btn v-if="$store.state.user.tipo=='professor'" color="success" data-toggle="modal" data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
+                        <v-btn v-if="$store.state.user.tipo=='professor'" color="success" data-toggle="modal"
+                               data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
                             Criar Atividade <i class="material-icons">add_box</i>
                         </v-btn>
                     </v-layout>
@@ -34,37 +36,37 @@
                     <v-container fluid grid-list-xl>
                         <v-layout row wrap align-center>
                             <v-text-field
-                                    v-model="search"
-                                    append-icon="pesquisa"
-                                    label="Pesquisar por título"
-                                    single-line
-                                    hide-details
+                                v-model="search"
+                                append-icon="pesquisa"
+                                label="Pesquisar por título"
+                                single-line
+                                hide-details
                             ></v-text-field>
                             <v-spacer></v-spacer>
                             <v-flex xs12 sm3 d-flex>
                                 <v-select
-                                        v-model="epocaSelected"
-                                        :items="epocas"
-                                        label="Filtrar por época históricas"
-                                        class="input-group--focused"
+                                    v-model="epocaSelected"
+                                    :items="epocas"
+                                    label="Filtrar por época históricas"
+                                    class="input-group--focused"
                                 ></v-select>
                             </v-flex>
                             <v-flex xs12 sm3>
                                 <v-select
-                                        v-model="cicloSelected"
-                                        :items="ciclos"
-                                        chips
-                                        label="Filtrar por ciclos"
-                                        multiple
+                                    v-model="cicloSelected"
+                                    :items="ciclos"
+                                    chips
+                                    label="Filtrar por ciclos"
+                                    multiple
                                 ></v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
                             <v-flex xs12 sm3 d-flex>
                                 <v-select
-                                        v-model="tipoSelected"
-                                        :items="tipos"
-                                        label="Filtrar por tipo de atividades"
-                                        class="input-group--focused"
+                                    v-model="tipoSelected"
+                                    :items="tipos"
+                                    label="Filtrar por tipo de atividades"
+                                    class="input-group--focused"
                                 ></v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
@@ -74,11 +76,16 @@
             </v-card>
             <v-card>
                 <v-container fluid grid-list-md>
+                    <v-alert v-if="atividades.length == 0 && !isLoading" :value="true" color="error" icon="warning">
+                        Nao existem atividades :(
+                    </v-alert>
                     <v-layout row wrap>
+                        <v-progress-linear v-show="isLoading" v-slot:progress color="brown" indeterminate></v-progress-linear>
                         <v-flex v-for="(atividade, index) in filteredAtividades" :key="index">
                             <v-hover>
                                 <v-card height="300" width="300" slot-scope="{ hover }" class="mx-auto">
-                                    <v-img @click="mostrar(atividade)" class="white--text" max-height="220" v-if="atividade.imagem"
+                                    <v-img @click="mostrar(atividade)" class="white--text" max-height="220"
+                                           v-if="atividade.imagem"
                                            v-bind:src="getPatrimonioPhoto(atividade.imagem)">
                                         <v-expand-transition>
                                             <div v-if="hover" class="blue darken-4 v-card--reveal white--text"
@@ -89,14 +96,16 @@
                                         <v-container fill-height fluid>
                                             <v-layout fill-height>
                                                 <v-flex xs12 align-end flexbox>
-                                                    <span style="text-shadow: 2px 2px #000000"><h4>{{atividade.titulo}}</h4></span>
+                                                    <span
+                                                        style="text-shadow: 2px 2px #000000"><h4>{{atividade.titulo}}</h4></span>
                                                     <span style="text-shadow: 2px 2px #000000">{{atividade.tipo}}</span><br>
                                                 </v-flex>
                                             </v-layout>
                                         </v-container>
                                     </v-img>
                                     <v-card-title>
-                                        <strong v-if="atividade.coordenador.escola">{{atividade.coordenador.escola[0]}}</strong>
+                                        <strong
+                                            v-if="atividade.coordenador.escola">{{atividade.coordenador.escola[0]}}</strong>
                                         <div v-if="atividade.coordenador.id == $store.state.user.id">
                                             <v-btn color="warning" @click="editar(atividade)">
                                                 Editar
@@ -163,7 +172,7 @@
                 atividades: [],
                 atividadesFiltradasLength: null,
                 limite: 4,
-                tiposDePesquisa: ['Publicas','Minha Escola', 'Minhas Atividades'],
+                tiposDePesquisa: ['Publicas', 'Minha Escola', 'Minhas Atividades'],
                 tipoDePesquisaSelected: 'Publicas',
                 minhasAtividades: ['Todas', 'Pendentes', 'Concluídas'],
                 minhasAtividadesSelected: 'Todas',
@@ -171,22 +180,27 @@
                 atividadeAApagar: null,
                 dialog: false,
                 atividadeAtual: {},
+                isLoading: true,
             }
         },
         methods: {
             getAtividades(url = '/api/users/' + this.$store.state.user.id + '/atividades') {
                 if (this.tipoDePesquisaSelected === 'Minhas Atividades') {
                     url = '/api/me/atividades/';
-                }else if(this.tipoDePesquisaSelected === 'Minha Escola'){
-                    url='/api/me/escola/atividades/'
+                } else if (this.tipoDePesquisaSelected === 'Minha Escola') {
+                    url = '/api/me/escola/atividades/'
                 }
+                this.isLoading = true;
                 axios.get(url)
                     .then(response => {
                         this.atividades = response.data.data;
+                        this.isLoading = false;
                     })
                     .catch(errors => {
                         console.log(errors);
+                        this.isLoading = false;
                     });
+
             },
             mostrar(atividade) {
                 this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
@@ -221,7 +235,7 @@
                     console.log(error);
                 });
             },
-            resetAtividadeAtual(){
+            resetAtividadeAtual() {
                 this.atividadeAtual = {};
             }
         },
@@ -237,12 +251,12 @@
                 this.atividadesFiltradasLength = atividadesFiltradas.length;
                 return atividadesFiltradas.slice(0, this.limite);
             },
-            getTitle: function() {
+            getTitle: function () {
                 let title = "Atividades / Pesquisa / " + this.tipoDePesquisaSelected;
-                if (this.tipoDePesquisaSelected === 'Minhas atividades' && this.$store.state.user.tipo === 'professor'){
+                if (this.tipoDePesquisaSelected === 'Minhas atividades' && this.$store.state.user.tipo === 'professor') {
                     title = "Atividades / Gestão";
                 }
-                if (this.tipoDePesquisaSelected === 'Minhas atividades' && this.minhasAtividadesSelected !== 'Todas'){
+                if (this.tipoDePesquisaSelected === 'Minhas atividades' && this.minhasAtividadesSelected !== 'Todas') {
                     title += " / " + this.minhasAtividadesSelected;
                 }
                 return title;

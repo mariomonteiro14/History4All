@@ -37,7 +37,7 @@
                 </v-card-title>
             </v-card>
             <v-data-table :headers="headers" :items="filteredUsers" :search="search" class="elevation-1"
-                          :pagination.sync="pagination" :expand="expand">
+                          :pagination.sync="pagination" :expand="expand" :loading="isLoading">
 
                 <template v-slot:items="props">
                     <tr v-bind:class="colorUserType(props.item.tipo)">
@@ -128,6 +128,7 @@
                                     required
                                 ></v-select>
                             </div>
+                            <span v-if="userAtual.tipo == 'professor'">Se alterar a escola, todas as turmas associadas a este professor ficaram sem professor</span>
                             <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola" @click="setOpenList">
                                 <v-select
                                     ref="selectT"
@@ -212,36 +213,47 @@
                 userDetail: {},
                 escolas: [],
                 selAberto: false, //atributo pra corrigir bug no modal
+                isLoading: true,
 
             }
         },
         methods: {
             getUsers(url = '/api/users') {
-
+                this.isLoading = true;
                 axios.get(url)
                     .then(response => {
                         this.users = response.data.data;
                         this.trashed = false;
+                        this.isLoading = false;
                     })
                     .catch(errors => {
+                        this.toastPopUp('error', errors);
                         console.log(errors);
+                        this.isLoading = false;
                     });
             },
 
             getUsersTrashed(url = '/api/usersTrashed') {
+                this.isLoading = true;
                 axios.get(url)
                     .then(response => {
                         if (!response.data.data.length) {
-                            this.toastPopUp('warning', 'Nao existem utilizadores apagados')
+                            this.toastPopUp('show', 'Nao existem utilizadores apagados');
+                            if (this.trashed){
+                                this.trashed = false;
+                                this.getUsers();
+                            }
                         } else {
                             this.users = response.data.data;
                             this.trashed = true;
                         }
-
+                        this.isLoading = false;
                     })
                     .catch(errors => {
                         console.log(errors);
                         this.toastPopUp("error", "`${error.response.data.message}`");
+                        this.isLoading = false;
+
                     });
             },
 

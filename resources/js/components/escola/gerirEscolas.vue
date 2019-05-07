@@ -30,7 +30,7 @@
                 </v-container>
 
                 <v-data-table :headers="headersEscola" :items="filteredEscolas" :search="search" class="elevation-1"
-                              :pagination.sync="pagination" :expand="expand">
+                              :pagination.sync="pagination" :expand="expand" :loading="isLoading">
                     <template v-slot:items="props">
                         <tr :class="[props.item.id == escolaAtual.id ? 'alert-success' : '' ]">
                             <td class="text-xs-left">{{ props.item.nome }}</td>
@@ -162,20 +162,24 @@
                 escolas: [],
                 dialog: false,
                 escolaAtual: {},
-                turmaAtual: {}
+                turmaAtual: {},
+                isLoading: true,
             }
         },
         methods: {
             getEscolas(url = '/api/escolas') {
+                this.isLoading = true;
                 axios.get(url)
                     .then(response => {
                         this.escolas = response.data.data;
                         if (this.escolaAtual.id){
                             this.escolaAtual = this.escolas.find(e => e.id === this.escolaAtual.id);
                         }
+                        this.isLoading = false;
                     })
                     .catch(errors => {
                         console.log(errors);
+                        this.isLoading = false;
                     });
             },
 

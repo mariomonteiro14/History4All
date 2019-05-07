@@ -230,8 +230,17 @@ class UserControllerAPI extends Controller
         $user = User::findOrFail($id);
 
         if ($request->has('escola') && $user->tipo != "admin") {
+
             $escola = Escola::where('nome', $request->escola)->first();
-            $user->escola_id = $escola->id;
+
+            if ($escola->id != $user->escola_id) {
+                $turmas = Turma::where('professor_id', $user->id)->get();
+                foreach ($turmas as $turma) {
+                    $turma->professor_id = null;
+                    $turma->save();
+                }
+                $user->escola_id = $escola->id;
+            }
 
             if ($request->has('turma') && $user->tipo == "aluno") {
                 $turma = Turma::where('escola_id', $escola->id)->where('nome', $request->turma)->first();

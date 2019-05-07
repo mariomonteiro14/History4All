@@ -51,7 +51,7 @@
                 </v-card-title>
             </v-card>
             <v-data-table :headers="headers" :items="filteredPatrimonios" :search="search" class="elevation-1"
-                          :pagination.sync="pagination">
+                          :pagination.sync="pagination" :loading="isLoading">
 
                 <template v-slot:items="props">
                     <tr @click="showPatrimonio(props.item)">
@@ -112,18 +112,22 @@
                     {text: 'Epoca', value: 'epoca'},
                     {text: 'Ciclo', value: 'ciclo'},
                 ],
-                patrimonios: []
+                patrimonios: [],
+                isLoading: true,
             }
         },
         methods: {
             getPatrimonios(url = '/api/patrimonios') {
-
+                this.isLoading= true;
                 axios.get(url)
                     .then(response => {
                         this.patrimonios = response.data.data;
+                        this.isLoading= false;
                     })
                     .catch(errors => {
                         console.log(errors);
+                        this.isLoading= false;
+
                     });
             },
             showPatrimonio(patrimonio) {

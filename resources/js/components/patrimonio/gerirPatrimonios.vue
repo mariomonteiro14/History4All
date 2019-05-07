@@ -3,7 +3,7 @@
         <v-app id="inspire">
             <br><br><br><br><br>
             <patrimonio-add-edit :patrimonio="patrimonioAtual" v-on:getPat="getPatrimonios()"></patrimonio-add-edit>
-            <h3> <a href="/patrimonios">Patrimónios </a>/ Gerir</h3>
+            <h3><a href="/patrimonios">Patrimónios </a>/ Gerir</h3>
             <br>
             <v-card append float>
                 <v-container fluid grid-list-xl>
@@ -17,14 +17,15 @@
                             clearable
                         ></v-text-field>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal" @click="resetPatrimonioAtual()">
+                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal"
+                               @click="resetPatrimonioAtual()">
                             Adicionar património <i class="material-icons">add_box</i>
                         </v-btn>
                     </v-layout>
                 </v-container>
 
                 <v-data-table :headers="headers" :items="patrimonios" :search="search" class="elevation-1"
-                              :pagination.sync="pagination">
+                              :pagination.sync="pagination" :loading="isLoading">
                     <template v-slot:items="props">
                         <tr>
                             <td class="text-xs-center">
@@ -120,23 +121,26 @@
                 ],
                 patrimonios: [],
                 dialog: false,
-                patrimonioAApagar: ''
+                patrimonioAApagar: '',
+                isLoading: true,
             }
         },
         methods: {
-            showEdit($pat){
+            showEdit($pat) {
                 this.patrimonioAtual = Object.assign({}, $pat);
                 $('#addPatrimonioModal').modal('show');
 
             },
             getPatrimonios(url = '/api/patrimonios') {
-                axios.get(url)
-                    .then(response => {
-                        this.patrimonios = response.data.data;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
-                    });
+                this.isLoading = true;
+                axios.get(url).then(response => {
+                    this.patrimonios = response.data.data;
+                    this.isLoading = false;
+
+                }).catch(errors => {
+                    console.log(errors);
+                    this.isLoading = false;
+                });
             },
 
             apagarVerificacao(id) {
@@ -154,8 +158,8 @@
                     console.log(error);
                 });
             },
-            resetPatrimonioAtual(){
-                this.patrimonioAtual.id = undefined ;
+            resetPatrimonioAtual() {
+                this.patrimonioAtual.id = undefined;
                 this.patrimonioAtual.nome = "";
                 this.patrimonioAtual.descricao = "";
                 this.patrimonioAtual.distrito = "";
