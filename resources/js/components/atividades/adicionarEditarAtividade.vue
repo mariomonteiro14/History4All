@@ -290,8 +290,8 @@
             },
         },
         watch: {
-            'atividade.id': function (id, oldId) {
-                if (id) {
+            atividade: function (atividade, oldAtividade) {
+                if (atividade.id) {
                     if (this.atividade.patrimonios) {
                         this.patrimoniosSelecionados = this.atividade.patrimonios;
                     } else {
@@ -306,7 +306,8 @@
                         }
                         this.chatExist = false;
                     }
-
+                }else{
+                    this.cleanForm();
                 }
             }
         }

@@ -222,7 +222,7 @@
                 });
             },
             resetAtividadeAtual(){
-                this.atividadeIdAtual = null;
+                this.atividadeAtual = {};
             }
         },
         computed: {

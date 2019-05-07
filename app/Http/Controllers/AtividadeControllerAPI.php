@@ -216,6 +216,7 @@ class AtividadeControllerAPI extends Controller
                 ]);
                 $patrimonio->save();
             }
+            $removidos = array_diff($patrimonios, $patrimoniosRecebidos);
             if (count($request->get('patrimonios')) != AtividadePatrimonios::where('atividade_id', $id)->count()) {
                 foreach ($removidos as $patrimonioId) {
                     AtividadePatrimonios::where('atividade_id', $id)->where('patrimonio_id', $patrimonioId)->delete();
