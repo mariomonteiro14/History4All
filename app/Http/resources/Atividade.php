@@ -23,7 +23,7 @@ class Atividade extends JsonResource
             'descricao' => $this->descricao,
             'visibilidade' => $this->visibilidade,
             'numeroElementos' => $this->numeroElementos,
-            'coordenador' => $this->coordenador(),
+            'coordenador' => new User($this->coordenador()),
             'chat' => $this->chat()->first(),
             'data' => $this->data,
             'patrimonios' => $patrimonios->exists() ? ShortPatrimonio::collection($patrimonios->get()->pluck('patrimonios')) : [],

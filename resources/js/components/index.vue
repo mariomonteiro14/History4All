@@ -20,7 +20,7 @@
             </ol>
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <b-img center class="d-block w-100" :src="getPatrimonioPhoto('001.jpg')" height="350px" alt="First slide"/>
+                    <b-img center ratio="1" class="d-block w-100" :src="getPatrimonioPhoto('001.jpg')" height="350px" alt="First slide"/>
                 </div>
                 <div class="carousel-item">
                     <b-img center class="d-block w-100" :src="getPatrimonioPhoto('002.jpg')" height="350px" alt="Second slide"/>

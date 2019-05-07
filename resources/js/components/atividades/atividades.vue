@@ -96,6 +96,7 @@
                                         </v-container>
                                     </v-img>
                                     <v-card-title>
+                                        <strong v-if="atividade.coordenador.escola">{{atividade.coordenador.escola[0]}}</strong>
                                         <div v-if="atividade.coordenador.id == $store.state.user.id">
                                             <v-btn color="warning" @click="editar(atividade)">
                                                 Editar
@@ -135,7 +136,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <atividade-add-edit :atividade_id="atividadeIdAtual" v-on:atualizar="atualizar()"></atividade-add-edit>
+        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()"></atividade-add-edit>
     </div>
 </template>
 
@@ -169,7 +170,7 @@
 
                 atividadeAApagar: null,
                 dialog: false,
-                atividadeIdAtual: '',
+                atividadeAtual: {},
             }
         },
         methods: {
@@ -195,8 +196,15 @@
                 $('#addAtividadeModal').modal('show');
             },
             editar(atividade) {
-                this.atividadeIdAtual = atividade.id;
-                $('#addAtividadeModal').modal('show');
+                axios.get('/api/atividades/' + atividade.id)
+                    .then(response => {
+                        this.atividadeAtual = response.data;
+                        $('#addAtividadeModal').modal('show');
+                    })
+                    .catch(errors => {
+                        console.log(errors);
+                    });
+
             },
             apagarVerificacao(id) {
                 this.dialog = true;

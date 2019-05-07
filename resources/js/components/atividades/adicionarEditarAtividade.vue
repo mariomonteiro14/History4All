@@ -24,107 +24,108 @@
                         </div>
                         <div class="form-group">
                             <v-textarea
-                                    id="inputDescricao"
-                                    v-model="atividade.descricao"
-                                    label="Descrição"
-                                    :rules="[v => !!v || 'Descrição é obrigatória',
+                                id="inputDescricao"
+                                v-model="atividade.descricao"
+                                label="Descrição"
+                                :rules="[v => !!v || 'Descrição é obrigatória',
                                              v => v && v.length >= 25 || 'minimo 25 caracteres']"
-                                    counter="1000"
-                                    required
+                                counter="1000"
+                                required
                             ></v-textarea>
                         </div>
                         <br>
                         <div @click="setOpenList('tipo')">
                             <v-select
-                                    label="Tipo"
-                                    v-model="atividade.tipo"
-                                    :items="tipos"
-                                    :rules="[v => !!v || 'Tipo de atividade é obrigatório']"
-                                    class="input-group--focused"
-                                    clearable
-                                    ref="selectTipo"
-                                    required
+                                label="Tipo"
+                                v-model="atividade.tipo"
+                                :items="tipos"
+                                :rules="[v => !!v || 'Tipo de atividade é obrigatório']"
+                                class="input-group--focused"
+                                clearable
+                                ref="selectTipo"
+                                required
                             ></v-select>
                         </div>
                         <br>
                         <div class="form-group">
                             <v-text-field
-                                    type="number"
-                                    min="1"
-                                    step="1"
-                                    default="1"
-                                    @change="atividade.numeroElementos = Math.max(Math.min(Math.round(atividade.numeroElementos), 99), 1)"
-                                    id="inputNumeroElementos"
-                                    v-model="atividade.numeroElementos"
-                                    label="Numero de elementos por grupo (1 caso seja individual)"
-                                    :rules="[v => !!v && !isNaN(v) || 'Numero de elementos é obrigatório']"
-                                    required
+                                type="number"
+                                min="1"
+                                step="1"
+                                default="1"
+                                @change="atividade.numeroElementos = Math.max(Math.min(Math.round(atividade.numeroElementos), 99), 1)"
+                                id="inputNumeroElementos"
+                                v-model="atividade.numeroElementos"
+                                label="Numero de elementos por grupo (1 caso seja individual)"
+                                :rules="[v => !!v && !isNaN(v) || 'Numero de elementos é obrigatório']"
+                                required
                             ></v-text-field>
                         </div>
                         <v-spacer></v-spacer>
                         <div class="form-group ">
                             <v-checkbox
-                                    v-model="chatExist"
-                                    label="Atividade tem Chat?"
+                                v-model="chatExist"
+                                label="Atividade tem Chat?"
                             ></v-checkbox>
                             <v-textarea
-                                    v-if="chatExist"
-                                    id="inputChatAssunto"
-                                    v-model="chatAssunto"
-                                    label="Chat Descrição"
-                                    :rules="[v => !!v || 'Assunto do chat é obrigatória']"
-                                    counter="150"
-                                    required
+                                v-if="chatExist"
+                                id="inputChatAssunto"
+                                v-model="chatAssunto"
+                                label="Chat Descrição"
+                                :rules="[v => !!v || 'Assunto do chat é obrigatória']"
+                                counter="150"
+                                required
                             ></v-textarea>
                         </div>
                         <v-spacer></v-spacer>
                         <div @click="setOpenList('visibilidade')">
                             <v-select
-                                    label="Visibilidade"
-                                    v-model="atividade.visibilidade"
-                                    :items="visibilidades"
-                                    :rules="[v => !!v || 'Visibilidade é obrigatória']"
-                                    class="input-group--focused"
-                                    required
-                                    clearable
-                                    ref="selectVisibilidade"
+                                label="Visibilidade"
+                                v-model="atividade.visibilidade"
+                                :items="visibilidades"
+                                :rules="[v => !!v || 'Visibilidade é obrigatória']"
+                                class="input-group--focused"
+                                required
+                                clearable
+                                ref="selectVisibilidade"
                             ></v-select>
                         </div>
                         <div @click="setOpenList('alunos')" v-if="atividade.visibilidade == 'privado'">
                             <v-combobox
-                                    v-model="atividade.participantes"
-                                    :items="alunos"
-                                    item-text="nome"
-                                    label="Alunos"
-                                    multiple
-                                    chips
-                                    class="input-group--focused"
-                                    deletable-chips
-                                    ref="selectAlunos"
-                                    autofocus
-                                    hide-no-data
+                                v-model="atividade.participantes"
+                                :items="alunos"
+                                item-text="nome"
+                                label="Alunos"
+                                multiple
+                                chips
+                                class="input-group--focused"
+                                deletable-chips
+                                ref="selectAlunos"
+                                autofocus
+                                hide-no-data
                             ></v-combobox>
                         </div>
                         <div @click="setOpenList('patrimonios')">
                             <v-combobox
-                                    v-model="patrimoniosSelecionados"
-                                    :items="patrimonios"
-                                    item-text="nome"
-                                    label="Patrimonios"
-                                    multiple
-                                    chips
-                                    class="input-group--focused"
-                                    deletable-chips
-                                    ref="selectPatrimonios"
-                                    :rules="[v => v.length != 0 || 'Património é obrigatório']"
-                                    autofocus
-                                    hide-no-data
-                                    required
+                                v-model="patrimoniosSelecionados"
+                                :items="patrimonios"
+                                item-text="nome"
+                                label="Patrimonios"
+                                multiple
+                                chips
+                                class="input-group--focused"
+                                deletable-chips
+                                ref="selectPatrimonios"
+                                :rules="[v => v.length != 0 || 'Património é obrigatório']"
+                                autofocus
+                                hide-no-data
+                                required
                             ></v-combobox>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button v-if="!atividade.id" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">
+                        <button v-if="!atividade.id" class="btn btn-info" v-on:click.prevent="save"
+                                :disabled="hasErrors">
                             Registar
                         </button>
                         <button v-else class="btn btn-info" v-on:click.prevent="edit" :disabled="hasErrors">
@@ -141,9 +142,9 @@
 
 <script>
     export default {
-        props: ['atividade_id'],
+        props: ['atividade'],
         created() {
-            if (this.$store.state.user.tipo === 'professor'){
+            if (this.$store.state.user.tipo === 'professor') {
                 this.getAlunos();
                 this.getPatrimonios();
             }
@@ -161,7 +162,6 @@
                 chatExist: false,
                 patrimoniosSelecionados: [],
                 chatAssunto: '',
-                atividade: {}
             };
         },
         methods: {
@@ -174,6 +174,7 @@
                     this.toastPopUp("success", "Atividade Criada!");
                     this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
+                    this.cleanForm();
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
@@ -184,20 +185,22 @@
                     this.toastPopUp("success", "Atividade Atualizada!");
                     this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
+                    this.cleanForm();
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
-            prepararAtividade(){
+            prepararAtividade() {
                 this.atividade.chatExist = this.chatExist;
                 this.atividade.chat = {assunto: this.chatAssunto};
                 this.atividade.patrimonios = this.patrimoniosSelecionados;
-                if (this.atividade.visibilidade == 'privado'){
+                if (this.atividade.visibilidade == 'privado') {
                     this.participantes = [];
                 }
             },
             cancel: function () {
                 $('#addAtividadeModal').modal('hide');
+                this.cleanForm();
             },
             cleanForm: function () {
                 this.atividade.id = null;
@@ -282,35 +285,28 @@
                     !this.atividade.visibilidade || this.chatExist && !this.chatAssunto ||
                     this.patrimoniosSelecionados.length === 0);
             },
-            getTitle: function() {
+            getTitle: function () {
                 return this.isCreated() ? "Criar Atividade" : "Editar Atividade";
             },
         },
         watch: {
-            atividade_id: function (id, oldId){
-                this.cleanForm();
-                if (id){
-                    axios.get('/api/atividades/' + id)
-                        .then(response => {
-                            this.atividade = response.data;
-                            if (this.atividade.patrimonios){
-                                this.patrimoniosSelecionados = this.atividade.patrimonios;
-                            } else{
-                                this.patrimoniosSelecionados = [];
-                            }
-                            if (this.atividade.chat && this.atividade.chat.id){
-                                this.chatAssunto = this.atividade.chat.assunto;
-                                this.chatExist = true;
-                            } else {
-                                if (!this.atividade.chat || this.atividade.chat && !this.atividade.chat.assunto){
-                                    this.chatAssunto = "";
-                                }
-                                this.chatExist = false;
-                            }
-                        })
-                        .catch(errors => {
-                            console.log(errors);
-                        });
+            'atividade.id': function (id, oldId) {
+                if (id) {
+                    if (this.atividade.patrimonios) {
+                        this.patrimoniosSelecionados = this.atividade.patrimonios;
+                    } else {
+                        this.patrimoniosSelecionados = [];
+                    }
+                    if (this.atividade.chat && this.atividade.chat.id) {
+                        this.chatAssunto = this.atividade.chat.assunto;
+                        this.chatExist = true;
+                    } else {
+                        if (!this.atividade.chat || this.atividade.chat && !this.atividade.chat.assunto) {
+                            this.chatAssunto = "";
+                        }
+                        this.chatExist = false;
+                    }
+
                 }
             }
         }
