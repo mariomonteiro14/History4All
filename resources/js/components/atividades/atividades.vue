@@ -14,7 +14,7 @@
                                     v-model="tipoDePesquisaSelected"
                             ></v-select>
                         </v-flex>
-                        <v-flex xs3 d-flex v-if="tipoDePesquisaSelected === 'Minhas atividades' && this.$store.state.user.tipo === 'aluno'">
+                        <v-flex xs3 d-flex v-if="tipoDePesquisaSelected == 'Minhas Atividades' && this.$store.state.user.tipo == 'aluno'">
                             <v-select
                                     v-model="minhasAtividadesSelected"
                                     :items="minhasAtividades"
@@ -77,9 +77,9 @@
                     <v-layout row wrap>
                         <v-flex v-for="(atividade, index) in filteredAtividades" :key="index">
                             <v-hover>
-                                <v-card @click="mostrar(atividade)" height="300" width="300" slot-scope="{ hover }" class="mx-auto">
-                                    <v-img class="white--text" max-height="220" v-if="atividade.patrimonios[0] &&
-                                    atividade.patrimonios[0].imagens[0]" v-bind:src="getPatrimonioPhoto(atividade.patrimonios[0].imagens[0])">
+                                <v-card height="300" width="300" slot-scope="{ hover }" class="mx-auto">
+                                    <v-img @click="mostrar(atividade)" class="white--text" max-height="220" v-if="atividade.imagem"
+                                           v-bind:src="getPatrimonioPhoto(atividade.imagem)">
                                         <v-expand-transition>
                                             <div v-if="hover" class="blue darken-4 v-card--reveal white--text"
                                                  style="height: 100%;">
@@ -91,8 +91,6 @@
                                                 <v-flex xs12 align-end flexbox>
                                                     <span style="text-shadow: 2px 2px #000000"><h4>{{atividade.titulo}}</h4></span>
                                                     <span style="text-shadow: 2px 2px #000000">{{atividade.tipo}}</span><br>
-                                                    <span style="text-shadow: 2px 2px #000000">{{atividade.ciclosFormatados}}</span><br>
-                                                    <span style="text-shadow: 2px 2px #000000">{{atividade.epocasFormatadas}}</span><br>
                                                 </v-flex>
                                             </v-layout>
                                         </v-container>
@@ -137,7 +135,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()"></atividade-add-edit>
+        <atividade-add-edit :atividade_id="atividadeIdAtual" v-on:atualizar="atualizar()"></atividade-add-edit>
     </div>
 </template>
 
@@ -171,16 +169,7 @@
 
                 atividadeAApagar: null,
                 dialog: false,
-                atividadeAtual: {
-                    id: undefined,
-                    titulo: "",
-                    descricao: "",
-                    tipo: "",
-                    numeroElementos: "",
-                    visibilidade: "",
-                    data: "",
-                    participantes: [],
-                },
+                atividadeIdAtual: '',
             }
         },
         methods: {
@@ -199,44 +188,14 @@
                     });
             },
             mostrar(atividade) {
-                if (this.podeGerir) {
-                    this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
-                }
-            },
-            formatarTexto(atividadesRecebidas) {
-                atividadesRecebidas.map(atividade => {
-                    let ciclos = atividade.ciclo;
-                    let cicloString = 'ciclos: ';
-                    ciclos.forEach((ciclo, index) => {
-                        if (ciclo.includes('ciclo')) {
-                            cicloString += ciclo.substring(0, 2);
-                        } else {
-                            cicloString += ciclo;
-                        }
-                        if (index !== ciclos.length - 1) {
-                            cicloString += ', '
-                        }
-                    });
-                    let epocas = atividade.epoca;
-                    let epocaString = 'epocas: ';
-                    epocas.forEach((epoca, index) => {
-                        epocaString += epoca;
-                        if (index !== epocas.length - 1) {
-                            epocaString += ', '
-                        }
-                    });
-                    let ativ = this.atividades.filter(a => a.id === atividade.id)[0];
-                    ativ.ciclosFormatados = cicloString;
-                    ativ.epocasFormatadas = epocaString;
-                });
+                this.$router.push({path: '/atividade/' + atividade.id, params: {'atividade': atividade}});
             },
             atualizar() {
                 this.getAtividades();
-                this.atividadeAtual = {};
                 $('#addAtividadeModal').modal('show');
             },
             editar(atividade) {
-                this.atividadeAtual = Object.assign({}, atividade);
+                this.atividadeIdAtual = atividade.id;
                 $('#addAtividadeModal').modal('show');
             },
             apagarVerificacao(id) {
@@ -255,7 +214,7 @@
                 });
             },
             resetAtividadeAtual(){
-                this.atividadeAtual.id = null;
+                this.atividadeIdAtual = null;
             }
         },
         computed: {
@@ -280,19 +239,9 @@
                 }
                 return title;
             },
-            podeGerir: function(){
-                return this.tipoDePesquisaSelected === 'Minhas Atividades' && this.$store.state.user.tipo === 'professor';
-            }
         },
         watch: {
-            filteredAtividades(atividadesFiltradas){
-                let atividadesSemTextoFormatado = atividadesFiltradas.filter(a => !a.ciclosFormatados);
-                if (atividadesSemTextoFormatado.length !== 0) {
-                    this.formatarTexto(atividadesSemTextoFormatado);
-                    this.atividades.splice(this.atividades.length);
-                }
-            },
-            tipoDePesquisaSelected(tipo) {
+            tipoDePesquisaSelected() {
                 this.getAtividades();
                 this.limite = 4;
             },

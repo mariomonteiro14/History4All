@@ -7,6 +7,7 @@ use App\AtividadeParticipantes;
 use App\AtividadePatrimonios;
 use App\Chat;
 use App\Http\Resources\Atividade as AtividadeResource;
+use App\Http\Resources\ShortAtividade as ShortAtividadeResource;
 use App\Http\Resources\User as UserResources;
 use App\User;
 use Illuminate\Http\Request;
@@ -14,12 +15,17 @@ use Illuminate\Support\Facades\Auth;
 
 class AtividadeControllerAPI extends Controller
 {
+    public function getAtividade(Request $request, $id)
+    {
+        return new AtividadeResource(Atividade::findOrFail($id));
+    }
+
     public function getTodas(Request $request, $id)
     {
         $collection = (Atividade::where('visibilidade', 'publico')->get());
         $participantes = (Atividade::join('atividade_participantes', 'atividade_id', 'id')->where('user_id', $id)->get());
         return response()->json([
-            'data' => AtividadeResource::collection($collection->diff($participantes))
+            'data' => ShortAtividadeResource::collection($collection->diff($participantes))
         ]);
     }
 
@@ -28,13 +34,13 @@ class AtividadeControllerAPI extends Controller
         $user = User::findOrFail($id);
         if ($user->tipo == "professor") {
             return response()->json([
-                'data' => AtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
+                'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
                     ->where('coordenador', $id)->get())
             ]);
         }
 
         return response()->json([
-            'data' => AtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
+            'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
                 ->where('user_id', $id)->get())
         ]);
     }
@@ -42,7 +48,7 @@ class AtividadeControllerAPI extends Controller
     public function getPendentes(Request $request, $id)
     {
         return response()->json([
-            'data' => AtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
+            'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
                 ->where('user_id', $id)->where('estado', 'pendente')->get())
         ]);
     }
@@ -50,7 +56,7 @@ class AtividadeControllerAPI extends Controller
     public function getConcluidas(Request $request, $id)
     {
         return response()->json([
-            'data' => AtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
+            'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
                 ->where('user_id', $id)->where('estado', 'concluida')->get())
         ]);
     }
@@ -60,17 +66,17 @@ class AtividadeControllerAPI extends Controller
         $user = Auth::user();
         if ($user->tipo == "professor") {
             return response()->json([
-                'data' => AtividadeResource::collection(Atividade::where('coordenador', $user->id)->get())
+                'data' => ShortAtividadeResource::collection(Atividade::where('coordenador', $user->id)->get())
             ]);
         }
         return response()->json([
-            'data' => AtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
+            'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
                 ->where('user_id', $user->id)->get())
         ]);
     }
 
     public function minhaEscolaAtividades(){
-        return AtividadeResource::collection( Atividade::select('atividades.*')
+        return ShortAtividadeResource::collection( Atividade::select('atividades.*')
             ->leftJoin('atividade_participantes', 'atividade_id', 'atividades.id')
             ->join('users','users.id','coordenador')
             ->where('escola_id',Auth::user()->escola_id)
@@ -159,7 +165,7 @@ class AtividadeControllerAPI extends Controller
             'numeroElementos' => $request->get('numeroElementos'),
             'visibilidade' => $request->get('visibilidade'),
         ]);
-
+        //chat
         if (!$atividade->chat_id && $request->get('chatExist')) {//cria
             $chat = new Chat();
             $chat->assunto = $request->chat['assunto'];
@@ -178,49 +184,41 @@ class AtividadeControllerAPI extends Controller
         //participantes
         if ($request->get('visibilidade') == 'privado' && sizeof($request->get('participantes')) > 0) {
             $participantesRecebidos = array_column($request->get('participantes'), 'id');
-            $participantes = AtividadeParticipantes::where('atividade_id', $id)->get()->pluck('user_id')->toArray();;
-            foreach ($participantesRecebidos as $participanteId) {
-                if (!in_array($participanteId, $participantes)) {
-                    $atividadeParticipante = new AtividadeParticipantes();
-                    $atividadeParticipante->fill([
-                        'atividade_id' => $id,
-                        'user_id' => $participanteId,
-                        'estado' => 'pendente'
-                    ]);
-                    $atividadeParticipante->save();
-                }
+            $participantes = AtividadeParticipantes::where('atividade_id', $id)->get()->pluck('user_id')->toArray();
+            $inseridos = array_diff($participantesRecebidos, $participantes);//array de id's
+            foreach ($inseridos as $participanteId) {
+                $atividadeParticipante = new AtividadeParticipantes();
+                $atividadeParticipante->fill([
+                    'atividade_id' => $id,
+                    'user_id' => $participanteId,
+                    'estado' => 'pendente'
+                ]);
+                $atividadeParticipante->save();
             }
-            if (count($request->get('participantes')) != AtividadeParticipantes::where('atividade_id', $id)->count()) {
-                $participantes = AtividadeParticipantes::where('atividade_id', $id)->get();
-                foreach ($participantes as $participante) {
-                    if (!in_array($participante->user_id, $participantesRecebidos) && $participante->estado == 'pendente') {
-                        AtividadeParticipantes::where('atividade_id', $id)
-                            ->where('user_id', $participante->user_id)->delete();
-                    }
+            $removidos = array_diff($participantes, $participantesRecebidos);
+            foreach ($removidos as $participanteId) {
+                $participante = AtividadeParticipantes::where('atividade_id', $id)->where('user_id', $participanteId);
+                if ($participante->first()->estado == 'pendente') {
+                    $participante->delete();
                 }
             }
         }
         //patrimonios
         if ($request->has('patrimonios') && sizeof($request->get('patrimonios')) > 0) {
             $patrimoniosRecebidos = array_column($request->get('patrimonios'), 'id');
-            $patrimonios = AtividadePatrimonios::where('atividade_id', $id)->get()->pluck('patrimonio_id')->toArray();;
-            foreach ($patrimoniosRecebidos as $patrimonioId) {
-                if (!in_array($patrimonioId, $patrimonios)) {
-                    $patrimonios = new AtividadePatrimonios();
-                    $patrimonios->fill([
-                        'atividade_id' => $id,
-                        'patrimonio_id' => $patrimonioId,
-                    ]);
-                    $patrimonios->save();
-                }
+            $patrimonios = AtividadePatrimonios::where('atividade_id', $id)->get()->pluck('patrimonio_id')->toArray();
+            $inseridos = array_diff($patrimoniosRecebidos, $patrimonios);
+            foreach ($inseridos as $patrimonioId) {
+                $patrimonio = new AtividadePatrimonios();
+                $patrimonio->fill([
+                    'atividade_id' => $id,
+                    'patrimonio_id' => $patrimonioId,
+                ]);
+                $patrimonio->save();
             }
             if (count($request->get('patrimonios')) != AtividadePatrimonios::where('atividade_id', $id)->count()) {
-                $patrimonios = AtividadePatrimonios::where('atividade_id', $id)->get();
-                foreach ($patrimonios as $patrimonio) {
-                    if (!in_array($patrimonio->patrimonio_id, $patrimoniosRecebidos)) {
-                        AtividadePatrimonios::where('atividade_id', $id)
-                            ->where('patrimonio_id', $patrimonio->patrimonio_id)->delete();
-                    }
+                foreach ($removidos as $patrimonioId) {
+                    AtividadePatrimonios::where('atividade_id', $id)->where('patrimonio_id', $patrimonioId)->delete();
                 }
             }
         }

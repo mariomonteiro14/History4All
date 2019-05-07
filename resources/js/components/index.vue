@@ -20,13 +20,13 @@
             </ol>
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <b-img center class="d-block w-100" :src="getPatrimonioPhoto('001.jpg')" alt="First slide"/>
+                    <b-img center class="d-block w-100" :src="getPatrimonioPhoto('001.jpg')" height="350px" alt="First slide"/>
                 </div>
                 <div class="carousel-item">
-                    <b-img center class="d-block w-100" :src="getPatrimonioPhoto('002.jpg')" alt="Second slide"/>
+                    <b-img center class="d-block w-100" :src="getPatrimonioPhoto('002.jpg')" height="350px" alt="Second slide"/>
                 </div>
                 <div class="carousel-item">
-                    <b-img center class="d-block w-100" :src="getPatrimonioPhoto('003.jpg')" alt="Third slide"/>
+                    <b-img center class="d-block w-100" :src="getPatrimonioPhoto('003.jpg')" height="350px" alt="Third slide"/>
             </div>
             </div>
             <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">

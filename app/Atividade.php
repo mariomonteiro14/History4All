@@ -55,4 +55,9 @@ class Atividade extends Model
             ->join('patrimonios as p', 'patrimonio_id','p.id')
             ->where('atividade_id', $this->id)->distinct('epoca')->orderBy('epoca')->pluck('epoca');
     }
+
+    public function imagem(){
+        return PatrimonioImagens::where('patrimonio_id', AtividadePatrimonios::where('atividade_id', $this->id)
+            ->pluck('patrimonio_id')->first())->pluck('foto')->first();
+    }
 }

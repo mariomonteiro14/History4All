@@ -141,10 +141,12 @@
 
 <script>
     export default {
-        props: ['atividade'],
+        props: ['atividade_id'],
         created() {
-            this.getAlunos();
-            this.getPatrimonios();
+            if (this.$store.state.user.tipo === 'professor'){
+                this.getAlunos();
+                this.getPatrimonios();
+            }
         },
         data: function () {
             return {
@@ -156,21 +158,20 @@
                 selVisibilidadeAberto: false,
                 selAlunosAberto: false,
                 selPatrimoniosAbertos: false,
-                reseted: false,
                 chatExist: false,
                 patrimoniosSelecionados: [],
-                chatAssunto: ''
+                chatAssunto: '',
+                atividade: {}
             };
         },
         methods: {
             isCreated() {
-                return this.atividade.id > 0 ? false : true;
+                return this.atividade_id > 0 ? false : true;
             },
             save: function () {
                 this.prepararAtividade();
                 axios.post('/api/atividades', this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Criada!");
-                    this.cleanForm();
                     this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
                 }).catch(error => {
@@ -181,7 +182,6 @@
                 this.prepararAtividade();
                 axios.put('/api/atividades/' + this.atividade.id, this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Atualizada!");
-                    this.cleanForm();
                     this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
                 }).catch(error => {
@@ -197,7 +197,6 @@
                 }
             },
             cancel: function () {
-                this.cleanForm();
                 $('#addAtividadeModal').modal('hide');
             },
             cleanForm: function () {
@@ -214,7 +213,6 @@
                 this.chatAssunto = "";
                 this.chatExist = false;
                 this.closeLists();
-                this.reseted = true;
             },
             getAlunos(url = '/api/me/escola/alunos') {
                 axios.get(url)
@@ -276,25 +274,6 @@
                     this.$refs.selectPatrimonios.isMenuActive = false;
                 }
             },
-            formatarAtividade(){
-                if (!this.atividade.id && !this.reseted){
-                    this.cleanForm();
-                } else {
-                    if (this.atividade.id){
-                        this.patrimoniosSelecionados = this.atividade.patrimonios;
-                    }
-                    this.reseted = false;
-                }
-                if (this.atividade.chat && this.atividade.chat.id){
-                    this.chatAssunto = this.atividade.chat.assunto;
-                    this.chatExist = true;
-                } else {
-                    if (!this.atividade.chat || this.atividade.chat && !this.atividade.chat.assunto){
-                        this.chatAssunto = "";
-                    }
-                    this.chatExist = false;
-                }
-            }
         },
         computed: {
             hasErrors: function () {
@@ -304,10 +283,36 @@
                     this.patrimoniosSelecionados.length === 0);
             },
             getTitle: function() {
-                this.formatarAtividade();
                 return this.isCreated() ? "Criar Atividade" : "Editar Atividade";
             },
         },
-
+        watch: {
+            atividade_id: function (id, oldId){
+                this.cleanForm();
+                if (id){
+                    axios.get('/api/atividades/' + id)
+                        .then(response => {
+                            this.atividade = response.data;
+                            if (this.atividade.patrimonios){
+                                this.patrimoniosSelecionados = this.atividade.patrimonios;
+                            } else{
+                                this.patrimoniosSelecionados = [];
+                            }
+                            if (this.atividade.chat && this.atividade.chat.id){
+                                this.chatAssunto = this.atividade.chat.assunto;
+                                this.chatExist = true;
+                            } else {
+                                if (!this.atividade.chat || this.atividade.chat && !this.atividade.chat.assunto){
+                                    this.chatAssunto = "";
+                                }
+                                this.chatExist = false;
+                            }
+                        })
+                        .catch(errors => {
+                            console.log(errors);
+                        });
+                }
+            }
+        }
     }
 </script>
