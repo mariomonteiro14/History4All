@@ -7,8 +7,10 @@ use App\AtividadeParticipantes;
 use App\AtividadePatrimonios;
 use App\Chat;
 use App\Http\Resources\Atividade as AtividadeResource;
+use App\ChatMensagens;
 use App\Http\Resources\ShortAtividade as ShortAtividadeResource;
 use App\Http\Resources\User as UserResources;
+use App\Http\Resources\ChatMensagens as ChatMensagensResource;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -242,5 +244,23 @@ class AtividadeControllerAPI extends Controller
         $atividade = Atividade::findOrFail($id);
         $atividade->delete();
         return response()->json(null, 201);
+    }
+
+
+    public function storeChatMensagem(Request $request)
+    {
+        $request->validate([
+            'chat_id' => 'required',
+            'mensagem' => 'required|min:1',
+            'user_id' => 'required',
+        ]);
+        User::findOrFail($request->user_id);
+        Chat::findOrFail($request->chat_id);
+
+        $mensagem = new ChatMensagens();
+        $mensagem->fill($request->all());
+        $mensagem->save();
+
+        return response()->json(new ChatMensagensResource($mensagem), 201);
     }
 }

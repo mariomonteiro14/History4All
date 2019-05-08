@@ -36,7 +36,7 @@
                                     </v-flex>
                                     <v-flex xs6 v-if="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
                                         <v-card>
-                                            <v-container fluid grid-list-md>
+                                            <v-container fluid grid-list-md id="scroll-target" style="max-height: 400px" class="scroll-y">
                                                 <v-layout row wrap>
                                                     <v-list three-line>
                                                         {{atividade.chat.assunto}}
@@ -137,7 +137,18 @@
                 $('#mostrarPatrimoniosModal').modal('show');
             },
             enviarMensagem(){
-                //put
+                let chatMensagem = {
+                    'chat_id': this.atividade.chat.id,
+                    'mensagem': this.mensagem,
+                    'user_id': this.$store.state.user.id
+                };
+                axios.post('/api/chat', chatMensagem).then(response => {
+                    console.log(response.data.user);
+                    this.atividade.chat.chat_mensagens.push(response.data);
+                    this.mensagem = '';
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                })
                 //websocket
             }
         },

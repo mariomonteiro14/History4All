@@ -28,6 +28,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users/{id}/atividades/pendentes', 'AtividadeControllerAPI@getPendentes');
     Route::get('users/{id}/atividades/concluidas', 'AtividadeControllerAPI@getConcluidas');
     Route::get('atividades/{id}', 'AtividadeControllerAPI@getAtividade');
+    Route::post('chat', 'AtividadeControllerAPI@storeChatMensagem');
 
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');
