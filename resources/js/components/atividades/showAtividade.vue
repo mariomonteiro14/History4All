@@ -41,7 +41,7 @@
                                                     <v-list three-line>
                                                         {{atividade.chat.assunto}}
                                                         <template v-for="(mensagem, index) in atividade.chat.chat_mensagens">
-                                                            <v-list-tile :key="index"avatar>
+                                                            <v-list-tile :key="index" avatar>
                                                                 <v-list-tile-avatar>
                                                                     <img v-if="mensagem.user.foto" width="30px" height="30px" v-bind:src="getUserPhoto(mensagem.user.foto)"/>
                                                                 </v-list-tile-avatar>
@@ -128,6 +128,9 @@
                         if (this.atividade.coordenador.id === this.$store.state.user.id){
                             this.estado = 'coordenador';
                         }
+                        if (this.atividade.chat && this.estado){
+                            this.$socket.emit('user_enter', this.$store.state.user, this.atividade.chat.id);
+                        }
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -143,8 +146,7 @@
                     'user_id': this.$store.state.user.id
                 };
                 axios.post('/api/chat', chatMensagem).then(response => {
-                    console.log(response.data.user);
-                    this.atividade.chat.chat_mensagens.push(response.data);
+                    this.$socket.emit('chat_mensagem', response.data, this.atividade.chat.id);
                     this.mensagem = '';
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
@@ -154,6 +156,11 @@
         },
         mounted() {
             this.getAtividade();
+        },
+        sockets: {
+            novaMensagem(mensagem){
+                this.atividade.chat.chat_mensagens.push(mensagem);
+            },
         }
     }
 </script>

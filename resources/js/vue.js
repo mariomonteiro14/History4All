@@ -9,6 +9,7 @@ import BootstrapVue from 'bootstrap-vue';
 import Vuetify from 'vuetify';
 import VueCarousel from 'vue-carousel';
 import VueAgile from 'vue-agile';
+import VueSocketio from 'vue-socket.io';
 //import VueLoading from 'vue-loading';
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import SocialSharing from 'vue-social-sharing';
@@ -29,6 +30,12 @@ Vue.use(SocialSharing);
 
 const navbar = Vue.component('navbarc', require('./components/widgets/nav.vue').default);
 const footer = Vue.component('footerc', require('./components/widgets/foter.vue').default);
+
+Vue.use(new VueSocketio({
+    debug: true,
+    connection: 'http://127.0.0.1:8080' //TODO
+}));
+
 Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //http://greyby.github.io/vue-spinner/?ref=madewithvuejs.com
 
 const routes = [
@@ -49,7 +56,7 @@ const routes = [
 
 const router = new VueRouter({
     mode: 'history',
-    routes:routes,
+    routes:routes
 });
 
 router.beforeEach((to, from, next) => {
