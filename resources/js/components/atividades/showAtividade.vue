@@ -14,8 +14,9 @@
                                             <h3 class="headline mb-0">{{atividade.titulo}}</h3>
                                             {{atividade.tipo}}
                                         </v-toolbar-title>
+                                        <v-btn v-if="estado == 'coordenador'" color="info">enviar notificação</v-btn>
                                     </v-toolbar>
-                                    <v-flex xs6>
+                                    <v-flex :xs12="!atividade.chat" :xs6="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
                                         <v-card>
                                             <v-card-text>
                                                 <span>{{atividade.descricao}}</span>
@@ -25,7 +26,7 @@
                                                 <div>
                                                     <v-btn small @click="showPatrimonios()">Patrimónios relacionados</v-btn>
                                                 </div>
-                                                <p v-if="podeParticipar">
+                                                <p v-if="!estado">
                                                     <v-btn color="info">Participar</v-btn><span> - data de término: {{atividade.data}}</span>
                                                 </p>
                                             </v-card-text>
@@ -33,8 +34,8 @@
                                         </v-card>
                                         <br><br><br>
                                     </v-flex>
-                                    <v-flex xs6>
-                                        <v-card v-if="atividade.chat">
+                                    <v-flex xs6 v-if="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
+                                        <v-card>
                                             <v-container fluid grid-list-md>
                                                 <v-layout row wrap>
                                                     <v-list three-line>
@@ -51,6 +52,10 @@
                                                             </v-list-tile>
                                                         </template>
                                                     </v-list>
+                                                    <div>
+                                                        <v-textarea v-model="mensagem"auto-grow box color="brown" label="mensagem" rows="1"></v-textarea>
+                                                        <v-btn color="success" @click="enviarMensagem">enviar</v-btn>
+                                                    </div>
                                                 </v-layout>
                                             </v-container>
                                         </v-card>
@@ -104,13 +109,25 @@
         data: function () {
             return {
                 atividade: [],
+                estado: '',
+                mensagem: ''
             };
         },
         methods: {
             getAtividade() {
                 axios.get('/api/atividades/' + this.id)
                     .then(response => {
-                        this.atividade = response.data;
+                        this.atividade = response.data.data;
+                        if (response.data.estado && response.data.estado.estado){
+                            this.estado = response.data.estado.estado;
+                        } else if (response.data.estado !== undefined){
+                            this.estado = null;
+                        } else{
+                            this.estado = 'outros';//professores e admins
+                        }
+                        if (this.atividade.coordenador.id === this.$store.state.user.id){
+                            this.estado = 'coordenador';
+                        }
                     })
                     .catch(errors => {
                         console.log(errors);
@@ -118,14 +135,10 @@
             },
             showPatrimonios(){
                 $('#mostrarPatrimoniosModal').modal('show');
-            }
-        },
-        computed:{
-            podeParticipar(){
-                if (this.$store.state.user.tipo == 'aluno' && this.atividade.participantes){
-                     return this.atividade.participantes.findIndex(participante => participante.id === this.$store.state.user.id) == -1;
-                }
-                return false;
+            },
+            enviarMensagem(){
+                //put
+                //websocket
             }
         },
         mounted() {

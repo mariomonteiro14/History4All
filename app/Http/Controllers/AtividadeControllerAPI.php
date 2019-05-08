@@ -17,7 +17,16 @@ class AtividadeControllerAPI extends Controller
 {
     public function getAtividade(Request $request, $id)
     {
-        return new AtividadeResource(Atividade::findOrFail($id));
+        if (Auth::user()->tipo == 'aluno'){
+            return response()->json([
+                'data' => new AtividadeResource(Atividade::findOrFail($id)),
+                'estado' => AtividadeParticipantes::where('atividade_id', $id)->where('user_id', Auth::user()->id)
+                    ->select('estado')->first()
+            ]);
+        }
+        return response()->json([
+            'data' => new AtividadeResource(Atividade::findOrFail($id))
+        ]);
     }
 
     public function getTodas(Request $request, $id)

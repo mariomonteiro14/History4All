@@ -26,18 +26,16 @@ class Atividade extends Model
         return $this->belongsTo(User::class, 'coordenador','id')->first();
     }
 
-
-
     public function chat(){
         return $this->hasOne(Chat::class, 'id', 'chat_id')->with('chatMensagens');
     }
 
     public function atividadeParticipantes(){
-        return $this->hasMany(AtividadeParticipantes::class, 'atividade_id','id')->with('users');
+        return $this->hasMany(AtividadeParticipantes::class, 'atividade_id','id')->with('user');
     }
 
     public function atividadePatrimonios(){
-        return $this->hasMany(AtividadePatrimonios::class, 'atividade_id','id')->with('patrimonios');
+        return $this->hasMany(AtividadePatrimonios::class, 'atividade_id','id')->with('patrimonio');
     }
 
     public function ciclo(){

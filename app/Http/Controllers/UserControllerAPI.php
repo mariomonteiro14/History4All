@@ -19,7 +19,7 @@ use App\User;
 use App\StoreUserRequest;
 use DateTime;
 
-define('YOUR_SERVER_URL', 'http://h4a.local/');
+define('YOUR_SERVER_URL', 'http://history4all.test/');
 // Check "oauth_clients" table for next 2 values:
 define('CLIENT_ID', '2');
 define('CLIENT_SECRET', '9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');

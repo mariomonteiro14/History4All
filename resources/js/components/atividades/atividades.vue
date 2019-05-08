@@ -189,7 +189,6 @@
                 } else if (this.tipoDePesquisaSelected === 'Minha Escola') {
                     url = '/api/me/escola/atividades/'
                 }
-                this.isLoading = true;
                 axios.get(url)
                     .then(response => {
                         this.atividades = response.data.data;
@@ -211,7 +210,7 @@
             editar(id) {
                 axios.get('/api/atividades/' + id)
                     .then(response => {
-                        this.atividadeAtual = response.data;
+                        this.atividadeAtual = response.data.data;
                         $('#addAtividadeModal').modal('show');
                     })
                     .catch(errors => {

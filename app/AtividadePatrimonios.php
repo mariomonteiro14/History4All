@@ -21,11 +21,11 @@ class AtividadePatrimonios extends Model
         'atividade_id', 'patrimonio_id'
     ];
 
-    public function patrimonios(){
+    public function patrimonio(){
         return $this->belongsTo(Patrimonio::class, 'patrimonio_id', 'id');
     }
 
-    public function atividades(){
+    public function atividade(){
         return $this->belongsTo(Atividade::class, 'atividade_id','id');
     }
 
