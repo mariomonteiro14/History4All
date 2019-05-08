@@ -9,6 +9,7 @@ import BootstrapVue from 'bootstrap-vue';
 import Vuetify from 'vuetify';
 import VueCarousel from 'vue-carousel';
 import VueAgile from 'vue-agile';
+import VueSocketio from 'vue-socket.io';
 //import VueLoading from 'vue-loading';
 import CKEditor from '@ckeditor/ckeditor5-vue';
 
@@ -24,6 +25,11 @@ Vue.use(VueCarousel);
 Vue.use(VueAgile);
 Vue.use(BootstrapVue);
 Vue.use(CKEditor);
+
+Vue.use(new VueSocketio({
+    debug: true,
+    connection: 'http://127.0.0.1:8080' //TODO
+}));
 
 const navbar = Vue.component('navbar', require('./components/widgets/nav.vue').default);
 Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //http://greyby.github.io/vue-spinner/?ref=madewithvuejs.com
