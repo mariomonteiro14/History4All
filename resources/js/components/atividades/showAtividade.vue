@@ -4,7 +4,7 @@
 
         <v-app id="inspire">
             <v-layout justify-center>
-                <v-flex xs12 sm6>
+                <v-flex xs12 sm12 md12>
                     <v-card>
                         <v-container fluid grid-list-md>
                             <v-flex v-if="atividade">
@@ -16,7 +16,7 @@
                                         </v-toolbar-title>
                                         <v-btn v-if="estado == 'coordenador'" color="info">enviar notificação</v-btn>
                                     </v-toolbar>
-                                    <v-flex :xs12="!atividade.chat" :xs6="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
+                                    <v-flex :xs12="!atividade.chat" :xs8="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
                                         <v-card>
                                             <v-card-text>
                                                 <span>{{atividade.descricao}}</span>
@@ -34,7 +34,7 @@
                                         </v-card>
                                         <br><br><br>
                                     </v-flex>
-                                    <v-flex xs6 v-if="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
+                                    <v-flex xs4 v-if="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
                                         <v-card>
                                             <v-container fluid grid-list-md id="scroll-target" style="max-height: 400px" class="scroll-y">
                                                 <v-layout row wrap>

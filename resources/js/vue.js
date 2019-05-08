@@ -33,7 +33,7 @@ const footer = Vue.component('footerc', require('./components/widgets/foter.vue'
 
 Vue.use(new VueSocketio({
     debug: true,
-    connection: 'http://127.0.0.1:8080' //TODO
+    connection: 'http://142.93.219.146:8080' //TODO
 }));
 
 Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //http://greyby.github.io/vue-spinner/?ref=madewithvuejs.com
