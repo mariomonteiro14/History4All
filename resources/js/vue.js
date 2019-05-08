@@ -11,6 +11,7 @@ import VueCarousel from 'vue-carousel';
 import VueAgile from 'vue-agile';
 //import VueLoading from 'vue-loading';
 import CKEditor from '@ckeditor/ckeditor5-vue';
+import SocialSharing from 'vue-social-sharing';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -24,8 +25,10 @@ Vue.use(VueCarousel);
 Vue.use(VueAgile);
 Vue.use(BootstrapVue);
 Vue.use(CKEditor);
+Vue.use(SocialSharing);
 
-const navbar = Vue.component('navbar', require('./components/widgets/nav.vue').default);
+const navbar = Vue.component('navbarc', require('./components/widgets/nav.vue').default);
+const footer = Vue.component('footerc', require('./components/widgets/foter.vue').default);
 Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //http://greyby.github.io/vue-spinner/?ref=madewithvuejs.com
 
 const routes = [
@@ -46,7 +49,7 @@ const routes = [
 
 const router = new VueRouter({
     mode: 'history',
-    routes:routes
+    routes:routes,
 });
 
 router.beforeEach((to, from, next) => {

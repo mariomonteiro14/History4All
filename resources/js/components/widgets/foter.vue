@@ -1,44 +1,86 @@
 <template>
-    <v-card>
-        <v-footer height="auto" color="white">
+    <div>
+        <v-footer dark height="auto"
+        >
+            <v-card
+                class="flex"
+                flat
+                tile
+            >
+                <v-card-title class="brown">
+                    <strong class="subheading">Partilha a nossa pagina nas redes sociais!</strong>
 
-            <v-layout justify-center row wrap>
-              <!--  <v-btn
-                    v-for="link in links"
-                    :key="link"
-                    color="white"
-                    flat
-                    round
-                >
-                    {{ link }}
-                </v-btn>-->
-                <v-flex
-                    primary
-                    lighten-2
-                    py-3
-                    text-xs-center
-                    dark--text
-                    xs6
-                >
-                    <strong >History4All - Projeto Informárico 2019</strong>
-                </v-flex>
-            </v-layout>
+                    <v-spacer></v-spacer>
+
+                    <social-sharing ref="socialSharing" :url="getUrl"
+                                    title="History4All - Site de Historia"
+                                    description="Portal de historia dinamico desenhado para alunos e professores."
+                                    quote="Portal de historia dinamico desenhado para alunos e professores."
+                                    twitter-user="History4All"
+                                    inline-template>
+                        <div>
+                            <network network="facebook">
+                                <v-btn icon flat>
+                                    <v-icon medium>fab fa-facebook</v-icon>
+                                </v-btn>
+                            </network>
+                            <network network="twitter">
+                                <v-btn icon flat>
+                                    <v-icon medium>fab fa-twitter</v-icon>
+                                </v-btn>
+                            </network>
+                            <network network="linkedin">
+                                <v-btn icon flat>
+                                    <v-icon medium>fab fa-linkedin</v-icon>
+                                </v-btn>
+                            </network>
+                        </div>
+                    </social-sharing>
+                </v-card-title>
+
+                <v-card-actions class="grey darken-3 justify-center">
+                    &copy;2019 — <strong>History4All</strong>
+                </v-card-actions>
+
+            </v-card>
         </v-footer>
-    </v-card>
+    </div>
 
 </template>
 
 <script>
+    import '@fortawesome/fontawesome-free/css/all.css' // Ensure you are using css-loader
+
     export default {
-        data: () => ({
-            links: [
-                'Home',
-                'About Us',
-                'Team',
-                'Services',
-                'Blog',
-                'Contact Us'
-            ]
-        })
+
+        data: function () {
+            return {
+                links: [
+                    'Home',
+                    'About Us',
+                    'Team',
+                    'Services',
+                    'Blog',
+                    'Contact Us'
+                ],
+                icons: [
+                    'fab fa-facebook',
+                    'fab fa-twitter',
+                    'fab fa-google-plus',
+                    'fab fa-instagram'
+                ]
+            }
+        },
+        computed: {
+            getUrl(){
+               /* if(this.$route.name == 'patrimoniosShow') {
+                    return this.$route.query.page;
+                }*/
+                return "http://142.93.219.146/";
+            }
+        },
+
+
+
     }
 </script>

@@ -41,7 +41,6 @@
         <br>
         <br>
         <br>
-        <myfooter></myfooter>
     </div>
 </template>
 
