@@ -77,7 +77,7 @@
                /* if(this.$route.name == 'patrimoniosShow') {
                     return this.$route.query.page;
                 }*/
-                return "http://142.93.219.146/";
+                return  window.location.href;
             }
         },
 

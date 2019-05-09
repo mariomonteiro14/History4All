@@ -49,6 +49,10 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->belongsTo(ChatMensagens::class, 'user_id','id');
     }
 
+    public function notificacoes(){
+        return $this->hasMany(Notificacao::class, 'user_id','id');
+    }
+
     /**
      * The attributes that should be hidden for arrays.
      *
