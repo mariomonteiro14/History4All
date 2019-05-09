@@ -90,7 +90,7 @@
                         </tr>
                     </template>
                     <template v-slot:no-data>
-                        <v-alert v-if="!isLoading" :value="true" color="error" icon="warning">
+                        <v-alert v-if="!isLoadingTurmas" :value="true" color="error" icon="warning">
                             Não existem turmas :(
                         </v-alert>
                     </template>
