@@ -18,7 +18,7 @@ class ShortAtividade extends JsonResource
             'id' => $this->id,
             'titulo' => $this->titulo,
             'descricao' => $this->descricao,
-            'coordenador' => $this->coordenador(),
+            'coordenador' => new ShortUser($this->coordenador()),
             'ciclo' => $this->ciclo(),
             'epoca' => $this->epoca(),
             'imagem' => $this->imagem()

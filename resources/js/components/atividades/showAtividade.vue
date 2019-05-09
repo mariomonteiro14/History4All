@@ -14,7 +14,9 @@
                                             <h3 class="headline mb-0">{{atividade.titulo}}</h3>
                                             {{atividade.tipo}}
                                         </v-toolbar-title>
-                                        <v-btn v-if="estado == 'coordenador'" color="info">enviar notificação</v-btn>
+                                        <v-btn v-if="estado == 'coordenador'" color="info" @click.stop="notificacaoDialog = true; mensagemNotificacao = ''">
+                                            enviar notificação
+                                        </v-btn>
                                     </v-toolbar>
                                     <v-flex :xs12="!atividade.chat" :xs8="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
                                         <v-card>
@@ -27,7 +29,7 @@
                                                     <v-btn small @click="showPatrimonios()">Patrimónios relacionados</v-btn>
                                                 </div>
                                                 <p v-if="!estado">
-                                                    <v-btn color="info">Participar</v-btn><span> - data de término: {{atividade.data}}</span>
+                                                    <v-btn color="info" @click="participar()">Participar</v-btn><span> - data de término: {{atividade.data}}</span>
                                                 </p>
                                             </v-card-text>
                                             <br><br><br>
@@ -37,26 +39,28 @@
                                     <v-flex xs4 v-if="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
                                         <v-card>
                                             <v-container fluid grid-list-md id="scroll-target" style="max-height: 400px" class="scroll-y">
-                                                <v-layout row wrap>
-                                                    <v-list three-line>
-                                                        {{atividade.chat.assunto}}
-                                                        <template v-for="(mensagem, index) in atividade.chat.chat_mensagens">
-                                                            <v-list-tile :key="index" avatar>
-                                                                <v-list-tile-avatar>
-                                                                    <img v-if="mensagem.user.foto" width="30px" height="30px" v-bind:src="getUserPhoto(mensagem.user.foto)"/>
-                                                                </v-list-tile-avatar>
-                                                                <v-list-tile-content>
-                                                                    <v-list-tile-title v-html="mensagem.user.nome"></v-list-tile-title>
-                                                                    <v-list-tile-sub-title v-html="mensagem.mensagem"></v-list-tile-sub-title>
-                                                                </v-list-tile-content>
-                                                            </v-list-tile>
-                                                        </template>
-                                                    </v-list>
-                                                    <div>
-                                                        <v-textarea v-model="mensagem"auto-grow box color="brown" label="mensagem" rows="1"></v-textarea>
-                                                        <v-btn color="success" @click="enviarMensagem">enviar</v-btn>
-                                                    </div>
-                                                </v-layout>
+                                                <div id="scrolled-content">
+                                                    <v-layout row wrap v-scroll:#scroll-target="onScroll">
+                                                        <v-list three-line>
+                                                            {{atividade.chat.assunto}}
+                                                            <template v-for="(mensagem, index) in atividade.chat.chat_mensagens">
+                                                                <v-list-tile :key="index" avatar>
+                                                                    <v-list-tile-avatar>
+                                                                        <img v-if="mensagem.user.foto" width="30px" height="30px" v-bind:src="getUserPhoto(mensagem.user.foto)"/>
+                                                                    </v-list-tile-avatar>
+                                                                    <v-list-tile-content>
+                                                                        <v-list-tile-title v-html="mensagem.user.nome"></v-list-tile-title>
+                                                                        <v-list-tile-sub-title v-html="mensagem.mensagem"></v-list-tile-sub-title>
+                                                                    </v-list-tile-content>
+                                                                </v-list-tile>
+                                                            </template>
+                                                        </v-list>
+                                                        <div id="#botton">
+                                                            <v-textarea v-model="mensagem" auto-grow box color="brown" label="mensagem" rows="1"></v-textarea>
+                                                            <v-btn color="success" @click="enviarMensagem">enviar</v-btn>
+                                                        </div>
+                                                    </v-layout>
+                                                </div>
                                             </v-container>
                                         </v-card>
                                     </v-flex>
@@ -71,13 +75,29 @@
                 </v-flex>
             </v-layout>
         </v-app>
+        <v-dialog v-model="notificacaoDialog" max-width="290">
+            <v-card>
+                <v-card-title class="headline">Notificação para todos os alunos que estão com a atividade pendente</v-card-title>
+                <v-textarea
+                        v-model="mensagemNotificacao"
+                        label="mensagem"
+                ></v-textarea>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="red darken-1" flat="flat" @click="notificacaoDialog = false">
+                        Cancelar
+                    </v-btn>
+                    <v-btn color="green darken-1" flat="flat" :disabled="!mensagemNotificacao" @click="enviarNotificacao()">Enviar</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <div class="modal fade" id="mostrarPatrimoniosModal" tabindex="-1" role="dialog" aria-labelledby="mostrarPatrimoniosModal"
              aria-hidden="true">
             <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
                     <div class="container box">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="mostrarPatrimoniosModal">Patrimónios envolvidos na atividade</h5>
+                            <h5 class="modal-title">Patrimónios envolvidos na atividade</h5>
                             <button type="button" class="close" data-dismiss="modal"
                                     aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -110,7 +130,10 @@
             return {
                 atividade: [],
                 estado: '',
-                mensagem: ''
+                mensagem: '',
+
+                mensagemNotificacao: '',
+                notificacaoDialog: false,
             };
         },
         methods: {
@@ -129,6 +152,10 @@
                             this.estado = 'coordenador';
                         }
                         if (this.atividade.chat && this.estado){
+                            window.addEventListener("load", function(event) {
+                                document.getElementById("scroll-target").scrollTop =
+                                    Math.floor(document.getElementById("scrolled-content").offsetHeight);
+                            });
                             this.$socket.emit('user_enter', this.$store.state.user, this.atividade.chat.id);
                         }
                     })
@@ -138,6 +165,26 @@
             },
             showPatrimonios(){
                 $('#mostrarPatrimoniosModal').modal('show');
+            },
+            enviarNotificacao(){
+                this.notificacaoDialog = false;
+                axios.post('/api/notificacoes', {'atividade_id': this.id, 'mensagem': this.mensagemNotificacao}).then(response => {
+                    this.toastPopUp("success", "Notificação enviada com sucesso!");
+                    this.mensagemNotificacao = '';
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                });
+            },
+            participar(){
+                axios.post('/api/atividades/' + this.id + '/participar', {'user_id': this.$store.state.user.id}).then(response => {
+                    this.estado = 'pendente';
+                    if (this.atividade.chat && this.estado){
+                        this.$socket.emit('user_enter', this.$store.state.user, this.atividade.chat.id);
+                    }
+                    this.toastPopUp("success", "A atividade encontra-se na sua lista de atividades pendentes!");
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                })
             },
             enviarMensagem(){
                 let chatMensagem = {
@@ -151,7 +198,11 @@
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
-                //websocket
+            },
+            onScroll (e) {
+                if (e.target.scrollTop == 0){
+                    console.log("loading");
+                }
             }
         },
         mounted() {
@@ -160,7 +211,14 @@
         sockets: {
             novaMensagem(mensagem){
                 this.atividade.chat.chat_mensagens.push(mensagem);
-            },
-        }
+                document.getElementById("scroll-target").scrollTop =
+                    Math.floor(document.getElementById("scrolled-content").offsetHeight);
+            }
+        },
+        destroyed: function () {
+            if (this.atividade.chat && this.estado) {
+                this.$socket.emit('user_exit', this.$store.state.user, this.atividade.chat.id);
+            }
+        },
     }
 </script>

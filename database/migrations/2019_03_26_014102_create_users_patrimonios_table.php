@@ -47,6 +47,13 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->rememberToken();
         });
 
+        Schema::create('notificacoes', function (Blueprint $table) {
+            $table->bigInteger('user_id')->unsigned();//destinatário
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->string('mensagem');
+            $table->boolean('nova');
+        });
+
         Schema::create('patrimonios', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome')->unique();

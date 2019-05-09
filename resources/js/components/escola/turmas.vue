@@ -50,7 +50,7 @@
                 </v-container>
 
                 <v-data-table :headers="headers" :items="filteredTurmas" :search="search" class="elevation-1"
-                              :pagination.sync="pagination" :loading="isLoading">
+                              :pagination.sync="pagination" :loading="isLoadingTurmas">
                     <template v-slot:items="props">
                         <tr class="alert-primary">
                             <td class="text-xs-left">{{props.item.nome}}</td>
@@ -90,7 +90,7 @@
                         </tr>
                     </template>
                     <template v-slot:no-data>
-                        <v-alert v-if="!isLoading" :value="true" color="error" icon="warning">
+                        <v-alert v-if="!isLoadingTurmas" :value="true" color="error" icon="warning">
                             Não existem turmas :(
                         </v-alert>
                     </template>
@@ -169,22 +169,22 @@
                     tipo: 'aluno',
                     escola: this.$store.state.user.escola[0],
                     turma: '',
-                    isLoading: true,
                 },
+                isLoadingTurmas: true,
             }
         },
         methods: {
             getMyEscola(url = '/api/me/escola') {
 
-                this.isLoading = true;
+                this.isLoadingTurmas = true;
                 axios.get(url)
                     .then(response => {
                         this.myEscola = response.data.data;
-                        this.isLoading = false;
+                        this.isLoadingTurmas = false;
                     })
                     .catch(errors => {
                         console.log(errors);
-                        this.isLoading = false;
+                        this.isLoadingTurmas = false;
                     });
             },
             showTurmaAlunos(turma) {

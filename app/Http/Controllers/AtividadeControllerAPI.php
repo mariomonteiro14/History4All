@@ -11,6 +11,7 @@ use App\ChatMensagens;
 use App\Http\Resources\ShortAtividade as ShortAtividadeResource;
 use App\Http\Resources\User as UserResources;
 use App\Http\Resources\ChatMensagens as ChatMensagensResource;
+use App\Notificacao;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,22 +38,6 @@ class AtividadeControllerAPI extends Controller
         $participantes = (Atividade::join('atividade_participantes', 'atividade_id', 'id')->where('user_id', $id)->get());
         return response()->json([
             'data' => ShortAtividadeResource::collection($collection->diff($participantes))
-        ]);
-    }
-
-    public function getParticipadas(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-        if ($user->tipo == "professor") {
-            return response()->json([
-                'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
-                    ->where('coordenador', $id)->get())
-            ]);
-        }
-
-        return response()->json([
-            'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
-                ->where('user_id', $id)->get())
         ]);
     }
 
@@ -262,5 +247,51 @@ class AtividadeControllerAPI extends Controller
         $mensagem->save();
 
         return response()->json(new ChatMensagensResource($mensagem), 201);
+    }
+
+    public function storeParticipante(Request $request, $id)
+    {
+        $request->validate([
+            'user_id' => 'required',
+        ]);
+
+        User::findOrFail($request->user_id);
+        Atividade::findOrFail($id);
+
+        if (Auth::id() != $request->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $participante = new AtividadeParticipantes();
+        $participante->fill([
+            'atividade_id' => $id,
+            'user_id' => $request->user_id,
+            'estado' => 'pendente'
+        ]);
+        $participante->save();
+
+        return response()->json($participante, 201);
+    }
+
+    public function storeNotificacao(Request $request)
+    {
+        $request->validate([
+            'atividade_id' => 'required',
+            'mensagem' => 'required|min:1'
+        ]);
+
+        $userIds = AtividadeParticipantes::where('atividade_id', $request->atividade_id)
+            ->where('estado', 'pendente')->pluck('user_id')->toArray();
+
+        foreach ($userIds as $userId) {
+            $notificacao = new Notificacao();
+            $notificacao->fill([
+                'user_id' => $userId,
+                'mensagem' => $request->mensagem,
+                'nova' => '1'
+            ]);
+            $notificacao->save();
+        };
+        return response()->json(null, 201);
     }
 }

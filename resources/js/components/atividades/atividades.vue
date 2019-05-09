@@ -5,7 +5,7 @@
             <h3>{{getTitle}}</h3>
             <br>
 
-            <v-card append float v-if="this.$store.state.user.tipo !== 'admin'">
+            <v-card append float v-if="$store.state.user.tipo !== 'admin'">
                 <v-container fluid grid-list-xl>
                     <v-layout wrap align-center>
                         <v-flex xs12 sm3 d-flex>
@@ -185,7 +185,9 @@
         methods: {
             getAtividades(url = '/api/users/' + this.$store.state.user.id + '/atividades') {
                 if (this.tipoDePesquisaSelected === 'Minhas Atividades') {
-                    url = '/api/me/atividades/';
+                    url = this.minhasAtividadesSelected === 'Todas' ? '/api/me/atividades/' :
+                        this.minhasAtividadesSelected === 'Pendentes' ? '/api/users/' + this.$store.state.user.id + '/atividades/pendentes' :
+                            '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
                 } else if (this.tipoDePesquisaSelected === 'Minha Escola') {
                     url = '/api/me/escola/atividades/'
                 }
@@ -251,10 +253,10 @@
             },
             getTitle: function () {
                 let title = "Atividades / Pesquisa / " + this.tipoDePesquisaSelected;
-                if (this.tipoDePesquisaSelected === 'Minhas atividades' && this.$store.state.user.tipo === 'professor') {
+                if (this.tipoDePesquisaSelected === 'Minhas Atividades' && this.$store.state.user.tipo === 'professor') {
                     title = "Atividades / Gestão";
                 }
-                if (this.tipoDePesquisaSelected === 'Minhas atividades' && this.minhasAtividadesSelected !== 'Todas') {
+                if (this.tipoDePesquisaSelected === 'Minhas Atividades' && this.minhasAtividadesSelected !== 'Todas') {
                     title += " / " + this.minhasAtividadesSelected;
                 }
                 return title;
@@ -264,23 +266,6 @@
             tipoDePesquisaSelected() {
                 this.getAtividades();
                 this.limite = 4;
-            },
-            minhasAtividadesSelected(tipo) {
-                if (this.tipoDePesquisaSelected === 'Minhas atividades') {
-                    let url = '';
-                    switch (tipo) {
-                        case 'Pendentes':
-                            url = '/api/users/' + this.$store.state.user.id + '/atividades/pendentes';
-                            break;
-                        case 'Concluídas':
-                            url = '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
-                            break;
-                        default:
-                            url = '/api/users/' + this.$store.state.user.id + '/atividades/participadas';
-                    }
-                    this.getAtividades(url);
-                    this.limite = 4;
-                }
             },
         }
     }

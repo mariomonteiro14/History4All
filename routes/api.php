@@ -64,10 +64,12 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('users/alunos', 'UserControllerAPI@alunos');
         Route::get('me/escola/alunos', 'EscolaControllerAPI@myEscolaAlunos');
         Route::post('users', 'UserControllerAPI@store');
+
+        Route::post('notificacoes', 'AtividadeControllerAPI@storeNotificacao');
     });
 
     Route::group(['middleware' => 'aluno'], function() {
-
+        Route::post('atividades/{id}/participar', 'AtividadeControllerAPI@storeParticipante');
     });
 
 

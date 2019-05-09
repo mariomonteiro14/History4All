@@ -51,9 +51,10 @@ io.on('connection', function (socket) {
 		socket.join(chat_id);
 		loggedUsers.addUserInfo(user, socket.id);
 	});
-	socket.on('user_exit', function (user) {
+	socket.on('user_exit', function (user, chat_id) {
 		if (user !== undefined && user !== null)
-			socket.leave(user.type);
+            console.log(user.nome + ' exited ' + chat_id);
+			socket.leave(chat_id);
 			loggedUsers.removeUserInfoByID(user.id);
 	});
 
