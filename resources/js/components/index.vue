@@ -1,17 +1,7 @@
 <template>
     <div>
-        <br><br><br><br>
-        <!--<carousel :per-page="1" autoplay autoplayTimeout=7000 class="carousel slide" data-ride="carousel">
-            <slide>
-                <b-img center class="thumbnail fluid" v-bind:src="getPatrimonioPhoto('1.jpg')"></b-img>
-            </slide>
-            <slide>
-                <b-img center v-bind:src="getPatrimonioPhoto('2.jpg')"></b-img>
-            </slide>
-            <slide>
-                <b-img center v-bind:src="getPatrimonioPhoto('3.jpg')"></b-img>
-            </slide>
-        </carousel>-->
+        <br><br><br>
+        <v-container fluid grid-list-lg>
         <v-card id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
             <ol class="carousel-indicators">
                 <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
@@ -20,14 +10,17 @@
             </ol>
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <b-img center ratio="1" class="d-block w-100" :src="getPatrimonioPhoto('001.jpg')" height="350px" alt="First slide"/>
+                    <v-img aspect-ratio="1.5" center  class="d-block w-100" :src="getPatrimonioPhoto('001.jpg')" min-height="250" max-height="350"
+                           alt="First slide"/>
                 </div>
                 <div class="carousel-item">
-                    <b-img center class="d-block w-100" :src="getPatrimonioPhoto('002.jpg')" height="350px" alt="Second slide"/>
+                    <v-img aspect-ratio="1.5" center class="d-block w-100" :src="getPatrimonioPhoto('002.jpg')" min-height="250" max-height="350"
+                           alt="Second slide"/>
                 </div>
                 <div class="carousel-item">
-                    <b-img center class="d-block w-100" :src="getPatrimonioPhoto('003.jpg')" height="350px" alt="Third slide"/>
-            </div>
+                    <v-img aspect-ratio="1.5" center class="d-block w-100" :src="getPatrimonioPhoto('003.jpg')" min-height="250" max-height="350"
+                           alt="Third slide"/>
+                </div>
             </div>
             <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -38,19 +31,65 @@
                 <span class="sr-only">Next</span>
             </a>
         </v-card>
-        <br>
-        <br>
-        <br>
+        </v-container>
+
+        <v-container fluid grid-list-lg>
+            <v-layout row wrap>
+                <v-flex d-flex xs12 sm6>
+                    <v-card class="btn" color="green lighten-4" flat>
+                        <br>
+                        <h3 class="align-content-center">
+                            <v-icon large color="green darken-2">business</v-icon>
+                            <br>
+                            <strong class="headline font-weight-bold font-weight-light">Sobre Nós</strong>
+                        </h3>
+
+                        <h2 class="font-weight-light">
+                            Somos uma plataforma de historia iterativa para ensino basico e secundario.
+                        </h2>
+                        <br>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="green darken-2" class="font-weight-regular title" flat round data-toggle="modal" data-target="#aboutUsModal">
+                                Saber Mais
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-flex>
+                <v-flex d-flex xs12 sm6>
+                    <v-card class="btn" color="lime lighten-2" flat>
+                        <br>
+                        <h3 class="align-content-center">
+                            <v-icon large color="teal darken-2">email</v-icon>
+                            <br>
+                            <strong class="headline" font-weight-bold>Contacte-nos</strong>
+                        </h3>
+
+                        <h2 class="font-weight-light">
+                            Preencha o formulário e esclareça todas as suas duvidas. Tambem poderá solicitar o registo
+                            da sua escola na plataforma.
+                        </h2>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                        <v-btn class="font-weight-regular title"  data-toggle="modal" data-target="#contactModal" round flat color="light-green darken-3">Formulário</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-flex>
+            </v-layout>
+        </v-container>
+        <contact></contact>
+        <about-us></about-us>
     </div>
 </template>
 
 <script type="text/javascript">
     import BImg from "bootstrap-vue/src/components/image/img";
-    import { Carousel, Slide } from 'vue-carousel';
-    import myfooter from './widgets/foter.vue'
+    import {Carousel, Slide} from 'vue-carousel';
+    import contactForm from './widgets/contactForm.vue'
+    import aboutUs from './widgets/aboutUs.vue'
 
     export default {
-        components: {BImg,Carousel, Slide, 'myfooter': myfooter},
+        components: {BImg, Carousel, Slide, 'contact': contactForm, 'about-us': aboutUs},
         data: function () {
             return {
                 title: "History4All",

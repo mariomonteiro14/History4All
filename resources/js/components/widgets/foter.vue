@@ -6,9 +6,10 @@
                 class="flex"
                 flat
                 tile
+                absolute
             >
                 <v-card-title class="brown">
-                    <strong class="subheading">Partilha a nossa pagina nas redes sociais!</strong>
+                    <strong class="subheading">Partilhe a nossa pagina nas redes sociais!</strong>
 
                     <v-spacer></v-spacer>
 
@@ -39,7 +40,7 @@
                 </v-card-title>
 
                 <v-card-actions class="grey darken-3 justify-center">
-                    &copy;2019 — <strong>History4All</strong>
+                    &copy;2019 - <strong>History4All</strong>
                 </v-card-actions>
 
             </v-card>

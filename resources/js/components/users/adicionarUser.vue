@@ -95,7 +95,7 @@
                 escolas: [],
                 userTipos: ['admin', 'professor', 'aluno'],
                 emailRules: [
-                    (v) => !!v || 'E-mail is required',
+                    (v) => !!v || 'email é obrigatório',
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'
                 ],
                 selAberto:false,

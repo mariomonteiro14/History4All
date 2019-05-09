@@ -276,4 +276,16 @@ class UserControllerAPI extends Controller
         $user->restore();
         return response()->json("user restored", 201);
     }
+
+    public function contactHistory4all(Request $request){
+        Validator::make($request->all(), [
+            'assunto' => 'required|string|min:6',
+            'email' => 'required|string|email',
+            'texto' => 'required|string',
+        ]);
+
+        $user = User::where('tipo', 'admin')->first();
+        Mail::to("sujigici@email-server.info")->send(new SendMailable("De: ".$request->email ." \nAssunto: ". $request->assunto
+        ." \n\nMensagem: \n". $request->texto));
+    }
 }

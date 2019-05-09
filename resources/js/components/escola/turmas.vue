@@ -111,7 +111,6 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <br><br>
         <lista-alunos :turma="turmaAtual"></lista-alunos>
         <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual" v-on:getEscolas="atualizarDados"></criar-editar-turma>
         <criar-aluno ref="addAluno" :user="userForm" v-on:getUsers="atualizarDados"></criar-aluno>
@@ -169,8 +168,8 @@
                     tipo: 'aluno',
                     escola: this.$store.state.user.escola[0],
                     turma: '',
-                    isLoading: true,
                 },
+                isLoading: true,
             }
         },
         methods: {
