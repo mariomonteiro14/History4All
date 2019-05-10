@@ -45,7 +45,6 @@
                                                 v-on:click.prevent="formValidateAndSend" :disabled="!formCompleted">
                                             Guardar
                                         </button>
-
                                     </form>
                                 </div>
                             </div>
@@ -54,6 +53,7 @@
                 </div>
             </div>
         </div>
+        <br><br><br>
     </div>
 </template>
 

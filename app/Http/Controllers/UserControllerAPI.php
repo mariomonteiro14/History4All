@@ -280,9 +280,10 @@ class UserControllerAPI extends Controller
         Validator::make($request->all(), [
             'assunto' => 'required|string|min:6',
             'email' => 'required|string|email',
-            'texto' => 'required|string',
+            'texto' => 'required|string|min:50',
         ]);
+        $user = User::where('tipo','admin')->first();
 
-        Mail::to("sujigici@email-server.info")->send(new ContactarAdmin($request->email, $request->assunto, $request->texto));
+        Mail::to($user->email)->send(new ContactarAdmin($request->email, $request->assunto, $request->texto));
     }
 }

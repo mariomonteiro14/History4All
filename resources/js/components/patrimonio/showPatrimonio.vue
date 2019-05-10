@@ -24,11 +24,12 @@
                             <v-btn flat color="orange" v-if="patrimonio.imagens && patrimonio.imagens.length > 1" @click="showGallery=!showGallery">
                                 Galeria
                             </v-btn>
+                            <v-btn flat color="green" v-if="$store.state.user && $store.state.user.tipo === 'professor'"
+                                   data-toggle="modal" data-target="#adicionarImagemModal">
+                                Adicionar Imagens
+                            </v-btn>
                         </v-card-actions>
-                        <v-btn flat color="green" v-if="$store.state.user && $store.state.user.tipo === 'professor'"
-                               data-toggle="modal" data-target="#adicionarImagemModal">
-                            Adicionar Imagens
-                        </v-btn>
+
                     </v-card>
                 </v-flex>
             </v-layout>

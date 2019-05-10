@@ -41,7 +41,7 @@
                         <h3 class="align-content-center">
                             <v-icon large color="green darken-2">business</v-icon>
                             <br>
-                            <strong class="headline font-weight-bold font-weight-light">Sobre Nós</strong>
+                            <strong class="headline font-weight-light">Sobre Nós</strong>
                         </h3>
 
                         <h2 class="font-weight-light">
@@ -62,7 +62,7 @@
                         <h3 class="align-content-center">
                             <v-icon large color="teal darken-2">email</v-icon>
                             <br>
-                            <strong class="headline" font-weight-bold>Contacte-nos</strong>
+                            <strong class="headline font-weight-light" font-weight-bold>Contacte-nos</strong>
                         </h3>
 
                         <h2 class="font-weight-light">
