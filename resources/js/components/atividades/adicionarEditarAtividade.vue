@@ -280,10 +280,9 @@
         },
         computed: {
             hasErrors: function () {
-                return (!this.atividade.titulo || !this.atividade.descricao || this.atividade.descricao.length < 25 ||
-                    !this.atividade.tipo || !this.atividade.numeroElementos ||
-                    !this.atividade.visibilidade || this.chatExist && !this.chatAssunto ||
-                    this.patrimoniosSelecionados.length === 0);
+                return (this.chatExist && !this.chatAssunto || this.patrimoniosSelecionados.length === 0 ||
+                    !this.atividade.titulo || !this.atividade.descricao || this.atividade.descricao.length < 25 ||
+                    !this.atividade.tipo || !this.atividade.numeroElementos || !this.atividade.visibilidade);
             },
             getTitle: function () {
                 return this.isCreated() ? "Criar Atividade" : "Editar Atividade";

@@ -43,7 +43,7 @@
                                                     <v-layout row wrap v-scroll:#scroll-target="onScroll">
                                                         <v-list three-line>
                                                             {{atividade.chat.assunto}}
-                                                            <template v-for="(mensagem, index) in atividade.chat.chat_mensagens">
+                                                            <template v-for="(mensagem, index) in mensagensDoChat">
                                                                 <v-list-tile :key="index" avatar>
                                                                     <v-list-tile-avatar>
                                                                         <img v-if="mensagem.user.foto" width="30px" height="30px" v-bind:src="getUserPhoto(mensagem.user.foto)"/>
@@ -56,7 +56,7 @@
                                                             </template>
                                                         </v-list>
                                                         <div id="#botton">
-                                                            <v-textarea v-model="mensagem" auto-grow box color="brown" label="mensagem" rows="1"></v-textarea>
+                                                            <v-textarea v-model="mensagemAEnviar" auto-grow box color="brown" label="mensagem" rows="1"></v-textarea>
                                                             <v-btn color="success" @click="enviarMensagem">enviar</v-btn>
                                                         </div>
                                                     </v-layout>
@@ -128,9 +128,11 @@
         props: ['id'],
         data: function () {
             return {
-                atividade: [],
+                atividade: {},
                 estado: '',
-                mensagem: '',
+                mensagensDoChat: [],
+                offset: 20,
+                mensagemAEnviar: '',
 
                 mensagemNotificacao: '',
                 notificacaoDialog: false,
@@ -152,7 +154,9 @@
                             this.estado = 'coordenador';
                         }
                         if (this.atividade.chat && this.estado){
-                            window.addEventListener("load", function(event) {
+                            let mensagens = this.atividade.chat.chat_mensagens;
+                            this.mensagensDoChat = mensagens.slice(mensagens.length - this.offset);
+                            window.addEventListener("load", function(event) {//quando a página estiver carregada
                                 document.getElementById("scroll-target").scrollTop =
                                     Math.floor(document.getElementById("scrolled-content").offsetHeight);
                             });
@@ -189,19 +193,22 @@
             enviarMensagem(){
                 let chatMensagem = {
                     'chat_id': this.atividade.chat.id,
-                    'mensagem': this.mensagem,
+                    'mensagem': this.mensagemAEnviar,
                     'user_id': this.$store.state.user.id
                 };
                 axios.post('/api/chat', chatMensagem).then(response => {
                     this.$socket.emit('chat_mensagem', response.data, this.atividade.chat.id);
-                    this.mensagem = '';
+                    this.mensagemAEnviar = '';
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
             onScroll (e) {
-                if (e.target.scrollTop == 0){
-                    console.log("loading");
+                if (e.target.scrollTop == 0 && this.atividade.chat.chat_mensagens.length !== this.mensagensDoChat.length){
+                    this.offset += 20;
+                    this.toastPopUp("success", "Mais mensagens carregadas");
+                    let mensagens = this.atividade.chat.chat_mensagens;
+                    this.mensagensDoChat = mensagens.slice(mensagens.length - this.offset);
                 }
             }
         },
@@ -211,6 +218,7 @@
         sockets: {
             novaMensagem(mensagem){
                 this.atividade.chat.chat_mensagens.push(mensagem);
+                this.mensagensDoChat.push(mensagem);
                 document.getElementById("scroll-target").scrollTop =
                     Math.floor(document.getElementById("scrolled-content").offsetHeight);
             }
