@@ -7,7 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class SendMailable extends Mailable
+class EmailConfirmacao extends Mailable
 {
     use Queueable, SerializesModels;
     public $link;

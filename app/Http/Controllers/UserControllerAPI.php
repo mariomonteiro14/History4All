@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Escola;
-use App\Mail\SendMailable;
-use App\Notifications\RegistarPassword;
+use App\Mail\ContactarAdmin;
+use App\Mail\EmailConfirmacao;
 use App\Turma;
 use Illuminate\Http\Request;
 
@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
 use App\User;
-use App\StoreUserRequest;
 use DateTime;
 
 define('YOUR_SERVER_URL', 'http://h4a.local/');
@@ -169,7 +168,7 @@ class UserControllerAPI extends Controller
 
 
         //enviar email
-        Mail::to($user->email)->send(new SendMailable('/users/registarPassword/' . $user->getRememberToken()));
+        Mail::to($user->email)->send(new EmailConfirmacao('/users/registarPassword/' . $user->getRememberToken()));
         $user->save();
         return response()->json([
             'message' => 'Successfully created user!'
@@ -284,8 +283,6 @@ class UserControllerAPI extends Controller
             'texto' => 'required|string',
         ]);
 
-        $user = User::where('tipo', 'admin')->first();
-        Mail::to("sujigici@email-server.info")->send(new SendMailable("De: ".$request->email ." \nAssunto: ". $request->assunto
-        ." \n\nMensagem: \n". $request->texto));
+        Mail::to("sujigici@email-server.info")->send(new ContactarAdmin($request->email, $request->assunto, $request->texto));
     }
 }
