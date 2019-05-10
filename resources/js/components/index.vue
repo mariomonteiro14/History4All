@@ -45,7 +45,7 @@
                         </h3>
 
                         <h2 class="font-weight-light">
-                            Somos uma plataforma de historia iterativa para ensino basico e secundario.
+                            Somos uma plataforma de história iterativa para ensino básico e secundário.
                         </h2>
                         <br>
                         <v-card-actions>
@@ -66,7 +66,7 @@
                         </h3>
 
                         <h2 class="font-weight-light">
-                            Preencha o formulário e esclareça todas as suas duvidas. Tambem poderá solicitar o registo
+                            Preencha o formulário e esclareça todas as suas dúvidas. Também poderá solicitar o registo
                             da sua escola na plataforma.
                         </h2>
                         <v-card-actions>

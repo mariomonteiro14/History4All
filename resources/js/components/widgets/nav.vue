@@ -45,14 +45,27 @@
             </v-layout>
         </v-toolbar-items>
         <div v-else>
-            <v-menu offset-y origin="center left" nudge-left class="elelvation-1" :nudge-bottom="14" transition="scale-transition">
-                <v-btn icon flat slot="activator">
+            <v-menu offset-y origin="center left" nudge-left class="dropdown elelvation-1" :nudge-bottom="14" transition="scale-transition" data-toggle="dropdown">
+                <v-btn icon flat slot="activator" @click="notificacoesLidas">
                     <v-badge color="red" overlap>
-                        <span slot="badge">3</span>
+                        <span slot="badge">{{novasNotificacoes}}</span>
                         <v-icon medium>notifications</v-icon>
                     </v-badge>
                 </v-btn>
             </v-menu>
+                <div v-show="this.$store.state.user" class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+                    <div class="p-4" style="width: 80vh">
+                        <div class="container-fluid">
+                            <template v-for="(notificacao, index) in notificacoes">
+                                <v-list-tile :key="index" avatar>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title v-html="notificacao.mensagem"></v-list-tile-title>
+                                    </v-list-tile-content>
+                                </v-list-tile>
+                            </template>
+                        </div>
+                    </div>
+                </div>
             <!--AVATAR-->
             <b-dropdown v-if="this.$store.state.user" right variant="Success" class="m-2" no-caret>
                 <template slot="button-content" >
@@ -128,6 +141,8 @@
             isLoading: false,
             loader_color: '#ffffff',
             loader_size:'30px',
+            notificacoes: [],
+            novasNotificacoes: 0
         }),
         computed: {
             toolbarColor () {
@@ -155,6 +170,31 @@
             },
             logging(){
                 this.isLoading = !this.isLoading;
+            },
+            notificacoesLidas(){
+                if (this.novasNotificacoes > 0){
+                    axios.put('/api/me/notificacoes').then(response => {
+                        this.notificacoes = response.data;
+                        this.novasNotificacoes = 
+                            this.notificacoes.filter(notificacao => notificacao.nova === 1).length;
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
+                    });
+                }
+            }
+        },
+        mounted() {
+            if (this.$store.state.user){
+                axios.get('/api/me/notificacoes')
+                    .then(response => {
+                        this.notificacoes = response.data.data;
+                        this.novasNotificacoes = 
+                            this.notificacoes.filter(notificacao => notificacao.nova === 1).length;
+                    })
+                    .catch(errors => {
+                        console.log(errors);
+                        this.isLoading = false;
+                    })
             }
         }
     };

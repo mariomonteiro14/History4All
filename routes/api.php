@@ -30,6 +30,8 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users/{id}/atividades/concluidas', 'AtividadeControllerAPI@getConcluidas');
     Route::get('atividades/{id}', 'AtividadeControllerAPI@getAtividade');
     Route::post('chat', 'AtividadeControllerAPI@storeChatMensagem');
+    Route::get('me/notificacoes', 'UserControllerAPI@notificacoes');
+    Route::put('me/notificacoes', 'UserControllerAPI@updateNotificacoes');
 
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');
