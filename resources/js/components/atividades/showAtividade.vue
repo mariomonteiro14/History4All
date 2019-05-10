@@ -2,7 +2,7 @@
     <div id="app">
         <br><br><br><br>
 
-        <v-app id="inspire">
+        <!--<v-app id="inspire">
             <v-layout justify-center>
                 <v-flex xs12 sm12 md12>
                     <v-card>
@@ -74,24 +74,263 @@
                     </v-card>
                 </v-flex>
             </v-layout>
+        </v-app>-->
+
+        <v-app id="inspire">
+            <v-container fluid grid-list-sm>
+                <v-layout justify-center>
+                    <v-flex xs12 sm12 md12>
+                        <!--HEADER -->
+                        <v-card v-if="atividade.titulo">
+                            <v-card-title primary-title>
+                                <v-layout row wrap>
+                                    <v-flex d-flex xs12 sm5>
+                                        <v-card flat>
+                                            <br>
+                                            <h3 class="display-1 font-weight-light">{{atividade.titulo}}</h3>
+                                            <p class="title green--text font-weight-light">{{atividade.tipo}}</p>
+                                        </v-card>
+                                    </v-flex>
+                                    <v-flex d-flex xs12 sm7 fluid>
+                                        <v-layout justify-end row d-flex fluid>
+                                            <v-spacer
+                                                v-if="atividade.patrimonios && patrimoniosImagens.length < 4"></v-spacer>
+                                            <v-spacer
+                                                v-if="atividade.patrimonios && patrimoniosImagens.length < 3"></v-spacer>
+                                            <v-spacer
+                                                v-if="atividade.patrimonios && patrimoniosImagens.length < 2"></v-spacer>
+                                            <v-flex class="text-xs-right"
+                                                    v-for="(imagem, index) in patrimoniosImagens"
+                                                    :key="index" d-flex>
+                                                <v-img
+                                                    :src="getPatrimonioPhoto(imagem)"
+                                                    aspect-ratio="1"
+                                                    class="grey lighten-2"
+                                                    max-height="100"
+                                                    max-width="100"
+                                                >
+                                                </v-img>
+                                            </v-flex>
+                                        </v-layout>
+                                    </v-flex>
+                                </v-layout>
+                            </v-card-title>
+
+                            <!--DESCRIÇAO-->
+                            <v-divider></v-divider>
+
+                            <v-card-text primary-title>
+                                <span class=" font-weight-light grey--text">Descriçao:</span>
+                                <h4 class="font-weight-light">{{atividade.descricao}}</h4>
+                                <br>
+                                <span class=" font-weight-light grey--text">Patrimonios:</span>
+                                <v-layout>
+                                    <h5 v-for="patrimonio in atividade.patrimonios" class="font-weight-light">
+                                        <a :href="/patrimonio/ + patrimonio.id">
+                                            {{patrimonio.nome}}&nbsp &nbsp
+                                        </a>
+                                    </h5>
+                                </v-layout>
+                                <br>
+                                <v-divider></v-divider>
+                                <br>
+                                <v-layout>
+                                    <v-flex>
+                                        <span class="font-weight-light grey--text">Escola:</span>
+                                        <h5>{{atividade.coordenador.escola[0]}}</h5>
+                                    </v-flex>
+                                    <v-flex>
+                                        <span class="font-weight-light grey--text">Coordenador:</span>
+                                        <h5>{{atividade.coordenador.nome}}</h5>
+                                    </v-flex>
+                                    <v-spacer></v-spacer>
+                                    <v-spacer></v-spacer>
+                                    <v-flex>
+
+                                        <v-btn flat round @click="showDetails = !showDetails">Mais Informações
+                                            <v-icon>{{ !showDetails ? 'keyboard_arrow_down' : 'keyboard_arrow_up' }}
+                                            </v-icon>
+                                        </v-btn>
+                                    </v-flex>
+                                </v-layout>
+                            </v-card-text>
+                            <v-slide-y-transition>
+                                <v-card-text v-show="showDetails">
+                                    <v-divider></v-divider>
+                                    <v-layout>
+                                        <v-flex>
+                                            <span class=" font-weight-light grey--text">Visibilidade:</span>
+                                            <h6>{{atividade.visibilidade}}</h6>
+                                        </v-flex>
+                                        <v-flex>
+                                            <span class=" font-weight-light grey--text">Numero de Participantes:</span>
+                                            <h6>{{atividade.participantes.length}}</h6>
+                                        </v-flex>
+                                        <v-flex>
+                                            <span
+                                                class=" font-weight-light grey--text">Numero de elementos por grupo:</span>
+                                            <h6>{{atividade.numeroElementos}}</h6>
+                                        </v-flex>
+                                        <v-flex>
+                                            <span class=" font-weight-light grey--text">Data de conclusao:</span>
+                                            <h6 v-if="atividade.data">{{atividade.data}}</h6>
+                                            <h6 v-else>Sem Data</h6>
+                                        </v-flex>
+                                    </v-layout>
+                                    <br>
+                                    <v-layout>
+                                        <v-flex>
+                                            <span class=" font-weight-light grey--text">Epocas:</span>
+                                            <v-layout row>
+                                                <h6 v-for="epoca in atividade.epoca">{{epoca}}&nbsp &nbsp</h6>
+                                            </v-layout>
+                                        </v-flex>
+                                        <v-flex>
+                                            <span class=" font-weight-light grey--text">Ciclos:</span>
+                                            <v-layout row>
+                                                <h6 v-for="ciclo in atividade.ciclo">{{ciclo}} &nbsp &nbsp</h6>
+                                            </v-layout>
+                                        </v-flex>
+                                    </v-layout>
+                                </v-card-text>
+                            </v-slide-y-transition>
+                        </v-card>
+                        <br>
+                        <!-- CHAT -->
+                        <v-card
+                            v-if="atividade.chat && (estado == 'pendente' || estado == 'coordenador') && atividade.participantes.length > 0">
+                            <v-card-text primary-title>
+                                <v-layout row wrap>
+                                    <v-flex d-flex xs12 sm8>
+                                        <v-card flat>
+                                            <v-card-text>
+                                                <h5 class="blue--text">
+                                                    <v-icon class="blue--text">far fa-comments</v-icon>
+                                                    &nbsp Chat
+                                                </h5>
+                                                <v-divider></v-divider>
+                                                <span class=" font-weight-light grey--text">Assunto:</span>
+                                                <h6>{{atividade.chat.assunto}}</h6>
+                                                <v-divider></v-divider>
+                                                <v-flex xs12
+                                                        style="max-height:350px; min-height:100px; overflow-y:auto">
+                                                    <v-layout row wrap v-scroll:#scroll-target="onScroll">
+                                                        <v-list three-line>
+
+                                                            <template v-for="(mensagem, index) in mensagensDoChat">
+                                                                <v-list-tile :key="index" avatar>
+                                                                    <v-list-tile-avatar>
+                                                                        <img v-if="mensagem.user.foto" width="30px"
+                                                                             height="30px"
+                                                                             v-bind:src="getUserPhoto(mensagem.user.foto)"/>
+                                                                    </v-list-tile-avatar>
+                                                                    <v-list-tile-content>
+                                                                        <v-list-tile-title
+                                                                            v-html="mensagem.user.nome"></v-list-tile-title>
+                                                                        <v-list-tile-sub-title
+                                                                            v-html="mensagem.mensagem"></v-list-tile-sub-title>
+                                                                    </v-list-tile-content>
+                                                                </v-list-tile>
+                                                            </template>
+                                                        </v-list>
+                                                    </v-layout>
+                                                </v-flex>
+                                            </v-card-text>
+                                            <v-card-actions>
+                                                <v-layout row wrap>
+
+                                                    <v-flex xs11>
+                                                        <v-text-field
+                                                            v-model="mensagemAEnviar"
+                                                            outline
+                                                            clearable
+                                                            label="Mensagem"
+                                                            type="text"
+                                                            @click:clear="mensagemAEnviar=''"
+                                                            @keyup.enter="enviarMensagem"
+                                                        ></v-text-field>
+                                                    </v-flex>
+                                                    <v-flex xs1>
+                                                        <v-btn icon large v-if="mensagemAEnviar!=''"
+                                                               @click="enviarMensagem">
+                                                            <v-icon class="blue--text" large>send</v-icon>
+                                                        </v-btn>
+                                                    </v-flex>
+
+                                                </v-layout>
+                                            </v-card-actions>
+                                        </v-card>
+                                    </v-flex>
+                                    <v-divider vertical></v-divider>
+                                    <v-flex d-flex xs12 sm3 fluid class="justify-center">
+                                        <v-card flat>
+                                            <v-card-text>
+                                                <h5 class="orange--text font-weight-light">
+                                                    <v-icon class="orange--text">far fa-user</v-icon>
+                                                    <v-icon class="orange--text">fas fa-user</v-icon>
+                                                    &nbsp Participantes:
+                                                </h5>
+                                                <v-divider></v-divider>
+                                                <v-flex style="max-height:350px; min-height:100px; overflow-y:auto">
+                                                    <v-list class="form-group" subheader>
+
+                                                        <v-list-tile
+                                                            v-for="aluno in atividade.participantes"
+                                                            :key="aluno.title"
+                                                            avatar
+                                                        >
+                                                            <v-list-tile-avatar>
+                                                                <img v-if="aluno.foto" :src="getUserPhoto(aluno.foto)">
+                                                                <span v-else>{{aluno.nome[0]}}</span>
+                                                            </v-list-tile-avatar>
+
+                                                            <v-list-tile-content>
+                                                                <v-list-tile-title>{{aluno.nome}}</v-list-tile-title>
+                                                            </v-list-tile-content>
+                                                        </v-list-tile>
+                                                    </v-list>
+                                                </v-flex>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-flex>
+                                </v-layout>
+                            </v-card-text>
+                        </v-card>
+                        <br>
+                        <v-card>
+                            <v-card-title primary-title>
+                                <div>
+                                    <h4>Testemunhos:</h4>
+                                </div>
+                            </v-card-title>
+                            <v-card-actions>
+                            </v-card-actions>
+                        </v-card>
+                    </v-flex>
+                </v-layout>
+            </v-container>
         </v-app>
         <v-dialog v-model="notificacaoDialog" max-width="290">
             <v-card>
-                <v-card-title class="headline">Notificação para todos os alunos que estão com a atividade pendente</v-card-title>
+                <v-card-title class="headline">Notificação para todos os alunos que estão com a atividade pendente
+                </v-card-title>
                 <v-textarea
-                        v-model="mensagemNotificacao"
-                        label="mensagem"
+                    v-model="mensagemNotificacao"
+                    label="mensagem"
                 ></v-textarea>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="red darken-1" flat="flat" @click="notificacaoDialog = false">
                         Cancelar
                     </v-btn>
-                    <v-btn color="green darken-1" flat="flat" :disabled="!mensagemNotificacao" @click="enviarNotificacao()">Enviar</v-btn>
+                    <v-btn color="green darken-1" flat="flat" :disabled="!mensagemNotificacao"
+                           @click="enviarNotificacao()">Enviar
+                    </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <div class="modal fade" id="mostrarPatrimoniosModal" tabindex="-1" role="dialog" aria-labelledby="mostrarPatrimoniosModal"
+        <div class="modal fade" id="mostrarPatrimoniosModal" tabindex="-1" role="dialog"
+             aria-labelledby="mostrarPatrimoniosModal"
              aria-hidden="true">
             <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
@@ -105,10 +344,11 @@
                         </div>
                         <v-list class="form-group" subheader>
                             <v-list-tile v-if="atividade.patrimonios"
-                                    v-for="patrimonio in atividade.patrimonios" :key="patrimonio.id" avatar
+                                         v-for="patrimonio in atividade.patrimonios" :key="patrimonio.id" avatar
                             >
                                 <v-list-tile-avatar>
-                                    <img v-if="patrimonio.imagens && patrimonio.imagens[0]" :src="getPatrimonioPhoto(patrimonio.imagens[0])">
+                                    <img v-if="patrimonio.imagens && patrimonio.imagens[0]"
+                                         :src="getPatrimonioPhoto(patrimonio.imagens[0])">
                                     <span v-else>{{patrimonio.nome[0]}}</span>
                                 </v-list-tile-avatar>
                                 <v-list-tile-content>
@@ -124,7 +364,10 @@
 
 </template>
 <script type="text/javascript">
+    import BRow from "bootstrap-vue/src/components/layout/row";
+
     export default {
+        components: {BRow},
         props: ['id'],
         data: function () {
             return {
@@ -136,6 +379,10 @@
 
                 mensagemNotificacao: '',
                 notificacaoDialog: false,
+
+                testemunhos: [],
+                numeroImagens: 0,
+                showDetails: false,
             };
         },
         methods: {
@@ -143,20 +390,20 @@
                 axios.get('/api/atividades/' + this.id)
                     .then(response => {
                         this.atividade = response.data.data;
-                        if (response.data.estado && response.data.estado.estado){
+                        if (response.data.estado && response.data.estado.estado) {
                             this.estado = response.data.estado.estado;
-                        } else if (response.data.estado !== undefined){
+                        } else if (response.data.estado !== undefined) {
                             this.estado = null;
-                        } else{
+                        } else {
                             this.estado = 'outros';//professores e admins
                         }
-                        if (this.atividade.coordenador.id === this.$store.state.user.id){
+                        if (this.atividade.coordenador.id === this.$store.state.user.id) {
                             this.estado = 'coordenador';
                         }
-                        if (this.atividade.chat && this.estado){
+                        if (this.atividade.chat && this.estado) {
                             let mensagens = this.atividade.chat.chat_mensagens;
                             this.mensagensDoChat = mensagens.slice(mensagens.length - this.offset);
-                            window.addEventListener("load", function(event) {//quando a página estiver carregada
+                            window.addEventListener("load", function (event) {//quando a página estiver carregada
                                 document.getElementById("scroll-target").scrollTop =
                                     Math.floor(document.getElementById("scrolled-content").offsetHeight);
                             });
@@ -167,22 +414,25 @@
                         console.log(errors);
                     });
             },
-            showPatrimonios(){
+            showPatrimonios() {
                 $('#mostrarPatrimoniosModal').modal('show');
             },
-            enviarNotificacao(){
+            enviarNotificacao() {
                 this.notificacaoDialog = false;
-                axios.post('/api/notificacoes', {'atividade_id': this.id, 'mensagem': this.mensagemNotificacao}).then(response => {
+                axios.post('/api/notificacoes', {
+                    'atividade_id': this.id,
+                    'mensagem': this.mensagemNotificacao
+                }).then(response => {
                     this.toastPopUp("success", "Notificação enviada com sucesso!");
                     this.mensagemNotificacao = '';
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
-            participar(){
+            participar() {
                 axios.post('/api/atividades/' + this.id + '/participar', {'user_id': this.$store.state.user.id}).then(response => {
                     this.estado = 'pendente';
-                    if (this.atividade.chat && this.estado){
+                    if (this.atividade.chat && this.estado) {
                         this.$socket.emit('user_enter', this.$store.state.user, this.atividade.chat.id);
                     }
                     this.toastPopUp("success", "A atividade encontra-se na sua lista de atividades pendentes!");
@@ -190,12 +440,13 @@
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
-            enviarMensagem(){
+            enviarMensagem() {
                 let chatMensagem = {
                     'chat_id': this.atividade.chat.id,
                     'mensagem': this.mensagemAEnviar,
                     'user_id': this.$store.state.user.id
                 };
+                this.mensagemAEnviar = '';
                 axios.post('/api/chat', chatMensagem).then(response => {
                     this.$socket.emit('chat_mensagem', response.data, this.atividade.chat.id);
                     this.mensagemAEnviar = '';
@@ -203,8 +454,8 @@
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
-            onScroll (e) {
-                if (e.target.scrollTop == 0 && this.atividade.chat.chat_mensagens.length !== this.mensagensDoChat.length){
+            onScroll(e) {
+                if (e.target.scrollTop == 0 && this.atividade.chat.chat_mensagens.length !== this.mensagensDoChat.length) {
                     this.offset += 20;
                     this.toastPopUp("success", "Mais mensagens carregadas");
                     let mensagens = this.atividade.chat.chat_mensagens;
@@ -215,8 +466,39 @@
         mounted() {
             this.getAtividade();
         },
+        computed: {
+            patrimoniosImagens() {
+                let imagens = [];
+                let numeroMaxImgs = 5;
+                let numImgPorPatrim = 1;
+
+                if (this.atividade && this.atividade.patrimonios) {
+                    if (this.atividade.patrimonios.length === 1) {
+                        numImgPorPatrim = 5
+                    }
+                    else if (this.atividade.patrimonios.length <= 3) {
+                        numImgPorPatrim = 2;
+                    }
+                    this.atividade.patrimonios.forEach(function (element) {
+                        let count = 1;
+                        element.imagens.forEach(function (elem) {
+
+                            if (count <= numImgPorPatrim) {
+                                imagens.push(elem);
+                                count++;
+                                if (imagens[numeroMaxImgs - 1]) {
+                                    return imagens;
+                                }
+                            }
+                        });
+                    });
+
+                }
+                return imagens;
+            },
+        },
         sockets: {
-            novaMensagem(mensagem){
+            novaMensagem(mensagem) {
                 this.atividade.chat.chat_mensagens.push(mensagem);
                 this.mensagensDoChat.push(mensagem);
                 document.getElementById("scroll-target").scrollTop =
@@ -230,3 +512,4 @@
         },
     }
 </script>
+
