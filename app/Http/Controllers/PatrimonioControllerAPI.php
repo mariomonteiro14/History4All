@@ -22,6 +22,27 @@ class PatrimonioControllerAPI extends Controller
         return Patrimonio::with('imagens')->where('id', $id)->first();
     }
 
+    public function adicionarImagens(Request $request, $id){
+        $request->validate([
+            'novas_imagens.*' => 'required|file|mimes:jpeg,bmp,png,jpg',
+        ]);
+        $patrim = Patrimonio::findOrFail($id);
+        if($request->has('novas_imagens')) {
+            foreach ($request->novas_imagens as $image) {
+                $filename = str_random(8) . '.' . $image->getClientOriginalExtension();;
+                Storage::disk('public')->putFileAs('patrimonios', $image, $filename);
+                $patrim_image = new PatrimonioImagens();
+
+                $patrim_image->patrimonio_id = $id;
+                $patrim_image->foto = $filename;
+
+                $patrim_image->save();
+            }
+        };
+        $imagens = PatrimonioImagens::where('patrimonio_id', $id)->get();
+        return response()->json($imagens, 200);
+    }
+
     public function update(Request $request, $id){
 
         $request->validate([

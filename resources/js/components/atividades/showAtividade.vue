@@ -216,7 +216,7 @@
             }
         },
         destroyed: function () {
-            if (this.atividade.chat && this.estado) {
+            if (this.atividade.chat && this.estado && this.$store.state.user) {
                 this.$socket.emit('user_exit', this.$store.state.user, this.atividade.chat.id);
             }
         },

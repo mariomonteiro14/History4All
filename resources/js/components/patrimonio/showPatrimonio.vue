@@ -20,12 +20,15 @@
                                 <div v-html="patrimonio.descricao"></div>
                             </div>
                         </v-card-title>
-
                         <v-card-actions>
                             <v-btn flat color="orange" v-if="patrimonio.imagens && patrimonio.imagens.length > 1" @click="showGallery=!showGallery">
                                 Galeria
                             </v-btn>
                         </v-card-actions>
+                        <v-btn flat color="green" v-if="$store.state.user && $store.state.user.tipo === 'professor'"
+                               data-toggle="modal" data-target="#adicionarImagemModal">
+                            Adicionar Imagens
+                        </v-btn>
                     </v-card>
                 </v-flex>
             </v-layout>
@@ -36,7 +39,7 @@
                     <v-card>
                         <v-container grid-list-sm fluid>
                             <v-layout row wrap>
-                                <v-flex v-for="image in patrimonio.imagens" :key="n" xs4 d-flex>
+                                <v-flex v-for="(image, index) in patrimonio.imagens" :key="index" xs4 d-flex>
                                     <v-card flat tile class="d-flex">
                                         <v-img
                                             :src="getPatrimonioPhoto(image.foto)"
@@ -63,6 +66,31 @@
                 </v-flex>
             </v-layout>
         </v-app>
+        <div class="modal fade" id="adicionarImagemModal" tabindex="-1" role="dialog" aria-labelledby="contactModal"
+             aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="container box">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Adicionar Imagens</h5>
+                            <button type="button" @click="cancel()" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="custom-file">
+                            <label class="custom-file-label" for="upload-files">{{getFilesText()}}</label>
+                            <input id="upload-files" type="file" multiple class="form-control custom-file-input"
+                                   @change="handleFile" accept=".png, .jpg, .jpeg">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-info" v-on:click.prevent="update" :disabled="attachments.length < 1">Guardar</button>
+                        <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
         <br><br>
     </div>
 
@@ -74,6 +102,7 @@
             return {
                 patrimonio: {},
                 showGallery: false,
+                attachments: [],
             };
         },
         methods: {
@@ -85,7 +114,53 @@
                     .catch(errors => {
                         console.log(errors);
                     });
-            }
+            },
+            handleFile: function (e) {
+                let files = e.target.files || e.dataTransfer.files;
+                if (!files.length) {
+                    return false;
+                }
+                for (let i = 0; i < files.length; i++) {
+                    if (!files[i].type.includes("image/")) {
+                        this.$toasted.error('File must be an image', {
+                            position: "bottom-center",
+                            duration: 3000,
+                        });
+                        return;
+                    }
+                    this.attachments.push(files[i]);
+                }
+            },
+            formCreate: function () {
+                let formData = new FormData();
+                for (let i = 0; i < this.attachments.length; i++) {
+                    formData.append('novas_imagens[]', this.attachments[i]);
+                    console.log(this.attachments[i]);
+                }
+                return formData;
+            },
+            update() {
+                const config = {
+                    headers: {'content-type': 'multipart/form-data'}
+                };
+                axios.post('/api/patrimonios/' + this.patrimonio.id + '/imagens', this.formCreate(), config).then(response => {
+                    this.toastPopUp("success", "Imagens adicionadas con sucesso!");
+                    this.attachments = [];
+                    $('#adicionarImagemModal').modal('hide');
+                    this.patrimonio.imagens = response.data;
+                }).catch(function (error) {
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                    console.log(error);
+                });
+            },
+            cancel: function () {
+                this.attachments = [];
+                $('#adicionarImagemModal').modal('hide');
+            },
+            getFilesText() {
+                return this.attachments.length == 0 ? "Adicionar Imagens" : this.attachments.length == 1 ?
+                    "1 Imagem Carregada" : this.attachments.length + " imagens Carregadas";
+            },
         },
         mounted() {
             this.getPatrimonio();

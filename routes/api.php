@@ -54,6 +54,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::post('atividades', 'AtividadeControllerAPI@store');
         Route::put('atividades/{id}', 'AtividadeControllerAPI@update');
         Route::delete('atividades/{id}', 'AtividadeControllerAPI@destroy');
+        Route::post('patrimonios/{id}/imagens', 'PatrimonioControllerAPI@adicionarImagens');
     });
 
     Route::group(['middleware' => 'adminOuProfessor'], function() {

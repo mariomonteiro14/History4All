@@ -70,16 +70,11 @@
                         </v-container>
 
                         <div class="custom-file">
-                            <label class="custom-file-label" for="upload-files">{{getFilesText()}}</label>
-                            <input id="upload-files" type="file" multiple class="form-control custom-file-input"
-                                   @change="handleFile">
-                        </div>
+                        <label class="custom-file-label" for="upload-files">{{getFilesText()}}</label>
+                        <input id="upload-files" type="file" multiple class="form-control custom-file-input"
+                               @change="handleFile" accept=".png, .jpg, .jpeg">
+                    </div>
                         <br>
-                        <div class="custom-file">
-                            <input id="upload-file2" type="file" accept=".png, .jpg, .jpeg" multiple
-                                   class="form-control custom-file-input"
-                                   @change="handleFile">
-                        </div>
                         <!-- <vue-select-image :dataImages="dataImages"
                                            :is-multiple="true"
                                            :selectedImages="initialSelected"
