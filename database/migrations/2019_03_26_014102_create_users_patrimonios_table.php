@@ -48,6 +48,7 @@ class CreateUsersPatrimoniosTable extends Migration
         });
 
         Schema::create('notificacoes', function (Blueprint $table) {
+            $table->increments('id');
             $table->bigInteger('user_id')->unsigned();//destinatário
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('mensagem');

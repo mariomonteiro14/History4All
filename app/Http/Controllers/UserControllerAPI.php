@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Escola;
 use App\Mail\ContactarAdmin;
 use App\Mail\EmailConfirmacao;
+use App\Notificacao;
 use App\Turma;
 use Illuminate\Http\Request;
 
@@ -285,5 +286,21 @@ class UserControllerAPI extends Controller
         $user = User::where('tipo','admin')->first();
 
         Mail::to($user->email)->send(new ContactarAdmin($request->email, $request->assunto, $request->texto));
+    }
+
+    public function notificacoes(Request $request){
+        return response()->json([
+            'data' => Notificacao::where('user_id', Auth::id())->get()
+        ]);
+    }
+    
+    public function updateNotificacoes(Request $request){
+        $notificacoes = Notificacao::where('user_id', Auth::id())->where('nova', 1)->get();
+        foreach ($notificacoes as $notificacao) {
+            $notificacao->nova = 0;
+            $notificacao->save();
+        };
+
+        return response()->json(Notificacao::where('user_id', Auth::id())->get(), 201);
     }
 }
