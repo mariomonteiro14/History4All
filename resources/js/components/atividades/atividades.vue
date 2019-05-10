@@ -123,7 +123,7 @@
                     </v-layout>
                 </v-container>
                 <v-layout align-center justify-center>
-                    <v-btn class="text-xs-center" v-if="limite < atividadesFiltradasLength" @click="limite += 4">
+                    <v-btn class="text-xs-center" v-if="limite < atividadesFiltradasLength" @click="limite += 8">
                         <i class="material-icons">keyboard_arrow_down</i>
                         Carregar Mais
                         <i class="material-icons">keyboard_arrow_down</i>
@@ -170,7 +170,7 @@
 
                 atividades: [],
                 atividadesFiltradasLength: null,
-                limite: 4,
+                limite: 8,
                 tiposDePesquisa: ['Publicas', 'Minha Escola', 'Minhas Atividades'],
                 tipoDePesquisaSelected: 'Publicas',
                 minhasAtividades: ['Todas', 'Pendentes', 'Concluídas'],
@@ -265,7 +265,7 @@
         watch: {
             tipoDePesquisaSelected() {
                 this.getAtividades();
-                this.limite = 4;
+                this.limite = 8;
             },
         }
     }

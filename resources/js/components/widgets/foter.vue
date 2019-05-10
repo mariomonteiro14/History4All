@@ -13,7 +13,7 @@
 
                     <v-spacer></v-spacer>
 
-                    <social-sharing ref="socialSharing" :url="getUrl"
+                    <social-sharing ref="socialSharing" :url="this.url"
                                     title="History4All - Site de Historia"
                                     description="Portal de historia dinamico desenhado para alunos e professores."
                                     quote="Portal de historia dinamico desenhado para alunos e professores."
@@ -69,17 +69,15 @@
                     'fab fa-twitter',
                     'fab fa-google-plus',
                     'fab fa-instagram'
-                ]
+                ],
+                url: window.location.href
             }
         },
-        computed: {
-            getUrl(){
-               /* if(this.$route.name == 'patrimoniosShow') {
-                    return this.$route.query.page;
-                }*/
-                return  window.location.href;
+        watch:{
+            $route (){
+                return this.url = window.location.href;
             }
-        },
+        }
 
 
 
