@@ -44,23 +44,25 @@ app.listen(8080, function(){
 let loggedUsers = new LoggedUsers();
 
 io.on('connection', function (socket) {
-    
-	socket.on('user_enter', function (user, chat_id) {
-	if (user !== undefined && user !== null)
-		console.log(user.nome + ' joined ' + chat_id);
-		socket.join(chat_id);
-		loggedUsers.addUserInfo(user, socket.id);
+
+	socket.on('user_enter_chat', function (user, chat_id) {
+		if (user !== undefined && user !== null) {
+			console.log(user.nome + ' joined chat_' + chat_id);
+			socket.join('chat_' + chat_id);
+			loggedUsers.addUserInfo(user, socket.id);
+		}
 	});
-	socket.on('user_exit', function (user, chat_id) {
-		if (user !== undefined && user !== null)
-            console.log(user.nome + ' exited ' + chat_id);
-			socket.leave(chat_id);
+	socket.on('user_exit_chat', function (user, chat_id) {
+		if (user !== undefined && user !== null) {
+			console.log(user.nome + ' exited ' + chat_id);
+			socket.leave('chat_' + chat_id);
 			loggedUsers.removeUserInfoByID(user.id);
+		}
 	});
 
 	socket.on('chat_mensagem', function (mensagem, chatId) {
 		if (mensagem !== undefined && chatId !== undefined) {
-			io.sockets.to(chatId).emit('novaMensagem', mensagem);
+			io.sockets.to('chat_' + chatId).emit('novaMensagem', mensagem);
 		}
 	});
 });

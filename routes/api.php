@@ -70,7 +70,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('me/escola/alunos', 'EscolaControllerAPI@myEscolaAlunos');
         Route::post('users', 'UserControllerAPI@store');
 
-        Route::post('notificacoes', 'AtividadeControllerAPI@storeNotificacao');
+        Route::post('notificacoes', 'UserControllerAPI@storeNotificacao');
     });
 
     Route::group(['middleware' => 'aluno'], function() {

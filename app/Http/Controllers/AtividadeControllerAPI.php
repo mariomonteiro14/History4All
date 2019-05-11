@@ -272,26 +272,4 @@ class AtividadeControllerAPI extends Controller
 
         return response()->json($participante, 201);
     }
-
-    public function storeNotificacao(Request $request)
-    {
-        $request->validate([
-            'atividade_id' => 'required',
-            'mensagem' => 'required|min:1'
-        ]);
-
-        $userIds = AtividadeParticipantes::where('atividade_id', $request->atividade_id)
-            ->where('estado', 'pendente')->pluck('user_id')->toArray();
-
-        foreach ($userIds as $userId) {
-            $notificacao = new Notificacao();
-            $notificacao->fill([
-                'user_id' => $userId,
-                'mensagem' => $request->mensagem,
-                'nova' => '1'
-            ]);
-            $notificacao->save();
-        };
-        return response()->json(null, 201);
-    }
 }

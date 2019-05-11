@@ -75,6 +75,9 @@
                                        @click="showTurmaAlunos(props.item)">Listar Alunos
                                     <v-icon medium>list</v-icon>
                                 </v-btn>
+                                <v-btn v-if="props.item.alunos[0]" color="info" @click="enviarNotificacao(props.item)">
+                                    enviar notificação
+                                </v-btn>
                             </td>
                             <td>
                                 <div
@@ -120,6 +123,7 @@
         <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual"
                             v-on:getEscolas="atualizarDados"></criar-editar-turma>
         <criar-aluno ref="addAluno" :user="userForm" v-on:getUsers="atualizarDados"></criar-aluno>
+        <enviar-notificacao ref="enviarNotificacaoModal" :tipo="'turma'" :users="turmaAtual.alunos"></enviar-notificacao>
     </div>
 </template>
 
@@ -127,12 +131,14 @@
     import listaAlunos from './showTurmaAlunos';
     import criarTurma from './adicionarEditarTurma';
     import criarAluno from '../users/adicionarUser';
+    import enviarNotificacao from '../widgets/enviarNotificacao';
 
     export default {
         components: {
             'lista-alunos': listaAlunos,
             'criar-editar-turma': criarTurma,
             'criar-aluno': criarAluno,
+            'enviar-notificacao': enviarNotificacao
         },
         mounted() {
             this.getMyEscola();
@@ -209,12 +215,10 @@
                 }
                 $('#addTurmaModal').modal('show');
             },
-
             apagarVerificacao(item) {
                 this.dialog = true;
                 this.turmaAtual = item;
             },
-
             apagarTurma() {
                 this.dialog = false;
                 axios.delete('/api/escolas/turmas/' + this.turmaAtual.id)
@@ -231,8 +235,11 @@
                 this.getMyEscola();
                 this.$refs.addEditTurma.getAlunos();
                 this.$refs.addAluno.getEscolas();
+            },
+            enviarNotificacao(turma) {
+                this.turmaAtual = turma;
+                $('#enviarNotificacaoModal').modal('show');
             }
-
         },
         computed: {
             filteredTurmas() {

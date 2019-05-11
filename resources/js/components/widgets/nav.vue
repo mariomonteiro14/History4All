@@ -59,7 +59,7 @@
                             <template v-for="(notificacao, index) in notificacoes">
                                 <v-list-tile :key="index" avatar>
                                     <v-list-tile-content>
-                                        <v-list-tile-title v-html="notificacao.mensagem"></v-list-tile-title>
+                                        <v-list-tile-title v-text="notificacao.mensagem"></v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>
                             </template>
@@ -147,7 +147,7 @@
         computed: {
             toolbarColor () {
                 return this.$vuetify.options.extra.mainNav;
-            }
+            },
         },
         methods: {
             handleDrawerToggle () {

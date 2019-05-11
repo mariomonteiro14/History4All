@@ -80,7 +80,6 @@
             <v-progress-linear v-show="isLoading" v-slot:progress color="brown" indeterminate></v-progress-linear>
             <br><br><br><br><br><br><br><br><br>
         </div>
-
         <v-app v-else id="inspire">
             <v-container fluid grid-list-sm>
                 <v-layout justify-center>
@@ -222,27 +221,28 @@
                                                 <span class=" font-weight-light grey--text">Assunto:</span>
                                                 <h6>{{atividade.chat.assunto}}</h6>
                                                 <v-divider></v-divider>
-                                                <v-flex xs12
+                                                <v-flex xs12 id="scroll-target"
                                                         style="max-height:350px; min-height:100px; overflow-y:auto">
                                                     <v-layout row wrap v-scroll:#scroll-target="onScroll">
-                                                        <v-list three-line>
-
-                                                            <template v-for="(mensagem, index) in mensagensDoChat">
-                                                                <v-list-tile :key="index" avatar>
-                                                                    <v-list-tile-avatar>
-                                                                        <img v-if="mensagem.user.foto" width="30px"
-                                                                             height="30px"
-                                                                             v-bind:src="getUserPhoto(mensagem.user.foto)"/>
-                                                                    </v-list-tile-avatar>
-                                                                    <v-list-tile-content>
-                                                                        <v-list-tile-title
-                                                                            v-html="mensagem.user.nome"></v-list-tile-title>
-                                                                        <v-list-tile-sub-title
-                                                                            v-html="mensagem.mensagem"></v-list-tile-sub-title>
-                                                                    </v-list-tile-content>
-                                                                </v-list-tile>
-                                                            </template>
-                                                        </v-list>
+                                                        <div id="scrolled-content">
+                                                            <v-list three-line>
+                                                                <template v-for="(mensagem, index) in mensagensDoChat">
+                                                                    <v-list-tile :key="index" avatar>
+                                                                        <v-list-tile-avatar>
+                                                                            <img v-if="mensagem.user.foto" width="30px"
+                                                                                 height="30px"
+                                                                                 v-bind:src="getUserPhoto(mensagem.user.foto)"/>
+                                                                        </v-list-tile-avatar>
+                                                                        <v-list-tile-content>
+                                                                            <v-list-tile-title
+                                                                                v-html="mensagem.user.nome"></v-list-tile-title>
+                                                                            <v-list-tile-sub-title
+                                                                                v-html="mensagem.mensagem"></v-list-tile-sub-title>
+                                                                        </v-list-tile-content>
+                                                                    </v-list-tile>
+                                                                </template>
+                                                            </v-list>
+                                                        </div>
                                                     </v-layout>
                                                 </v-flex>
                                             </v-card-text>
@@ -261,7 +261,7 @@
                                                         ></v-text-field>
                                                     </v-flex>
                                                     <v-flex xs1>
-                                                        <v-btn icon large v-if="mensagemAEnviar!=''"
+                                                        <v-btn icon large v-if="mensagemAEnviar != ''"
                                                                @click="enviarMensagem">
                                                             <v-icon class="blue--text" large>send</v-icon>
                                                         </v-btn>
@@ -272,7 +272,7 @@
                                         </v-card>
                                     </v-flex>
                                     <v-divider vertical></v-divider>
-                                    <v-flex d-flex xs12 sm3 fluid class="justify-center">
+                                    <v-flex d-flex xs12 sm3 fluid class="justify-right">
                                         <v-card flat>
                                             <v-card-text>
                                                 <h5 class="orange--text font-weight-light">
@@ -305,6 +305,9 @@
                                                     </v-list>
                                                 </v-flex>
                                             </v-card-text>
+                                            <v-btn v-if="estado === 'coordenador'" color="info" @click="enviarNotificacao">
+                                                enviar notificação
+                                            </v-btn>
                                         </v-card>
                                     </v-flex>
                                 </v-layout>
@@ -324,25 +327,6 @@
                 </v-layout>
             </v-container>
         </v-app>
-        <v-dialog v-model="notificacaoDialog" max-width="290">
-            <v-card>
-                <v-card-title class="headline">Notificação para todos os alunos que estão com a atividade pendente
-                </v-card-title>
-                <v-textarea
-                    v-model="mensagemNotificacao"
-                    label="mensagem"
-                ></v-textarea>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="red darken-1" flat="flat" @click="notificacaoDialog = false">
-                        Cancelar
-                    </v-btn>
-                    <v-btn color="green darken-1" flat="flat" :disabled="!mensagemNotificacao"
-                           @click="enviarNotificacao()">Enviar
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
         <div class="modal fade" id="mostrarPatrimoniosModal" tabindex="-1" role="dialog"
              aria-labelledby="mostrarPatrimoniosModal"
              aria-hidden="true">
@@ -374,30 +358,32 @@
                 </div>
             </div>
         </div>
+        <enviar-notificacao ref="enviarNotificacaoModal" :tipo="'atividade'" :users="atividade.participantes"></enviar-notificacao>
     </div>
-
 </template>
 <script type="text/javascript">
     import BRow from "bootstrap-vue/src/components/layout/row";
+    import enviarNotificacao from '../widgets/enviarNotificacao';
 
     export default {
-        components: {BRow},
+        components: {
+            BRow,
+            'enviar-notificacao': enviarNotificacao
+        },
         props: ['id'],
         data: function () {
             return {
                 atividade: {},
                 estado: '',
                 mensagensDoChat: [],
-                offset: 20,
+                offset: 4,
                 mensagemAEnviar: '',
-
-                mensagemNotificacao: '',
-                notificacaoDialog: false,
 
                 testemunhos: [],
                 numeroImagens: 0,
                 showDetails: false,
                 isLoading: true,
+                actualScroll: 0,
             };
         },
         methods: {
@@ -419,11 +405,7 @@
                         if (this.atividade.chat && this.estado) {
                             let mensagens = this.atividade.chat.chat_mensagens;
                             this.mensagensDoChat = mensagens.slice(mensagens.length - this.offset);
-                            window.addEventListener("load", function (event) {//quando a página estiver carregada
-                                document.getElementById("scroll-target").scrollTop =
-                                    Math.floor(document.getElementById("scrolled-content").offsetHeight);
-                            });
-                            this.$socket.emit('user_enter', this.$store.state.user, this.atividade.chat.id);
+                            this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
                         }
                         this.isLoading = false;
                     })
@@ -437,22 +419,13 @@
                 $('#mostrarPatrimoniosModal').modal('show');
             },
             enviarNotificacao() {
-                this.notificacaoDialog = false;
-                axios.post('/api/notificacoes', {
-                    'atividade_id': this.id,
-                    'mensagem': this.mensagemNotificacao
-                }).then(response => {
-                    this.toastPopUp("success", "Notificação enviada com sucesso!");
-                    this.mensagemNotificacao = '';
-                }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
-                });
+                $('#enviarNotificacaoModal').modal('show');
             },
             participar() {
                 axios.post('/api/atividades/' + this.id + '/participar', {'user_id': this.$store.state.user.id}).then(response => {
                     this.estado = 'pendente';
                     if (this.atividade.chat && this.estado) {
-                        this.$socket.emit('user_enter', this.$store.state.user, this.atividade.chat.id);
+                        this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
                     }
                     this.toastPopUp("success", "A atividade encontra-se na sua lista de atividades pendentes!");
                 }).catch(error => {
@@ -474,12 +447,19 @@
                 })
             },
             onScroll(e) {
-                if (e.target.scrollTop == 0 && this.atividade.chat.chat_mensagens.length !== this.mensagensDoChat.length) {
+                if (this.actualScroll < e.target.scrollTop){
+                    this.scrollDown();
+                }
+                if (e && e.target.scrollTop === 0 && this.atividade.chat.chat_mensagens.length !== this.mensagensDoChat.length) {
                     this.offset += 20;
                     this.toastPopUp("success", "Mais mensagens carregadas");
                     let mensagens = this.atividade.chat.chat_mensagens;
                     this.mensagensDoChat = mensagens.slice(mensagens.length - this.offset);
                 }
+                this.actualScroll = e.target.scrollTop;
+            },
+            scrollDown(){
+                document.getElementById("scroll-target").scrollTop = document.getElementById("scrolled-content").offsetHeight;
             }
         },
         mounted() {
@@ -520,13 +500,12 @@
             novaMensagem(mensagem) {
                 this.atividade.chat.chat_mensagens.push(mensagem);
                 this.mensagensDoChat.push(mensagem);
-                document.getElementById("scroll-target").scrollTop =
-                    Math.floor(document.getElementById("scrolled-content").offsetHeight);
+                this.scrollDown();
             }
         },
         destroyed: function () {
             if (this.atividade.chat && this.estado && this.$store.state.user) {
-                this.$socket.emit('user_exit', this.$store.state.user, this.atividade.chat.id);
+                this.$socket.emit('user_exit_chat', this.$store.state.user, this.atividade.chat.id);
             }
         },
     }

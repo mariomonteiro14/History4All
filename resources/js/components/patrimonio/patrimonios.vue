@@ -41,7 +41,7 @@
                             <v-text-field
                                 v-model="search"
                                 append-icon="pesquisa"
-                                label="Pesquisar"
+                                label="Pesquisar em todos os campos"
                                 single-line
                                 hide-details
                                 clearable

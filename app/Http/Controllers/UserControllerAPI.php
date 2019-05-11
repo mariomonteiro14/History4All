@@ -300,6 +300,29 @@ class UserControllerAPI extends Controller
         ]);
     }
 
+    public function storeNotificacao(Request $request) {
+        $request->validate([
+            'users' => 'required',
+            'mensagem' => 'required|min:1'
+        ]);
+
+        if (!$request->has('users') || sizeof($request->get('users')) < 1) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $userIds = array_column($request->get('users'), 'id');
+        foreach ($userIds as $userId) {
+            $notificacao = new Notificacao();
+            $notificacao->fill([
+                'user_id' => $userId,
+                'mensagem' => $request->mensagem,
+                'nova' => '1'
+            ]);
+            $notificacao->save();
+        };
+        return response()->json(null, 201);
+    }
+
     public function updateNotificacoes(Request $request){
         $notificacoes = Notificacao::where('user_id', Auth::id())->where('nova', 1)->get();
         foreach ($notificacoes as $notificacao) {

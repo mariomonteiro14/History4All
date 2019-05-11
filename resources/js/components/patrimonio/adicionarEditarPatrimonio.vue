@@ -280,7 +280,7 @@
                 let $patrimonio = this.formCreate();
                 if (this.links) {
                     let descricao = $patrimonio.get('descricao') + "<div id='links'><h4>Links sobre o património:</h4><ul>";
-                    this.links.split(" ").forEach(link => {descricao += "<li>" + link + "</li>"});
+                    this.links.split(" ").forEach(link => {descricao += "<li><a href='" + link + "'\>" + link + "</a></li>"});
                     descricao += "</ul></div>";
                     $patrimonio.set('descricao', descricao);
                 }
@@ -301,10 +301,10 @@
                 if (newPatrim.descricao.includes("<div id='links'><h4>Links sobre o património:</h4><ul><li>")){
                     let linksComTags = newPatrim.descricao.split("<div id='links'><h4>Links sobre o património:</h4><ul><li>")[1].split("<li>");
                     let linksFormatadosComEspaco = '';
-                    linksComTags.forEach((link , indice) => {
-                        linksFormatadosComEspaco += link.slice(0, link.length - 5) + ' ';
+                    linksComTags.forEach(link => {
+                        linksFormatadosComEspaco += link.slice(link.indexOf('>') + 1, link.indexOf('</')) + ' ';
                     });
-                    this.links = linksFormatadosComEspaco.slice(0, linksFormatadosComEspaco.length - 12);
+                    this.links = linksFormatadosComEspaco.slice(0, linksFormatadosComEspaco.length - 1);
                     let descricaoComTag = newPatrim.descricao.split("<div id='links'>")[0];
                     this.patrimonio.descricao = descricaoComTag.slice(0, descricaoComTag.length - 4);
                 }

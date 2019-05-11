@@ -1,0 +1,113 @@
+<template>
+    <div>
+        <!-- Modal Add Order-->
+        <div class="modal fade" id="enviarNotificacaoModal" tabindex="-1" role="dialog" aria-labelledby="enviarNotificacaoModal"
+             aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                    <div class="container box" @click="closeLists">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="enviarNotificacaoModal">{{getTitle}}</h5>
+                            <button type="button" @click="cancel()" class="close" data-dismiss="modal"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <br>
+                        <div class="form-group">
+                            <v-textarea id="inputMensagem"
+                                    v-model="mensagem"
+                                    label="mensagem"
+                                    :rules="[v => !!v || 'Mensagem é obrigatória']"
+                                    required
+                            ></v-textarea>
+                        </div>
+                        <div @click="setOpenList('users')">
+                            <v-combobox
+                                    v-model="usersSelected"
+                                    :items="users"
+                                    item-text="nome"
+                                    label="Users"
+                                    multiple
+                                    chips
+                                    class="input-group--focused"
+                                    deletable-chips
+                                    ref="selectUsers"
+                                    autofocus
+                                    @click="selUsersAberto=true"
+                                    :disabled="!usersSelected || usersSelected.length == 0"
+                            ></v-combobox>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-info" v-on:click.prevent="enviar" :disabled="hasErrors">
+                            Enviar
+                        </button>
+                        <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        props: ['tipo', 'users'],
+        data: function () {
+            return {
+                mensagem: '',
+                selUsersAberto: false,
+                usersSelected: []
+            };
+        },
+        methods: {
+            enviar: function () {
+                axios.post('/api/notificacoes', {
+                    'users': this.usersSelected,
+                    'mensagem': this.mensagem
+                }).then(response => {
+                    this.toastPopUp("success", "Notificação enviada com sucesso!");
+                    this.cancel();
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                });
+            },
+            cancel: function () {
+                this.mensagem = '';
+                this.selUsersAberto = false;
+                $('#enviarNotificacaoModal').modal('hide');
+            },
+            setOpenList(lista) {
+                setTimeout(() => {
+                    if (lista == "users" && this.$refs.selectUsers.isMenuActive == true) {
+                        setTimeout(() => {
+                            this.selUsersAberto = true;
+                        }, 30);
+                    }
+                }, 10)
+            },
+            closeLists() {
+                if (this.selUsersAberto == true) {
+                    this.selUsersAberto = false;
+                    this.$refs.selectUsers.isMenuActive = false;
+                }
+            }
+        },
+        computed: {
+            hasErrors: function () {
+                return this.mensagem.length === 0 || this.usersSelected.length === 0;
+            },
+            getTitle() {
+                return this.tipo === 'atividade' ? "Notificação para todos os alunos que estão com a atividade pendente" :
+                    'Notificação para todos os alunos da turma';
+            },
+        },
+        watch:{
+            users(){
+                this.usersSelected = this.users;
+            }
+        }
+    }
+</script>
