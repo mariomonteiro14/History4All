@@ -17,7 +17,7 @@ class Turma extends JsonResource
         return [
             'id' => $this->id,
             'nome' => $this->nome,
-            'professor' => $this->professor()->select('nome', 'email', 'foto')->get(),
+            'professor' => $this->professor()->select('id','nome', 'email', 'foto')->get(),
             'ciclo' => $this->ciclo,
             'alunos' => User::collection($this->alunos()),
         ];

@@ -64,6 +64,12 @@ class UserControllerAPI extends Controller
         return new UserResource($request->user());
     }
 
+    public function getUser($id)
+    {
+        $user = User::findOrFail($id);
+        return new UserResource($user);
+    }
+
     public function editProfile(Request $request)
     {
         $user = User::findOrFail(Auth::id());
@@ -293,7 +299,7 @@ class UserControllerAPI extends Controller
             'data' => Notificacao::where('user_id', Auth::id())->get()
         ]);
     }
-    
+
     public function updateNotificacoes(Request $request){
         $notificacoes = Notificacao::where('user_id', Auth::id())->where('nova', 1)->get();
         foreach ($notificacoes as $notificacao) {

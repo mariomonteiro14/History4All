@@ -3,7 +3,23 @@
         <br><br><br><br><br>
         <link href="/css/profile.css" rel="stylesheet" type="text/css">
         <br>
-        <div class="container emp-profile">
+        <div v-if="isLoading">
+            <br><br><br>
+            <v-progress-linear v-show="isLoading" v-slot:progress color="brown" indeterminate></v-progress-linear>
+            <br><br><br><br><br><br><br><br><br>
+        </div>
+        <div v-if="!isLoading && !profileUser.id">
+            <br><br><br>
+            <v-card>
+                <v-container fluid grid-list-md>
+                    <v-alert :value="true" color="red" icon="warning">
+                        Utilizador nao encontrado! :(
+                    </v-alert>
+                </v-container>
+            </v-card>
+            <br><br><br><br><br><br><br><br><br>
+        </div>
+        <div class="container emp-profile" v-if="profileUser.id">
             <div class="row">
                 <div class="col-md-4">
                     <div class="profile-img">
@@ -29,8 +45,12 @@
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <button class="profile-edit-btn" name="btnAddMore" href="#editProfileModal" data-toggle="modal"
-                            data-target="#editProfileModal">Editar Perfil
+                    <button v-if="profileUser.id == $store.state.user.id"
+                            class="profile-edit-btn" name="btnAddMore" href="#editProfileModal"
+                            data-toggle="modal" data-target="#editProfileModal">Editar Perfil
+                    </button>
+                    <button v-else class="profile-edit-btn" name="btnAddMore" href="#contactModal"
+                            data-toggle="modal" data-target="#contactModal">Contactar
                     </button>
                 </div>
             </div>
@@ -80,22 +100,45 @@
             </div>
         </div>
         <edit-profile @reloadUser="profileUser = $store.state.user"></edit-profile>
+        <contact-user v-if="profileUser.email" :email-from="profileUser.email"></contact-user>
     </div>
 </template>
 <script type="text/javascript">
     import editProfile from './editPerfil.vue';
+    import contactUser from '../widgets/contactForm.vue';
+
 
     export default {
+        props: ['id'],
         components: {
             'edit-profile': editProfile,
+            'contact-user': contactUser,
+        },
+        mounted() {
+            if (this.id) {
+                this.isLoading = true;
+                axios.get('/api/users/' + this.id)
+                    .then(response => {
+                        this.profileUser = response.data.data;
+                        this.isLoading = false;
+                    })
+                    .catch(errors => {
+                        console.log(errors);
+                        this.isLoading = false;
+                    });
+            } else {
+                this.profileUser = this.$store.state.user;
+            }
         },
         data: function () {
             return {
-                profileUser: this.$store.state.user,
+                profileUser: '',
                 successMessage: "",
-                showSuccess: false
+                showSuccess: false,
+                isLoading: false,
             }
         },
+
         methods: {},
     }
 </script>

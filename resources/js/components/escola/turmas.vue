@@ -56,12 +56,16 @@
                             <td class="text-xs-left">{{props.item.nome}}</td>
                             <td class="text-xs-center">
                                 <div v-if="props.item.professor[0] && props.item.professor[0].foto">
-                                    <img class="zoom" width="30px" height="30px" v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
+                                    <img class="zoom" width="30px" height="30px"
+                                         v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
                                 </div>
                             </td>
                             <td class="text-xs-center">
                                 <div v-if="props.item.professor[0]">
-                                    {{props.item.professor[0].nome}}
+                                    <a class="indigo--text darken-4"
+                                       @click="$router.push('/users/'+ props.item.professor[0].id)">
+                                        {{props.item.professor[0].nome}}
+                                    </a>
                                 </div>
                             </td>
                             <td class="text-xs-center">{{props.item.alunos.length}}</td>
@@ -73,7 +77,8 @@
                                 </v-btn>
                             </td>
                             <td>
-                                <div v-if="props.item.professor[0] && $store.state.user.email === props.item.professor[0].email">
+                                <div
+                                    v-if="props.item.professor[0] && $store.state.user.email === props.item.professor[0].email">
                                     <v-btn color="warning"
                                            @click="showEditTurma(props.item)">Editar
                                         <v-icon small>edit</v-icon>
@@ -112,7 +117,8 @@
             </v-card>
         </v-dialog>
         <lista-alunos :turma="turmaAtual"></lista-alunos>
-        <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual" v-on:getEscolas="atualizarDados"></criar-editar-turma>
+        <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual"
+                            v-on:getEscolas="atualizarDados"></criar-editar-turma>
         <criar-aluno ref="addAluno" :user="userForm" v-on:getUsers="atualizarDados"></criar-aluno>
     </div>
 </template>
@@ -149,7 +155,7 @@
 
                 headers: [
                     {text: 'Nome', value: 'nome', align: 'left'},
-                    {text: 'Foto', align:'center', sortable: false},
+                    {text: 'Foto', align: 'center', sortable: false},
                     {text: 'Professor', align: 'center', value: 'professor'},
                     {text: 'Numero de Alunos', align: 'center', value: 'numero'},
                     {text: 'Ciclo', align: 'center', value: 'ciclo'},
@@ -198,7 +204,7 @@
             showEditTurma(turma) {
                 this.turmaAtual = Object.assign({}, turma);
                 this.turmaAtual.professor = this.turmaAtual.professor[0];
-                if(turma.alunos) {
+                if (turma.alunos) {
                     this.turmaAtual.alunos = turma.alunos.map(a => ({...a}));
                 }
                 $('#addTurmaModal').modal('show');
@@ -221,7 +227,7 @@
                 });
                 this.turmaAtual = {};
             },
-            atualizarDados(){
+            atualizarDados() {
                 this.getMyEscola();
                 this.$refs.addEditTurma.getAlunos();
                 this.$refs.addAluno.getEscolas();

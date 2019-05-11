@@ -23,10 +23,10 @@
                                           required
                             ></v-text-field>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" v-if="emailFrom == ''">
                             <v-text-field id="inputEmail"
                                           v-model="mensagem.email"
-                                          label="Email"
+                                          label="Seu email"
                                           :rules="emailRules"
                                           clearable
                                           required
@@ -60,6 +60,13 @@
 
 <script>
     export default {
+
+        props:['emailFrom'],
+        mounted(){
+            if (this.emailFrom){
+                this.mensagem.email = this.emailFrom;
+            }
+        },
 
         data: function () {
             return {

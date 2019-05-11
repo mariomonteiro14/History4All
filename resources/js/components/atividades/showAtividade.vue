@@ -75,8 +75,13 @@
                 </v-flex>
             </v-layout>
         </v-app>-->
+        <div v-if="isLoading">
+            <br><br><br>
+            <v-progress-linear v-show="isLoading" v-slot:progress color="brown" indeterminate></v-progress-linear>
+            <br><br><br><br><br><br><br><br><br>
+        </div>
 
-        <v-app id="inspire">
+        <v-app v-else id="inspire">
             <v-container fluid grid-list-sm>
                 <v-layout justify-center>
                     <v-flex xs12 sm12 md12>
@@ -125,8 +130,9 @@
                                 <br>
                                 <span class=" font-weight-light grey--text">Patrimonios:</span>
                                 <v-layout>
-                                    <h5 v-for="patrimonio in atividade.patrimonios" class="font-weight-light">
-                                        <a :href="/patrimonio/ + patrimonio.id">
+                                    <h5 v-for="patrimonio in atividade.patrimonios"
+                                        class="blue--text font-weight-light">
+                                        <a @click="$router.push('/patrimonio/'+ patrimonio.id)">
                                             {{patrimonio.nome}}&nbsp &nbsp
                                         </a>
                                     </h5>
@@ -141,7 +147,11 @@
                                     </v-flex>
                                     <v-flex>
                                         <span class="font-weight-light grey--text">Coordenador:</span>
-                                        <h5>{{atividade.coordenador.nome}}</h5>
+                                        <h5 class="indigo--text darken-4">
+                                            <a @click="$router.push('/users/'+ atividade.coordenador.id)">
+                                                {{atividade.coordenador.nome}}
+                                            </a>
+                                        </h5>
                                     </v-flex>
                                     <v-spacer></v-spacer>
                                     <v-spacer></v-spacer>
@@ -285,7 +295,11 @@
                                                             </v-list-tile-avatar>
 
                                                             <v-list-tile-content>
-                                                                <v-list-tile-title>{{aluno.nome}}</v-list-tile-title>
+                                                                <v-list-tile-title class="indigo--text darken-4">
+                                                                    <a @click="$router.push('/users/'+ aluno.id)">
+                                                                        {{aluno.nome}}
+                                                                    </a>
+                                                                </v-list-tile-title>
                                                             </v-list-tile-content>
                                                         </v-list-tile>
                                                     </v-list>
@@ -383,10 +397,12 @@
                 testemunhos: [],
                 numeroImagens: 0,
                 showDetails: false,
+                isLoading: true,
             };
         },
         methods: {
             getAtividade() {
+                this.isLoading = true;
                 axios.get('/api/atividades/' + this.id)
                     .then(response => {
                         this.atividade = response.data.data;
@@ -409,9 +425,12 @@
                             });
                             this.$socket.emit('user_enter', this.$store.state.user, this.atividade.chat.id);
                         }
+                        this.isLoading = false;
                     })
                     .catch(errors => {
                         console.log(errors);
+                        this.isLoading = false;
+
                     });
             },
             showPatrimonios() {

@@ -77,7 +77,7 @@
                 </v-flex>
             </v-layout>
         </v-container>
-        <contact></contact>
+        <contact :email-from="''"></contact>
         <about-us></about-us>
     </div>
 </template>

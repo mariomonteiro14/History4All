@@ -41,6 +41,7 @@ Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //ht
 const routes = [
     { path: '/', name: 'index',component: require('./components/index.vue').default},
     { path: '/me/perfil', name: 'perfil',component: require('./components/users/perfil.vue').default},
+    { path: '/users/:id', name: 'perfilUser',component: require('./components/users/perfil.vue').default,props: true},
     { path: '/patrimonios', name: 'patrimonios',component: require('./components/patrimonio/patrimonios.vue').default},
     { path: '/patrimonio/:id', name: 'patrimoniosShow',component: require('./components/patrimonio/showPatrimonio.vue').default, props: true},
     { path: '/admin/patrimonios', name: 'gerirPatrimonios',component: require('./components/patrimonio/gerirPatrimonios.vue').default},

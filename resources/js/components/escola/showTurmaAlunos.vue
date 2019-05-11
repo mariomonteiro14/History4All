@@ -14,20 +14,24 @@
                             </button>
                         </div>
                         <v-list class="form-group" subheader>
-                                <v-list-tile
-                                    v-for="aluno in turma.alunos"
-                                    :key="aluno.title"
-                                    avatar
-                                >
-                                    <v-list-tile-avatar>
-                                        <img v-if="aluno.foto" :src="getUserPhoto(aluno.foto)">
-                                        <span v-else>{{aluno.nome[0]}}</span>
-                                    </v-list-tile-avatar>
+                            <v-list-tile
+                                v-for="aluno in turma.alunos"
+                                :key="aluno.title"
+                                avatar
+                            >
+                                <v-list-tile-avatar>
+                                    <img v-if="aluno.foto" :src="getUserPhoto(aluno.foto)">
+                                    <span v-else>{{aluno.nome[0]}}</span>
+                                </v-list-tile-avatar>
 
-                                    <v-list-tile-content>
-                                        <v-list-tile-title>{{aluno.nome}}</v-list-tile-title>
-                                    </v-list-tile-content>
-                                </v-list-tile>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>
+                                        <a class="indigo--text darken-4 btn" @click="showAlunoPerfil(aluno.id)">
+                                            {{aluno.nome}}
+                                        </a>
+                                    </v-list-tile-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
                         </v-list>
                     </div>
                 </div>
@@ -45,14 +49,15 @@
 
 
         data: function () {
-            return {
-
-            };
+            return {};
         },
         methods: {
+            showAlunoPerfil($id) {
+                $('#turmaAlunosModal').modal('hide');
+                this.$router.push('/users/' + $id);
+            }
 
-
-            },
+        },
     };
 
 </script>

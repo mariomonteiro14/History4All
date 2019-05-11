@@ -36,7 +36,8 @@
                             <td class="text-xs-left">{{ props.item.nome }}</td>
                             <td class="text-xs-left">{{ props.item.distrito }}</td>
                             <td class="text-xs-center">
-                                <v-btn v-if="props.item.turmas[0]" color="success" @click="showTurmas(props, props.item)">Listar Turmas
+                                <v-btn v-if="props.item.turmas[0]" color="success"
+                                       @click="showTurmas(props, props.item)">Listar Turmas
                                     <v-icon medium>list</v-icon>
                                 </v-btn>
                             </td>
@@ -52,25 +53,30 @@
                         </tr>
                     </template>
                     <template v-slot:expand="props" class="alert-success">
-                        <v-data-table :headers="headersTurma" :items="escolaAtual.turmas" class="alert-success elevation-1"
+                        <v-data-table :headers="headersTurma" :items="escolaAtual.turmas"
+                                      class="alert-success elevation-1"
                                       hide-actions dark>
                             <template v-slot:items="props">
                                 <tr class="alert-primary">
                                     <td class="text-xs-left">{{props.item.nome}}</td>
                                     <td class="text-xs-center">
                                         <div v-if="props.item.professor[0] && props.item.professor[0].foto">
-                                            <img class="zoom" width="30px" height="30px" v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
+                                            <img class="zoom" width="30px" height="30px"
+                                                 v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
                                         </div>
                                     </td>
                                     <td class="text-xs-center">
                                         <div v-if="props.item.professor[0]">
-                                            {{props.item.professor[0].nome}}
+                                            <a @click="$router.push('/users/'+ props.item.professor[0].id)">
+                                                {{props.item.professor[0].nome}}
+                                            </a>
                                         </div>
                                     </td>
                                     <td class="text-xs-center">{{props.item.alunos.length}}</td>
                                     <td class="text-xs-center">{{props.item.ciclo}}</td>
                                     <td class="float-md-right">
-                                        <v-btn v-if="props.item.alunos[0]" color="success" @click="showTurmaAlunos(props.item)">Listar Alunos
+                                        <v-btn v-if="props.item.alunos[0]" color="success"
+                                               @click="showTurmaAlunos(props.item)">Listar Alunos
                                             <v-icon medium>list</v-icon>
                                         </v-btn>
                                         <v-btn color="warning" @click="showEditTurma(props.item)">Editar
@@ -93,7 +99,9 @@
         <v-dialog v-model="dialog" max-width="290">
             <v-card>
                 <v-card-title class="headline">Confirmação</v-card-title>
-                <v-card-text v-if="!turmaAtual.id">Se eliminar esta escola, todas as turmas, professores e alunos seram eliminados permanentemente.</v-card-text>
+                <v-card-text v-if="!turmaAtual.id">Se eliminar esta escola, todas as turmas, professores e alunos seram
+                    eliminados permanentemente.
+                </v-card-text>
                 <v-card-text v-else>Se eliminar esta turma, todos alunos ficaram sem turma.</v-card-text>
                 <v-card-text>Quer continuar?</v-card-text>
                 <v-card-actions>
@@ -109,7 +117,8 @@
         <br><br>
         <lista-alunos :turma="turmaAtual"></lista-alunos>
         <criar-escola v-on:getEscolas="getEscolas"></criar-escola>
-        <criar-editar-turma ref="addEditTurma" v-bind:escola="escolaAtual" :turma="turmaAtual" v-on:getEscolas="getEscolas"></criar-editar-turma>
+        <criar-editar-turma ref="addEditTurma" v-bind:escola="escolaAtual" :turma="turmaAtual"
+                            v-on:getEscolas="getEscolas"></criar-editar-turma>
 
     </div>
 </template>
@@ -147,17 +156,17 @@
                 headersEscola: [
                     {text: 'Nome', value: 'nome'},
                     {text: 'Distrito', value: 'distrito'},
-                    {text: '', align:'center', value: 'turmas', sortable: false},
-                    {text: 'Ações', align:'center', value: 'acoes', sortable: false},
+                    {text: '', align: 'center', value: 'turmas', sortable: false},
+                    {text: 'Ações', align: 'center', value: 'acoes', sortable: false},
                 ],
                 headersTurma: [
-                    {text: 'Nome', value: 'nome', align:'left'},
-                    {text: 'Foto', align:'center', sortable: false},
-                    {text: 'Professor', align:'center', value: 'professor'},
-                    {text: 'Numero de Alunos', align:'center', value: 'numero'},
-                    {text: 'Ciclo', align:'center', value: 'ciclo'},
-                    {text: '', align:'', value: 'acoes', sortable: false},
-                    {text: '', align:'center', value: '', sortable: false}
+                    {text: 'Nome', value: 'nome', align: 'left'},
+                    {text: 'Foto', align: 'center', sortable: false},
+                    {text: 'Professor', align: 'center', value: 'professor'},
+                    {text: 'Numero de Alunos', align: 'center', value: 'numero'},
+                    {text: 'Ciclo', align: 'center', value: 'ciclo'},
+                    {text: '', align: '', value: 'acoes', sortable: false},
+                    {text: '', align: 'center', value: '', sortable: false}
                 ],
                 escolas: [],
                 dialog: false,
@@ -172,7 +181,7 @@
                 axios.get(url)
                     .then(response => {
                         this.escolas = response.data.data;
-                        if (this.escolaAtual.id){
+                        if (this.escolaAtual.id) {
                             this.escolaAtual = this.escolas.find(e => e.id === this.escolaAtual.id);
                         }
                         this.isLoading = false;
@@ -183,28 +192,28 @@
                     });
             },
 
-            showTurmas(props ,escola) {
+            showTurmas(props, escola) {
                 props.expanded = !props.expanded;
-                if(!this.escolaAtual.id || this.escolaAtual.id != escola.id) {
+                if (!this.escolaAtual.id || this.escolaAtual.id != escola.id) {
                     this.escolaAtual = escola;
-                }else{
+                } else {
                     this.escolaAtual = {};
                 }
             },
-            showTurmaAlunos(turma){
+            showTurmaAlunos(turma) {
                 this.turmaAtual = turma;
 
                 $('#turmaAlunosModal').modal('show');
             },
-            showCriarTurma(escola){
+            showCriarTurma(escola) {
                 this.escolaAtual = escola;
                 this.turmaAtual = {};
                 $('#addTurmaModal').modal('show');
             },
-            showEditTurma(turma){
+            showEditTurma(turma) {
                 this.turmaAtual = Object.assign({}, turma);
                 this.turmaAtual.professor = this.turmaAtual.professor[0];
-                if(turma.alunos) {
+                if (turma.alunos) {
                     this.turmaAtual.alunos = turma.alunos.map(a => ({...a}));
                 }
                 $('#addTurmaModal').modal('show');
@@ -214,7 +223,7 @@
                 this.dialog = true;
                 if (escola_boolean == true) {
                     this.escolaAtual = item;
-                }else {
+                } else {
                     this.turmaAtual = item;
                 }
             },
@@ -229,7 +238,7 @@
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);
                 });
-                this.escolaAtual={};
+                this.escolaAtual = {};
             },
 
             apagarTurma() {
