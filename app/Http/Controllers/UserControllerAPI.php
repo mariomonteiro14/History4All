@@ -296,7 +296,7 @@ class UserControllerAPI extends Controller
 
     public function notificacoes(Request $request){
         return response()->json([
-            'data' => Notificacao::where('user_id', Auth::id())->get()
+            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova')->orderBy('id', 'desc')->get()
         ]);
     }
 
@@ -320,7 +320,7 @@ class UserControllerAPI extends Controller
             ]);
             $notificacao->save();
         };
-        return response()->json(null, 201);
+        return response()->json($notificacao, 201);
     }
 
     public function updateNotificacoes(Request $request){

@@ -58,6 +58,7 @@
                     this.toastPopUp("success", `Bem Vindo ${this.$store.state.user.nome}`);
                     this.user.email = '';
                     this.user.password = '';
+                    this.$socket.emit('user_enter', this.$store.state.user);
                     $('#loginModal').modal('hide');
                 }).catch(error => {
                     this.$emit("logging");

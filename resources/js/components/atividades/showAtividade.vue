@@ -497,6 +497,11 @@
             },
         },
         sockets: {
+            connect(){
+                if (this.atividade.chat && this.estado) {
+                    this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
+                }
+            },
             novaMensagem(mensagem) {
                 this.atividade.chat.chat_mensagens.push(mensagem);
                 this.mensagensDoChat.push(mensagem);

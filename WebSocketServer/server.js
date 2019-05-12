@@ -45,16 +45,25 @@ let loggedUsers = new LoggedUsers();
 
 io.on('connection', function (socket) {
 
+	socket.on('user_enter', function (user) {
+		if (user !== undefined && user !== null) {
+			loggedUsers.addUserInfo(user, socket.id);
+		}
+	});
+	socket.on('user_exit', function (user) {
+		if (user !== undefined && user !== null) {
+			loggedUsers.removeUserInfoByID(user.id);
+		}
+	});
+
 	socket.on('user_enter_chat', function (user, chat_id) {
 		if (user !== undefined && user !== null) {
-			console.log(user.nome + ' joined chat_' + chat_id);
 			socket.join('chat_' + chat_id);
 			loggedUsers.addUserInfo(user, socket.id);
 		}
 	});
 	socket.on('user_exit_chat', function (user, chat_id) {
 		if (user !== undefined && user !== null) {
-			console.log(user.nome + ' exited ' + chat_id);
 			socket.leave('chat_' + chat_id);
 			loggedUsers.removeUserInfoByID(user.id);
 		}
@@ -63,6 +72,19 @@ io.on('connection', function (socket) {
 	socket.on('chat_mensagem', function (mensagem, chatId) {
 		if (mensagem !== undefined && chatId !== undefined) {
 			io.sockets.to('chat_' + chatId).emit('novaMensagem', mensagem);
+		}
+	});
+
+	socket.on('nova_notificacao', function (mensagem, users) {
+		if (mensagem !== undefined) {
+			users.forEach(user =>{
+				let userInfo = loggedUsers.userInfoByID(user.id);
+				let socket_id = userInfo !== undefined ? userInfo.socketID : null;
+				if (socket_id !== null) {
+					io.to(socket_id).emit('novaNotificacao', mensagem);
+				}
+				//io.sockets.to('user_' + user.id).emit('novaNotificacao', mensagem);
+			});
 		}
 	});
 });
