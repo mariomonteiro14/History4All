@@ -2,7 +2,7 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <h3>Utilizadores / Gestão</h3>
+            <h3>{{titulo}}</h3>
             <br>
             <v-card append float>
                 <v-card-title>
@@ -17,21 +17,32 @@
                                 ></v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
-                            <v-text-field
-                                v-model="search"
-                                append-icon="pesquisa"
-                                label="Pesquisa"
-                                single-line
-                                hide-details
-                                clearable
-                            ></v-text-field>
+                            <v-flex xs12 sm3 d-flex>
+                                <v-text-field
+                                    v-model="search"
+                                    append-icon="pesquisa"
+                                    label="Pesquisa"
+                                    single-line
+                                    hide-details
+                                    clearable
+                                ></v-text-field>
+                            </v-flex>
                             <v-spacer></v-spacer>
-                            <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Adicionar utilizador <i
-                                class="material-icons">add_box</i>
-                            </v-btn>
-                            <v-btn v-if="trashed" color="warning" @click="getUsers()">Utilizadores Ativos</v-btn>
-                            <v-btn v-else color="warning" @click="getUsersTrashed()">Utilizadores Apagados</v-btn>
-
+                            <v-flex xs12 sm4 d-flex>
+                                <v-flex xs12 sm5 d-flex>
+                                    <v-btn color="success" round data-toggle="modal" data-target="#addUserModal">
+                                        <v-icon class="material-icons">add</v-icon>
+                                        &nbsp Utilizador
+                                    </v-btn>
+                                </v-flex>
+                                <v-flex xs12 sm7 d-flex>
+                                    <v-btn round v-if="trashed" color="warning" @click="getUsers()">Utilizadores Ativos
+                                    </v-btn>
+                                    <v-btn round v-else color="warning" @click="getUsersTrashed()">Utilizadores
+                                        Eliminados
+                                    </v-btn>
+                                </v-flex>
+                            </v-flex>
                         </v-layout>
                     </v-container>
                 </v-card-title>
@@ -46,35 +57,38 @@
                                 <img v-bind:src="getUserPhoto(props.item.foto)"/>
                             </v-avatar>
                         </td>
-                        <td class="text-xs-left">{{ props.item.nome }}</td>
+                        <td class="text-xs-left"><strong>{{ props.item.nome }}</strong></td>
                         <td class="text-xs-left">{{ props.item.email }}</td>
-                        <td class="text-xs-center">{{ props.item.tipo }}</td>
-                        <td class="text-sm-right">
-                            <v-btn  @click="props.expanded = !props.expanded" icon>
+                        <!-- Se Filtro for Todos -->
+                        <td v-if="tipoUser=='Todos'" class="text-xs-center">{{ props.item.tipo }}</td>
+                        <td v-if="tipoUser=='Todos'" class="text-sm-right">
+                            <v-btn @click="props.expanded = !props.expanded" icon>
                                 <v-icon color="brown darken-1" medium>info</v-icon>
                             </v-btn>
                         </td>
+                        <!-- Se Filtro for Professor ou Alunos -->
+                        <td v-if="tipoUser=='professor' || tipoUser=='aluno'" class="text-xs-center">{{ props.item.escola[0] }}</td>
+                        <!-- Se Filtro for Alunos -->
+                        <td v-if="tipoUser=='aluno' &&  props.item.turma[0]" class="text-xs-center">{{ props.item.turma[0] }}</td>
+                        <td v-if="tipoUser=='aluno' &&  !props.item.turma[0]" class="text-xs-center"> --- </td>
+
                         <td class="text-xs-center" v-if="!trashed && $store.state.user.id != props.item.id ">
 
-                            <v-btn v-if="props.item.tipo!='admin'" color="warning" @click="showEdit(props.item)">
-                                Editar
-                                <v-icon small class="mr-2">edit</v-icon>
+                            <v-btn icon v-if="props.item.tipo!='admin'" @click="showEdit(props.item)">
+                                <v-icon color="warning" medium>edit</v-icon>
                             </v-btn>
-                            <v-btn color="error" @click.stop="showDeleteVerif(props.item.id)">
-                                Eliminar
-                                <v-icon small>delete_forever</v-icon>
+                            <v-btn icon @click.stop="showDeleteVerif(props.item.id)">
+                                <v-icon color="error" medium>delete_forever</v-icon>
                             </v-btn>
 
                         </td>
                         <td v-if="$store.state.user.id == props.item.id"></td>
                         <td class="text-xs-center" v-if="trashed">
-                            <v-btn color="warning" @click="restaurarUser(props.item)">
+                            <v-btn round color="warning" @click="restaurarUser(props.item)">
                                 Restaurar
-                                <v-icon small class="mr-2"></v-icon>
                             </v-btn>
-                            <v-btn color="error" @click.stop="showDeleteVerif(props.item.id)">
-                                Eliminar
-                                <v-icon small>delete_forever</v-icon>
+                            <v-btn icon flat @click.stop="showDeleteVerif(props.item.id)">
+                                <v-icon color="error" medium>delete_forever</v-icon>
                             </v-btn>
                         </td>
 
@@ -129,7 +143,8 @@
                                 ></v-select>
                             </div>
                             <span v-if="userAtual.tipo == 'professor'">Se alterar a escola, todas as turmas associadas a este professor ficaram sem professor</span>
-                            <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola" @click="setOpenList">
+                            <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola"
+                                 @click="setOpenList">
                                 <v-select
                                     ref="selectT"
                                     label="Turma"
@@ -181,19 +196,6 @@
                     totalItems: 0,
                     rowsPerPageItems: [5, 10, 20]
                 },
-                headers: [
-                    {
-                        text: '',
-                        align: 'left',
-                        sortable: false,
-                        value: 'image'
-                    },
-                    {text: 'Nome', value: 'nome'},
-                    {text: 'Email', value: 'email'},
-                    {text: 'Tipo', value: 'tipo', align: 'center'},
-                    {text: '', value: 'info', align: 'right', sortable: false},
-                    {text: 'Actions', value: '', sortable: false, align: 'center'},
-                ],
                 search: '',
                 expand: false,
                 tipoUser: 'Todos',
@@ -239,7 +241,7 @@
                     .then(response => {
                         if (!response.data.data.length) {
                             this.toastPopUp('show', 'Nao existem utilizadores apagados');
-                            if (this.trashed){
+                            if (this.trashed) {
                                 this.trashed = false;
                                 this.getUsers();
                             }
@@ -339,7 +341,7 @@
             //Metodos pra corrigir bug nos Modal
             setOpenList() {
                 setTimeout(() => {
-                    if ( this.$refs.selectT.isMenuActive == true || this.$refs.selectE.isMenuActive == true) {
+                    if (this.$refs.selectT.isMenuActive == true || this.$refs.selectE.isMenuActive == true) {
                         setTimeout(() => {
                             this.selAberto = true;
                         }, 30);
@@ -369,6 +371,80 @@
                     }
                 }
             },
+            titulo: function(){
+                let t = "Utilizadores / Gestão "
+                if (this.tipoUser == "Todos"){
+                    return t;
+                }
+                if (this.tipoUser == "admin"){
+                    return t + "/ Administradores";
+                }
+                if (this.tipoUser == "professor"){
+                    return t + "/ Professores";
+                }
+                if (this.tipoUser == "aluno"){
+                    return t + "/ Alunos";
+                }
+            },
+            headers: function () {
+                if (this.tipoUser == "Todos") {
+                    return [
+                        {
+                            text: '',
+                            align: 'left',
+                            sortable: false,
+                            value: 'image'
+                        },
+                        {text: 'Nome', value: 'nome'},
+                        {text: 'Email', value: 'email'},
+                        {text: 'Tipo', value: 'tipo', align: 'center'},
+                        {text: '', value: 'info', align: 'right', sortable: false},
+                        {text: 'Actions', value: '', sortable: false, align: 'center'},
+                    ];
+                }
+                if (this.tipoUser == "admin") {
+                    return [
+                        {
+                            text: '',
+                            align: 'left',
+                            sortable: false,
+                            value: 'image'
+                        },
+                        {text: 'Nome', value: 'nome'},
+                        {text: 'Email', value: 'email'},
+                        {text: 'Actions', value: '', sortable: false, align: 'center'},
+                    ];
+                }
+                if (this.tipoUser == "professor") {
+                    return [
+                        {
+                            text: '',
+                            align: 'left',
+                            sortable: false,
+                            value: 'image'
+                        },
+                        {text: 'Nome', value: 'nome'},
+                        {text: 'Email', value: 'email'},
+                        {text: 'Escola', value: 'escola', align: 'center', sortable: true},
+                        {text: 'Actions', value: '', sortable: false, align: 'center'},
+                    ];
+                }
+                if (this.tipoUser == "aluno") {
+                    return [
+                        {
+                            text: '',
+                            align: 'left',
+                            sortable: false,
+                            value: 'image'
+                        },
+                        {text: 'Nome', value: 'nome'},
+                        {text: 'Email', value: 'email'},
+                        {text: 'Escola', value: 'escola', align: 'center', sortable: true},
+                        {text: 'Turma', value: 'turma', align: 'center', sortable: true},
+                        {text: 'Actions', value: '', sortable: false, align: 'center'},
+                    ];
+                }
+            }
         },
 
         watch: {

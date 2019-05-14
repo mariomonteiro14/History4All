@@ -5,9 +5,14 @@
             <h3>Turmas / Gerir</h3>
             <br>
             <v-card append float>
-                <v-btn color="success" data-toggle="modal" data-target="#addUserModal">Adicionar Aluno <i
-                    class="material-icons">add_box</i>
-                </v-btn>
+                <v-container fluid grid-list-xl>
+                    <v-layout>
+                        <v-btn round color="success" data-toggle="modal" data-target="#addUserModal">
+                            <v-icon class="material-icons">add</v-icon>
+                            &nbsp Aluno
+                        </v-btn>
+                    </v-layout>
+                </v-container>
                 <v-container fluid grid-list-xl>
                     <v-layout row align-center>
                         <v-spacer></v-spacer>
@@ -41,9 +46,10 @@
                             ></v-text-field>
                         </v-flex>
                         <v-spacer></v-spacer>
-                        <v-flex xs12 sm3 d-flex>
-                            <v-btn color="success" @click="showCriarTurma">Adicionar Turma <i
-                                class="material-icons">add_box</i>
+                        <v-flex xs12 sm2 d-flex>
+                            <v-btn round color="success" @click="showCriarTurma">
+                                <v-icon class="material-icons">add</v-icon>
+                                &nbsp Turma
                             </v-btn>
                         </v-flex>
                     </v-layout>
@@ -53,8 +59,8 @@
                               :pagination.sync="pagination" :loading="isLoadingTurmas">
                     <template v-slot:items="props">
                         <tr class="alert-primary">
-                            <td class="text-xs-left">{{props.item.nome}}</td>
-                            <td class="text-xs-center">
+                            <td class="text-xs-left"><strong>{{props.item.nome}}</strong></td>
+                            <td class="text-xs-right">
                                 <div v-if="props.item.professor[0] && props.item.professor[0].foto">
                                     <img class="zoom" width="30px" height="30px"
                                          v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
@@ -71,25 +77,25 @@
                             <td class="text-xs-center">{{props.item.alunos.length}}</td>
                             <td class="text-xs-center">{{props.item.ciclo}}</td>
                             <td class="float-md-right">
-                                <v-btn v-if="props.item.alunos[0]" color="success"
-                                       @click="showTurmaAlunos(props.item)">Listar Alunos
+                                <v-btn round v-if="props.item.alunos[0]" color="primary"
+                                       @click="showTurmaAlunos(props.item)">
                                     <v-icon medium>list</v-icon>
+                                    &nbsp Alunos
                                 </v-btn>
-                                <v-btn v-if="props.item.alunos[0]" color="info" @click="enviarNotificacao(props.item)">
-                                    enviar notificação
+                                <v-btn round v-if="props.item.alunos[0]" color="deep-orange darken-1"
+                                       class="white--text" @click="enviarNotificacao(props.item)">
+                                    Notificar &nbsp
+                                    <v-icon small>send</v-icon>
                                 </v-btn>
                             </td>
-                            <td>
+                            <td class="text-xs-center">
                                 <div
                                     v-if="props.item.professor[0] && $store.state.user.email === props.item.professor[0].email">
-                                    <v-btn color="warning"
-                                           @click="showEditTurma(props.item)">Editar
+                                    <v-btn icon color="warning" @click="showEditTurma(props.item)">
                                         <v-icon small>edit</v-icon>
-
                                     </v-btn>
-                                    <v-btn color="error"
+                                    <v-btn color="error" icon
                                            @click.stop="apagarVerificacao(props.item)">
-                                        Eliminar
                                         <v-icon small>delete_forever</v-icon>
                                     </v-btn>
                                 </div>
@@ -123,7 +129,8 @@
         <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual"
                             v-on:getEscolas="atualizarDados"></criar-editar-turma>
         <criar-aluno ref="addAluno" :user="userForm" v-on:getUsers="atualizarDados"></criar-aluno>
-        <enviar-notificacao ref="enviarNotificacaoModal" :tipo="'turma'" :users="turmaAtual.alunos"></enviar-notificacao>
+        <enviar-notificacao ref="enviarNotificacaoModal" :tipo="'turma'"
+                            :users="turmaAtual.alunos"></enviar-notificacao>
     </div>
 </template>
 
@@ -161,12 +168,12 @@
 
                 headers: [
                     {text: 'Nome', value: 'nome', align: 'left'},
-                    {text: 'Foto', align: 'center', sortable: false},
+                    {text: '', align: 'right', sortable: false},
                     {text: 'Professor', align: 'center', value: 'professor'},
                     {text: 'Numero de Alunos', align: 'center', value: 'numero'},
                     {text: 'Ciclo', align: 'center', value: 'ciclo'},
-                    {text: '', align: '', value: '', sortable: false},
-                    {text: '', align: 'center', value: 'acoes', sortable: false}
+                    {text: '', align: 'right', value: '', sortable: false},
+                    {text: 'Actions', align: 'center', value: 'acoes', sortable: false}
                 ],
                 myEscola: {
                     nome: '',

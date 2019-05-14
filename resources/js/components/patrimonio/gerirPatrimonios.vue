@@ -8,20 +8,26 @@
             <v-card append float>
                 <v-container fluid grid-list-xl>
                     <v-layout row align-center>
-                        <v-text-field
-                            v-model="search"
-                            append-icon="pesquisa"
-                            label="Pesquisa"
-                            single-line
-                            hide-details
-                            clearable
-                        ></v-text-field>
+                        <v-flex xs12 sm4 d-flex>
+                            <v-text-field
+                                v-model="search"
+                                append-icon="pesquisa"
+                                label="Pesquisa"
+                                single-line
+                                hide-details
+                                clearable
+                            />
+                        </v-flex>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" data-toggle="modal" data-target="#addPatrimonioModal"
-                               @click="resetPatrimonioAtual()">
-                            Adicionar património <i class="material-icons">add_box</i>
-                        </v-btn>
+                        <v-flex xs12 sm2 d-flex>
+                            <v-btn round color="success" data-toggle="modal" data-target="#addPatrimonioModal"
+                                   @click="resetPatrimonioAtual()">
+                                <v-icon medium>add</v-icon>
+                                &nbsp Patrimonio
+                            </v-btn>
+                        </v-flex>
                     </v-layout>
+                </v-container>
                 </v-container>
 
                 <v-data-table :headers="headers" :items="patrimonios" :search="search" class="elevation-1"
@@ -37,13 +43,11 @@
                             <td class="text-xs-left">{{ props.item.epoca }}</td>
                             <td class="text-xs-left">{{ props.item.ciclo }}</td>
                             <td class="justify-left layout px-0">
-                                <v-btn color="warning" @click="showEdit(props.item)">
-                                    Editar
-                                    <v-icon small class="mr-2">edit</v-icon>
+                                <v-btn flat icon @click="showEdit(props.item)">
+                                    <v-icon color="warning" medium>edit</v-icon>
                                 </v-btn>
-                                <v-btn color="error" @click.stop="apagarVerificacao(props.item.id)">
-                                    Eliminar
-                                    <v-icon small>delete_forever</v-icon>
+                                <v-btn flat icon  @click.stop="apagarVerificacao(props.item.id)">
+                                    <v-icon color="error" medium>delete_forever</v-icon>
                                 </v-btn>
                             </td>
                         </tr>

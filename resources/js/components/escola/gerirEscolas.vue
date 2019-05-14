@@ -33,21 +33,20 @@
                               :pagination.sync="pagination" :expand="expand" :loading="isLoading">
                     <template v-slot:items="props">
                         <tr :class="[props.item.id == escolaAtual.id ? 'alert-success' : '' ]">
-                            <td class="text-xs-left">{{ props.item.nome }}</td>
+                            <td class="text-xs-left"><strong>{{ props.item.nome }}</strong></td>
                             <td class="text-xs-left">{{ props.item.distrito }}</td>
                             <td class="text-xs-center">
-                                <v-btn v-if="props.item.turmas[0]" color="success"
-                                       @click="showTurmas(props, props.item)">Listar Turmas
-                                    <v-icon medium>list</v-icon>
+                                <v-btn round v-if="props.item.turmas[0]" color="primary"
+                                       @click="showTurmas(props, props.item)">
+                                    <v-icon medium>list</v-icon> &nbsp Turmas
                                 </v-btn>
                             </td>
                             <td class="justify-center layout px-0">
-                                <v-btn color="success" @click="showCriarTurma(props.item)">Adicionar Turma <i
-                                    class="material-icons">add_box</i>
+                                <v-btn round color="success" @click="showCriarTurma(props.item)"> <i
+                                    class="material-icons">add</i>&nbsp Turma
                                 </v-btn>
-                                <v-btn color="error" @click.stop="apagarVerificacao(props.item, true)">
-                                    Eliminar
-                                    <v-icon small>delete_forever</v-icon>
+                                <v-btn  icon color="red" @click.stop="apagarVerificacao(props.item, true)">
+                                    <v-icon color="white" medium>delete_forever</v-icon>
                                 </v-btn>
                             </td>
                         </tr>
@@ -58,7 +57,7 @@
                                       hide-actions dark>
                             <template v-slot:items="props">
                                 <tr class="alert-primary">
-                                    <td class="text-xs-left">{{props.item.nome}}</td>
+                                    <td class="text-xs-left"><strong>{{props.item.nome}}</strong></td>
                                     <td class="text-xs-center">
                                         <div v-if="props.item.professor[0] && props.item.professor[0].foto">
                                             <img class="zoom" width="30px" height="30px"
@@ -76,15 +75,14 @@
                                     <td class="text-xs-center">{{props.item.ciclo}}</td>
                                     <td class="float-md-right">
                                         <v-btn v-if="props.item.alunos[0]" color="success"
-                                               @click="showTurmaAlunos(props.item)">Listar Alunos
-                                            <v-icon medium>list</v-icon>
+                                               @click="showTurmaAlunos(props.item)">
+                                            <v-icon medium>list</v-icon>&nbsp Alunos
                                         </v-btn>
-                                        <v-btn color="warning" @click="showEditTurma(props.item)">Editar
+                                        <v-btn  icon color="warning" @click="showEditTurma(props.item)">
                                             <v-icon small>edit</v-icon>
 
                                         </v-btn>
-                                        <v-btn color="error" @click.stop="apagarVerificacao(props.item, false)">
-                                            Eliminar
+                                        <v-btn icon color="error" @click.stop="apagarVerificacao(props.item, false)">
                                             <v-icon small>delete_forever</v-icon>
                                         </v-btn>
                                     </td>
