@@ -135,6 +135,13 @@ Vue.mixin(common);
 const app = new Vue({
     router,
     store,
+    sockets: {
+        connect(){
+            if(this.$store.state.user !== null){
+                this.$socket.emit('user_enter', store.state.user);
+            }
+        },
+    },
     created() {
         this.$store.commit('loadTokenAndUserFromSession');
     },

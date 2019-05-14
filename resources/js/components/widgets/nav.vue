@@ -159,6 +159,7 @@
                     this.logging();
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("success", "Logged out");
+                    this.$socket.emit('user_exit', this.$store.state.user);
                     this.$router.push({name: 'index'});
                 }).catch(error => {
                     this.$store.commit('clearUserAndToken');
@@ -175,8 +176,7 @@
                 if (this.novasNotificacoes > 0){
                     axios.put('/api/me/notificacoes').then(response => {
                         this.notificacoes = response.data;
-                        this.novasNotificacoes = 
-                            this.notificacoes.filter(notificacao => notificacao.nova === 1).length;
+                        this.novasNotificacoes = 0;
                     }).catch(error => {
                         this.toastPopUp("error", `${error.response.data.message}`);
                     });
@@ -195,6 +195,12 @@
                         console.log(errors);
                         this.isLoading = false;
                     })
+            }
+        },
+        sockets: {
+            novaNotificacao(mensagem) {
+                this.notificacoes.unshift(mensagem);
+                this.novasNotificacoes++;
             }
         }
     };
