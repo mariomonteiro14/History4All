@@ -99,6 +99,7 @@
                 </div>
             </div>
         </div>
+        <br><br><br>
         <edit-profile @reloadUser="profileUser = $store.state.user"></edit-profile>
         <contact-user v-if="profileUser.email" :email-from="profileUser.email"></contact-user>
     </div>
@@ -117,7 +118,7 @@
         mounted() {
             if (this.id) {
                 this.isLoading = true;
-                axios.get('/api/users/' + this.id)
+                axios.get('/api/user/' + this.id)
                     .then(response => {
                         this.profileUser = response.data.data;
                         this.isLoading = false;
@@ -140,5 +141,23 @@
         },
 
         methods: {},
+        watch: {
+            id: function () {
+                if (this.id) {
+                    this.isLoading = true;
+                    axios.get('/api/user/' + this.id)
+                        .then(response => {
+                            this.profileUser = response.data.data;
+                            this.isLoading = false;
+                        })
+                        .catch(errors => {
+                            console.log(errors);
+                            this.isLoading = false;
+                        });
+                } else {
+                    this.profileUser = this.$store.state.user;
+                }
+            }
+        }
     }
 </script>

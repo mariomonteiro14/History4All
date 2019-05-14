@@ -22,7 +22,7 @@ Route::post('sendEmail/history4all', 'UserControllerAPI@contactHistory4all');
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'UserControllerAPI@logout');
     Route::get('users/me', 'UserControllerAPI@myProfile');
-    Route::get('users/{id}', 'UserControllerAPI@getUser');
+    Route::get('user/{id}', 'UserControllerAPI@getUser');
     Route::post('users/me', 'UserControllerAPI@editProfile');
     Route::get('users/{id}/atividades/', 'AtividadeControllerAPI@getTodas');
     Route::get('me/atividades/', 'AtividadeControllerAPI@getMinhas');
