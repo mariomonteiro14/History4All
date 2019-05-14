@@ -58,7 +58,7 @@
                             <template v-slot:items="props">
                                 <tr class="alert-primary">
                                     <td class="text-xs-left"><strong>{{props.item.nome}}</strong></td>
-                                    <td class="text-xs-center">
+                                    <td class="text-xs-right">
                                         <div v-if="props.item.professor[0] && props.item.professor[0].foto">
                                             <img class="zoom" width="30px" height="30px"
                                                  v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
@@ -74,10 +74,12 @@
                                     <td class="text-xs-center">{{props.item.alunos.length}}</td>
                                     <td class="text-xs-center">{{props.item.ciclo}}</td>
                                     <td class="float-md-right">
-                                        <v-btn v-if="props.item.alunos[0]" color="success"
-                                               @click="showTurmaAlunos(props.item)">
+                                        <v-btn v-if="props.item.alunos[0]" color="lime darken-1"
+                                              round @click="showTurmaAlunos(props.item)">
                                             <v-icon medium>list</v-icon>&nbsp Alunos
                                         </v-btn>
+                                    </td>
+                                    <td class="text-xs-right">
                                         <v-btn  icon color="warning" @click="showEditTurma(props.item)">
                                             <v-icon small>edit</v-icon>
 
@@ -159,7 +161,7 @@
                 ],
                 headersTurma: [
                     {text: 'Nome', value: 'nome', align: 'left'},
-                    {text: 'Foto', align: 'center', sortable: false},
+                    {text: '', align: 'right', sortable: false},
                     {text: 'Professor', align: 'center', value: 'professor'},
                     {text: 'Numero de Alunos', align: 'center', value: 'numero'},
                     {text: 'Ciclo', align: 'center', value: 'ciclo'},

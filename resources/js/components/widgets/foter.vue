@@ -70,12 +70,16 @@
                     'fab fa-google-plus',
                     'fab fa-instagram'
                 ],
-                url: window.location.href
             }
         },
-        watch:{
-            $route (){
-                return this.url = window.location.href;
+        computed: {
+            url(){
+                //console.log(this.$route.name);
+                if (this.$route.name == "patrimoniosShow" || this.$route.name == "patrimonios" ) {
+                    return  window.location.href;
+                }else{
+                    return 'http://142.93.219.146/';
+                }
             }
         }
 
