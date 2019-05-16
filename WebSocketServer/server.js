@@ -59,13 +59,11 @@ io.on('connection', function (socket) {
 	socket.on('user_enter_chat', function (user, chat_id) {
 		if (user !== undefined && user !== null) {
 			socket.join('chat_' + chat_id);
-			loggedUsers.addUserInfo(user, socket.id);
 		}
 	});
 	socket.on('user_exit_chat', function (user, chat_id) {
 		if (user !== undefined && user !== null) {
 			socket.leave('chat_' + chat_id);
-			loggedUsers.removeUserInfoByID(user.id);
 		}
 	});
 
@@ -83,7 +81,6 @@ io.on('connection', function (socket) {
 				if (socket_id !== null) {
 					io.to(socket_id).emit('novaNotificacao', mensagem);
 				}
-				//io.sockets.to('user_' + user.id).emit('novaNotificacao', mensagem);
 			});
 		}
 	});

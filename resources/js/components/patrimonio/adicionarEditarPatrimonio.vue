@@ -2,8 +2,8 @@
     <div>
         <!-- Modal Add Order-->
         <div class="modal fade" id="addPatrimonioModal" tabindex="-1" role="dialog" aria-labelledby="addPatrimonioModal"
-             aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
+             aria-hidden="true" data-keyboard="false" data-backdrop="static">
+            <div class="modal-dialog modal-xl" role="document">
                 <div class="modal-content">
                     <div class="container box">
                         <div class="modal-header">

@@ -99,7 +99,7 @@
     </v-toolbar>
 
         <!-- Login Modal -->
-        <login v-on:logging="logging"></login>
+        <login v-on:logging="logging" v-on:logged="getNotificacoes()"></login>
     </div>
 </template>
 <script>
@@ -181,20 +181,23 @@
                         this.toastPopUp("error", `${error.response.data.message}`);
                     });
                 }
-            }
-        },
-        mounted() {
-            if (this.$store.state.user){
+            },
+            getNotificacoes(){
                 axios.get('/api/me/notificacoes')
                     .then(response => {
                         this.notificacoes = response.data.data;
-                        this.novasNotificacoes = 
+                        this.novasNotificacoes =
                             this.notificacoes.filter(notificacao => notificacao.nova === 1).length;
                     })
                     .catch(errors => {
                         console.log(errors);
                         this.isLoading = false;
-                    })
+                    });
+            }
+        },
+        mounted() {
+            if (this.$store.state.user){
+                this.getNotificacoes();
             }
         },
         sockets: {
@@ -205,3 +208,18 @@
         }
     };
 </script>
+<style>
+    .modal-open {
+        overflow: hidden;
+        position:fixed;
+        width: 100%;
+        height: 100%;
+        margin-right:0px !important;
+    }
+    body.with-modal {
+        position: static;
+        height: auto;
+        overflow-y: hidden;
+    }
+</style>
+

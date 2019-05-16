@@ -2,7 +2,7 @@
     <div>
         <!-- Modal Add Order-->
         <div class="modal fade" id="enviarNotificacaoModal" tabindex="-1" role="dialog" aria-labelledby="enviarNotificacaoModal"
-             aria-hidden="true">
+             aria-hidden="true" data-keyboard="false" data-backdrop="static">
             <div class="modal-dialog modal-md" role="document">
                 <div class="modal-content">
                     <div class="container box" @click="closeLists">

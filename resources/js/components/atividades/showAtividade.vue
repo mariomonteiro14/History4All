@@ -206,8 +206,8 @@
                         </v-card>
                         <br>
                         <!-- CHAT -->
-                        <v-card
-                            v-if="atividade.chat && (estado == 'pendente' || estado == 'coordenador') && atividade.participantes.length > 0">
+                        <v-card v-if="atividade.chat &&
+                            (estado == 'coordenador' || estado == 'pendente' && atividade.participantes.length > 0)">
                             <v-card-text primary-title>
                                 <v-layout row wrap>
                                     <v-flex d-flex xs12 sm8>

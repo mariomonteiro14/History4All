@@ -2,12 +2,12 @@
     <div>
         <!-- Modal Add Order-->
         <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModal"
-             aria-hidden="true">
+             aria-hidden="true" data-keyboard="false" data-backdrop="static">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="container box" @click="closeLists">
                         <div  class="modal-header">
-                            <h5 class="modal-title" id="addUserModal">Adicionar Utilizador</h5>
+                            <h5 class="modal-title" id="addUserModal">{{getTitle}}</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
                                     aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -30,7 +30,7 @@
                                           required
                             ></v-text-field>
                         </div>
-                        <div class="form-group" @click="setOpenList">
+                        <div class="form-group" @click="setOpenList" v-if="$store.state.user.tipo=='admin'">
                             <v-select
                                 ref="selectT"
                                 label="Tipo"
@@ -38,12 +38,12 @@
                                 :items="userTipos"
                                 :rules="[v => !!v || 'Tipo é obrigatório']"
                                 class="input-group--focused"
-                                :disabled="$store.state.user.tipo=='professor'"
                                 required
                             ></v-select>
                         </div>
 
-                        <div class="form-group" v-if="user.tipo && user.tipo != 'admin'" @click="setOpenList">
+                        <div class="form-group" v-if="user.tipo && user.tipo != 'admin' && $store.state.user.tipo=='admin'"
+                             @click="setOpenList">
                             <v-select
                                 ref="selectE"
                                 label="Escola"
@@ -170,7 +170,8 @@
                         return this.escolas[i].turmas;
                     }
                 }
-            }, hasErrors: function () {
+            },
+            hasErrors: function () {
                 if (!this.user.nome || !this.user.email || !this.user.tipo) {
                     return true;
                 }
@@ -188,13 +189,16 @@
                 }
                 return false;
             },
+            getTitle() {
+                return this.$store.state.user.tipo == "admin" ? "Adicionar Utilizador" : "Adicionar Aluno";
+            },
         },
         watch:{
             'user.escola' : function (newVal, oldVal){
                 this.user.escola = newVal;
                 this.user.turma = undefined;
             }
-        }
+        },
     }
 
 </script>
