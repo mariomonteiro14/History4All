@@ -358,7 +358,7 @@
                 </div>
             </div>
         </div>
-        <enviar-notificacao ref="enviarNotificacaoModal" :tipo="'atividade'" :users="atividade.participantes"></enviar-notificacao>
+        <enviar-notificacao ref="enviarNotificacaoModal" :tipo="atividade.titulo" :users="atividade.participantes"></enviar-notificacao>
     </div>
 </template>
 <script type="text/javascript">

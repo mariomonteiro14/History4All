@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @focusout="closeLists">
         <!-- Modal Add Order-->
         <div class="modal fade" id="addTurmaModal" tabindex="-1" role="dialog" aria-labelledby="addTurmaModal"
              aria-hidden="true" data-keyboard="false" data-backdrop="static">
@@ -23,7 +23,7 @@
                             ></v-text-field>
                         </div>
 
-                        <div @click="setOpenList('professor')">
+                        <div @click="setOpenList('professor')" v-if="this.$store.state.user.tipo === 'admin'">
                             <v-select
                                 label="Professor"
                                 v-model="turma.professor"
@@ -32,7 +32,6 @@
                                 item-value="email"
                                 class="input-group--focused"
                                 clearable
-                                :disabled="this.$store.state.user.tipo != 'admin'"
                                 ref="selectProfessor"
                                 @click="selProfAberto=true"
                             >

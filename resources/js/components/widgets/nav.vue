@@ -59,6 +59,8 @@
                             <template v-for="(notificacao, index) in notificacoes">
                                 <v-list-tile :key="index" avatar>
                                     <v-list-tile-content>
+                                        <v-list-tile-title v-text="notificacao.de"></v-list-tile-title>
+                                        <v-list-tile-title v-text="notificacao.data"></v-list-tile-title>
                                         <v-list-tile-title v-text="notificacao.mensagem"></v-list-tile-title>
                                     </v-list-tile-content>
                                 </v-list-tile>

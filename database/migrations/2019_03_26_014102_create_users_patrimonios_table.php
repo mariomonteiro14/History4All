@@ -52,6 +52,8 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->bigInteger('user_id')->unsigned();//destinatário
             $table->foreign('user_id')->references('id')->on('users');
             $table->string('mensagem');
+            $table->string('de');
+            $table->dateTime('data');
             $table->boolean('nova');
         });
 
@@ -90,7 +92,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->increments('id');
             $table->enum('tipo', ['visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio']);
             $table->string('titulo');
-            $table->string('descricao');
+            $table->string('descricao', 1000);
             $table->integer('numeroElementos');
             $table->enum('visibilidade', ['privado', 'publico', 'visivel para a escola']);
             $table->bigInteger('coordenador')->unsigned();

@@ -84,7 +84,7 @@ class AtividadeControllerAPI extends Controller
     {
         $request->validate([
             'titulo' => 'required|min:3',
-            'descricao' => 'required|min:10',
+            'descricao' => 'required|min:10:max:1000',
             'tipo' => 'required',
             'numeroElementos' => 'required|numeric|digits_between:1,99',
             'visibilidade' => 'required',

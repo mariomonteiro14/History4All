@@ -60,17 +60,13 @@
                             <v-btn v-if="foto !=''" @click="foto=''">Limpar</v-btn>
                             </v-layout>
                         <br>
-
                     </div>
-
                     <div class="modal-footer">
                             <button class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Registar
                             </button>
                             <button flat class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
-
                 </div>
-
             </div>
         </div>
     </div>

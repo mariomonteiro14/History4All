@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @focusout="closeLists">
         <!-- Modal Add Order-->
         <div class="modal fade" id="enviarNotificacaoModal" tabindex="-1" role="dialog" aria-labelledby="enviarNotificacaoModal"
              aria-hidden="true" data-keyboard="false" data-backdrop="static">
@@ -65,6 +65,8 @@
         methods: {
             enviar: function () {
                 axios.post('/api/notificacoes', {
+                    'de': (this.tipo !== 'turma' ? 'coordenador da atividade: ' + this.tipo :
+                        this.$store.state.user.tipo + ' ' + this.$store.state.user.nome),
                     'users': this.usersSelected,
                     'mensagem': this.mensagem
                 }).then(response => {
@@ -101,8 +103,8 @@
                 return this.mensagem.length === 0 || this.usersSelected.length === 0;
             },
             getTitle() {
-                return this.tipo === 'atividade' ? "Notificação para todos os alunos que estão com a atividade pendente" :
-                    'Notificação para todos os alunos da turma';
+                return this.tipo === 'turma' ? 'Notificação para todos os alunos da turma' :
+                    "Notificação para todos os alunos que estão com a atividade pendente";
             },
         },
         watch:{

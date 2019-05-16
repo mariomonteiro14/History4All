@@ -296,14 +296,15 @@ class UserControllerAPI extends Controller
 
     public function notificacoes(Request $request){
         return response()->json([
-            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova')->orderBy('id', 'desc')->get()
+            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data')->orderBy('id', 'desc')->get()
         ]);
     }
 
     public function storeNotificacao(Request $request) {
         $request->validate([
             'users' => 'required',
-            'mensagem' => 'required|min:1'
+            'mensagem' => 'required|min:1',
+            'de' => 'required'
         ]);
 
         if (!$request->has('users') || sizeof($request->get('users')) < 1) {
@@ -316,6 +317,8 @@ class UserControllerAPI extends Controller
             $notificacao->fill([
                 'user_id' => $userId,
                 'mensagem' => $request->mensagem,
+                'de' => $request->de,
+                'data' => date("Y-m-d H:i:s"),
                 'nova' => '1'
             ]);
             $notificacao->save();

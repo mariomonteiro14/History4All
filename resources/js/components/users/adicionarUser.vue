@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @focusout="closeLists">
         <!-- Modal Add Order-->
         <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModal"
              aria-hidden="true" data-keyboard="false" data-backdrop="static">
