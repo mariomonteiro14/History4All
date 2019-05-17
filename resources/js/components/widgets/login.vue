@@ -25,10 +25,10 @@
                                     type="password" class="form-control" v-model="user.password"
                                     name="password" id="inputPassword"/>
                             </div>
+                            <a class="btn primary--text" @click="showReset">Esqueceu a sua palavra-passe?</a>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <v-btn class="btn btn-info" data-toggle="modal" data-target="#resetPasswordModal">Reset da password</v-btn>
                         <button class="btn btn-info" v-on:click.prevent="login" :disabled="!formCompleted">Login</button>
                     </div>
                 </div>
@@ -81,7 +81,12 @@ import pedidoNovaPassword from './pedidoNovaPassword.vue';
             },
             fechar(){
                 $('#loginModal').modal('hide');
-            }
+            },
+            showReset(){
+                $('#loginModal').modal('hide');
+                $('#resetPasswordModal').modal('show');
+
+            },
         },
         computed: {
             formCompleted(){

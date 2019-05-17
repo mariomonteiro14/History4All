@@ -350,10 +350,13 @@ class UserControllerAPI extends Controller
 
         if ($validator->fails()) {
             return response()->json([
-                'message' => 'Error ao registar a nova password'
+                'message' => 'Email invalido ou nao registado'
             ], 400);
         }
         $user = User::where('email', $request->email)->first();
+
+        if ($user->email_verified_at == '') abort(403, 'Conta não verificada');
+
         $user->setRememberToken(Str::random(10));
         $user->save();
         Mail::to($user->email)->send(new AlterarPassword('/users/resetPassword/' . $user->getRememberToken(), 'email.resetPassword'));

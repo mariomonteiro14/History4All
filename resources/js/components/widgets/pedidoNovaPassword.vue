@@ -23,9 +23,12 @@
                             ></v-text-field>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div v-if="!aEnviarEmail" class="modal-footer">
                         <button class="btn btn-info" :disabled="hasErrors || aEnviarEmail" v-on:click.prevent="save">Enviar email</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
                     </div>
                 </div>
             </div>
