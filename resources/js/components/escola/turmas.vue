@@ -75,11 +75,12 @@
                                         {{props.item.professor[0].nome}}
                                     </a>
                                 </div>
-                                <div v-else> ---------------- </div>
+                                <div v-else> ----------------</div>
                             </td>
                             <td class="text-xs-center">{{props.item.alunos.length}}</td>
                             <td class="text-xs-center">{{props.item.ciclo}}</td>
-                            <td class="float-md-right" v-if="props.item.professor[0] && $store.state.user.email === props.item.professor[0].email">
+                            <td class="float-md-right"
+                                v-if="props.item.professor[0] && $store.state.user.email === props.item.professor[0].email">
                                 <v-btn round v-if="props.item.alunos[0]" color="primary"
                                        @click="showTurmaAlunos(props.item)">
                                     <v-icon medium>list</v-icon>
@@ -129,7 +130,8 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <lista-alunos v-on:atualizar="getMyEscola" :titulo="'Turma ' + turmaAtual.nome + ' - Alunos'" :users="turmaAtual.alunos"></lista-alunos>
+        <lista-alunos v-on:atualizar="getMyEscola" :titulo="'Turma ' + turmaAtual.nome + ' - Alunos'"
+                      :users="turmaAtual.alunos"></lista-alunos>
         <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual"
                             v-on:getEscolas="atualizarDados"></criar-editar-turma>
         <criar-aluno ref="addAluno" :user="userForm" v-on:getUsers="atualizarDados"></criar-aluno>

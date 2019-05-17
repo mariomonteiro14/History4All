@@ -172,14 +172,14 @@
                 atividadesFiltradasLength: null,
                 limite: 8,
                 tiposDePesquisa: ['Publicas', 'Minha Escola', 'Minhas Atividades'],
-                tipoDePesquisaSelected: 'Publicas',
+                tipoDePesquisaSelected: 'Minhas Atividades',
                 minhasAtividades: ['Todas', 'Pendentes', 'Concluídas'],
                 minhasAtividadesSelected: 'Todas',
 
                 atividadeAApagar: null,
                 dialog: false,
                 atividadeAtual: {},
-                isLoading: true,
+                isLoading: false,
             }
         },
         methods: {
@@ -191,6 +191,7 @@
                 } else if (this.tipoDePesquisaSelected === 'Minha Escola') {
                     url = '/api/me/escola/atividades/'
                 }
+                this.isLoading=true;
                 axios.get(url)
                     .then(response => {
                         this.atividades = response.data.data;

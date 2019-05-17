@@ -26,6 +26,7 @@ define('CLIENT_SECRET', '9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
 
 class UserControllerAPI extends Controller
 {
+    ///APAGAR
     public function users(Request $request)
     {
         $users = UserResource::collection(User::all());
@@ -42,6 +43,7 @@ class UserControllerAPI extends Controller
         ]);
     }
 
+    ///AGAGAR
     public function alunos(Request $request)
     {
         $users = UserResource::collection(User::where('tipo', 'aluno')->orderBy('nome')->get());
@@ -50,6 +52,7 @@ class UserControllerAPI extends Controller
         ]);
     }
 
+    ///APAGAR
     public function professores(Request $request)
     {
         $users = UserResource::collection(User::where('tipo', 'professor')->get());

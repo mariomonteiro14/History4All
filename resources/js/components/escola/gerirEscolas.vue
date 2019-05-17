@@ -221,8 +221,6 @@
 
             showTurmas(props, escola) {
                 props.expanded = !props.expanded;
-                console.log(escola.turmas);
-                console.log(escola.turmas[0]);
                 if (!this.escolaAtual.id || this.escolaAtual.id != escola.id) {
                     this.escolaAtual = escola;
                 } else {

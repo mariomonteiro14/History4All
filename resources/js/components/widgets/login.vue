@@ -17,13 +17,13 @@
                                 <input
                                     type="text" class="form-control" v-model.trim="user.email"
                                     name="emailUsername" id="inputEmailUsername"
-                                    placeholder="Email address"/>
+                                    placeholder="Email address" @keyup.enter="login"/>
                             </div>
                             <div class="form-group">
                                 <label for="inputPassword">Password</label>
                                 <input
                                     type="password" class="form-control" v-model="user.password"
-                                    name="password" id="inputPassword"/>
+                                    name="password" id="inputPassword" @keyup.enter="login"/>
                             </div>
                             <a class="btn primary--text" @click="showReset">Esqueceu a sua palavra-passe?</a>
                         </div>
@@ -55,6 +55,9 @@ import pedidoNovaPassword from './pedidoNovaPassword.vue';
         },
         methods: {
             login() {
+                if (this.user.email=== "" || this.user.password=== ""){
+                    return;
+                }
                 this.$emit("logging");
                 axios.post('/api/login', this.user).then(response => {
                     this.$store.commit('setToken',response.data.access_token);

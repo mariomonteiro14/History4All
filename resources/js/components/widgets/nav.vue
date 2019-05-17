@@ -1,11 +1,7 @@
 <template>
         <div>
             <v-toolbar :color="colorDefault" fixed>
-                <!-- <v-toolbar-title class="ml-0 pl-3">
-                 </v-toolbar-title>
-                 <v-toolbar-side-icon @click.stop="handleDrawerToggle"></v-toolbar-side-icon>
-                 <v-toolbar-items>
-                 -->
+
             <v-btn to="/">
                 HISTORY4ALL
             </v-btn>
@@ -33,7 +29,7 @@
                     <b-dropdown-item to="/admin/escolas"><i class="material-icons">home</i> Gerir Escolas | Turmas</b-dropdown-item>
                 </div>
                 <div v-if="$store.state.user.tipo === 'professor'">
-                    <b-dropdown-item to="/escola/turmas"><i class="material-icons vsm-icon">group</i>Minhas Turmas</b-dropdown-item>
+                    <b-dropdown-item to="/escola/turmas"><i class="material-icons vsm-icon">group</i>Turmas</b-dropdown-item>
                 </div>
             </b-dropdown>
         <v-toolbar-items v-if="!this.$store.state.user">
@@ -114,32 +110,6 @@
             'login': login,
         },
         data: () => ({
-            items: [
-                {
-                    icon: 'account_circle',
-                    href: '#',
-                    title: 'Profile',
-                    click: (e) => {
-                        console.log(e);
-                    }
-                },
-                {
-                    icon: 'settings',
-                    href: '#',
-                    title: 'Settings',
-                    click: (e) => {
-                        console.log(e);
-                    }
-                },
-                {
-                    icon: 'fullscreen_exit',
-                    href: '#',
-                    title: 'Logout',
-                    click: () => {
-                        this.methods.logout();
-                    }
-                }
-            ],
             isLoading: false,
             loader_color: '#ffffff',
             loader_size:'30px',
