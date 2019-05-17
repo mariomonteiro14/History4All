@@ -29,4 +29,10 @@ class Escola extends Model
         return $this->hasMany(Turma::class, 'escola_id','id')->get();
     }
 
+    public function professores(){
+        return User::where('tipo', 'professor')->where('escola_id', $this->id)->get();
+    }
+    public function alunos(){
+        return User::where('tipo', 'aluno')->where('escola_id', $this->id)->get();
+    }
 }

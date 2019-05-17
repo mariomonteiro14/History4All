@@ -8,7 +8,7 @@
                 tile
                 absolute
             >
-                <v-card-title class="brown">
+                <v-card-title class="light-green darken-3">
                     <strong class="subheading">Partilhe a nossa pagina nas redes sociais!</strong>
 
                     <v-spacer></v-spacer>
@@ -39,14 +39,13 @@
                     </social-sharing>
                 </v-card-title>
 
-                <v-card-actions class="grey darken-3 justify-center">
-                    &copy;2019 - <strong>History4All</strong>
+                <v-card-actions class="green darken-1 justify-center">
+                    &copy;2019 - &nbsp <strong>History4All</strong>
                 </v-card-actions>
 
             </v-card>
         </v-footer>
     </div>
-
 </template>
 
 <script>

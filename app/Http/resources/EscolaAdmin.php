@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class Escola extends JsonResource
+class EscolaAdmin extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,8 +18,8 @@ class Escola extends JsonResource
             'id' => $this->id,
             'nome' => $this->nome,
             'distrito' => $this->distrito,
-            'turmas' => Turma::collection($this->turmas()),
-            'alunos' => User::collection($this->alunos()),
+            'turmas' => TurmaAdmin::collection($this->turmas()),
+            'professores' => User::collection($this->professores()),
         ];
     }
 

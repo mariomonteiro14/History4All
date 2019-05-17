@@ -6,7 +6,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="container box" @click="closeLists">
-                        <div  class="modal-header">
+                        <div class="modal-header">
                             <h5 class="modal-title" id="addUserModal">{{getTitle}}</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
                                     aria-label="Close">
@@ -30,7 +30,7 @@
                                           required
                             ></v-text-field>
                         </div>
-                        <div class="form-group" @click="setOpenList" v-if="$store.state.user.tipo=='admin'">
+                        <div class="form-group" @click="setOpenList" v-if="showType == 'true'">
                             <v-select
                                 ref="selectT"
                                 label="Tipo"
@@ -42,7 +42,8 @@
                             ></v-select>
                         </div>
 
-                        <div class="form-group" v-if="user.tipo && user.tipo != 'admin' && $store.state.user.tipo=='admin'"
+                        <div class="form-group"
+                             v-if="user.tipo && user.tipo != 'admin' && $store.state.user.tipo=='admin'"
                              @click="setOpenList">
                             <v-select
                                 ref="selectE"
@@ -86,9 +87,10 @@
 
 <script>
     export default {
-        props:['user'],
+        props: ['user','showType'],
         created() {
             this.getEscolas();
+           // console.log(this.showType);
         },
         data: function () {
             return {
@@ -98,7 +100,7 @@
                     (v) => !!v || 'email é obrigatório',
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'
                 ],
-                selAberto:false,
+                selAberto: false,
             };
         },
         methods: {
@@ -123,7 +125,6 @@
                 this.user.nome = "";
                 this.user.email = "";
                 if (this.$store.state.user.tipo == "admin") {
-                    this.user.tipo = "";
                     this.user.escola = "";
                 }
                 this.user.turma = "";
@@ -165,9 +166,16 @@
         },
         computed: {
             turmas: function () {
+                let turmas = [];
                 for (let i in this.escolas) {
                     if (this.escolas[i].nome === this.user.escola) {
-                        return this.escolas[i].turmas;
+                        for (let j in this.escolas[i].turmas) {
+                            let turma=this.escolas[i].turmas[j];
+                            if (turma.professor[0] && turma.professor[0].id == this.$store.state.user.id) {
+                                turmas.push(turma)
+                            }
+                        }
+                        return turmas;
                     }
                 }
             },
@@ -176,7 +184,7 @@
                     return true;
                 }
                 var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                if(!re.test(String(this.user.email).toLowerCase())){
+                if (!re.test(String(this.user.email).toLowerCase())) {
                     return true;
                 }
                 if (this.user.tipo !== "admin" && this.user.escola == "") {
@@ -190,11 +198,22 @@
                 return false;
             },
             getTitle() {
-                return this.$store.state.user.tipo == "admin" ? "Adicionar Utilizador" : "Adicionar Aluno";
+                if (this.user.tipo == 'admin'){
+                    return "Adicionar Administrador";
+                }
+                if (this.user.tipo == 'professor'){
+                    return "Adicionar Professor";
+                }
+                if (this.user.tipo == 'aluno') {
+                    return "Adicionar Aluno";
+                }
+                return "Adicionar Utilizador";
+
+
             },
         },
-        watch:{
-            'user.escola' : function (newVal, oldVal){
+        watch: {
+            'user.escola': function (newVal, oldVal) {
                 this.user.escola = newVal;
                 this.user.turma = undefined;
             }

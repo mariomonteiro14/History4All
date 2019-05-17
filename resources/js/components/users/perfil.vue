@@ -5,7 +5,7 @@
         <br>
         <div v-if="isLoading">
             <br><br><br>
-            <v-progress-linear v-show="isLoading" v-slot:progress color="brown" indeterminate></v-progress-linear>
+            <v-progress-linear v-show="isLoading" v-slot:progress :color="colorDefault" indeterminate></v-progress-linear>
             <br><br><br><br><br><br><br><br><br>
         </div>
         <div v-if="!isLoading && !profileUser.id">
@@ -23,8 +23,9 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="profile-img">
-                        <v-avatar size="150px">
+                        <v-avatar size="150px" :color="colorDefault" >
                             <img v-if="profileUser.foto != null" v-bind:src="getUserPhoto(profileUser.foto)" alt=""/>
+                            <v-icon v-else class="white--text" large>far fa-user</v-icon>
                         </v-avatar>
                     </div>
                 </div>

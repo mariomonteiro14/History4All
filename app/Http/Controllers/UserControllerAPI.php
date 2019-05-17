@@ -175,7 +175,7 @@ class UserControllerAPI extends Controller
 
 
         //enviar email
-        Mail::to($user->email)->send(new EmailConfirmacao('/users/registarPassword/' . $user->getRememberToken()));
+        //Mail::to($user->email)->send(new EmailConfirmacao('/users/registarPassword/' . $user->getRememberToken()));
         $user->save();
         return response()->json([
             'message' => 'Successfully created user!'
@@ -266,7 +266,13 @@ class UserControllerAPI extends Controller
 
     public function destroy($id)
     {
+
         $user = User::withTrashed()->find($id);
+        if (Auth::user()->tipo == "professor" && $user->turma()->first()->professor_id != Auth::id()){
+            return response()->json([
+                'message' => 'Unauthorized.'
+            ], 403);
+        }
         if ($user->trashed()) {
             Storage::disk('public')->delete('profiles/' . $user->foto);
             $user->forceDelete();

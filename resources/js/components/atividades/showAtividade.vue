@@ -291,7 +291,7 @@
                                                         >
                                                             <v-list-tile-avatar>
                                                                 <img v-if="aluno.foto" :src="getUserPhoto(aluno.foto)">
-                                                                <span v-else>{{aluno.nome[0]}}</span>
+                                                                <v-icon v-else class="indigo--text" small>far fa-user</v-icon>
                                                             </v-list-tile-avatar>
 
                                                             <v-list-tile-content>

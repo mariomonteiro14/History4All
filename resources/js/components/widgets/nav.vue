@@ -1,6 +1,6 @@
 <template>
         <div>
-            <v-toolbar color="brown" fixed>
+            <v-toolbar :color="colorDefault" fixed>
                 <!-- <v-toolbar-title class="ml-0 pl-3">
                  </v-toolbar-title>
                  <v-toolbar-side-icon @click.stop="handleDrawerToggle"></v-toolbar-side-icon>
@@ -72,9 +72,9 @@
             <b-dropdown v-if="this.$store.state.user" right variant="Success" class="m-2" no-caret>
                 <template slot="button-content" >
                     <v-btn icon large flat slot="activator">
-                        <v-avatar size="30px" class="bg-success">
+                        <v-avatar size="30px" class="bg-white">
                             <img v-if="this.$store.state.user.foto" v-bind:src="getUserPhoto(this.$store.state.user.foto)"/>
-                            <span v-else>{{this.$store.state.user.nome[0]}}</span>
+                            <v-icon v-else class="indigo--text darken-4" small>far fa-user</v-icon>
                         </v-avatar>
                     </v-btn>
                 </template>

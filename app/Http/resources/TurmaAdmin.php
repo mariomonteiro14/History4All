@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class Escola extends JsonResource
+class TurmaAdmin extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,9 +17,9 @@ class Escola extends JsonResource
         return [
             'id' => $this->id,
             'nome' => $this->nome,
-            'distrito' => $this->distrito,
-            'turmas' => Turma::collection($this->turmas()),
-            'alunos' => User::collection($this->alunos()),
+            'professor' => $this->professor()->select('id','nome', 'email', 'foto')->get(),
+            'ciclo' => $this->ciclo,
+            'numeroAlunos' => $this->alunos()->count(),
         ];
     }
 

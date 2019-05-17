@@ -43,7 +43,6 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('users/alunos', 'UserControllerAPI@alunos');
         Route::get('usersTrashed', 'UserControllerAPI@usersTrashed');
         Route::put('users/{id}', 'UserControllerAPI@update');
-        Route::delete('users/{id}', 'UserControllerAPI@destroy');
         Route::put('users/restaurar/{id}', 'UserControllerAPI@restore');
 
         Route::post('escolas', 'EscolaControllerAPI@store');
@@ -69,6 +68,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::get('users/alunos', 'UserControllerAPI@alunos');
         Route::get('me/escola/alunos', 'EscolaControllerAPI@myEscolaAlunos');
         Route::post('users', 'UserControllerAPI@store');
+        Route::delete('users/{id}', 'UserControllerAPI@destroy');
 
         Route::post('notificacoes', 'UserControllerAPI@storeNotificacao');
     });

@@ -27,7 +27,7 @@
                             <v-select
                                 label="Professor"
                                 v-model="turma.professor"
-                                :items="filteredProfessores"
+                                :items="escola.professores"
                                 item-text="nome"
                                 item-value="email"
                                 class="input-group--focused"
@@ -40,7 +40,7 @@
                                     <v-list-tile-avatar>
                                         <img v-if="data.item.foto && data.item.foto!=''" width="30px" height="30px"
                                              v-bind:src="getUserPhoto(data.item.foto)"/>
-                                        <span v-else>{{data.item.nome[0]}}</span>
+                                        <v-icon v-else class="indigo--text" small>far fa-user</v-icon>
                                     </v-list-tile-avatar>
                                     <v-list-tile-title v-html="data.item.nome"></v-list-tile-title>
 
@@ -61,7 +61,7 @@
                             ></v-select>
                         </div>
 
-                        <div @click="setOpenList('alunos')">
+                        <div v-if="$store.state.user.tipo=='professor'" @click="setOpenList('alunos')">
                             <v-combobox
                                 v-model="turma.alunos"
                                 :items="filteredAlunos"
@@ -109,12 +109,12 @@
     export default {
         props: ['escola', 'turma'],
 
-        created() {
+       /* created() {
             this.getAlunos();
             if (this.$store.state.user.tipo != "professor") {
                 this.getProfessores();
             }
-        },
+        },*/
         data: function () {
             return {
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
@@ -141,9 +141,8 @@
                 axios.post('/api/escolas/' + this.escola.id + '/turmas', this.turma).then(response => {
                     this.toastPopUp("success", "Turma Criada!");
                     this.cleanForm();
-                    this.getAlunos();
-                    this.$emit('getEscolas');
                     $('#addTurmaModal').modal('hide');
+                    this.$emit('getEscolas');
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
@@ -156,9 +155,8 @@
                 axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
                     this.toastPopUp("success", "Turma Atualizada!");
                     this.cleanForm();
-                    this.getAlunos();
-                    this.$emit('getEscolas');
                     $('#addTurmaModal').modal('hide');
+                    this.$emit('getEscolas');
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
@@ -176,27 +174,7 @@
                 this.turma.professor = undefined;
                 this.closeLists();
             },
-            getProfessores(url = '/api/users/professores') {
-                axios.get(url)
-                    .then(response => {
-                        this.professores = response.data.data;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
-                    });
-            },
-            getAlunos(url = '/api/users/alunos') {
-                if (this.$store.state.user.tipo == 'professor'){
-                    url = "/api/me/escola/alunos"
-                }
-                axios.get(url)
-                    .then(response => {
-                        this.alunos = response.data.data;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
-                    });
-            },
+
             ////////////////////////////////////////////////////////
             //Metodos pra correçao de bug relacionado com os selects
             setOpenList(lista) {
@@ -256,9 +234,12 @@
             },
 
             filteredAlunos() {
-                return this.alunos.filter((i) => {
-                    return (i.escola[0] === this.escola.nome) && (!i.turma[0] || i.turma[0] === this.turma.nome);
-                });
+                if (this.escola && this.escola.alunos) {
+                    return this.escola.alunos.filter((i) => {
+                        return (!i.turma[0] || i.turma[0] === this.turma.nome);
+                    });
+                }
+                return [];
 
             },
             getTitle() {

@@ -53,8 +53,10 @@
                 <template v-slot:items="props">
                     <tr v-bind:class="colorUserType(props.item.tipo)">
                         <td class="text-xs-center">
-                            <v-avatar size="90px" v-if="props.item.foto">
-                                <img v-bind:src="getUserPhoto(props.item.foto)"/>
+                            <v-avatar size="90px" color="white">
+                                <img v-if="props.item.foto" v-bind:src="getUserPhoto(props.item.foto)"/>
+
+                                <v-icon v-else class="indigo--text" large>far fa-user</v-icon>
                             </v-avatar>
                         </td>
                         <td class="text-xs-left"><strong>{{ props.item.nome }}</strong></td>
@@ -116,7 +118,7 @@
             </v-card>
         </v-dialog>
         <br><br>
-        <add-user :user="userForm" v-on:getUsers="getUsers"></add-user>
+        <add-user show-type="true" :user="userForm" v-on:getUsers="getUsers"></add-user>
 
         <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal"
              aria-hidden="true">

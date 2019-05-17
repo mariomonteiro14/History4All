@@ -23,8 +23,12 @@
                             class="input-group--focused"
                         ></v-select>
                         <v-spacer></v-spacer>
-                        <v-btn color="success" data-toggle="modal" data-target="#addEscolaModal">Adicionar Escola <i
-                            class="material-icons">add_box</i>
+                        <v-btn round color="success" data-toggle="modal" data-target="#addEscolaModal">
+                            <v-icon medium>add</v-icon> &nbsp Escola
+                        </v-btn>
+                        <v-btn round color="lime darken-3" class="white--text" data-toggle="modal"
+                               data-target="#addUserModal">
+                            <v-icon medium>add</v-icon> &nbsp Professor
                         </v-btn>
                     </v-layout>
                 </v-container>
@@ -35,17 +39,25 @@
                         <tr :class="[props.item.id == escolaAtual.id ? 'alert-success' : '' ]">
                             <td class="text-xs-left"><strong>{{ props.item.nome }}</strong></td>
                             <td class="text-xs-left">{{ props.item.distrito }}</td>
-                            <td class="text-xs-center">
-                                <v-btn round v-if="props.item.turmas[0]" color="primary"
+                            <td class="text-xs-right">
+                                <v-btn round v-if="props.item.turmas && props.item.turmas[0]" color="primary"
                                        @click="showTurmas(props, props.item)">
-                                    <v-icon medium>list</v-icon> &nbsp Turmas
+                                    <v-icon medium>list</v-icon>
+                                    &nbsp Turmas
+                                </v-btn>
+                            </td>
+                            <td class="text-xs-center">
+                                <v-btn round v-if="props.item.professores[0]" color="lime darken-3" class="white--text"
+                                       @click="showProfessores(props.item)">
+                                    <v-icon medium>list</v-icon>
+                                    &nbsp Professores
                                 </v-btn>
                             </td>
                             <td class="justify-center layout px-0">
-                                <v-btn round color="success" @click="showCriarTurma(props.item)"> <i
+                                <v-btn round color="success" @click="showCriarTurma(props.item)"><i
                                     class="material-icons">add</i>&nbsp Turma
                                 </v-btn>
-                                <v-btn  icon color="red" @click.stop="apagarVerificacao(props.item, true)">
+                                <v-btn icon color="red" @click.stop="apagarVerificacao(props.item, true)">
                                     <v-icon color="white" medium>delete_forever</v-icon>
                                 </v-btn>
                             </td>
@@ -59,9 +71,12 @@
                                 <tr class="alert-primary">
                                     <td class="text-xs-left"><strong>{{props.item.nome}}</strong></td>
                                     <td class="text-xs-right">
-                                        <div v-if="props.item.professor[0] && props.item.professor[0].foto">
-                                            <img class="zoom" width="30px" height="30px"
+                                        <div v-if="props.item.professor[0]">
+                                            <img v-if="props.item.professor[0].foto" class="zoom" width="30px"
+                                                 height="30px"
                                                  v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
+
+                                            <v-icon v-else class="indigo--text" small>far fa-user</v-icon>
                                         </div>
                                     </td>
                                     <td class="text-xs-center">
@@ -70,17 +85,12 @@
                                                 {{props.item.professor[0].nome}}
                                             </a>
                                         </div>
+                                        <div v-else> ----------- </div>
                                     </td>
-                                    <td class="text-xs-center">{{props.item.alunos.length}}</td>
+                                    <td class="text-xs-center">{{props.item.numeroAlunos}}</td>
                                     <td class="text-xs-center">{{props.item.ciclo}}</td>
-                                    <td class="float-md-right">
-                                        <v-btn v-if="props.item.alunos[0]" color="lime darken-1"
-                                              round @click="showTurmaAlunos(props.item)">
-                                            <v-icon medium>list</v-icon>&nbsp Alunos
-                                        </v-btn>
-                                    </td>
                                     <td class="text-xs-right">
-                                        <v-btn  icon color="warning" @click="showEditTurma(props.item)">
+                                        <v-btn icon color="warning" @click="showEditTurma(props.item)">
                                             <v-icon small>edit</v-icon>
 
                                         </v-btn>
@@ -115,24 +125,29 @@
             </v-card>
         </v-dialog>
         <br><br>
-        <lista-alunos :turma="turmaAtual"></lista-alunos>
-        <criar-escola v-on:getEscolas="getEscolas"></criar-escola>
+        <criar-escola v-on:getEscolas="atualizarEscolas"></criar-escola>
         <criar-editar-turma ref="addEditTurma" v-bind:escola="escolaAtual" :turma="turmaAtual"
                             v-on:getEscolas="getEscolas"></criar-editar-turma>
+        <lista-professores v-on:atualizar="getEscolas" :titulo="escolaAtual.nome + ' - Professores'"
+                           :users="escolaAtual.professores"></lista-professores>
+        <add-professor ref="addProf" show-type="false" :user="userForm" v-on:getUsers="getEscolas"></add-professor>
+
 
     </div>
 </template>
 
 <script>
-    import listaAlunos from './showTurmaAlunos';
+    import listaProfs from './showUsers';
     import criarEscola from './adicionarEscola';
     import criarTurma from './adicionarEditarTurma';
+    import AddUser from '../users/adicionarUser.vue';
 
     export default {
         components: {
-            'lista-alunos': listaAlunos,
+            'lista-professores': listaProfs,
             'criar-escola': criarEscola,
             'criar-editar-turma': criarTurma,
+            'add-professor': AddUser,
         },
         mounted() {
             this.getEscolas();
@@ -156,6 +171,7 @@
                 headersEscola: [
                     {text: 'Nome', value: 'nome'},
                     {text: 'Distrito', value: 'distrito'},
+                    {text: '', align: 'right', value: 'turmas', sortable: false},
                     {text: '', align: 'center', value: 'turmas', sortable: false},
                     {text: 'Ações', align: 'center', value: 'acoes', sortable: false},
                 ],
@@ -173,6 +189,13 @@
                 escolaAtual: {},
                 turmaAtual: {},
                 isLoading: true,
+                userForm: {
+                    nome: '',
+                    email: '',
+                    tipo: 'professor',
+                    escola: '',
+                    turma: '',
+                },
             }
         },
         methods: {
@@ -191,18 +214,23 @@
                         this.isLoading = false;
                     });
             },
+            atualizarEscolas(){
+                this.getEscolas();
+                this.$refs.addProf.getEscolas();
+            },
 
             showTurmas(props, escola) {
                 props.expanded = !props.expanded;
+                console.log(escola.turmas);
+                console.log(escola.turmas[0]);
                 if (!this.escolaAtual.id || this.escolaAtual.id != escola.id) {
                     this.escolaAtual = escola;
                 } else {
                     this.escolaAtual = {};
                 }
             },
-            showTurmaAlunos(turma) {
-                this.turmaAtual = turma;
-
+            showProfessores(escola) {
+                this.escolaAtual = escola;
                 $('#turmaAlunosModal').modal('show');
             },
             showCriarTurma(escola) {
@@ -233,7 +261,7 @@
                 axios.delete('/api/escolas/' + this.escolaAtual.id)
                     .then(response => {
                         this.toastPopUp("success", "Escola Apagado!");
-                        this.getEscolas();
+                        this.atualizarEscolas();
                     }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");
                     console.log(error);

@@ -7,6 +7,7 @@ use App\Turma;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\Escola as EscolaResource;
+use App\Http\Resources\EscolaAdmin as EscolaAdminResource;
 use App\Http\Resources\Turma as TurmaResource;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\User as UserResource;
@@ -15,7 +16,7 @@ class EscolaControllerAPI extends Controller
 {
     public function escolas(Request $request)
     {
-        $escolas = EscolaResource::collection(Escola::all());
+        $escolas = EscolaAdminResource::collection(Escola::all());
         return response()->json([
             'data' => $escolas,
         ]);

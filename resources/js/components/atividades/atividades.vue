@@ -80,7 +80,7 @@
                         Nao existem atividades :(
                     </v-alert>
                     <v-layout row wrap>
-                        <v-progress-linear v-show="isLoading" v-slot:progress color="brown" indeterminate></v-progress-linear>
+                        <v-progress-linear v-show="isLoading" v-slot:progress :color="colorDefault" indeterminate></v-progress-linear>
                         <v-flex v-for="(atividade, index) in filteredAtividades" :key="index">
                             <v-hover>
                                 <v-card height="300" width="300" slot-scope="{ hover }" class="mx-auto">

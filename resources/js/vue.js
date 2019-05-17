@@ -91,6 +91,11 @@ router.beforeEach((to, from, next) => {
 });
 
 var common = {
+    data: function () {
+        return {
+            colorDefault: 'light-green darken-1'
+        }
+    },
     methods: {
         toastPopUp(type, msg){
             Vue.toasted.clear();

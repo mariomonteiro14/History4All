@@ -61,10 +61,12 @@
                         <tr class="alert-primary">
                             <td class="text-xs-left"><strong>{{props.item.nome}}</strong></td>
                             <td class="text-xs-right">
-                                <div v-if="props.item.professor[0] && props.item.professor[0].foto">
-                                    <img class="zoom" width="30px" height="30px"
+                                <div v-if="props.item.professor[0]">
+                                    <img v-if="props.item.professor[0].foto" class="zoom" width="30px" height="30px"
                                          v-bind:src="getUserPhoto(props.item.professor[0].foto)"/>
+                                    <v-icon v-else class="indigo--text" small>far fa-user</v-icon>
                                 </div>
+
                             </td>
                             <td class="text-xs-center">
                                 <div v-if="props.item.professor[0]">
@@ -76,7 +78,7 @@
                             </td>
                             <td class="text-xs-center">{{props.item.alunos.length}}</td>
                             <td class="text-xs-center">{{props.item.ciclo}}</td>
-                            <td class="float-md-right">
+                            <td class="float-md-right" v-if="props.item.professor[0] && $store.state.user.email === props.item.professor[0].email">
                                 <v-btn round v-if="props.item.alunos[0]" color="primary"
                                        @click="showTurmaAlunos(props.item)">
                                     <v-icon medium>list</v-icon>
@@ -88,6 +90,7 @@
                                     <v-icon small>send</v-icon>
                                 </v-btn>
                             </td>
+                            <td v-else></td>
                             <td class="text-xs-center">
                                 <div
                                     v-if="props.item.professor[0] && $store.state.user.email === props.item.professor[0].email">
@@ -125,7 +128,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <lista-alunos :turma="turmaAtual"></lista-alunos>
+        <lista-alunos v-on:atualizar="getMyEscola" :titulo="'Turma ' + turmaAtual.nome + ' - Alunos'" :users="turmaAtual.alunos"></lista-alunos>
         <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual"
                             v-on:getEscolas="atualizarDados"></criar-editar-turma>
         <criar-aluno ref="addAluno" :user="userForm" v-on:getUsers="atualizarDados"></criar-aluno>
@@ -135,7 +138,7 @@
 </template>
 
 <script>
-    import listaAlunos from './showTurmaAlunos';
+    import listaAlunos from './showUsers';
     import criarTurma from './adicionarEditarTurma';
     import criarAluno from '../users/adicionarUser';
     import enviarNotificacao from '../widgets/enviarNotificacao';
@@ -240,13 +243,12 @@
             },
             atualizarDados() {
                 this.getMyEscola();
-                this.$refs.addEditTurma.getAlunos();
                 this.$refs.addAluno.getEscolas();
             },
             enviarNotificacao(turma) {
                 this.turmaAtual = turma;
                 $('#enviarNotificacaoModal').modal('show');
-            }
+            },
         },
         computed: {
             filteredTurmas() {
