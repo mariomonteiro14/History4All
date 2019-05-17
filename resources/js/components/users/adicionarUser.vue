@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-info" :disabled="hasErrors" v-on:click.prevent="save">Registar</button>
+                        <button class="btn btn-info" :disabled="hasErrors || aEnviarEmail" v-on:click.prevent="save">Registar</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
 
@@ -101,18 +101,22 @@
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'
                 ],
                 selAberto: false,
+                aEnviarEmail: false
             };
         },
         methods: {
 
             save: function () {
+                this.aEnviarEmail = true;
                 console.log(this.user);
                 axios.post('/api/users', this.user).then(response => {
+                    this.aEnviarEmail = false;
                     this.toastPopUp("success", "Utilizador Criado!");
                     this.cleanForm();
                     this.$emit('getUsers');
                     $('#addUserModal').modal('hide');
                 }).catch(error => {
+                    this.aEnviarEmail = false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },

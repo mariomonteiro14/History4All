@@ -17,7 +17,9 @@ Route::get('patrimonios', 'PatrimonioControllerAPI@patrimoniosDataTable');
 Route::get('patrimonios/{id}', 'PatrimonioControllerAPI@find');
 Route::post('login', 'UserControllerAPI@login')->name('login');
 Route::post('register/activate/{id}', 'UserControllerAPI@activateAccount');
+Route::post('register/novaPassword/{id}', 'UserControllerAPI@novaPassword');
 Route::post('sendEmail/history4all', 'UserControllerAPI@contactHistory4all');
+Route::post('sendEmail/resetPassword', 'UserControllerAPI@resetPassword');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'UserControllerAPI@logout');

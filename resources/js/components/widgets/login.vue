@@ -28,16 +28,23 @@
                         </div>
                     </div>
                     <div class="modal-footer">
+                        <v-btn class="btn btn-info" data-toggle="modal" data-target="#resetPasswordModal">Reset da password</v-btn>
                         <button class="btn btn-info" v-on:click.prevent="login" :disabled="!formCompleted">Login</button>
                     </div>
                 </div>
             </div>
         </div>
+        <pedido-nova-password v-on:fechar="fechar()"></pedido-nova-password>
     </div>
 </template>
 
 <script type="text/javascript">
-    module.exports={
+import pedidoNovaPassword from './pedidoNovaPassword.vue';
+
+    export default {
+        components: {
+            'pedido-nova-password': pedidoNovaPassword,
+        },
         data: function(){
             return {
                 user: {
@@ -60,6 +67,7 @@
                     this.user.password = '';
                     this.$socket.emit('user_enter', this.$store.state.user);
                     $('#loginModal').modal('hide');
+                    this.$router.push({name: 'index'});
                 }).catch(error => {
                     this.$emit("logging");
                     this.$store.commit('clearUserAndToken');
@@ -71,6 +79,9 @@
                 });
                 $('#loginModal').modal('hide');
             },
+            fechar(){
+                $('#loginModal').modal('hide');
+            }
         },
         computed: {
             formCompleted(){

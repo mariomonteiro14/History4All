@@ -7,18 +7,20 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class EmailConfirmacao extends Mailable
+class AlterarPassword extends Mailable
 {
     use Queueable, SerializesModels;
     public $link;
+    public $blade;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($link)
+    public function __construct($link, $blade)
     {
         $this->link = $link;
+        $this->blade = $blade;
     }
 
     /**
@@ -28,6 +30,6 @@ class EmailConfirmacao extends Mailable
      */
     public function build()
     {
-        return $this->view('email.registar');
+        return $this->view($this->blade);
     }
 }

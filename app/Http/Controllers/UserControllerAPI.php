@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Escola;
 use App\Mail\ContactarAdmin;
-use App\Mail\EmailConfirmacao;
+use App\Mail\AlterarPassword;
 use App\Notificacao;
 use App\Turma;
 use Illuminate\Http\Request;
@@ -175,7 +175,7 @@ class UserControllerAPI extends Controller
 
 
         //enviar email
-        //Mail::to($user->email)->send(new EmailConfirmacao('/users/registarPassword/' . $user->getRememberToken()));
+        Mail::to($user->email)->send(new AlterarPassword('/users/registarPassword/' . $user->getRememberToken(), 'email.registar'));
         $user->save();
         return response()->json([
             'message' => 'Successfully created user!'
@@ -184,7 +184,7 @@ class UserControllerAPI extends Controller
 
     public function getUserByToken(Request $request, $token)
     {
-        return User::where('remember_token', $token)->where('password', 'secret')->where('email_verified_at', null)->first();
+        return User::where('remember_token', $token)->first();
     }
 
     public function logout()
@@ -340,5 +340,42 @@ class UserControllerAPI extends Controller
         };
 
         return response()->json(Notificacao::where('user_id', Auth::id())->get(), 201);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|exists:users',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error ao registar a nova password'
+            ], 400);
+        }
+        $user = User::where('email', $request->email)->first();
+        $user->setRememberToken(Str::random(10));
+        $user->save();
+        Mail::to($user->email)->send(new AlterarPassword('/users/resetPassword/' . $user->getRememberToken(), 'email.resetPassword'));
+        return response()->json([
+            'message' => 'Email enviado'
+        ], 200);
+    }
+
+    public function novaPassword(Request $request, $id){
+        $request->validate([
+            'password' => 'required|min:4',
+        ]);
+
+        $user = User::findOrFail($id);
+        if ($user && $request->has('password')) {
+            $user->password = bcrypt($request->input('password'));
+            $user->remember_token = '';
+            $user->save();
+            return response()->json([
+                'data' => $user,
+                'message' => 'Password alterada'
+            ], 201);
+        }
     }
 }
