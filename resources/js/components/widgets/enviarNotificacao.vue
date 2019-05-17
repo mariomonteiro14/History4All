@@ -39,7 +39,7 @@
                             ></v-combobox>
                         </div>
                     </div>
-                    <div v-if="aEnviar" class="modal-footer">
+                    <div v-if="!aEnviar" class="modal-footer">
                         <button class="btn btn-info" v-on:click.prevent="enviar" :disabled="hasErrors">
                             Enviar
                         </button>

@@ -49,8 +49,10 @@
             <v-card>
                 <v-card-title class="headline">Confirmação</v-card-title>
                 <v-card-text v-if="userAApagar.tipo == 'aluno'">Tem a certeza que quer elimiar o aluno?</v-card-text>
-                <v-card-text v-else>Todas as turmas associadas a este professor ficaram sem professor.
-                    Tem a certeza que quer continuar?</v-card-text>
+                <v-card-text v-else>
+                    Todas as turmas associadas a este professor ficaram sem professor.
+                    <p>Tem a certeza que quer continuar?</p>
+                </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="red darken-1" flat="flat" @click="closeDialog">

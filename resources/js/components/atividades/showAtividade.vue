@@ -217,8 +217,7 @@
                         </v-card>
                         <br>
                         <!-- CHAT -->
-                        <v-card v-if="atividade.chat &&
-                            (estado == 'coordenador' || estado == 'pendente' && atividade.participantes.length > 0)">
+                        <v-card v-if="participa">
                             <v-card-text primary-title>
                                 <v-layout row wrap>
                                     <v-flex d-flex xs12 sm8>
@@ -233,10 +232,11 @@
                                                 <h6>{{atividade.chat.assunto}}</h6>
                                                 <v-divider></v-divider>
                                                 <v-flex xs12 id="scroll-target"
-                                                        style="max-height:350px; min-height:100px; overflow-y:auto">
+                                                        style="max-height:350px; min-height:200px; overflow-y:auto">
                                                     <v-layout row wrap v-scroll:#scroll-target="onScroll">
                                                         <div id="scrolled-content">
                                                             <v-list three-line>
+                                                                <span class="grey--text" v-if="mensagensDoChat.length == 0">(Nao existem mensagens)</span>
                                                                 <template v-for="(mensagem, index) in mensagensDoChat">
                                                                     <v-list-tile :key="index" avatar>
                                                                         <v-list-tile-avatar>
@@ -515,6 +515,17 @@
                 }
                 return imagens;
             },
+            participa (){
+                if (this.atividade.coordenador.email === this.$store.state.user.email) {
+                    return true;
+                }
+                this.atividade.participantes.forEach(function (element) {
+                   if (element.email === this.$store.state.user.email){
+                       return true;
+                   }
+                });
+                return false;
+    }
         },
         sockets: {
             connect() {
