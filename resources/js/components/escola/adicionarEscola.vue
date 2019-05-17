@@ -37,10 +37,13 @@
 
                     </div>
 
-                    <div class="modal-footer">
+                    <div v-if="!isLoading" class="modal-footer">
                         <button class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Registar
                         </button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
                     </div>
 
                 </div>
@@ -62,16 +65,21 @@
                     distrito: "",
                 },
                 selAberto:false,
+                isLoading: false,
             };
         },
         methods: {
             save: function () {
+                this.isLoading=true;
                 axios.post('/api/escolas', this.escola).then(response => {
                     this.toastPopUp("success", "Escola Criada!");
                     this.cleanForm();
                     this.$emit('getEscolas');
                     $('#addEscolaModal').modal('hide');
+                    this.isLoading=false;
+
                 }).catch(error => {
+                    this.isLoading=false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },

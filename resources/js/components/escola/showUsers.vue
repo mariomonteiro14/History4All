@@ -33,7 +33,7 @@
                                     </v-list-tile-title>
                                 </v-list-tile-content>
                                 <v-list-tile-action>
-                                    <v-btn icon flat @click.stop="showDeleteVerif(user.id)">
+                                    <v-btn icon flat @click.stop="showDeleteVerif(user)">
                                         <v-icon color="error" medium>delete_forever</v-icon>
                                     </v-btn>
                                 </v-list-tile-action>
@@ -48,7 +48,9 @@
         <v-dialog v-model="dialog" max-width="290">
             <v-card>
                 <v-card-title class="headline">Confirmação</v-card-title>
-                <v-card-text>Tem a certeza que que elimiar o aluno?</v-card-text>
+                <v-card-text v-if="userAApagar.tipo == 'aluno'">Tem a certeza que quer elimiar o aluno?</v-card-text>
+                <v-card-text v-else>Todas as turmas associadas a este professor ficaram sem professor.
+                    Tem a certeza que quer continuar?</v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="red darken-1" flat="flat" @click="closeDialog">
@@ -79,10 +81,10 @@
                 $('#turmaAlunosModal').modal('hide');
                 this.$router.push('/users/' + $id);
             },
-            showDeleteVerif(user_id) {
+            showDeleteVerif(user) {
                 $('#turmaAlunosModal').modal('hide');
                 this.dialog = true;
-                this.userAApagar = user_id;
+                this.userAApagar = user;
             },
             apagar() {
                 this.dialog = false;

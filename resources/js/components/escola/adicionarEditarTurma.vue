@@ -90,13 +90,16 @@
                     </div>
 
 
-                    <div class="modal-footer">
+                    <div v-if="!isLoading" class="modal-footer">
                         <button v-if="!turma.id" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">
                             Registar
                         </button>
                         <button v-else class="btn btn-info" v-on:click.prevent="edit" :disabled="hasErrors">Guardar
                         </button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
                     </div>
                 </div>
             </div>
@@ -126,6 +129,7 @@
                 selProfAberto: false,
                 selCicloAberto: false,
                 selAlunosAberto: false,
+                isLoading:false,
             };
         },
         methods: {
@@ -137,13 +141,16 @@
                 if (this.turma.professor && this.turma.professor.email) {
                     this.turma.professor = this.turma.professor.email;
                 }
+                this.isLoading = true;
 
                 axios.post('/api/escolas/' + this.escola.id + '/turmas', this.turma).then(response => {
                     this.toastPopUp("success", "Turma Criada!");
                     this.cleanForm();
                     $('#addTurmaModal').modal('hide');
+                    this.isLoading = false;
                     this.$emit('getEscolas');
                 }).catch(error => {
+                    this.isLoading = false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
@@ -151,13 +158,18 @@
                 if (this.turma.professor && this.turma.professor.email) {
                     this.turma.professor = this.turma.professor.email;
                 }
+                this.isLoading = true;
 
                 axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
                     this.toastPopUp("success", "Turma Atualizada!");
                     this.cleanForm();
                     $('#addTurmaModal').modal('hide');
+                    this.isLoading = false;
+
                     this.$emit('getEscolas');
                 }).catch(error => {
+                    this.isLoading = false;
+
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },

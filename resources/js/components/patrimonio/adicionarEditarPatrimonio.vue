@@ -1,5 +1,5 @@
 <template>
-    <div @focusout="closeLists">
+    <div>
         <!-- Modal Add Order-->
         <div class="modal fade" id="addPatrimonioModal" tabindex="-1" role="dialog" aria-labelledby="addPatrimonioModal"
              aria-hidden="true" data-keyboard="false" data-backdrop="static">
@@ -101,10 +101,13 @@
                         </v-list-tile>-->
                     </div>
 
-                    <div class="modal-footer">
+                    <div v-if="!isLoading" class="modal-footer">
                         <button v-if="isCreated()" class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Registar</button>
                         <button v-else class="btn btn-info" v-on:click.prevent="update" :disabled="hasErrors">Guardar</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
                     </div>
 
                 </div>
@@ -147,7 +150,8 @@
                 },
                 attachments: [],
                 removeImagesSelected: [],
-                links: ''
+                links: '',
+                isLoading: false,
             };
         },
         methods: {
@@ -223,6 +227,8 @@
                 return formData;
             },
             save: function () {
+                this.isLoading= true;
+
                 const config = {
                     headers: {'content-type': 'multipart/form-data'}
                 };
@@ -231,11 +237,15 @@
                     this.cleanForm();
                     this.$emit('getPat');
                     $('#addPatrimonioModal').modal('hide');
+                    this.isLoading= false;
                 }).catch(error => {
+                    this.isLoading= false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
             update() {
+                this.isLoading= true;
+
                 const config = {
                     headers: {'content-type': 'multipart/form-data'}
                 };
@@ -244,8 +254,11 @@
                     this.cleanForm();
                     this.$emit('getPat');
                     $('#addPatrimonioModal').modal('hide');
+                    this.isLoading= false;
 
                 }).catch(function (error) {
+                    this.isLoading= false;
+
                     this.toastPopUp("error", `${error.response.data.message}`);
                     console.log(error);
                 });

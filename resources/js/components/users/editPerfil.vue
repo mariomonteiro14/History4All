@@ -61,10 +61,13 @@
                             </v-layout>
                         <br>
                     </div>
-                    <div class="modal-footer">
+                    <div v-if="!isLoading" class="modal-footer">
                             <button class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Registar
                             </button>
                             <button flat class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
                     </div>
                 </div>
             </div>
@@ -79,6 +82,7 @@
                 user: this.$store.state.user,
                 passwordConf: '',
                 foto: '',
+                isLoading: false,
             }
         },
         methods: {
@@ -86,12 +90,16 @@
                 const config = {
                     headers: {'content-type': 'multipart/form-data'}
                 };
+                this.isLoading = true;
                 axios.post('/api/users/me', this.formCreate(), config).then(response => {
                     this.toastPopUp("success", "Informação Atualizada!");
                     this.$store.commit('setUser',response.data.data);
                     this.$emit('reloadUser');
                     $('#editProfileModal').modal('hide');
+                    this.isLoading = false;
+
                 }).catch(error => {
+                    this.isLoading = false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },

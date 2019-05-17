@@ -13,9 +13,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(EscolasSeeder::class);
         $this->call(TurmasSeeder::class);
-        $this->call(UsersSeeder::class);
         $this->call(PatrimoniosSeeder::class);
         $this->call(PatrimonioImagesSeeder::class);
+        $this->call(UsersSeeder::class);
+
 
     }
 }

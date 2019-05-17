@@ -77,7 +77,7 @@
         </v-app>-->
         <div v-if="isLoading">
             <br><br><br>
-            <v-progress-linear v-show="isLoading" v-slot:progress color="brown" indeterminate></v-progress-linear>
+            <v-progress-linear v-show="isLoading" v-slot:progress :color="colorDefault" indeterminate></v-progress-linear>
             <br><br><br><br><br><br><br><br><br>
         </div>
         <v-app v-else id="inspire">
@@ -280,6 +280,7 @@
                                                     <v-icon class="orange--text">fas fa-user</v-icon>
                                                     &nbsp Participantes:
                                                 </h5>
+
                                                 <v-divider></v-divider>
                                                 <v-flex style="max-height:350px; min-height:100px; overflow-y:auto">
                                                     <v-list class="form-group" subheader>
@@ -303,11 +304,14 @@
                                                             </v-list-tile-content>
                                                         </v-list-tile>
                                                     </v-list>
+
                                                 </v-flex>
+                                                <v-btn v-if="estado === 'coordenador'" color="orange"
+                                                       round class="white--text" @click="enviarNotificacao">
+                                                    Notificar &nbsp
+                                                    <v-icon small>send</v-icon>
+                                                </v-btn>
                                             </v-card-text>
-                                            <v-btn v-if="estado === 'coordenador'" color="info" @click="enviarNotificacao">
-                                                enviar notificação
-                                            </v-btn>
                                         </v-card>
                                     </v-flex>
                                 </v-layout>

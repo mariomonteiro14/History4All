@@ -75,6 +75,7 @@
                                         {{props.item.professor[0].nome}}
                                     </a>
                                 </div>
+                                <div v-else> ---------------- </div>
                             </td>
                             <td class="text-xs-center">{{props.item.alunos.length}}</td>
                             <td class="text-xs-center">{{props.item.ciclo}}</td>

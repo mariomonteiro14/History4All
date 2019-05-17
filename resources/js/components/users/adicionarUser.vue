@@ -73,12 +73,16 @@
 
                     </div>
 
-                    <div class="modal-footer">
+                    <div v-if="!isLoading" class="modal-footer">
                         <button class="btn btn-info" :disabled="hasErrors" v-on:click.prevent="save">Registar</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
+                    </div>
 
-                </div>
+
+                    </div>
 
             </div>
         </div>
@@ -101,18 +105,23 @@
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'
                 ],
                 selAberto: false,
+                isLoading: false,
             };
         },
         methods: {
 
             save: function () {
                 console.log(this.user);
+                this.isLoading = true;
                 axios.post('/api/users', this.user).then(response => {
                     this.toastPopUp("success", "Utilizador Criado!");
                     this.cleanForm();
                     this.$emit('getUsers');
                     $('#addUserModal').modal('hide');
+                    this.isLoading = false;
+
                 }).catch(error => {
+                    this.isLoading = false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },

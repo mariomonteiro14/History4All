@@ -123,7 +123,7 @@
                             ></v-combobox>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div v-if="!isLoading" class="modal-footer">
                         <button v-if="!atividade.id" class="btn btn-info" v-on:click.prevent="save"
                                 :disabled="hasErrors">
                             Registar
@@ -132,6 +132,9 @@
                             Guardar
                         </button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
                     </div>
                 </div>
             </div>
@@ -162,6 +165,7 @@
                 chatExist: false,
                 patrimoniosSelecionados: [],
                 chatAssunto: '',
+                isLoading: false,
             };
         },
         methods: {
@@ -169,24 +173,30 @@
                 return this.atividade_id > 0 ? false : true;
             },
             save: function () {
+                this.isLoading = true;
                 this.prepararAtividade();
                 axios.post('/api/atividades', this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Criada!");
                     this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
+                    this.isLoading = false;
                     this.cleanForm();
                 }).catch(error => {
+                    this.isLoading = false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
             edit: function () {
+                this.isLoading = true;
                 this.prepararAtividade();
                 axios.put('/api/atividades/' + this.atividade.id, this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Atualizada!");
                     this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
+                    this.isLoading = false;
                     this.cleanForm();
                 }).catch(error => {
+                    this.isLoading = false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
