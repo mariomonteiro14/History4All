@@ -7,7 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class AlterarPassword extends Mailable
+class InserirPassword extends Mailable
 {
     use Queueable, SerializesModels;
     public $link;

@@ -84,4 +84,22 @@ io.on('connection', function (socket) {
 			});
 		}
 	});
+
+	socket.on('atualizar_notificacoes', function (userId) {
+		let userInfo = loggedUsers.userInfoByID(userId);
+		let socket_id = userInfo !== undefined ? userInfo.socketID : null;
+		if (socket_id !== null) {
+			io.to(socket_id).emit('atualizarNotificacoes');
+		}
+	});
+
+	socket.on('multiplos_atualizar_notificacoes', function (users) {
+		users.forEach(user =>{
+			let userInfo = loggedUsers.userInfoByID(user.id);
+			let socket_id = userInfo !== undefined ? userInfo.socketID : null;
+			if (socket_id !== null) {
+				io.to(socket_id).emit('atualizarNotificacoes');
+			}
+		});
+	});
 });

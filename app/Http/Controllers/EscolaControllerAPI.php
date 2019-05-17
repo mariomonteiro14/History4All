@@ -131,8 +131,8 @@ class EscolaControllerAPI extends Controller
 
         $turma->ciclo = $request->input('ciclo');
 
+        $professor = User::where('email', $request->input('professor'))->first();
         if ($request->has('professor') && $request->input('professor') != "") {
-            $professor = User::where('email', $request->input('professor'))->first();
             if (!$professor || $professor->tipo != 'professor') {
                 return response()->json("Professor Invalido", 500);
             }
@@ -142,21 +142,30 @@ class EscolaControllerAPI extends Controller
         }
 
         if($request->has('alunos') && sizeof($request->alunos) > 0){
+            $alunosId = array_column($request->alunos, 'id');
             foreach (User::where('turma_id', $turma->id)->get() as $aluno){
-                $aluno->turma_id = null;
-                $aluno->save();
+                if (!in_array($aluno->id, $alunosId)){//se foi removido
+                    $aluno->turma_id = null;
+                    $aluno->save();
+                    $this->notificacaoEEmail($aluno, 
+                        "Foi removido(a) da turma" . $turma->nome . " estando de momento sem turma associada",
+                        "<h3>Foi removido(a) da sua turma</h3><p>Já não está na turma " . $turma->nome . ". De momento não tem turma associada</p>");
+                }
             }
-
+            $alunos = User::where('turma_id', $turma->id)->get()->pluck('id')->toArray();
             foreach ($request->alunos as $aluno){
-                $aluno = User::findOrFail($aluno['id']);
-                $aluno->turma_id = $turma->id;
-                $aluno->save();
+                if (!in_array($aluno['id'], $alunos)) {//se foi inserid
+                    $aluno = User::findOrFail($aluno['id']);
+                    $aluno->turma_id = $turma->id;
+                    $aluno->save();
+                    $this->notificacaoEEmail($aluno, 
+                        "Foi movido(a) para a turma" . $turma->nome . " que é lecionada pelo(a) professor(a) " . $professor->nome, 
+                        "<h3>Foi movido(a) para a turma</h3><p>A sua turma passou a ser a " . $turma->nome . 
+                        " que é lecionada pelo(a) professor(a) " . $professor->nome . "</p>");
+                }
             }
         }
-
-
         $turma->save();
-
         return response()->json(new TurmaResource($turma), 201);
 
     }

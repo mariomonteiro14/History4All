@@ -180,6 +180,9 @@
             novaNotificacao(mensagem) {
                 this.notificacoes.unshift(mensagem);
                 this.novasNotificacoes++;
+            },
+            atualizarNotificacoes(){
+                this.getNotificacoes();
             }
         }
     };

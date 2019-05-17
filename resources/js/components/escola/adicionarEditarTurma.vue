@@ -123,8 +123,8 @@
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
                 professores: [],
                 alunos: [],
-                alunosSelected: [],
-                removedAlunos: false,
+                //alunosSelected: [],
+                //removedAlunos: false,
 
                 selProfAberto: false,
                 selCicloAberto: false,
@@ -133,10 +133,10 @@
             };
         },
         methods: {
-            removeAluno(aluno) {
+            /*removeAluno(aluno) {
                 this.alunosSelected.splice(this.alunosSelected.indexOf(aluno), 1);
                 this.alunosSelected.alunos = [...this.alunosSelected];
-            },
+            },*/
             save: function () {
                 if (this.turma.professor && this.turma.professor.email) {
                     this.turma.professor = this.turma.professor.email;
@@ -162,6 +162,7 @@
 
                 axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
                     this.toastPopUp("success", "Turma Atualizada!");
+                    this.$socket.emit('multiplos_atualizar_notificacoes', this.turma.alunos);
                     this.cleanForm();
                     $('#addTurmaModal').modal('hide');
                     this.isLoading = false;

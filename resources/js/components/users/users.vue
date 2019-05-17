@@ -120,51 +120,57 @@
         <br><br>
         <add-user show-type="true" :user="userForm" v-on:getUsers="getUsers"></add-user>
 
-        <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal"
-             aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content" @click="closeLists">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editUserModal">Editar Utilizador</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="container box">
-                            <div class="form-group" v-if="userAtual.tipo != 'admin'" @click="setOpenList">
-                                <v-select
-                                    ref="selectE"
-                                    label="Escola"
-                                    v-model="userAtual.escola"
-                                    :items="escolas"
-                                    item-text="nome"
-                                    :rules="[v => !!v || 'Escola é obrigatório']"
-                                    class="input-group--focused"
-                                    required
-                                ></v-select>
-                            </div>
-                            <span v-if="userAtual.tipo == 'professor'">Se alterar a escola, todas as turmas associadas a este professor ficaram sem professor</span>
-                            <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola"
-                                 @click="setOpenList">
-                                <v-select
-                                    ref="selectT"
-                                    label="Turma"
-                                    v-model="userAtual.turma"
-                                    :items="turmas"
-                                    item-text="nome"
-                                    class="input-group--focused"
-                                    clearable
-                                    required
-                                    @click:clear="userAtual.turma=''"
-                                ></v-select>
+
+        <div @focusout="closeLists">
+            <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal"
+                aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content" @click="closeLists">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editUserModal">Editar Utilizador</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container box">
+                                <div class="form-group" v-if="userAtual.tipo != 'admin'" @click="setOpenList">
+                                    <v-select
+                                        ref="selectE"
+                                        label="Escola"
+                                        v-model="userAtual.escola"
+                                        :items="escolas"
+                                        item-text="nome"
+                                        :rules="[v => !!v || 'Escola é obrigatório']"
+                                        class="input-group--focused"
+                                        required
+                                    ></v-select>
+                                </div>
+                                <span v-if="userAtual.tipo == 'professor'">Se alterar a escola, todas as turmas associadas a este professor ficaram sem professor</span>
+                                <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola"
+                                    @click="setOpenList">
+                                    <v-select
+                                        ref="selectT"
+                                        label="Turma"
+                                        v-model="userAtual.turma"
+                                        :items="turmas"
+                                        item-text="nome"
+                                        class="input-group--focused"
+                                        clearable
+                                        required
+                                        @click:clear="userAtual.turma=''"
+                                    ></v-select>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-info" v-on:click.prevent="saveEdit"
-                                :disabled="!userAtual.escola">Guardar
-                        </button>
+                        <div class="modal-footer" v-if="!aEnviar">
+                            <button class="btn btn-info" v-on:click.prevent="saveEdit"
+                                    :disabled="!userAtual.escola">Guardar
+                            </button>
+                        </div>
+                        <div v-else class="modal-footer">
+                            <loader color="green" size="32px"></loader>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -218,7 +224,7 @@
                 escolas: [],
                 selAberto: false, //atributo pra corrigir bug no modal
                 isLoading: true,
-
+                aEnviar: false
             }
         },
         methods: {
@@ -301,20 +307,24 @@
                 });
             },
             saveEdit() {
-                console.log(this.userAtual);
+                this.aEnviar = true;
                 axios.put('/api/users/' + this.userAtual.id, this.userAtual)
                     .then(response => {
+                        this.aEnviar = false;
                         this.toastPopUp("success", "Utilizador Atualizado");
+                        this.$socket.emit('atualizar_notificacoes', this.userAtual.id);
                         this.getUsers();
                         $('#editUserModal').modal('hide');
                     }).catch(function (error) {
-                    this.toastPopUp("error", "`${error.response.data.message}`");
-                    console.log(error);
+                    this.aEnviar = false;
+                        this.toastPopUp("error", "`${error.response.data.message}`");
+                        console.log(error);
                 });
             },
             restaurarUser($user) {
                 axios.put('/api/users/restaurar/' + $user.id).then(res => {
                     this.toastPopUp("success", "Uilizador restaurado");
+                    this.$socket.emit('atualizar_notificacoes', $user.id);
                     this.getUsersTrashed();
                 }).catch(function (error) {
                     this.toastPopUp("error", "`${error.response.data.message}`");
@@ -343,7 +353,7 @@
             //Metodos pra corrigir bug nos Modal
             setOpenList() {
                 setTimeout(() => {
-                    if (this.$refs.selectT.isMenuActive == true || this.$refs.selectE.isMenuActive == true) {
+                    if (this.$refs.selectT && this.$refs.selectT.isMenuActive == true || this.$refs.selectE.isMenuActive == true) {
                         setTimeout(() => {
                             this.selAberto = true;
                         }, 30);
@@ -355,7 +365,9 @@
                 if (this.selAberto == true) {
                     this.selAberto = false;
                     this.$refs.selectE.isMenuActive = false;
-                    this.$refs.selectT.isMenuActive = false;
+                    if (this.$refs.selectT){
+                        this.$refs.selectT.isMenuActive = false;
+                    }
                 }
             },
             ////////////////////////////////////////////////

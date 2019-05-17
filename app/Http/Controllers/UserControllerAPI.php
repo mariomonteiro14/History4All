@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Escola;
 use App\Mail\ContactarAdmin;
-use App\Mail\AlterarPassword;
+use App\Mail\InserirPassword;
+use App\Mail\MensagemEmail;
 use App\Notificacao;
 use App\Turma;
 use Illuminate\Http\Request;
@@ -178,7 +179,7 @@ class UserControllerAPI extends Controller
 
 
         //enviar email
-        Mail::to($user->email)->send(new AlterarPassword('/users/registarPassword/' . $user->getRememberToken(), 'email.registar'));
+        Mail::to($user->email)->send(new InserirPassword('/users/registarPassword/' . $user->getRememberToken(), 'email.registar'));
         $user->save();
         return response()->json([
             'message' => 'Successfully created user!'
@@ -243,6 +244,15 @@ class UserControllerAPI extends Controller
             $escola = Escola::where('nome', $request->escola)->first();
 
             if ($escola->id != $user->escola_id) {
+                if (!$escola){
+                    $this->notificacaoEEmail($user, 
+                        "Foi removido(a) da escola " . $escola->nome . " estando de momento sem escola associada", 
+                        "<h3>Foi removido(a) da sua escola</h3><p>Já não está na escola " . $escola->nome . ". De momento não tem escola associada</p>");
+                } else{
+                    $this->notificacaoEEmail($user, 
+                        "Foi movido(a) para a escola " . $escola->nome . " estando de momento sem escola associada", 
+                        "<h3>Foi movido(a) para a escola</h3><p>A sua escola passou a ser a " . $escola->nome . "</p>");
+                }
                 $turmas = Turma::where('professor_id', $user->id)->get();
                 foreach ($turmas as $turma) {
                     $turma->professor_id = null;
@@ -277,9 +287,13 @@ class UserControllerAPI extends Controller
             ], 403);
         }
         if ($user->trashed()) {
+            $this->notificacaoEEmail($user, "A sua conta foi apagada", 
+                "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi permanentemente apagada</h3>");
             Storage::disk('public')->delete('profiles/' . $user->foto);
             $user->forceDelete();
         } else {
+            $this->notificacaoEEmail($user, "A sua conta foi apagada", 
+                "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi apagada</h3>");
             $user->delete();
         }
         return response()->json(null, 204);
@@ -289,6 +303,8 @@ class UserControllerAPI extends Controller
     {
         $user = User::onlyTrashed()->find($id);
         $user->restore();
+        $this->notificacaoEEmail($user, "A sua conta foi restaurada", 
+            "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi restaurada</h3>");
         return response()->json("user restored", 201);
     }
 
@@ -332,7 +348,7 @@ class UserControllerAPI extends Controller
             ]);
             $notificacao->save();
         };
-        return response()->json($notificacao, 201);
+        return response()->json(null, 201);
     }
 
     public function updateNotificacoes(Request $request){
@@ -362,7 +378,7 @@ class UserControllerAPI extends Controller
 
         $user->setRememberToken(Str::random(10));
         $user->save();
-        Mail::to($user->email)->send(new AlterarPassword('/users/resetPassword/' . $user->getRememberToken(), 'email.resetPassword'));
+        Mail::to($user->email)->send(new InserirPassword('/users/resetPassword/' . $user->getRememberToken(), 'email.resetPassword'));
         return response()->json([
             'message' => 'Email enviado'
         ], 200);
