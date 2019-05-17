@@ -5,7 +5,8 @@
         <br>
         <div v-if="isLoading">
             <br><br><br>
-            <v-progress-linear v-show="isLoading" v-slot:progress :color="colorDefault" indeterminate></v-progress-linear>
+            <v-progress-linear v-show="isLoading" v-slot:progress :color="colorDefault"
+                               indeterminate></v-progress-linear>
             <br><br><br><br><br><br><br><br><br>
         </div>
         <div v-if="!isLoading && !profileUser.id">
@@ -23,7 +24,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <div class="profile-img">
-                        <v-avatar size="150px" :color="colorDefault" >
+                        <v-avatar size="150px" :color="colorDefault">
                             <img v-if="profileUser.foto != null" v-bind:src="getUserPhoto(profileUser.foto)" alt=""/>
                             <v-icon v-else class="white--text" large>far fa-user</v-icon>
                         </v-avatar>
@@ -64,32 +65,32 @@
                     <div class="tab-content profile-tab" id="myTabContent">
                         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <label>Nome</label>
+                                <div class="col-md-2">
+                                    <label>Nome:</label>
                                 </div>
                                 <div class="col-md-6">
                                     <p>{{profileUser.nome}}</p>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
-                                    <label>Email</label>
+                                <div class="col-md-2">
+                                    <label>Email:</label>
                                 </div>
                                 <div class="col-md-6">
                                     <p>{{profileUser.email}}</p>
                                 </div>
                             </div>
                             <div v-if="profileUser.tipo != 'admin'" class="row">
-                                <div class="col-md-6">
-                                    <label>Escola</label>
+                                <div class="col-md-2">
+                                    <label>Escola:</label>
                                 </div>
                                 <div class="col-md-6">
                                     <p>{{profileUser.escola[0]}}</p>
                                 </div>
                             </div>
                             <div v-if="profileUser.tipo == 'aluno'" class="row">
-                                <div class="col-md-6">
-                                    <label>Turma</label>
+                                <div class="col-md-2">
+                                    <label>Turma:</label>
                                 </div>
                                 <div class="col-md-6">
                                     <p>{{profileUser.turma[0]}}</p>
@@ -100,6 +101,15 @@
                 </div>
             </div>
         </div>
+        <v-layout align-content-start v-if="!isLoading && id">
+            <v-flex xs1 offset-sm1>
+                <v-btn flat @click="$router.go(-1)">
+                    <h6 class="primary--text">
+                        <v-icon>fa fa-arrow-left</v-icon>&nbsp Voltar
+                    </h6>
+                </v-btn>
+            </v-flex>
+        </v-layout>
         <br><br><br>
         <edit-profile @reloadUser="profileUser = $store.state.user"></edit-profile>
         <contact-user v-if="profileUser.email" :email-from="profileUser.email"></contact-user>

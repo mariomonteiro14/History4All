@@ -77,10 +77,21 @@
         </v-app>-->
         <div v-if="isLoading">
             <br><br><br>
-            <v-progress-linear v-show="isLoading" v-slot:progress :color="colorDefault" indeterminate></v-progress-linear>
+            <v-progress-linear v-show="isLoading" v-slot:progress :color="colorDefault"
+                               indeterminate></v-progress-linear>
             <br><br><br><br><br><br><br><br><br>
         </div>
         <v-app v-else id="inspire">
+
+            <v-layout align-content-start v-if="!isLoading">
+                <v-flex xs1>
+                    <v-btn flat @click="$router.push('/atividades')">
+                        <h5 class="primary--text">
+                            <v-icon>fa fa-arrow-left</v-icon>&nbsp Atividades
+                        </h5>
+                    </v-btn>
+                </v-flex>
+            </v-layout>
             <v-container fluid grid-list-sm>
                 <v-layout justify-center>
                     <v-flex xs12 sm12 md12>
@@ -232,6 +243,9 @@
                                                                             <img v-if="mensagem.user.foto" width="30px"
                                                                                  height="30px"
                                                                                  v-bind:src="getUserPhoto(mensagem.user.foto)"/>
+                                                                            <v-icon v-else class="indigo--text" small>
+                                                                                far fa-user
+                                                                            </v-icon>
                                                                         </v-list-tile-avatar>
                                                                         <v-list-tile-content>
                                                                             <v-list-tile-title
@@ -292,7 +306,8 @@
                                                         >
                                                             <v-list-tile-avatar>
                                                                 <img v-if="aluno.foto" :src="getUserPhoto(aluno.foto)">
-                                                                <v-icon v-else class="indigo--text" small>far fa-user</v-icon>
+                                                                <v-icon v-else class="indigo--text" small>far fa-user
+                                                                </v-icon>
                                                             </v-list-tile-avatar>
 
                                                             <v-list-tile-content>
@@ -362,7 +377,8 @@
                 </div>
             </div>
         </div>
-        <enviar-notificacao ref="enviarNotificacaoModal" :tipo="atividade.titulo" :users="atividade.participantes"></enviar-notificacao>
+        <enviar-notificacao ref="enviarNotificacaoModal" :tipo="atividade.titulo"
+                            :users="atividade.participantes"></enviar-notificacao>
     </div>
 </template>
 <script type="text/javascript">
@@ -451,7 +467,7 @@
                 })
             },
             onScroll(e) {
-                if (this.actualScroll < e.target.scrollTop){
+                if (this.actualScroll < e.target.scrollTop) {
                     this.scrollDown();
                 }
                 if (e && e.target.scrollTop === 0 && this.atividade.chat.chat_mensagens.length !== this.mensagensDoChat.length) {
@@ -462,7 +478,7 @@
                 }
                 this.actualScroll = e.target.scrollTop;
             },
-            scrollDown(){
+            scrollDown() {
                 document.getElementById("scroll-target").scrollTop = document.getElementById("scrolled-content").offsetHeight;
             }
         },
@@ -501,7 +517,7 @@
             },
         },
         sockets: {
-            connect(){
+            connect() {
                 if (this.atividade.chat && this.estado) {
                     this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
                 }

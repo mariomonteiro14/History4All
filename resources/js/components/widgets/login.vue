@@ -63,8 +63,8 @@ import pedidoNovaPassword from './pedidoNovaPassword.vue';
                     this.$store.commit('setToken',response.data.access_token);
                     return axios.get('/api/users/me');
                 }).then(response => {
-                    this.$emit("logging");
                     this.$store.commit('setUser',response.data.data);
+                    this.$emit("logging");
                     this.toastPopUp("success", `Bem Vindo ${this.$store.state.user.nome}`);
                     this.user.email = '';
                     this.user.password = '';

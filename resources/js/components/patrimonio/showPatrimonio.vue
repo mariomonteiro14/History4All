@@ -67,6 +67,15 @@
                 </v-flex>
             </v-layout>
         </v-app>
+            <v-layout align-content-center>
+                <v-flex xs1 sm7 offset-sm3>
+                    <v-btn flat @click="$router.go(-1)">
+                        <h6 class="primary--text">
+                            <v-icon>fa fa-arrow-left</v-icon>&nbsp Voltar
+                        </h6>
+                    </v-btn>
+                </v-flex>
+            </v-layout>
         <div class="modal fade" id="adicionarImagemModal" tabindex="-1" role="dialog" aria-labelledby="contactModal"
              aria-hidden="true">
             <div class="modal-dialog" role="document">

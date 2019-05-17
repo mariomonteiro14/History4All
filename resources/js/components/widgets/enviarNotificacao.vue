@@ -39,11 +39,14 @@
                             ></v-combobox>
                         </div>
                     </div>
-                    <div class="modal-footer">
+                    <div v-if="aEnviar" class="modal-footer">
                         <button class="btn btn-info" v-on:click.prevent="enviar" :disabled="hasErrors">
                             Enviar
                         </button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
                     </div>
                 </div>
             </div>
@@ -59,11 +62,13 @@
             return {
                 mensagem: '',
                 selUsersAberto: false,
-                usersSelected: []
+                usersSelected: [],
+                aEnviar: false,
             };
         },
         methods: {
             enviar: function () {
+                this.aEnviar = true;
                 axios.post('/api/notificacoes', {
                     'de': (this.tipo !== 'turma' ? 'coordenador da atividade: ' + this.tipo :
                         this.$store.state.user.tipo + ' ' + this.$store.state.user.nome),
@@ -73,7 +78,9 @@
                     this.$socket.emit('nova_notificacao', response.data, this.usersSelected);
                     this.toastPopUp("success", "Notificação enviada com sucesso!");
                     this.cancel();
+                    this.aEnviar = false;
                 }).catch(error => {
+                    this.aEnviar = false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },

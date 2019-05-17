@@ -24,12 +24,12 @@
             <b-dropdown v-if="this.$store.state.user && $store.state.user.tipo !== 'aluno'" text="Outline Danger" right variant="Success" class="m-2">
                 <template slot="button-content">GESTÃO</template>
                 <div v-if="$store.state.user.tipo === 'admin'">
-                    <b-dropdown-item to="/admin/patrimonios"><i class="material-icons sm1">build</i> Gerir Patrimónios</b-dropdown-item>
-                    <b-dropdown-item to="/admin/users"><i class="material-icons vsm-icon">group</i> Gerir Utilizadores</b-dropdown-item>
-                    <b-dropdown-item to="/admin/escolas"><i class="material-icons">home</i> Gerir Escolas | Turmas</b-dropdown-item>
+                    <b-dropdown-item to="/admin/patrimonios"><v-icon> &nbsp build</v-icon> Gerir Patrimónios</b-dropdown-item>
+                    <b-dropdown-item to="/admin/users"><v-icon>group</v-icon> &nbsp Gerir Utilizadores</b-dropdown-item>
+                    <b-dropdown-item to="/admin/escolas"><v-icon>home</v-icon> &nbsp Gerir Escolas | Turmas</b-dropdown-item>
                 </div>
                 <div v-if="$store.state.user.tipo === 'professor'">
-                    <b-dropdown-item to="/escola/turmas"><i class="material-icons vsm-icon">group</i>Turmas</b-dropdown-item>
+                    <b-dropdown-item to="/escola/turmas"><v-icon>group</v-icon>&nbsp Turmas</b-dropdown-item>
                 </div>
             </b-dropdown>
         <v-toolbar-items v-if="!this.$store.state.user">
@@ -143,6 +143,7 @@
             },
             logging(){
                 this.isLoading = !this.isLoading;
+                this.getNotificacoes();
             },
             notificacoesLidas(){
                 if (this.novasNotificacoes > 0){
@@ -155,6 +156,9 @@
                 }
             },
             getNotificacoes(){
+                if (!this.$store.state.user){
+                    return;
+                }
                 axios.get('/api/me/notificacoes')
                     .then(response => {
                         this.notificacoes = response.data.data;
