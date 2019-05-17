@@ -45,7 +45,7 @@
                         </h3>
 
                         <h2 class="font-weight-light">
-                            Somos uma plataforma de história iterativa para ensino básico e secundário.
+                            Somos uma plataforma de história interativa para ensino básico e secundário.
                         </h2>
                         <br>
                         <v-card-actions>
