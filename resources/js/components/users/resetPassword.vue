@@ -23,7 +23,6 @@
                                                           required
                                             ></v-text-field>
                                         </div>
-
                                         <div class="form-group">
                                             <v-text-field id="inputPasswordConf"
                                                           v-model="passwordConfirmation"
@@ -33,14 +32,6 @@
                                                           required
                                             ></v-text-field>
                                         </div>
-                                        <br>
-                                        <div class="custom-file">
-                                            <label class="custom-file-label" for="upload-files">{{getFilesText}}</label>
-                                            <input id="upload-files" type="file" multiple
-                                                   class="form-control custom-file-input"
-                                                   @change="handleFile">
-                                        </div>
-                                        <br><br>
                                         <button type="submit" class="btn btn-success btn-lg float-right" id="btnLogin"
                                                 v-on:click.prevent="formValidateAndSend" :disabled="!formCompleted">
                                             Guardar
@@ -67,13 +58,12 @@
             return {
                 user: {},
                 passwordConfirmation: '',
-                foto: '',
             };
         },
         methods: {
             getUser: function () {
                 axios.get("/api/users/token/" + this.token).then(response => {
-                    if (response.data === "" && response.data.email_verified_at === null) {//token inválido
+                    if (response.data === "") {
                         this.$router.push({name: 'index'});
                     }
                     this.user = response.data;
@@ -86,44 +76,19 @@
                     const config = {
                         headers: {'content-type': 'multipart/form-data'}
                     };
-                    axios.post('/api/register/activate/' + this.user.id, this.formCreate(), config).then(response => {
-                        this.toastPopUp('success', 'Conta Ativada');
+                    axios.post('/api/register/novaPassword/' + this.user.id, this.formCreate(), config).then(response => {
+                        this.toastPopUp('success', 'Password atualizada com sucesso!');
                         this.$router.push('/');
                     }).catch(error => {
-                        this.$toasted.error(`Erro ativando conta`, {
-                            position: "bottom-center",
-                            duration: 3000,
-                        });
+                        this.toastPopUp("error", `Erro ao guardar nova password`);
                     });
                 } else {
-                    this.$toasted.error(`Passwords don't match`, {
-                        position: "bottom-center",
-                        duration: 3000,
-                    });
+                    this.toastPopUp("error", `A password e a passowrd de confirmação são diferentes`);
                 }
             },
-            handleFile: function (e) {
-                let files = e.target.files || e.dataTransfer.files;
-
-                if (!files.length || files.length > 1) {
-                    return false;
-                }
-
-                if (!files[0].type.includes("image/")) {
-                    this.toastPopUp('error', 'Ficheiro tem de ser uma imagem');
-                    return;
-                }
-
-                this.foto = files[0];
-            },
-
             formCreate: function () {
                 let formData = new FormData();
                 formData.append('password', this.user.password);
-                if (this.foto != '') {
-                    formData.append('foto', this.foto);
-                }
-
                 return formData;
             },
         },
@@ -140,13 +105,6 @@
                 }
                 return (this.user.password === this.passwordConfirmation) ? '' : 'Password nao combinam'
             },
-            getFilesText() {
-                if (this.foto == "") {
-                    return "Adicione foto de perfil";
-                } else {
-                    return "Foto carregada";
-                }
-            }
         },
 
 

@@ -33,7 +33,7 @@ const footer = Vue.component('footerc', require('./components/widgets/foter.vue'
 
 Vue.use(new VueSocketio({
     debug: true,
-    connection: 'http://127.0.0.1:8080' //TODO
+    connection: 'http://142.93.219.146:8080' //TODO
 }));
 
 Vue.component('loader', require('vue-spinner/src/MoonLoader.vue').default); //http://greyby.github.io/vue-spinner/?ref=madewithvuejs.com
@@ -50,6 +50,7 @@ const routes = [
     { path: '/atividade/:id', name: 'atividadesShow',component: require('./components/atividades/showAtividade.vue').default, props: true},
     { path: '/admin/users', name: 'gestor_users',component: require('./components/users/users.vue').default},
     { path: '/users/registarPassword/:token', name: 'registarPassword',component: require('./components/users/registarPassword.vue').default, props: true},
+    { path: '/users/resetPassword/:token', name: 'resetPassword',component: require('./components/users/resetPassword.vue').default, props: true},
     { path: '/escola/turmas', name: 'turmas',component: require('./components/escola/turmas.vue').default},
     { path: '/*', name: 'unknown'},
 
