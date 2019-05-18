@@ -16,28 +16,20 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function notificacaoEEmail($user, $notificacaoMensagem, $emailMensagem){
-        //notificação
+    public function notificacaoEEmail($user, $notificacaoMensagem, $assunto, $emailMensagem){
         $de = User::findOrFail(Auth::id());
-        $request= [
-            'userId' => $user->id,
-            'mensagem' => $notificacaoMensagem,
-            'de' => $de->tipo . " " . $de->nome,
-            ];
-        $this->enviarNotificacao($request);
-        //email
-        Mail::to($user->email)->send(new MensagemEmail($emailMensagem));
-    }
-
-    public function enviarNotificacao($request) {
         $notificacao = new Notificacao();
         $notificacao->fill([
-            'user_id' => $request['userId'],
-            'mensagem' => $request['mensagem'],
-            'de' => $request['de'],
+            'user_id' => $user->id,
+            'mensagem' => $notificacaoMensagem,
+            'de' => $de->tipo . " " . $de->nome,
             'data' => date("Y-m-d H:i:s"),
             'nova' => '1'
         ]);
         $notificacao->save();
+        Mail::to($user->email)->send(new MensagemEmail($de, $assunto, $emailMensagem));
+        
+        //Mail::send('emails.hello', $data, function($message) use ($data) { $message->from($data['email'] , $data['first_name']);
+        //$message->to($user->email, $user->nome)->subject($notificacaoMensagem); });
     }
 }

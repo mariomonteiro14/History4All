@@ -247,11 +247,13 @@ class UserControllerAPI extends Controller
                 if (!$escola){
                     $this->notificacaoEEmail($user, 
                         "Foi removido(a) da escola " . $escola->nome . " estando de momento sem escola associada", 
-                        "<h3>Foi removido(a) da sua escola</h3><p>Já não está na escola " . $escola->nome . ". De momento não tem escola associada</p>");
+                        "Ficou sem escola associada escola associada",
+                        "<h3>Foi removido(a) da sua escola no <a href='http://142.93.219.146/'>History4All</a></h3><p>Já não está na escola " . $escola->nome . ". De momento não tem escola associada</p>");
                 } else{
                     $this->notificacaoEEmail($user, 
                         "Foi movido(a) para a escola " . $escola->nome . " estando de momento sem escola associada", 
-                        "<h3>Foi movido(a) para a escola</h3><p>A sua escola passou a ser a " . $escola->nome . "</p>");
+                        "A sua escola foi alterada",
+                        "<h3>Foi movido(a) para a escola no <a href='http://142.93.219.146/'>History4All</a></h3><p>A sua escola passou a ser a " . $escola->nome . "</p>");
                 }
                 $turmas = Turma::where('professor_id', $user->id)->get();
                 foreach ($turmas as $turma) {
@@ -287,12 +289,12 @@ class UserControllerAPI extends Controller
             ], 403);
         }
         if ($user->trashed()) {
-            $this->notificacaoEEmail($user, "A sua conta foi apagada", 
-                "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi permanentemente apagada</h3>");
+            $this->notificacaoEEmail($user, "A sua conta foi apagada", "A sua conta foi apagada",
+                "<h3>A sua conta no <a href='<ahttp://142.93.219.146/'>History4All</a> foi permanentemente apagada</h3>");
             Storage::disk('public')->delete('profiles/' . $user->foto);
             $user->forceDelete();
         } else {
-            $this->notificacaoEEmail($user, "A sua conta foi apagada", 
+            $this->notificacaoEEmail($user, "A sua conta foi apagada", "A sua conta foi apagada",
                 "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi apagada</h3>");
             $user->delete();
         }
@@ -303,7 +305,7 @@ class UserControllerAPI extends Controller
     {
         $user = User::onlyTrashed()->find($id);
         $user->restore();
-        $this->notificacaoEEmail($user, "A sua conta foi restaurada", 
+        $this->notificacaoEEmail($user, "A sua conta foi restaurada", "A sua conta foi restaurada",
             "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi restaurada</h3>");
         return response()->json("user restored", 201);
     }
@@ -314,9 +316,9 @@ class UserControllerAPI extends Controller
             'email' => 'required|string|email',
             'texto' => 'required|string|min:50',
         ]);
-        $user = User::where('tipo','admin')->first();
-
-        Mail::to($user->email)->send(new ContactarAdmin($request->email, $request->assunto, $request->texto));
+        $para = User::where('tipo','admin')->first();
+        $de = new UserResource(User::where('email', $request->email)->first()) ?? $request->email;
+        Mail::to($para->email)->send(new ContactarAdmin($de , $request->assunto, $request->texto));
     }
 
     public function notificacoes(Request $request){

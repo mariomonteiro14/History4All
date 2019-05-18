@@ -149,7 +149,9 @@ class EscolaControllerAPI extends Controller
                     $aluno->save();
                     $this->notificacaoEEmail($aluno, 
                         "Foi removido(a) da turma" . $turma->nome . " estando de momento sem turma associada",
-                        "<h3>Foi removido(a) da sua turma</h3><p>Já não está na turma " . $turma->nome . ". De momento não tem turma associada</p>");
+                        "Ficou se turma associada",
+                        "<h3>Foi removido(a) da sua turma</h3><p>Já não está na turma " . $turma->nome . ". De momento não tem turma associada 
+                        no <a href='http://142.93.219.146/'>History4All</a></p>");
                 }
             }
             $alunos = User::where('turma_id', $turma->id)->get()->pluck('id')->toArray();
@@ -160,8 +162,9 @@ class EscolaControllerAPI extends Controller
                     $aluno->save();
                     $this->notificacaoEEmail($aluno, 
                         "Foi movido(a) para a turma " . $turma->nome . " que é lecionada pelo(a) professor(a) " . $professor->nome, 
+                        "A sua turma foi alterada",
                         "<h3>Foi movido(a) para a turma</h3><p>A sua turma passou a ser a " . $turma->nome . 
-                        " que é lecionada pelo(a) professor(a) " . $professor->nome . "</p>");
+                        " que é lecionada pelo(a) professor(a) " . $professor->nome . "no <a href='http://142.93.219.146/'>History4All</a></p>");
                 }
             }
         }

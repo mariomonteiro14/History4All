@@ -125,6 +125,7 @@ class AtividadeControllerAPI extends Controller
                 $atividadeParticipante->save();
                 $this->notificacaoEEmail(User::findOrFail($participante['id']),
                     "Foi inserido(a) na atividade" . $atividade->titulo . " que está a ser coordenada pelo(a) porfessor(a) " . $coordenador->nome,
+                    "Foi inserido(a) na atividade" . $atividade->titulo,
                     "<h3>Foi inserido(a) na atividade" . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " .
                     $coordenador->nome . "</p><p>A atividade consiste em: " . $atividade->descricao . "</p>");
             }
@@ -191,6 +192,7 @@ class AtividadeControllerAPI extends Controller
                 $atividadeParticipante->save();
                 $this->notificacaoEEmail(User::findOrFail($participanteId),
                     "Foi inserido(a) na atividade " . $atividade->titulo . " que está a ser coordenada pelo(a) porfessor(a) " . $coordenador->nome,
+                    "Foi inserido(a) na atividade" . $atividade->titulo,
                     "<h3>Foi inserido(a) na atividade " . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " .
                     $coordenador->nome . "</p><p>A atividade consiste em: " . $atividade->descricao . "</p>");
             }
@@ -201,6 +203,7 @@ class AtividadeControllerAPI extends Controller
                     $participante->delete();
                     $this->notificacaoEEmail(User::findOrFail($participanteId),
                         "Foi removido(a) da atividade " . $atividade->titulo . " que é coordenada pelo(a) porfessor(a) " . $coordenador->nome,
+                        "Foi removido(a) na atividade" . $atividade->titulo,
                         "<h3>Foi removido(a) na atividade " . $atividade->titulo . "</h3><p>A atividade é coordenada pelo(a) porfessor(a) " .
                         $coordenador->nome . "</p>");
                 }
@@ -241,6 +244,7 @@ class AtividadeControllerAPI extends Controller
             foreach ($ids as $id) {
                 $this->notificacaoEEmail(User::findOrFail($id),
                     "As especificações da atividade " . $request->titulo . " foram alteradas, " . $alteracoes,
+                    "A atividade " . $request->titulo . " foi alterada",
                     "<h3>As especificações da atividade " . $request->titulo . " foram alteradas</h3><p>A atividade 
                     é coordenada pelo(a) porfessor(a) " . $coordenador->nome . " e passou a ter as seguintes configurações: " . 
                     $alteracoes . "</p>");

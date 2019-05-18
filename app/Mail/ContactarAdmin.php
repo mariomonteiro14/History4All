@@ -9,7 +9,7 @@ use Illuminate\Queue\SerializesModels;
 class ContactarAdmin extends Mailable
 {
     use Queueable, SerializesModels;
-    public $email;
+    public $de;
     public $assunto;
     public $texto;
 
@@ -18,9 +18,9 @@ class ContactarAdmin extends Mailable
      *
      * @return void
      */
-    public function __construct($email, $assunto, $texto)
+    public function __construct($de, $assunto, $texto)
     {
-        $this->email = $email;
+        $this->de = $de;
         $this->assunto = $assunto;
         $this->texto = $texto;
     }
@@ -32,6 +32,17 @@ class ContactarAdmin extends Mailable
      */
     public function build()
     {
+        if ($this->de->email){
+            $nome = $this->de->tipo . ' ' . $this->de->nome;
+            if ($this->de->tipo == 'aluno'){
+                $nome .= ' - ' . $this->de->escola->nome . ' - ' . $this->de->turma->nome;
+            }
+            $nome .= ' - ' . $this->de->email;
+            $this->from($this->de->email, $nome);
+        }else{
+            $this->from($this->de, $this->de) ;
+        }
+        $this->subject($this->assunto);
         return $this->view('email.contactarAdmin');
     }
 }

@@ -143,7 +143,6 @@
             },
             logging(){
                 this.isLoading = !this.isLoading;
-                this.getNotificacoes();
             },
             notificacoesLidas(){
                 if (this.novasNotificacoes > 0){
