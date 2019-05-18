@@ -159,7 +159,7 @@ class EscolaControllerAPI extends Controller
                     $aluno->turma_id = $turma->id;
                     $aluno->save();
                     $this->notificacaoEEmail($aluno, 
-                        "Foi movido(a) para a turma" . $turma->nome . " que é lecionada pelo(a) professor(a) " . $professor->nome, 
+                        "Foi movido(a) para a turma " . $turma->nome . " que é lecionada pelo(a) professor(a) " . $professor->nome, 
                         "<h3>Foi movido(a) para a turma</h3><p>A sua turma passou a ser a " . $turma->nome . 
                         " que é lecionada pelo(a) professor(a) " . $professor->nome . "</p>");
                 }

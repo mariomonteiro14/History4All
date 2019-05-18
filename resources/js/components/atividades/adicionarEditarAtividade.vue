@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @focusout="closeLists">
         <!-- Modal Add Order-->
         <div class="modal fade" id="addAtividadeModal" tabindex="-1" role="dialog" aria-labelledby="addAtividadeModal"
              data-keyboard="false" data-backdrop="static" aria-hidden="true">
@@ -177,6 +177,7 @@
                 this.prepararAtividade();
                 axios.post('/api/atividades', this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Criada!");
+                    this.$socket.emit('multiplos_atualizar_notificacoes', this.atividade.participantes);
                     this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
                     this.isLoading = false;
@@ -191,6 +192,7 @@
                 this.prepararAtividade();
                 axios.put('/api/atividades/' + this.atividade.id, this.atividade).then(response => {
                     this.toastPopUp("success", "Atividade Atualizada!");
+                    this.$socket.emit('multiplos_atualizar_notificacoes', this.atividade.participantes);
                     this.$emit('atualizar');
                     $('#addAtividadeModal').modal('hide');
                     this.isLoading = false;
