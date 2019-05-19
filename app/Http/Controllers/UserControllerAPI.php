@@ -72,6 +72,11 @@ class UserControllerAPI extends Controller
     public function getUser($id)
     {
         $user = User::findOrFail($id);
+        $userAtual = User::where('id', Auth::id())->first();
+        if ($userAtual->tipo == 'aluno' && $userAtual->escola_id != $user->escola_id ||
+            $userAtual->tipo == 'professor' && $user->tipo == 'aluno' && $userAtual->escola_id != $user->escola_id){
+            return null;
+        }
         return new UserResource($user);
     }
 

@@ -14,7 +14,12 @@
             <v-card>
                 <v-container fluid grid-list-md>
                     <v-alert :value="true" color="red" icon="warning">
-                        Utilizador nao encontrado! :(
+                        <div v-if="profileUser">
+                            {{profileUser}}
+                        </div>
+                        <div v-else>
+                            Utilizador nao encontrado! :(
+                        </div>
                     </v-alert>
                 </v-container>
             </v-card>
@@ -131,7 +136,7 @@
                 this.isLoading = true;
                 axios.get('/api/user/' + this.id)
                     .then(response => {
-                        this.profileUser = response.data.data;
+                        this.profileUser = response.data.data ? response.data.data : 'Não tem permissão para visualizar o utilizador';
                         this.isLoading = false;
                     })
                     .catch(errors => {

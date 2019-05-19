@@ -48,7 +48,7 @@ const routes = [
     { path: '/admin/escolas', name: 'gerirEscolas',component: require('./components/escola/gerirEscolas.vue').default},
     { path: '/atividades', name: 'atividades',component: require('./components/atividades/atividades.vue').default},
     { path: '/atividade/:id', name: 'atividadesShow',component: require('./components/atividades/showAtividade.vue').default, props: true},
-    { path: '/admin/users', name: 'gestor_users',component: require('./components/users/users.vue').default},
+    { path: '/admin/users', name: 'gestorUsers',component: require('./components/users/users.vue').default},
     { path: '/users/registarPassword/:token', name: 'registarPassword',component: require('./components/users/registarPassword.vue').default, props: true},
     { path: '/users/resetPassword/:token', name: 'resetPassword',component: require('./components/users/resetPassword.vue').default, props: true},
     { path: '/escola/turmas', name: 'turmas',component: require('./components/escola/turmas.vue').default},
@@ -67,7 +67,7 @@ router.beforeEach((to, from, next) => {
         store.commit('loadTokenAndUserFromSession');
     }
     let user = store.state.user;
-    if(to.name == 'gerirPatrimonios' || to.name == 'gerirEscolas' || to.name == 'gestor_users'){
+    if(to.name == 'gerirPatrimonios' || to.name == 'gerirEscolas' || to.name == 'gestorUsers'){
         if(!user || user.tipo !== "admin"){
             next("/");
             return;
@@ -79,7 +79,7 @@ router.beforeEach((to, from, next) => {
             return;
         }
     }
-    if(to.name == 'perfil' || to.name == 'atividades' || to.name == 'atividadesShow'){
+    if(to.name == 'perfil' || to.name == 'atividades' || to.name == 'atividadesShow' || to.nome == 'perfilUser'){
         if(!user){
             next("/");
             return;
