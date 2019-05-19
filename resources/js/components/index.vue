@@ -83,7 +83,7 @@
 </template>
 
 <script type="text/javascript">
-    import BImg from "bootstrap-vue/src/components/image/img";
+    import BImg from "bootstrap-vue/es/components/image/img";
     import {Carousel, Slide} from 'vue-carousel';
     import contactForm from './widgets/contactForm.vue'
     import aboutUs from './widgets/aboutUs.vue'

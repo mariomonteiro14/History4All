@@ -70,7 +70,6 @@ import pedidoNovaPassword from './pedidoNovaPassword.vue';
                     this.user.password = '';
                     this.$socket.emit('user_enter', this.$store.state.user);
                     $('#loginModal').modal('hide');
-                    this.$router.push({name: 'index'});
                 }).catch(error => {
                     this.$emit("logging");
                     this.$store.commit('clearUserAndToken');

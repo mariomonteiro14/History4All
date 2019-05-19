@@ -6,6 +6,7 @@ use App\Escola;
 use App\Mail\ContactarAdmin;
 use App\Mail\InserirPassword;
 use App\Mail\MensagemEmail;
+use App\Mail\ConfirmarNovoEmail;
 use App\Notificacao;
 use App\Turma;
 use Illuminate\Http\Request;
@@ -78,8 +79,9 @@ class UserControllerAPI extends Controller
     {
         $user = User::findOrFail(Auth::id());
 
-        if ($request->has('newEmail') && $request->input('newEmail') != "") {
-            $user->email = $request->newEmail;
+        if ($request->has('newEmail') && $request->input('newEmail') != "" && $user->email != $request->newEmail) {
+            Mail::to($user->email)->send(new ConfirmarNovoEmail(Auth::id(), $request->newEmail));
+            //$user->email = $request->newEmail;
         }
 
         if ($request->has('newPassword') && $request->input('newPassword') != "") {
@@ -401,5 +403,21 @@ class UserControllerAPI extends Controller
                 'message' => 'Password alterada'
             ], 201);
         }
+    }
+
+    public function novoEmail(Request $request, $id){
+        if (Auth::id() != $id) {
+            abort(403, 'Unauthorized action.');
+        }
+        $request->validate([
+            'email' => 'required|string|email|unique:users',
+        ]);
+        $user = User::findOrFail($id);
+        $user->email = $request->email;
+        $user->save();
+        return response()->json([
+            'data' => $user,
+            'message' => 'Email alterado'
+        ], 201);
     }
 }

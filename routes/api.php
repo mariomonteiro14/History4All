@@ -35,6 +35,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('chat', 'AtividadeControllerAPI@storeChatMensagem');
     Route::get('me/notificacoes', 'UserControllerAPI@notificacoes');
     Route::put('me/notificacoes', 'UserControllerAPI@updateNotificacoes');
+    Route::put('register/novoEmail/{id}', 'UserControllerAPI@novoEmail');
 
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');
