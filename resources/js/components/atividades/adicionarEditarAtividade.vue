@@ -37,14 +37,22 @@
                         <div @click="setOpenList('tipo')">
                             <v-select
                                 label="Tipo"
-                                v-model="atividade.tipo"
+                                v-model="tipoSelected"
                                 :items="tipos"
-                                :rules="[v => !!v || 'Tipo de atividade é obrigatório']"
+                                :rules="[v => !!v || 'Tipo de atividade é obrigatória']"
                                 class="input-group--focused"
+                                required
                                 clearable
                                 ref="selectTipo"
-                                required
                             ></v-select>
+                        </div>
+                        <div class="form-group" v-if="tipoSelected === 'outro'">
+                            <v-text-field id="inputTipoOutro"
+                                          v-model="outroTipo"
+                                          label="Indique o tipo da atividade"
+                                          :rules="[v => !!v || 'Tipo é obrigatório']"
+                                          required
+                            ></v-text-field>
                         </div>
                         <br>
                         <div class="form-group">
@@ -147,6 +155,7 @@
     export default {
         props: ['atividade'],
         created() {
+            this.getTipos();
             if (this.$store.state.user.tipo === 'professor') {
                 this.getAlunos();
                 this.getPatrimonios();
@@ -154,7 +163,9 @@
         },
         data: function () {
             return {
-                tipos: ['visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio'],
+                tipos: [],
+                tipoSelected: '',
+                outroTipo: '',
                 visibilidades: ['privado', 'publico', 'visivel para a escola'],
                 alunos: [],
                 patrimonios: [],
@@ -172,6 +183,19 @@
             isCreated() {
                 return this.atividade_id > 0 ? false : true;
             },
+            getTipos() {
+                this.isLoading = true;
+                axios.get('/api/atividades/tipos')
+                    .then(response => {
+                        this.tipos = response.data.data;
+                        this.tipos.push('outro');
+                        this.isLoading = false;
+                    })
+                    .catch(errors => {
+                        console.log(errors);
+                        this.isLoading = false;
+                    });
+            },
             save: function () {
                 this.isLoading = true;
                 this.prepararAtividade();
@@ -179,6 +203,9 @@
                     this.toastPopUp("success", "Atividade Criada!");
                     this.$socket.emit('multiplos_atualizar_notificacoes', this.atividade.participantes);
                     this.$emit('atualizar');
+                    if (this.tipoSelected === 'outro'){
+                        this.$emit('atualizarTipos');
+                    }
                     $('#addAtividadeModal').modal('hide');
                     this.isLoading = false;
                     this.cleanForm();
@@ -194,6 +221,9 @@
                     this.toastPopUp("success", "Atividade Atualizada!");
                     this.$socket.emit('multiplos_atualizar_notificacoes', this.atividade.participantes);
                     this.$emit('atualizar');
+                    if (this.tipoSelected === 'outro'){
+                        this.$emit('atualizarTipos');
+                    }
                     $('#addAtividadeModal').modal('hide');
                     this.isLoading = false;
                     this.cleanForm();
@@ -206,6 +236,7 @@
                 this.atividade.chatExist = this.chatExist;
                 this.atividade.chat = {assunto: this.chatAssunto};
                 this.atividade.patrimonios = this.patrimoniosSelecionados;
+                this.atividade.tipo = this.tipoSelected === 'outro' ? this.outroTipo : this.tipoSelected;
                 if (this.atividade.visibilidade == 'privado') {
                     this.participantes = [];
                 }
@@ -218,13 +249,14 @@
                 this.atividade.id = null;
                 this.atividade.titulo = "";
                 this.atividade.descricao = "";
-                this.atividade.tipo = "";
                 this.atividade.numeroElementos = "";
                 this.atividade.visibilidade = "";
                 this.atividade.data = "";
                 this.atividade.participantes = [];
                 this.atividade.patrimonios = [];
                 this.patrimoniosSelecionados = [];
+                this.tipoSelected = '';
+                this.outroTipo = '';
                 this.chatAssunto = "";
                 this.chatExist = false;
                 this.closeLists();
@@ -294,7 +326,8 @@
             hasErrors: function () {
                 return (this.chatExist && !this.chatAssunto || this.patrimoniosSelecionados.length === 0 ||
                     !this.atividade.titulo || !this.atividade.descricao || this.atividade.descricao.length < 25 ||
-                    !this.atividade.tipo || !this.atividade.numeroElementos || !this.atividade.visibilidade);
+                    !this.tipoSelected || this.tipoSelected === 'outro' && !this.outroTipo ||
+                    !this.atividade.numeroElementos || !this.atividade.visibilidade);
             },
             getTitle: function () {
                 return this.isCreated() ? "Criar Atividade" : "Editar Atividade";

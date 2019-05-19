@@ -90,7 +90,7 @@ class CreateUsersPatrimoniosTable extends Migration
 
         Schema::create('atividades', function (Blueprint $table) {
             $table->increments('id');
-            $table->enum('tipo', ['visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio']);
+            $table->string('tipo');
             $table->string('titulo');
             $table->string('descricao', 1000);
             $table->integer('numeroElementos');

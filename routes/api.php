@@ -26,6 +26,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users/me', 'UserControllerAPI@myProfile');
     Route::get('user/{id}', 'UserControllerAPI@getUser');
     Route::post('users/me', 'UserControllerAPI@editProfile');
+    Route::get('atividades/tipos', 'AtividadeControllerAPI@getTipos');
     Route::get('users/{id}/atividades/', 'AtividadeControllerAPI@getTodas');
     Route::get('me/atividades/', 'AtividadeControllerAPI@getMinhas');
     Route::get('me/escola/atividades/', 'AtividadeControllerAPI@minhaEscolaAtividades');

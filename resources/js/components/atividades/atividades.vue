@@ -144,7 +144,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()"></atividade-add-edit>
+        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()" v-on:atualizarTipos="getTipos()"></atividade-add-edit>
     </div>
 </template>
 
@@ -157,6 +157,7 @@
         },
         created() {
             this.getAtividades();
+            this.getTipos();
         },
         data() {
             return {
@@ -201,7 +202,19 @@
                         console.log(errors);
                         this.isLoading = false;
                     });
-
+            },
+            getTipos() {
+                this.isLoading = true;
+                axios.get('/api/atividades/tipos')
+                    .then(response => {
+                        this.tipos = response.data.data;
+                        this.tipos.unshift('Todos');
+                        this.isLoading = false;
+                    })
+                    .catch(errors => {
+                        console.log(errors);
+                        this.isLoading = false;
+                    });
             },
             mostrar(id) {
                 this.$router.push('/atividade/' + id);

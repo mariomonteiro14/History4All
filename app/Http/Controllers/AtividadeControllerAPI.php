@@ -77,7 +77,14 @@ class AtividadeControllerAPI extends Controller
             ->join('users','users.id','coordenador')
             ->where('escola_id',Auth::user()->escola_id)
             ->where('visibilidade','NOT LIKE','privado')->get());
+    }
 
+    public function getTipos(){
+        $data = Atividade::select('tipo')->distinct()->get()->pluck('tipo')->toArray();
+        array_push($data, 'visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio');
+        return response()->json([
+            'data' => array_values(array_unique($data))
+        ]);
     }
 
     public function store(Request $request)
