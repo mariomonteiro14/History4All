@@ -38,7 +38,7 @@
                                 v-model="mensagem.texto"
                                 label="Mensagem"
                                 :rules="[v => !!v || 'Mensagem é obrigatória',
-                                             v => v && v.length >= 75 || 'minimo 75 caracteres']"
+                                             v => v && v.length >= 10 || 'minimo 10 caracteres']"
                                 counter="1000"
                                 required
                             ></v-textarea>
@@ -64,7 +64,8 @@
         props:['emailFrom'],
         mounted(){
             if (this.emailFrom){
-                this.mensagem.email = this.emailFrom;
+                this.mensagem.emailPara = this.emailFrom;
+                this.mensagem.email = this.$store.state.user.email;
             }
         },
 
@@ -74,6 +75,7 @@
                     assunto: '',
                     email: '',
                     texto: '',
+                    emailPara: null
                 },
                 emailRules: [
                     (v) => !!v || 'email é obrigatório',
@@ -118,7 +120,7 @@
                 if (!this.mensagem.assunto || this.mensagem.assunto.length < 6) {
                     return true;
                 }
-                if (!this.mensagem.texto || this.mensagem.texto.length < 75) {
+                if (!this.mensagem.texto || this.mensagem.texto.length < 10) {
                     return true;
                 }
 

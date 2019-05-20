@@ -318,14 +318,21 @@ class UserControllerAPI extends Controller
     }
 
     public function contactHistory4all(Request $request){
-        Validator::make($request->all(), [
+        $validator = Validator::make($request->all(), [
             'assunto' => 'required|string|min:6',
             'email' => 'required|string|email',
-            'texto' => 'required|string|min:50',
+            'texto' => 'required|string|min:10',
+            'emailPara' => 'nullable|string|email',
         ]);
-        $para = User::where('tipo','admin')->first();
-        $de = new UserResource(User::where('email', $request->email)->first()) ?? $request->email;
-        Mail::to($para->email)->send(new ContactarAdmin($de , $request->assunto, $request->texto));
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Dados inválidos'
+            ], 400);
+        }
+        $para = $request->emailPara != null ? $request->emailPara : User::where('tipo','admin')->first()->pluck('email');
+        $user = User::where('email', $request->email)->first();
+        $de = $user ? new UserResource($user) : $request->email;
+        Mail::to($para)->send(new ContactarAdmin($de , $request->assunto, $request->texto));
     }
 
     public function notificacoes(Request $request){

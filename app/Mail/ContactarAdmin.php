@@ -32,7 +32,7 @@ class ContactarAdmin extends Mailable
      */
     public function build()
     {
-        if ($this->de->email){
+        if (is_object($this->de) && $this->de->email){
             $nome = $this->de->tipo . ' ' . $this->de->nome;
             if ($this->de->tipo == 'aluno'){
                 $nome .= ' - ' . $this->de->escola->nome . ' - ' . $this->de->turma->nome;
@@ -40,7 +40,7 @@ class ContactarAdmin extends Mailable
             $nome .= ' - ' . $this->de->email;
             $this->from($this->de->email, $nome);
         }else{
-            $this->from($this->de, $this->de) ;
+            $this->from($this->de, $this->de);
         }
         $this->subject($this->assunto);
         return $this->view('email.contactarAdmin');

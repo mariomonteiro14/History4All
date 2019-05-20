@@ -220,7 +220,7 @@
                         <v-card v-if="participa">
                             <v-card-text primary-title>
                                 <v-layout row wrap>
-                                    <v-flex d-flex xs12 sm8>
+                                    <v-flex d-flex xs12 sm8 v-if="atividade.chat">
                                         <v-card flat>
                                             <v-card-text>
                                                 <h5 class="blue--text">
