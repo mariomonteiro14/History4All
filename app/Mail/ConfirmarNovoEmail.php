@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 class ConfirmarNovoEmail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $userId;
+    public $token;
     public $email;
     public $url;
     /**
@@ -18,12 +18,12 @@ class ConfirmarNovoEmail extends Mailable
      *
      * @return void
      */
-    public function __construct($userId, $email)
+    public function __construct($token, $email)
     {
-        $this->userId = $userId;
+        $this->$token = $token;
         $this->email = $email;
         $emailDividido = explode('@', $email);
-        $this->url = '/users/' . $userId . '/alterarEmail/' . $emailDividido[0] . '?' . $emailDividido[1];
+        $this->url = '/users/alterarEmail/' . $token . '/' . $emailDividido[0] . '?' . $emailDividido[1];
     }
 
     /**

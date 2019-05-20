@@ -85,7 +85,8 @@ class UserControllerAPI extends Controller
         $user = User::findOrFail(Auth::id());
 
         if ($request->has('newEmail') && $request->input('newEmail') != "" && $user->email != $request->newEmail) {
-            Mail::to($user->email)->send(new ConfirmarNovoEmail(Auth::id(), $request->newEmail));
+            $user->setRememberToken(Str::random(10));
+            Mail::to($request->newEmail)->send(new ConfirmarNovoEmail($user->getRememberToken(), $request->newEmail));
             //$user->email = $request->newEmail;
         }
 
@@ -252,13 +253,13 @@ class UserControllerAPI extends Controller
 
             if ($escola->id != $user->escola_id) {
                 if (!$escola){
-                    $this->notificacaoEEmail($user, 
-                        "Foi removido(a) da escola " . $escola->nome . " estando de momento sem escola associada", 
+                    $this->notificacaoEEmail($user,
+                        "Foi removido(a) da escola " . $escola->nome . " estando de momento sem escola associada",
                         "Ficou sem escola associada escola associada",
                         "<h3>Foi removido(a) da sua escola no <a href='http://142.93.219.146/'>History4All</a></h3><p>Já não está na escola " . $escola->nome . ". De momento não tem escola associada</p>");
                 } else{
-                    $this->notificacaoEEmail($user, 
-                        "Foi movido(a) para a escola " . $escola->nome . " estando de momento sem escola associada", 
+                    $this->notificacaoEEmail($user,
+                        "Foi movido(a) para a escola " . $escola->nome . " estando de momento sem escola associada",
                         "A sua escola foi alterada",
                         "<h3>Foi movido(a) para a escola no <a href='http://142.93.219.146/'>History4All</a></h3><p>A sua escola passou a ser a " . $escola->nome . "</p>");
                 }
@@ -418,14 +419,17 @@ class UserControllerAPI extends Controller
     }
 
     public function novoEmail(Request $request, $id){
-        if (Auth::id() != $id) {
+        /*if (Auth::id() != $id) {
             abort(403, 'Unauthorized action.');
-        }
+        }*/
+
         $request->validate([
             'email' => 'required|string|email|unique:users',
         ]);
         $user = User::findOrFail($id);
         $user->email = $request->email;
+        $user->email_verified_at = date("Y-m-d H:i:s");
+        $user->setRememberToken(null);
         $user->save();
         return response()->json([
             'data' => $user,

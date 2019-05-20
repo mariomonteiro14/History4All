@@ -52,7 +52,7 @@ const routes = [
     { path: '/users/registarPassword/:token', name: 'registarPassword',component: require('./components/users/registarPassword.vue').default, props: true},
     { path: '/users/resetPassword/:token', name: 'resetPassword',component: require('./components/users/resetPassword.vue').default, props: true},
     { path: '/escola/turmas', name: 'turmas',component: require('./components/escola/turmas.vue').default},
-    { path: '/users/:id/alterarEmail/:email', name: 'alterarEmail',component: require('./components/users/alterarEmail.vue').default,props: true},
+    { path: '/users/alterarEmail/:token/:email', name: 'alterarEmail',component: require('./components/users/alterarEmail.vue').default,props: true},
     { path: '/*', name: 'unknown'},
 
 ];

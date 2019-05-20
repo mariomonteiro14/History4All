@@ -20,6 +20,7 @@ Route::post('register/activate/{id}', 'UserControllerAPI@activateAccount');
 Route::post('register/novaPassword/{id}', 'UserControllerAPI@novaPassword');
 Route::post('sendEmail/history4all', 'UserControllerAPI@contactHistory4all');
 Route::post('sendEmail/resetPassword', 'UserControllerAPI@resetPassword');
+Route::put('register/novoEmail/{id}', 'UserControllerAPI@novoEmail');
 
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'UserControllerAPI@logout');
@@ -36,7 +37,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('chat', 'AtividadeControllerAPI@storeChatMensagem');
     Route::get('me/notificacoes', 'UserControllerAPI@notificacoes');
     Route::put('me/notificacoes', 'UserControllerAPI@updateNotificacoes');
-    Route::put('register/novoEmail/{id}', 'UserControllerAPI@novoEmail');
 
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');

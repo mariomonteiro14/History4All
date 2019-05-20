@@ -1,7 +1,7 @@
 <template>
     <div>
         <br><br>
-        <div class="container py-5">
+        <div class="container py-5" v-if="this.user.id">
             <div class="row">
                 <div class="col-md-12">
                     <div class="row">
@@ -13,12 +13,9 @@
                                 <div class="card-body">
                                     <form class="form" role="form" autocomplete="off" id="formLogin" novalidate=""
                                           method="POST">
-                                        <p>Tem a certeza que pretende alterar o seu email para {{emailCompleto}}?</p>
-                                        <button type="submit" class="btn btn-success btn-lg float-right" id="btnLogin"
-                                                v-on:click.prevent="alterarEmail" 
-                                                :disabled='!this.$store.state.user || this.$store.state.user.id != this.id'>
-                                            Confirmar alteração de email
-                                        </button>
+                                        <p>O seu novo email está confirmado: {{emailCompleto}}</p>
+                                        <v-btn :color="defaultColor" flat @click="$router.push('/')">Ok</v-btn>
+
                                     </form>
                                 </div>
                             </div>
@@ -33,20 +30,23 @@
 
 <script>
     export default {
-        props: ['id', 'email'],
+        props: ['token', 'email'],
         data: function () {
-            return {};
+            return {
+                user: {},
+            };
         },
         created() {
-            if (!this.$store.state.user || this.$store.state.user.id != this.id) {
-                this.toastPopUp("error", "Necessita de estar autenticado na conta");
+            if (this.$store.state.user) {
+                this.logout();
             }
+            this.getUser();
+
         },
         methods: {
             alterarEmail: function () {
-                axios.put("/api/register/novoEmail/" + this.id, {'email': this.emailCompleto}).then(response => {
-                    this.toastPopUp("success", "Email alterado com sucesso");
-                    this.logout();
+                axios.put("/api/register/novoEmail/" + this.user.id, {'email': this.emailCompleto}).then(response => {
+
                 }).catch(errors => {
                     console.log(errors);
                 });
@@ -55,15 +55,31 @@
                 axios.get('/api/logout').then(response => {
                     this.$store.commit('clearUserAndToken');
                     this.$socket.emit('user_exit', this.$store.state.user);
-                    this.$router.push({name: 'index'});
                 }).catch(error => {
                     this.$store.commit('clearUserAndToken');
                     console.log(error);
                 });
             },
+            getUser: function () {
+                axios.get("/api/users/token/" + this.token).then(response => {
+                    if (response.data === "" && response.data.email_verified_at === null) {//token inválido
+                        this.$router.push({name: 'index'});
+                    }
+                    if (response.data.id) {
+                        this.user = response.data;
+                        this.alterarEmail();
+                    }else {
+                        this.toastPopUp("error", "Operação invalida");
+                        this.$router.push('/');
+                    }
+
+                }).catch(errors => {
+                    console.log(errors);
+                });
+            },
         },
-        computed:{
-            emailCompleto: function() {
+        computed: {
+            emailCompleto: function () {
                 return this.email + '@' + window.location.search.substr(1);
             }
         }
