@@ -50,7 +50,7 @@ class CreateUsersPatrimoniosTable extends Migration
         Schema::create('notificacoes', function (Blueprint $table) {
             $table->increments('id');
             $table->bigInteger('user_id')->unsigned();//destinatário
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('mensagem');
             $table->string('de');
             $table->dateTime('data');
@@ -84,7 +84,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->integer('chat_id')->unsigned();
             $table->foreign('chat_id')->references('id')->on('chats')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
             $table->longText('mensagem');
         });
 
@@ -96,7 +96,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->integer('numeroElementos');
             $table->enum('visibilidade', ['privado', 'publico', 'visivel para a escola']);
             $table->bigInteger('coordenador')->unsigned();
-            $table->foreign('coordenador')->references('id')->on('users');
+            $table->foreign('coordenador')->references('id')->on('users')->onDelete('set null');
             $table->integer('chat_id')->unsigned()->nullable();
             $table->foreign('chat_id')->references('id')->on('chats')->onDelete('set null');
             $table->date('data')->nullable();
@@ -106,7 +106,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->integer('atividade_id')->unsigned();
             $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
             $table->enum('estado', ['pendente', 'concluida']);
             $table->primary(['atividade_id', 'user_id']);
         });

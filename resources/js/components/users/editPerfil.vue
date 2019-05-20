@@ -34,6 +34,14 @@
                                           required
                             ></v-text-field>
                         </div>
+                        <div class="form-group" v-if="user.email != $store.state.user.email">
+                            <v-text-field id="inputEmailConf"
+                                          v-model="emailConf"
+                                          label="Confirmar Novo Email"
+                                          :error-messages="emailMatchError"
+                                          required
+                            ></v-text-field>
+                        </div>
                         <div class="form-group">
                             <v-text-field id="inputPassword"
                                           v-model="user.password"
@@ -72,6 +80,20 @@
                 </div>
             </div>
         </div>
+
+        <v-dialog v-model="dialog" max-width="290">
+            <v-card>
+                <v-card-title class="headline">Atenção</v-card-title>
+                <v-card-text>Novo email:</v-card-text>
+                <v-card-text>Irá receber um email de confirmaçao do novo email. O email só será alterado após a sua confirmaçao</v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="success" flat="flat" @click="dialog = false">
+                        Ok
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </div>
 </template>
 
@@ -79,10 +101,12 @@
     export default {
         data: function () {
             return {
-                user: this.$store.state.user,
+                user: Object.assign({}, this.$store.state.user),
+                emailConf: '',
                 passwordConf: '',
                 foto: '',
                 isLoading: false,
+                dialog: false,
             }
         },
         methods: {
@@ -91,11 +115,17 @@
                     headers: {'content-type': 'multipart/form-data'}
                 };
                 this.isLoading = true;
+                if (this.user.email !== this.$store.state.user.email){
+                    this.dialog = true;
+                }
                 axios.post('/api/users/me', this.formCreate(), config).then(response => {
                     this.toastPopUp("success", "Informação Atualizada!");
                     this.$store.commit('setUser',response.data.data);
-                    this.$emit('reloadUser');
                     $('#editProfileModal').modal('hide');
+                    if (this.user.email !== this.$store.state.user.email){
+                        this.dialog = true;
+                    }
+                    this.$emit('reloadUser');
                     this.isLoading = false;
 
                 }).catch(error => {
@@ -151,7 +181,20 @@
                 if (!re.test(String(this.user.email).toLowerCase())) {
                     return true;
                 }
+
+                if (this.user.email != this.$store.state.user.email && this.user.email !== this.emailConf) {
+                    return true;
+                }
                 return false;
+            },
+            emailMatchError() {
+                if (this.user.email === "" || this.user.email == this.$store.state.user.email) {
+                    return '';
+                }
+                if (this.emailConf === "") {
+                    return 'Confirmação obrigatoria'
+                }
+                return (this.user.email === this.emailConf) ? '' : 'Emails nao combinam'
             },
             passwordMatchError() {
                 if (!this.user.password || this.user.password === "") {
