@@ -136,7 +136,6 @@
                 }).catch(error => {
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("error", "Error on logout");
-                    console.log(error);
                     this.logging();
                 });
 
@@ -163,9 +162,8 @@
                         this.notificacoes = response.data.data;
                         this.novasNotificacoes =
                             this.notificacoes.filter(notificacao => notificacao.nova === 1).length;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                         this.isLoading = false;
                     });
             }

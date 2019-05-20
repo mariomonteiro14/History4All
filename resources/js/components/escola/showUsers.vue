@@ -94,11 +94,9 @@
                     .then(response => {
                         this.toastPopUp("success", "Utilizador Apagado!");
                         this.$emit('atualizar');
-                    }).catch(function (error) {
-                    $('#turmaAlunosModal').modal('show');
-                    this.toastPopUp("error", "`${error.response.data.message}`");
-                    console.log(error);
-
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
+                        $('#turmaAlunosModal').modal('show');
                 });
             },
             closeDialog(){

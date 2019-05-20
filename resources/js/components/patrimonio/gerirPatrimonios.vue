@@ -140,10 +140,9 @@
                 axios.get(url).then(response => {
                     this.patrimonios = response.data.data;
                     this.isLoading = false;
-
-                }).catch(errors => {
-                    console.log(errors);
+                }).catch(error => {
                     this.isLoading = false;
+                    this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
 
@@ -157,9 +156,8 @@
                     .then(response => {
                         this.toastPopUp("success", "Património Apagado!");
                         this.getPatrimonios();
-                    }).catch(function (error) {
-                    this.toastPopUp("error", "`${error.response.data.message}`");
-                    console.log(error);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
             resetPatrimonioAtual() {

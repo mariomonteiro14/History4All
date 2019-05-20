@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Exceptions;
-
 use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use App\Exceptions\ModelNotFoundException;
 
 class Handler extends ExceptionHandler
 {
@@ -46,6 +46,10 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Exception $exception)
     {
+        if ($exception instanceof \Illuminate\Database\Eloquent\ModelNotFoundException) {
+            // a JSON response for example
+            return response()->json(['message' => trans('Página não encontrada')], 404);
+        }        
         return parent::render($request, $exception);
     }
 }

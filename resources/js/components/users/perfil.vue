@@ -138,9 +138,8 @@
                     .then(response => {
                         this.profileUser = response.data.data ? response.data.data : 'Não tem permissão para visualizar o utilizador';
                         this.isLoading = false;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                         this.isLoading = false;
                     });
             } else {
@@ -165,9 +164,8 @@
                         .then(response => {
                             this.profileUser = response.data.data;
                             this.isLoading = false;
-                        })
-                        .catch(errors => {
-                            console.log(errors);
+                        }).catch(error => {
+                            this.toastPopUp("error", `${error.response.data.message}`);
                             this.isLoading = false;
                         });
                 } else {

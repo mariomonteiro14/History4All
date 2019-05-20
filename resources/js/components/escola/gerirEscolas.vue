@@ -208,9 +208,8 @@
                             this.escolaAtual = this.escolas.find(e => e.id === this.escolaAtual.id);
                         }
                         this.isLoading = false;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                         this.isLoading = false;
                     });
             },
@@ -260,9 +259,8 @@
                     .then(response => {
                         this.toastPopUp("success", "Escola Apagado!");
                         this.atualizarEscolas();
-                    }).catch(function (error) {
-                    this.toastPopUp("error", "`${error.response.data.message}`");
-                    console.log(error);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                 });
                 this.escolaAtual = {};
             },
@@ -277,9 +275,8 @@
                         if (this.escolaAtual.turmas.length === 1) {
                             this.escolaAtual = {};
                         }
-                    }).catch(function (error) {
-                    this.toastPopUp("error", "`${error.response.data.message}`");
-                    console.log(error);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                 });
                 this.turmaAtual = {};
             },

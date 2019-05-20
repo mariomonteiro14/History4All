@@ -9,7 +9,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title" id="addPatrimonioModal">{{getTitle()}}</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
-                                    aria-label="Close">
+                                    aria-label="Close" :disabled="isLoading">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -83,7 +83,7 @@
                         <v-container v-if="patrimonio.imagens && patrimonio.imagens.length > 0">
                             <h4>{{getTextRemoveFiles()}}</h4>
                             <v-layout class="form-group" fluid wrap align-center>
-                                <span class="border" v-for="image in patrimonio.imagens" v-bind:id="image" @click="selectImage(image)">
+                                <span class="border" v-for="(image, index) in patrimonio.imagens" :key="index" v-bind:id="image" @click="selectImage(image)">
                                     <img class="preview" v-bind:src="getPatrimonioPhoto(image)">
                                 </span>
                             </v-layout>
@@ -256,11 +256,9 @@
                     $('#addPatrimonioModal').modal('hide');
                     this.isLoading= false;
 
-                }).catch(function (error) {
+                }).catch(error => {
                     this.isLoading= false;
-
                     this.toastPopUp("error", `${error.response.data.message}`);
-                    console.log(error);
                 });
             },
             cancel: function () {
@@ -325,10 +323,7 @@
         },
         computed: {
             hasErrors: function () {
-                if (!this.patrimonio.nome || !this.patrimonio.ciclo || !this.patrimonio.epoca || !this.patrimonio.distrito || !this.patrimonio.descricao) {
-                    return true;
-                }
-                return false;
+                return !this.patrimonio.nome || !this.patrimonio.ciclo || !this.patrimonio.epoca || !this.patrimonio.distrito || !this.patrimonio.descricao;
             },
         }
     };

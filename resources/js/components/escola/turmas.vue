@@ -205,11 +205,10 @@
                     .then(response => {
                         this.myEscola = response.data.data;
                         this.isLoadingTurmas = false;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                         this.isLoadingTurmas = false;
-                    });
+                });
             },
             showTurmaAlunos(turma) {
                 this.turmaAtual = turma;
@@ -238,9 +237,8 @@
                     .then(response => {
                         this.toastPopUp("success", "Turma Apagado!");
                         this.atualizarDados();
-                    }).catch(function (error) {
-                    this.toastPopUp("error", "`${error.response.data.message}`");
-                    console.log(error);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                 });
                 this.turmaAtual = {};
             },

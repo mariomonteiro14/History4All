@@ -77,8 +77,8 @@
                         this.$router.push({name: 'index'});
                     }
                     this.user = response.data;
-                }).catch(errors => {
-                    console.log(errors);
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
             formValidateAndSend() {
@@ -90,16 +90,10 @@
                         this.toastPopUp('success', 'Conta Ativada');
                         this.$router.push('/');
                     }).catch(error => {
-                        this.$toasted.error(`Erro ativando conta`, {
-                            position: "bottom-center",
-                            duration: 3000,
-                        });
+                        this.toastPopUp("error", `${error.response.data.message}`);
                     });
                 } else {
-                    this.$toasted.error(`Passwords don't match`, {
-                        position: "bottom-center",
-                        duration: 3000,
-                    });
+                    this.toastPopUp("error", "A password e a passowrd de confirmação são diferentes");
                 }
             },
             handleFile: function (e) {

@@ -13,7 +13,6 @@ use Illuminate\Http\Request;
 
 use App\Http\Resources\User as UserResource;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -88,7 +87,7 @@ class UserControllerAPI extends Controller
             if (User::where('email', $request->newEmail)->first()){
                 return abort(403, "Email invalido: Ja registado.");
             }
-            $user->setRememberToken(Str::random(10));
+            $user->setRememberToken(Str::random(100));
             Mail::to($request->newEmail)->send(new ConfirmarNovoEmail($user->getRememberToken(), $request->newEmail));
             //$user->email = $request->newEmail;
         }
@@ -151,20 +150,13 @@ class UserControllerAPI extends Controller
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'nome' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'tipo' => 'required|in:admin,professor,aluno',
             'escola' => 'nullable',
             'turma' => 'nullable',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Error while registering user'
-            ], 400);
-        }
-
         $user = new User([
             'nome' => $request->input('nome'),
             'email' => $request->input('email'),
@@ -186,7 +178,7 @@ class UserControllerAPI extends Controller
             }
         }
 
-        $user->setRememberToken(Str::random(10));
+        $user->setRememberToken(Str::random(100));
 
 
         //enviar email
@@ -322,17 +314,12 @@ class UserControllerAPI extends Controller
     }
 
     public function contactHistory4all(Request $request){
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'assunto' => 'required|string|min:6',
             'email' => 'required|string|email',
             'texto' => 'required|string|min:10',
             'emailPara' => 'nullable|string|email',
         ]);
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Dados inválidos'
-            ], 400);
-        }
         $para = $request->emailPara != null ? $request->emailPara : User::where('tipo','admin')->first()->pluck('email');
         $user = User::where('email', $request->email)->first();
         $de = $user ? new UserResource($user) : $request->email;
@@ -383,20 +370,14 @@ class UserControllerAPI extends Controller
 
     public function resetPassword(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $request->validate([
             'email' => 'required|email|exists:users',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'message' => 'Email invalido ou nao registado'
-            ], 400);
-        }
         $user = User::where('email', $request->email)->first();
 
         if ($user->email_verified_at == '') abort(403, 'Conta não verificada');
 
-        $user->setRememberToken(Str::random(10));
+        $user->setRememberToken(Str::random(100));
         $user->save();
         Mail::to($user->email)->send(new InserirPassword('/users/resetPassword/' . $user->getRememberToken(), 'email.resetPassword'));
         return response()->json([

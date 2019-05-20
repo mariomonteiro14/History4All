@@ -19,7 +19,7 @@ class PatrimonioControllerAPI extends Controller
     }
 
     public function find(Request $request, $id){
-        return Patrimonio::with('imagens')->where('id', $id)->first();
+        return Patrimonio::with('imagens')->findOrFail($id);
     }
 
     public function adicionarImagens(Request $request, $id){

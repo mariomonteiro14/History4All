@@ -73,11 +73,7 @@ import pedidoNovaPassword from './pedidoNovaPassword.vue';
                 }).catch(error => {
                     this.$emit("logging");
                     this.$store.commit('clearUserAndToken');
-                    if(error.response.status && error.response.status === 401){
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                    }else{
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                    }
+                    this.toastPopUp("error", `${error.response.data.message}`);
                 });
                 $('#loginModal').modal('hide');
             },

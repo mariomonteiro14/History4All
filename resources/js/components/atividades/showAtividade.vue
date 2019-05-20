@@ -77,7 +77,7 @@
         </v-app>-->
         <div v-if="isLoading">
             <br><br><br>
-            <v-progress-linear v-show="isLoading" v-slot:progress :color="colorDefault"
+            <v-progress-linear v-slot:progress :color="colorDefault"
                                indeterminate></v-progress-linear>
             <br><br><br><br><br><br><br><br><br>
         </div>
@@ -140,7 +140,7 @@
                                 <br>
                                 <span class=" font-weight-light grey--text">Patrimonios:</span>
                                 <v-layout>
-                                    <h5 v-for="patrimonio in atividade.patrimonios"
+                                    <h5 v-for="(patrimonio, index) in atividade.patrimonios" :key="index"
                                         class="blue--text font-weight-light">
                                         <a @click="$router.push('/patrimonio/'+ patrimonio.id)">
                                             {{patrimonio.nome}}&nbsp &nbsp
@@ -202,13 +202,13 @@
                                         <v-flex>
                                             <span class=" font-weight-light grey--text">Epocas:</span>
                                             <v-layout row>
-                                                <h6 v-for="epoca in atividade.epoca">{{epoca}}&nbsp &nbsp</h6>
+                                                <h6 v-for="(epoca, index) in atividade.epoca" :key="index">{{epoca}}&nbsp &nbsp</h6>
                                             </v-layout>
                                         </v-flex>
                                         <v-flex>
                                             <span class=" font-weight-light grey--text">Ciclos:</span>
                                             <v-layout row>
-                                                <h6 v-for="ciclo in atividade.ciclo">{{ciclo}} &nbsp &nbsp</h6>
+                                                <h6 v-for="(ciclo, index) in atividade.ciclo" :key="index">{{ciclo}} &nbsp &nbsp</h6>
                                             </v-layout>
                                         </v-flex>
                                     </v-layout>
@@ -359,10 +359,8 @@
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
-                        <v-list class="form-group" subheader>
-                            <v-list-tile v-if="atividade.patrimonios"
-                                         v-for="patrimonio in atividade.patrimonios" :key="patrimonio.id" avatar
-                            >
+                        <v-list class="form-group" subheader v-if="atividade.patrimonios">
+                            <v-list-tile v-for="patrimonio in atividade.patrimonios" :key="patrimonio.id" avatar>
                                 <v-list-tile-avatar>
                                     <img v-if="patrimonio.imagens && patrimonio.imagens[0]"
                                          :src="getPatrimonioPhoto(patrimonio.imagens[0])">
@@ -428,10 +426,9 @@
                             this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
                         }
                         this.isLoading = false;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
                         this.isLoading = false;
+                        this.toastPopUp("error", `${error.response.data.message}`);
 
                     });
             },

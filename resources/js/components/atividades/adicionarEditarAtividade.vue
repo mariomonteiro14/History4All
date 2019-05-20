@@ -9,7 +9,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title" id="addAtividadeModal">{{getTitle}}</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
-                                    aria-label="Close">
+                                    aria-label="Close" :disabled="isLoading">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -190,9 +190,8 @@
                         this.tipos = response.data.data;
                         this.tipos.push('outro');
                         this.isLoading = false;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                         this.isLoading = false;
                     });
             },
@@ -265,18 +264,16 @@
                 axios.get(url)
                     .then(response => {
                         this.alunos = response.data.data;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                     });
             },
             getPatrimonios(url = '/api/patrimonios') {
                 axios.get(url)
                     .then(response => {
                         this.patrimonios = response.data.data;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                     });
             },
             setOpenList(lista) {
@@ -350,6 +347,7 @@
                         }
                         this.chatExist = false;
                     }
+                    this.tipoSelected = this.atividade.tipo;
                 }else{
                     this.cleanForm();
                 }

@@ -128,7 +128,7 @@
                     <div class="modal-content" @click="closeLists">
                         <div class="modal-header">
                             <h5 class="modal-title" id="editUserModal">Editar Utilizador</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" :disabled="aEnviar">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -235,10 +235,8 @@
                         this.users = response.data.data;
                         this.trashed = false;
                         this.isLoading = false;
-                    })
-                    .catch(errors => {
-                        this.toastPopUp('error', errors);
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                         this.isLoading = false;
                     });
             },
@@ -258,10 +256,8 @@
                             this.trashed = true;
                         }
                         this.isLoading = false;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
-                        this.toastPopUp("error", "`${error.response.data.message}`");
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                         this.isLoading = false;
 
                     });
@@ -301,9 +297,8 @@
                         } else {
                             this.getUsers();
                         }
-                    }).catch(function (error) {
-                    this.toastPopUp("error", "`${error.response.data.message}`");
-                    console.log(error);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
             saveEdit() {
@@ -315,10 +310,9 @@
                         this.$socket.emit('atualizar_notificacoes', this.userAtual.id);
                         this.getUsers();
                         $('#editUserModal').modal('hide');
-                    }).catch(function (error) {
-                    this.aEnviar = false;
-                        this.toastPopUp("error", "`${error.response.data.message}`");
-                        console.log(error);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.aEnviar = false;
                 });
             },
             restaurarUser($user) {
@@ -346,8 +340,8 @@
             getEscolas: function () {
                 axios.get("/api/escolas").then(response => {
                     this.escolas = response.data.data;
-                }).catch(errors => {
-                    console.log(errors);
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
             //Metodos pra corrigir bug nos Modal

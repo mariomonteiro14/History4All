@@ -67,8 +67,8 @@
                         this.$router.push({name: 'index'});
                     }
                     this.user = response.data;
-                }).catch(errors => {
-                    console.log(errors);
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
             formValidateAndSend() {
@@ -103,7 +103,7 @@
                 if (this.passwordConfirmation === "") {
                     return 'Confirmação obrigatoria'
                 }
-                return (this.user.password === this.passwordConfirmation) ? '' : 'Password nao combinam'
+                return (this.user.password === this.passwordConfirmation) ? '' : 'A password e a passowrd de confirmação são diferentes'
             },
         },
 

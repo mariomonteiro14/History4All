@@ -9,7 +9,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title" id="editProfileModal">Registar Escola</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
-                                    aria-label="Close">
+                                    aria-label="Close" :disabled="isLoading">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>

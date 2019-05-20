@@ -9,7 +9,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title" id="addUserModal">{{getTitle}}</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
-                                    aria-label="Close">
+                                    aria-label="Close" :disable="isLoading">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -141,8 +141,8 @@
             getEscolas: function () {
                 axios.get("/api/escolas").then(response => {
                     this.escolas = response.data.data;
-                }).catch(errors => {
-                    console.log(errors);
+                }).catch(error => {
+                    this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
 

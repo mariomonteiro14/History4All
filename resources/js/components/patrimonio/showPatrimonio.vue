@@ -1,8 +1,8 @@
 <template>
     <div id="app">
         <br><br><br><br>
-
-        <v-app id="inspire">
+        <v-app id="inspire" v-if="isLoadingPatrimonio || patrimonio.id">
+            <v-progress-linear v-show="isLoadingPatrimonio" v-slot:progress :color="colorDefault" indeterminate></v-progress-linear>
             <v-layout align-content-center>
                 <v-flex xs12 sm7 offset-sm3>
                     <v-card>
@@ -24,7 +24,7 @@
                             <v-btn flat color="orange" v-if="patrimonio.imagens && patrimonio.imagens.length > 1" @click="showGallery=!showGallery">
                                 Galeria
                             </v-btn>
-                            <v-btn flat color="green" v-if="$store.state.user && $store.state.user.tipo === 'professor'"
+                            <v-btn flat color="green" v-if="patrimonio.id && $store.state.user && $store.state.user.tipo === 'professor'"
                                    data-toggle="modal" data-target="#adicionarImagemModal">
                                 Adicionar Imagens
                             </v-btn>
@@ -77,14 +77,14 @@
                 </v-flex>
             </v-layout>
         <div class="modal fade" id="adicionarImagemModal" tabindex="-1" role="dialog" aria-labelledby="contactModal"
-             aria-hidden="true">
+             data-keyboard="false" data-backdrop="static" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="container box">
                         <div class="modal-header">
                             <h5 class="modal-title">Adicionar Imagens</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
-                                    aria-label="Close">
+                                    aria-label="Close" :disabled="isLoadingImagens">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -94,9 +94,12 @@
                                    @change="handleFile" accept=".png, .jpg, .jpeg">
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-info" v-on:click.prevent="update" :disabled="attachments.length < 1">Guardar</button>
+                    <div v-if="!isLoadingImagens" class="modal-footer">
+                        <button class="btn btn-info" v-on:click.prevent="adicionarImagens" :disabled="attachments.length < 1">Guardar</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                    </div>
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
                     </div>
                 </div>
             </div>
@@ -113,16 +116,21 @@
                 patrimonio: {},
                 showGallery: false,
                 attachments: [],
+                isLoadingPatrimonio: false,
+                isLoadingImagens: false,
             };
         },
         methods: {
             getPatrimonio() {
+                this.isLoadingPatrimonio = true;
                 axios.get('/api/patrimonios/' + this.id)
                     .then(response => {
+                        this.isLoadingPatrimonio = false;
                         this.patrimonio = response.data;
                     })
-                    .catch(errors => {
-                        console.log(errors);
+                    .catch(error => {
+                        this.isLoadingPatrimonio = false;
+                        this.toastPopUp("error", `${error.response.data.message}`);
                     });
             },
             handleFile: function (e) {
@@ -149,18 +157,20 @@
                 }
                 return formData;
             },
-            update() {
+            adicionarImagens() {
                 const config = {
                     headers: {'content-type': 'multipart/form-data'}
                 };
+                this.isLoadingImagens = true;
                 axios.post('/api/patrimonios/' + this.patrimonio.id + '/imagens', this.formCreate(), config).then(response => {
+                    this.isLoadingImagens = false;
                     this.toastPopUp("success", "Imagens adicionadas con sucesso!");
                     this.attachments = [];
                     $('#adicionarImagemModal').modal('hide');
                     this.patrimonio.imagens = response.data;
-                }).catch(function (error) {
+                }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
-                    console.log(error);
+                    this.isLoadingImagens = false;
                 });
             },
             cancel: function () {

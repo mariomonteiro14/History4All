@@ -94,10 +94,9 @@
                                         </v-expand-transition>
                                         <v-container fill-height fluid>
                                             <v-layout fill-height>
-                                                <v-flex xs12 align-end flexbox>
-                                                    <span
-                                                        style="text-shadow: 2px 2px #000000"><h4>{{atividade.titulo}}</h4></span>
-                                                    <span style="text-shadow: 2px 2px #000000">{{atividade.tipo}}</span><br>
+                                                <v-flex xs12 align-end flexbox style="text-shadow: 2px 2px #000000">
+                                                    <h4>{{atividade.titulo}}</h4>
+                                                    {{atividade.tipo}}<br>
                                                 </v-flex>
                                             </v-layout>
                                         </v-container>
@@ -156,6 +155,9 @@
             'atividade-add-edit': adicionarEditarAtividade,
         },
         created() {
+            if(this.$store.state.user.tipo == 'admin'){
+                this.tipoDePesquisaSelected = 'Publicas';
+            }
             this.getAtividades();
             this.getTipos();
         },
@@ -197,9 +199,8 @@
                     .then(response => {
                         this.atividades = response.data.data;
                         this.isLoading = false;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                         this.isLoading = false;
                     });
             },
@@ -210,9 +211,8 @@
                         this.tipos = response.data.data;
                         this.tipos.unshift('Todos');
                         this.isLoading = false;
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                         this.isLoading = false;
                     });
             },
@@ -228,9 +228,8 @@
                     .then(response => {
                         this.atividadeAtual = response.data.data;
                         $('#addAtividadeModal').modal('show');
-                    })
-                    .catch(errors => {
-                        console.log(errors);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                     });
 
             },
@@ -244,9 +243,8 @@
                     .then(response => {
                         this.toastPopUp("success", "Atividade Apagada!");
                         this.getAtividades();
-                    }).catch(function (error) {
-                    this.toastPopUp("error", "`${error.response.data.message}`");
-                    console.log(error);
+                    }).catch(error => {
+                        this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
             resetAtividadeAtual() {
