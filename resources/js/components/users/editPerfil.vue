@@ -115,9 +115,6 @@
                     headers: {'content-type': 'multipart/form-data'}
                 };
                 this.isLoading = true;
-                if (this.user.email !== this.$store.state.user.email){
-                    this.dialog = true;
-                }
                 axios.post('/api/users/me', this.formCreate(), config).then(response => {
                     this.toastPopUp("success", "Informação Atualizada!");
                     this.$store.commit('setUser',response.data.data);

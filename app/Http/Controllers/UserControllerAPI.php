@@ -85,6 +85,9 @@ class UserControllerAPI extends Controller
         $user = User::findOrFail(Auth::id());
 
         if ($request->has('newEmail') && $request->input('newEmail') != "" && $user->email != $request->newEmail) {
+            if (User::where('email', $request->newEmail)->first()){
+                return abort(403, "Email invalido: Ja registado.");
+            }
             $user->setRememberToken(Str::random(10));
             Mail::to($request->newEmail)->send(new ConfirmarNovoEmail($user->getRememberToken(), $request->newEmail));
             //$user->email = $request->newEmail;
