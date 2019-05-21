@@ -21,6 +21,7 @@ class EscolaControllerAPI extends Controller
             'data' => $escolas,
         ]);
     }
+
     public function escolaTurmas($id, Request $request){
 
         return response()->json([
@@ -47,7 +48,6 @@ class EscolaControllerAPI extends Controller
             'data' => $users,
         ]);
     }
-
 
     public function store(Request $request)
     {
@@ -147,7 +147,7 @@ class EscolaControllerAPI extends Controller
                 if (!in_array($aluno->id, $alunosId)){//se foi removido
                     $aluno->turma_id = null;
                     $aluno->save();
-                    $this->notificacaoEEmail($aluno, 
+                    $this->notificacaoEEmail($aluno,
                         "Foi removido(a) da turma" . $turma->nome . " estando de momento sem turma associada",
                         "Ficou se turma associada",
                         "<h3>Foi removido(a) da sua turma</h3><p>Já não está na turma " . $turma->nome . ". De momento não tem turma associada 
@@ -160,10 +160,10 @@ class EscolaControllerAPI extends Controller
                     $aluno = User::findOrFail($aluno['id']);
                     $aluno->turma_id = $turma->id;
                     $aluno->save();
-                    $this->notificacaoEEmail($aluno, 
-                        "Foi movido(a) para a turma " . $turma->nome . " que é lecionada pelo(a) professor(a) " . $professor->nome, 
+                    $this->notificacaoEEmail($aluno,
+                        "Foi movido(a) para a turma " . $turma->nome . " que é lecionada pelo(a) professor(a) " . $professor->nome,
                         "A sua turma foi alterada",
-                        "<h3>Foi movido(a) para a turma</h3><p>A sua turma passou a ser a " . $turma->nome . 
+                        "<h3>Foi movido(a) para a turma</h3><p>A sua turma passou a ser a " . $turma->nome .
                         " que é lecionada pelo(a) professor(a) " . $professor->nome . "no <a href='http://142.93.219.146/'>History4All</a></p>");
                 }
             }

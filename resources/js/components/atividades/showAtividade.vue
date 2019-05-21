@@ -87,7 +87,8 @@
                 <v-flex xs1>
                     <v-btn flat @click="$router.push('/atividades')">
                         <h5 class="primary--text">
-                            <v-icon>fa fa-arrow-left</v-icon>&nbsp Atividades
+                            <v-icon>fa fa-arrow-left</v-icon>
+                            &nbsp Atividades
                         </h5>
                     </v-btn>
                 </v-flex>
@@ -202,13 +203,15 @@
                                         <v-flex>
                                             <span class=" font-weight-light grey--text">Epocas:</span>
                                             <v-layout row>
-                                                <h6 v-for="(epoca, index) in atividade.epoca" :key="index">{{epoca}}&nbsp &nbsp</h6>
+                                                <h6 v-for="(epoca, index) in atividade.epoca" :key="index">
+                                                    {{epoca}}&nbsp &nbsp</h6>
                                             </v-layout>
                                         </v-flex>
                                         <v-flex>
                                             <span class=" font-weight-light grey--text">Ciclos:</span>
                                             <v-layout row>
-                                                <h6 v-for="(ciclo, index) in atividade.ciclo" :key="index">{{ciclo}} &nbsp &nbsp</h6>
+                                                <h6 v-for="(ciclo, index) in atividade.ciclo" :key="index">{{ciclo}}
+                                                    &nbsp &nbsp</h6>
                                             </v-layout>
                                         </v-flex>
                                     </v-layout>
@@ -236,7 +239,8 @@
                                                     <v-layout row wrap v-scroll:#scroll-target="onScroll">
                                                         <div id="scrolled-content">
                                                             <v-list three-line>
-                                                                <span class="grey--text" v-if="mensagensDoChat.length == 0">(Nao existem mensagens)</span>
+                                                                <span class="grey--text"
+                                                                      v-if="mensagensDoChat.length == 0">(Nao existem mensagens)</span>
                                                                 <template v-for="(mensagem, index) in mensagensDoChat">
                                                                     <v-list-tile :key="index" avatar>
                                                                         <v-list-tile-avatar>
@@ -427,10 +431,11 @@
                         }
                         this.isLoading = false;
                     }).catch(error => {
-                        this.isLoading = false;
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                    this.isLoading = false;
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.$router.push('/atividades');
 
-                    });
+                });
             },
             showPatrimonios() {
                 $('#mostrarPatrimoniosModal').modal('show');
@@ -512,17 +517,18 @@
                 }
                 return imagens;
             },
-            participa (){
-                if (this.atividade.coordenador.email === this.$store.state.user.email) {
+            participa() {
+                let me = this.$store.state.user;
+                if (this.atividade.coordenador.email === me.email) {
                     return true;
                 }
                 this.atividade.participantes.forEach(function (element) {
-                   if (element.email === this.$store.state.user.email){
-                       return true;
-                   }
+                    if (element.email === me.email) {
+                        return true;
+                    }
                 });
                 return false;
-    }
+            }
         },
         sockets: {
             connect() {

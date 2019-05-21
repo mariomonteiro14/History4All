@@ -18,6 +18,7 @@ class ShortUser extends JsonResource
             'id' => $this->id,
             'nome' => $this->nome,
             'foto' => $this->foto,
+            'escola' => $this->escola()->pluck('nome'),
         ];
     }
 

@@ -24,9 +24,9 @@
                             ></v-select>
                         </v-flex>
                         <v-spacer></v-spacer>
-                        <v-btn v-if="$store.state.user.tipo=='professor'" color="success" data-toggle="modal"
+                        <v-btn round v-if="$store.state.user.tipo=='professor'" color="success" data-toggle="modal"
                                data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
-                            Criar Atividade <i class="material-icons">add_box</i>
+                             <v-icon>add</v-icon> &nbsp Atividade
                         </v-btn>
                     </v-layout>
                 </v-container>
@@ -75,16 +75,17 @@
                 </v-card-title>
             </v-card>
             <v-card>
-                <v-container fluid grid-list-md>
+                <v-progress-linear v-if="isLoading" v-slot:progress :color="colorDefault"
+                                   indeterminate></v-progress-linear>
+                <v-container v-else fluid grid-list-md  >
                     <v-alert v-if="atividades.length == 0 && !isLoading" :value="true" color="error" icon="warning">
                         Nao existem atividades :(
                     </v-alert>
-                    <v-layout row wrap>
-                        <v-progress-linear v-show="isLoading" v-slot:progress :color="colorDefault" indeterminate></v-progress-linear>
+                    <v-layout row wrap >
                         <v-flex v-for="(atividade, index) in filteredAtividades" :key="index">
                             <v-hover>
                                 <v-card height="300" width="300" slot-scope="{ hover }" class="mx-auto">
-                                    <v-img @click="mostrar(atividade.id)" class="white--text" max-height="220"
+                                    <v-img @click="mostrar(atividade.id)" class="white--text" aspect-ratio="1.5"
                                            v-if="atividade.imagem" v-bind:src="getPatrimonioPhoto(atividade.imagem)">
                                         <v-expand-transition>
                                             <div v-if="hover" class="blue darken-4 v-card--reveal white--text"
@@ -102,19 +103,21 @@
                                         </v-container>
                                     </v-img>
                                     <v-card-title>
-                                        <strong
-                                            v-if="atividade.coordenador.escola">{{atividade.coordenador.escola[0]}}</strong>
-                                        <div v-if="atividade.coordenador.id == $store.state.user.id">
-                                            <v-btn color="warning" @click="editar(atividade.id)">
-                                                Editar
-                                                <v-icon small class="mr-2">edit</v-icon>
+                                        <strong v-if="atividade.coordenador.escola">
+                                            {{atividade.coordenador.escola[0]}}
+                                        </strong>
+                                        <v-spacer></v-spacer>
+
+
+                                    <div v-if="atividade.coordenador.id == $store.state.user.id">
+                                        <v-divider vertical></v-divider>
+                                            <v-btn icon color="warning" @click="editar(atividade.id)">
+                                                <v-icon small>edit</v-icon>
                                             </v-btn>
-                                            <v-btn color="error" @click.stop="apagarVerificacao(atividade.id)">
-                                                Eliminar
+                                            <v-btn icon color="error" @click.stop="apagarVerificacao(atividade.id)">
                                                 <v-icon small>delete_forever</v-icon>
                                             </v-btn>
-                                        </div>
-                                        <span v-else class="grey--text" style="position: absolute;">{{atividade.coordenador.nome}}</span>
+                                    </div>
                                     </v-card-title>
                                 </v-card>
                             </v-hover>
@@ -143,7 +146,8 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()" v-on:atualizarTipos="getTipos()"></atividade-add-edit>
+        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()"
+                            v-on:atualizarTipos="getTipos()"></atividade-add-edit>
     </div>
 </template>
 
@@ -155,7 +159,7 @@
             'atividade-add-edit': adicionarEditarAtividade,
         },
         created() {
-            if(this.$store.state.user.tipo == 'admin'){
+            if (this.$store.state.user.tipo == 'admin') {
                 this.tipoDePesquisaSelected = 'Publicas';
             }
             this.getAtividades();
@@ -174,7 +178,7 @@
                 atividades: [],
                 atividadesFiltradasLength: null,
                 limite: 8,
-                tiposDePesquisa: ['Publicas', 'Minha Escola', 'Minhas Atividades'],
+                tiposDePesquisa: ['Publicas', 'Minhas Atividades'],
                 tipoDePesquisaSelected: 'Minhas Atividades',
                 minhasAtividades: ['Todas', 'Pendentes', 'Concluídas'],
                 minhasAtividadesSelected: 'Todas',
@@ -186,23 +190,22 @@
             }
         },
         methods: {
-            getAtividades(url = '/api/users/' + this.$store.state.user.id + '/atividades') {
+            getAtividades(url = '/api/atividades/publicas') {
                 if (this.tipoDePesquisaSelected === 'Minhas Atividades') {
                     url = this.minhasAtividadesSelected === 'Todas' ? '/api/me/atividades/' :
                         this.minhasAtividadesSelected === 'Pendentes' ? '/api/users/' + this.$store.state.user.id + '/atividades/pendentes' :
                             '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
-                } else if (this.tipoDePesquisaSelected === 'Minha Escola') {
-                    url = '/api/me/escola/atividades/'
                 }
-                this.isLoading=true;
+
+                this.isLoading = true;
                 axios.get(url)
                     .then(response => {
                         this.atividades = response.data.data;
                         this.isLoading = false;
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                        this.isLoading = false;
-                    });
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.isLoading = false;
+                });
             },
             getTipos() {
                 this.isLoading = true;
@@ -212,9 +215,9 @@
                         this.tipos.unshift('Todos');
                         this.isLoading = false;
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                        this.isLoading = false;
-                    });
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.isLoading = false;
+                });
             },
             mostrar(id) {
                 this.$router.push('/atividade/' + id);
@@ -229,8 +232,8 @@
                         this.atividadeAtual = response.data.data;
                         $('#addAtividadeModal').modal('show');
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                    });
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                });
 
             },
             apagarVerificacao(id) {
@@ -244,7 +247,7 @@
                         this.toastPopUp("success", "Atividade Apagada!");
                         this.getAtividades();
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastPopUp("error", `${error.response.data.message}`);
                 });
             },
             resetAtividadeAtual() {
@@ -286,7 +289,7 @@
     .v-card--reveal {
         align-items: center;
         bottom: 0;
-        justify-content: center;
+        justify-content: left;
         opacity: .7;
         position: absolute;
         width: 100%;

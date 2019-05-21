@@ -20,28 +20,37 @@ class AtividadeControllerAPI extends Controller
 {
     public function getAtividade(Request $request, $id)
     {
-        if (Auth::user()->tipo == 'aluno'){
+        $atividade = Atividade::findOrFail($id);
+
+        if ($atividade->visibilidade != 'publico') {
+            if ($atividade->visibilidade == 'privado') {
+                if (!AtividadeParticipantes::where('atividade_id', $id)->where('user_id', Auth::id())->first()
+                    && $atividade->coordenador != Auth::id()) {
+                    return abort(403, "Nao pode aceder a esta informaçao");
+                }
+            }
+
+            if ($atividade->coordenador()->escola_id != Auth::user()->escola_id) {
+                return abort(403, "Nao pode aceder a esta informaçao");
+            }
+        }
+
+        if (Auth::user()->tipo == 'aluno') {
             return response()->json([
-                'data' => new AtividadeResource(Atividade::findOrFail($id)),
+                'data' => new AtividadeResource($atividade),
                 'estado' => AtividadeParticipantes::where('atividade_id', $id)->where('user_id', Auth::user()->id)
                     ->select('estado')->first()
             ]);
         }
+
         return response()->json([
-            'data' => new AtividadeResource(Atividade::findOrFail($id))
+            'data' => new AtividadeResource($atividade)
         ]);
     }
 
-    public function getTodas(Request $request, $id)
-    {
-        $collection = (Atividade::where('visibilidade', 'publico')->get());
-        $participantes = (Atividade::join('atividade_participantes', 'atividade_id', 'id')->where('user_id', $id)->get());
-        return response()->json([
-            'data' => ShortAtividadeResource::collection($collection->diff($participantes))
-        ]);
-    }
 
-    public function getPendentes(Request $request, $id)
+    public
+    function getPendentes(Request $request, $id)
     {
         return response()->json([
             'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
@@ -49,7 +58,8 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
-    public function getConcluidas(Request $request, $id)
+    public
+    function getConcluidas(Request $request, $id)
     {
         return response()->json([
             'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
@@ -57,7 +67,8 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
-    public function getMinhas(Request $request)
+    public
+    function getMinhas(Request $request)
     {
         $user = Auth::user();
         if ($user->tipo == "professor") {
@@ -71,15 +82,20 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
-    public function minhaEscolaAtividades(){
-        return ShortAtividadeResource::collection( Atividade::select('atividades.*')
+    public
+    function atividadesPublicas()
+    {
+        return ShortAtividadeResource::collection(Atividade::select('atividades.*')
             ->leftJoin('atividade_participantes', 'atividade_id', 'atividades.id')
-            ->join('users','users.id','coordenador')
-            ->where('escola_id',Auth::user()->escola_id)
-            ->where('visibilidade','NOT LIKE','privado')->get());
+            ->join('users', 'users.id', 'coordenador')
+            ->where('escola_id', Auth::user()->escola_id)
+            ->where('visibilidade', 'NOT LIKE', 'privado')
+            ->distinct()->get());
     }
 
-    public function getTipos(){
+    public
+    function getTipos()
+    {
         $data = Atividade::select('tipo')->distinct()->get()->pluck('tipo')->toArray();
         array_push($data, 'visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio');
         return response()->json([
@@ -87,7 +103,8 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public
+    function store(Request $request)
     {
         $request->validate([
             'titulo' => 'required|min:3',
@@ -151,7 +168,8 @@ class AtividadeControllerAPI extends Controller
         return response()->json(new AtividadeResource($atividade), 201);
     }
 
-    public function update(Request $request, $id)
+    public
+    function update(Request $request, $id)
     {
         $request->validate([
             'titulo' => 'required|min:3',
@@ -175,7 +193,7 @@ class AtividadeControllerAPI extends Controller
             $chat->privado = $request->get('visibilidade') != 'publico';
             $chat->save();
             $atividade->chat_id = $chat->id;
-        } else if ($atividade->chat_id && $request->get('chatExist')){//atualiza
+        } else if ($atividade->chat_id && $request->get('chatExist')) {//atualiza
             $chat = Chat::findOrFail($atividade->chat_id);
             $chat->assunto = $request->chat['assunto'];
             $chat->save();
@@ -237,13 +255,13 @@ class AtividadeControllerAPI extends Controller
             }
         }
         $alteracoes = '';
-        if ($atividade->tipo != $request->tipo){
-            $alteracoes .= "passou de " . $atividade->tipo ." para " . $request->tipo . ", ";
+        if ($atividade->tipo != $request->tipo) {
+            $alteracoes .= "passou de " . $atividade->tipo . " para " . $request->tipo . ", ";
         }
-        if ($atividade->numeroElementos != $request->numeroElementos){
-            $alteracoes .= "passou de grupos de " . $atividade->numeroElementos ." para grupos de " . $request->numeroElementos. ", ";
+        if ($atividade->numeroElementos != $request->numeroElementos) {
+            $alteracoes .= "passou de grupos de " . $atividade->numeroElementos . " para grupos de " . $request->numeroElementos . ", ";
         }
-        if ($atividade->data != $request->data){
+        if ($atividade->data != $request->data) {
             $alteracoes .= "a data limite é " . date('d-m-Y', strtotime($request->data)) . ".";
         }
         if ($alteracoes != '') {
@@ -253,7 +271,7 @@ class AtividadeControllerAPI extends Controller
                     "As especificações da atividade " . $request->titulo . " foram alteradas, " . $alteracoes,
                     "A atividade " . $request->titulo . " foi alterada",
                     "<h3>As especificações da atividade " . $request->titulo . " foram alteradas</h3><p>A atividade 
-                    é coordenada pelo(a) porfessor(a) " . $coordenador->nome . " e passou a ter as seguintes configurações: " . 
+                    é coordenada pelo(a) porfessor(a) " . $coordenador->nome . " e passou a ter as seguintes configurações: " .
                     $alteracoes . "</p>");
             }
         }
@@ -270,7 +288,8 @@ class AtividadeControllerAPI extends Controller
         return response()->json(new AtividadeResource($atividade), 201);
     }
 
-    public function destroy($id)
+    public
+    function destroy($id)
     {
         $atividade = Atividade::findOrFail($id);
         $atividade->delete();
@@ -278,7 +297,8 @@ class AtividadeControllerAPI extends Controller
     }
 
 
-    public function storeChatMensagem(Request $request)
+    public
+    function storeChatMensagem(Request $request)
     {
         $request->validate([
             'chat_id' => 'required',
@@ -295,7 +315,8 @@ class AtividadeControllerAPI extends Controller
         return response()->json(new ChatMensagensResource($mensagem), 201);
     }
 
-    public function storeParticipante(Request $request, $id)
+    public
+    function storeParticipante(Request $request, $id)
     {
         $request->validate([
             'user_id' => 'required',

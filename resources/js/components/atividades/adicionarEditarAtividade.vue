@@ -98,7 +98,7 @@
                                 ref="selectVisibilidade"
                             ></v-select>
                         </div>
-                        <div @click="setOpenList('alunos')" v-if="atividade.visibilidade == 'privado'">
+                        <div @click="setOpenList('alunos')">
                             <v-combobox
                                 v-model="atividade.participantes"
                                 :items="alunos"
