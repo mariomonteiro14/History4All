@@ -351,10 +351,20 @@ class AtividadeControllerAPI extends Controller
     public function novoTestemunho(Request $request, $id){
         $atividade = Atividade::findOrFail($id);
 
-        /*$request->validate([
-            'texto' => 'required|text',
-            'rate' => 'required|number|min:1|max:5',
-        ]);*/
+        $request->validate([
+            'texto' => 'required|string',
+            'rate' => 'required|numeric|min:1|max:5',
+        ]);
+
+        if (AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)->first()){
+            return abort(403, "Nao pode submeter mais do que uma vez");
+        }
+
+        if (!AtividadeParticipantes::where('atividade_id', $id)->where('user_id', Auth::id())->first()
+            && $atividade->coordenador != Auth::id()) {
+            return abort(403, "Nao pode submeter um testemunho");
+        }
+
         $testemunho = new AtividadeTestemunhos();
         $testemunho->fill([
             'atividade_id' => $id,
@@ -366,9 +376,31 @@ class AtividadeControllerAPI extends Controller
         return response()->json($testemunho, 201);
 
     }
-    public function removerTestemunho(Request $request, $id, $user_id){
+    public function editTestemunho(Request $request, $id){
 
-        $test = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $user_id)->delete();
+        $request->validate([
+            'texto' => 'required|string',
+            'rate' => 'required|numeric|min:1|max:5',
+        ]);
+        $atividade = Atividade::findOrFail($id);
+
+        if(Auth::id() != $request->user_id){
+            abort(403, "Nao tem permissoes");
+        }
+
+        $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
+                    ->update(['texto' => $request->texto, 'rate' => $request->rate]);
+
+        return response()->json($testemunho, 201);
+    }
+
+
+    public function removerTestemunho(Request $request, $id, $user_id){
+        if(Auth::id() != $user_id){
+            abort(403, "Nao tem permissoes");
+        }
+
+        AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $user_id)->delete();
 
         return response()->json(null, 201);
     }

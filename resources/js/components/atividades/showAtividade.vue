@@ -361,20 +361,51 @@
                                             </td>
 
                                             <td class="text-xs-left" style="max-width:400px; min-width:400px;">
-                                                {{ props.item.texto }}
+                                                <div
+                                                    v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)">
+                                                    {{ props.item.texto }}
+                                                </div>
+                                                <v-text-field v-else
+                                                              v-model="myTestemunho.texto"
+                                                              clearable
+                                                              placeholder="Testemunho"
+                                                              :color="colorDefault"
+                                                              :rules="[v => !!v || 'Testemunho é obrigatório']"
+                                                              required
+                                                              @keyup.enter="saveEditTestemunho"
+                                                ></v-text-field>
+
                                             </td>
                                             <td class="text-xs-right">
-                                                <v-rating
+                                                <v-rating v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
                                                     v-model="props.item.rate"
                                                     readonly
                                                     :background-color="colorDefault"
                                                     :color="colorDefault"
                                                     small
                                                 ></v-rating>
+                                                <v-rating v-else
+                                                    v-model="myTestemunho.rate"
+                                                     :background-color="colorDefault"
+                                                    :color="colorDefault"
+                                                    small
+                                                ></v-rating>
                                             </td>
                                             <td class="text-xs-right" v-if="props.item.user_id == $store.state.user.id">
-                                                <v-btn icon color="warning" @click="showEditTestemunho(props.item)">
+                                                <v-btn
+                                                    v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
+                                                    icon color="warning" @click="showEditTestemunho(props.item)">
                                                     <v-icon small>edit</v-icon>
+                                                </v-btn>
+                                                <v-btn
+                                                    v-if="(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
+                                                    icon color="success" @click="saveEditTestemunho()">
+                                                    <v-icon small>check</v-icon>
+                                                </v-btn>
+                                                <v-btn
+                                                    v-if="(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
+                                                    icon color="warning" @click="cancelEdit">
+                                                    <v-icon small>close</v-icon>
                                                 </v-btn>
                                                 <v-btn color="error" icon
                                                        @click.stop="apagarTestemunho(props.item)">
@@ -400,7 +431,6 @@
                                                         :color="colorDefault"
                                                         :rules="[v => !!v || 'Testemunho é obrigatório']"
                                                         required
-
                                                         @keyup.enter="enviarTestemunho"
                                                     ></v-text-field>
                                                 </v-flex>
@@ -568,13 +598,12 @@
                 })
             },
             enviarTestemunho() {
-
                 if (this.myTestemunho.texto && this.myTestemunho.rate) {
                     this.myTestemunho.atividade_id = this.atividade.id;
                     this.myTestemunho.user_id = this.$store.state.user.id;
                     this.loadingTestemunho = true;
                     axios.post('/api/atividade/' + this.atividade.id + '/testemunho', this.myTestemunho).then(response => {
-                        this.myTestemunho = {};
+                        this.myTestemunho = {rate: 3};
                         this.showEscrever = false;
                         this.getTestemunhos();
                     }).catch(error => {
@@ -585,8 +614,21 @@
 
             },
             showEditTestemunho(testemunho) {
-                this.getTestemunhos();
-
+                this.myTestemunho = Object.assign({}, testemunho);
+            },
+            cancelEdit() {
+                this.myTestemunho = {rate: 3};
+            },
+            saveEditTestemunho() {
+                this.loadingTestemunho = true;
+                axios.put('/api/atividade/' + this.atividade.id + '/testemunho', this.myTestemunho).then(response => {
+                    this.myTestemunho = {rate: 3};
+                    this.getTestemunhos();
+                    this.toastPopUp("success", "Testemunho atualizado");
+                }).catch(error => {
+                    this.loadingTestemunho = false;
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                })
             },
             apagarTestemunho(testemunho) {
                 this.loadingTestemunho = true;

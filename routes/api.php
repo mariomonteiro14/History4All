@@ -39,6 +39,7 @@ Route::group(['middleware' => 'auth:api'], function() {
 
     Route::get('atividade/{id}/testemunhos', 'AtividadeControllerAPI@getTestemunhos');
     Route::post('atividade/{id}/testemunho', 'AtividadeControllerAPI@novoTestemunho');
+    Route::put('atividade/{id}/testemunho', 'AtividadeControllerAPI@editTestemunho');
     Route::delete('atividade/{id}/testemunho/{user_id}', 'AtividadeControllerAPI@removerTestemunho');
 
     Route::group(['middleware' => 'admin'], function() {
