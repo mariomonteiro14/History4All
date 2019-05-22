@@ -37,6 +37,10 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('me/notificacoes', 'UserControllerAPI@notificacoes');
     Route::put('me/notificacoes', 'UserControllerAPI@updateNotificacoes');
 
+    Route::get('atividade/{id}/testemunhos', 'AtividadeControllerAPI@getTestemunhos');
+    Route::post('atividade/{id}/testemunho', 'AtividadeControllerAPI@novoTestemunho');
+    Route::delete('atividade/{id}/testemunho/{user_id}', 'AtividadeControllerAPI@removerTestemunho');
+
     Route::group(['middleware' => 'admin'], function() {
         Route::post('patrimonios/{id}', 'PatrimonioControllerAPI@update');
         Route::delete('patrimonios/{id}', 'PatrimonioControllerAPI@destroy');

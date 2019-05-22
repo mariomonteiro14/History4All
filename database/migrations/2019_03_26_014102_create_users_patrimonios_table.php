@@ -117,6 +117,14 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->integer('patrimonio_id')->unsigned();
             $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');
         });
+        Schema::create('atividade_testemunhos', function (Blueprint $table) {
+            $table->integer('atividade_id')->unsigned();
+            $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
+            $table->integer('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->integer('rate');
+            $table->longText('texto');
+        });
 
         Schema::table('turmas', function (Blueprint $table) {
            // $table->bigInteger('professor_id')->unsigned();

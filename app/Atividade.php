@@ -38,6 +38,10 @@ class Atividade extends Model
         return $this->hasMany(AtividadePatrimonios::class, 'atividade_id','id')->with('patrimonio');
     }
 
+    public function testemunhos(){
+        return $this->hasMany(AtividadeTestemunhos::class, 'atividade_id','id');
+    }
+
     public function ciclo(){
         return $this->join('atividade_patrimonios', 'atividade_id', 'id')
             ->join('patrimonios as p', 'patrimonio_id','p.id')

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Atividade;
 use App\AtividadeParticipantes;
 use App\AtividadePatrimonios;
+use App\AtividadeTestemunhos;
 use App\Chat;
 use App\Http\Resources\Atividade as AtividadeResource;
 use App\ChatMensagens;
@@ -297,8 +298,7 @@ class AtividadeControllerAPI extends Controller
     }
 
 
-    public
-    function storeChatMensagem(Request $request)
+    public function storeChatMensagem(Request $request)
     {
         $request->validate([
             'chat_id' => 'required',
@@ -315,8 +315,7 @@ class AtividadeControllerAPI extends Controller
         return response()->json(new ChatMensagensResource($mensagem), 201);
     }
 
-    public
-    function storeParticipante(Request $request, $id)
+    public function storeParticipante(Request $request, $id)
     {
         $request->validate([
             'user_id' => 'required',
@@ -338,5 +337,39 @@ class AtividadeControllerAPI extends Controller
         $participante->save();
 
         return response()->json($participante, 201);
+    }
+
+    public function getTestemunhos(Request $request, $id){
+
+        $atividade = Atividade::findOrFail($id);
+
+        $testemunhos = $atividade->testemunhos()->exists() ? $atividade->testemunhos()->select('user_id', 'texto', 'rate')->get() : [];
+        return response()->json($testemunhos, 201);
+
+    }
+
+    public function novoTestemunho(Request $request, $id){
+        $atividade = Atividade::findOrFail($id);
+
+        /*$request->validate([
+            'texto' => 'required|text',
+            'rate' => 'required|number|min:1|max:5',
+        ]);*/
+        $testemunho = new AtividadeTestemunhos();
+        $testemunho->fill([
+            'atividade_id' => $id,
+            'user_id' => $request->user_id,
+            'texto' => $request->texto,
+            'rate' => $request->rate,
+            ]);
+        $testemunho->save();
+        return response()->json($testemunho, 201);
+
+    }
+    public function removerTestemunho(Request $request, $id, $user_id){
+
+        $test = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $user_id)->delete();
+
+        return response()->json(null, 201);
     }
 }

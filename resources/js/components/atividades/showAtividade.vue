@@ -342,9 +342,92 @@
                                 <div>
                                     <h4>Testemunhos:</h4>
                                 </div>
+                                <v-spacer></v-spacer>
+                                <loader v-if="loadingTestemunho" color="green" size="50px"></loader>
                             </v-card-title>
-                            <v-card-actions>
-                            </v-card-actions>
+                            <div v-if="!loadingTestemunho">
+                                <v-card-text>
+                                    <h6 v-if="testemunhos.length == 0" class="grey--text"> Nao existem testemunhos</h6>
+                                    <v-data-table v-else
+                                                  :items="testemunhos"
+                                                  class="elevation-1"
+                                                  hide-actions
+                                                  hide-headers
+                                                  style="max-height:200px; min-height:50px; overflow-y:auto"
+                                    >
+                                        <template v-slot:items="props">
+                                            <td class="text-xs-left">
+                                                <v-icon class="indigo--text" small>far fa-user</v-icon>
+                                            </td>
+
+                                            <td class="text-xs-left" style="max-width:400px; min-width:400px;">
+                                                {{ props.item.texto }}
+                                            </td>
+                                            <td class="text-xs-right">
+                                                <v-rating
+                                                    v-model="props.item.rate"
+                                                    readonly
+                                                    :background-color="colorDefault"
+                                                    :color="colorDefault"
+                                                    small
+                                                ></v-rating>
+                                            </td>
+                                            <td class="text-xs-right" v-if="props.item.user_id == $store.state.user.id">
+                                                <v-btn icon color="warning" @click="showEditTestemunho(props.item)">
+                                                    <v-icon small>edit</v-icon>
+                                                </v-btn>
+                                                <v-btn color="error" icon
+                                                       @click.stop="apagarTestemunho(props.item)">
+                                                    <v-icon small>delete_forever</v-icon>
+                                                </v-btn>
+                                            </td>
+                                            <td class="text-xs-right" v-else></td>
+                                        </template>
+                                    </v-data-table>
+                                </v-card-text>
+                                <v-divider></v-divider>
+                                <v-card-actions v-if="canWriteTestemunho">
+                                    <v-container fluid grid-list-sm>
+                                        <a @click="showEscrever = !showEscrever" class="indigo--text">
+                                            <h5>Escrever Testemunho</h5></a>
+                                        <v-slide-y-transition>
+                                            <v-layout v-show="showEscrever">
+                                                <v-flex sm8>
+                                                    <v-text-field
+                                                        v-model="myTestemunho.texto"
+                                                        clearable
+                                                        placeholder="Testemunho"
+                                                        :color="colorDefault"
+                                                        :rules="[v => !!v || 'Testemunho é obrigatório']"
+                                                        required
+
+                                                        @keyup.enter="enviarTestemunho"
+                                                    ></v-text-field>
+                                                </v-flex>
+                                                <v-spacer></v-spacer>
+                                                <v-flex sm2>
+                                                    <v-rating
+                                                        v-model="myTestemunho.rate"
+                                                        :background-color="colorDefault"
+                                                        :color="colorDefault"
+                                                        medium
+                                                        hover
+                                                    ></v-rating>
+                                                </v-flex>
+                                                <v-flex sm1>
+                                                    <v-btn flat v-if="myTestemunho.texto && myTestemunho.rate"
+                                                           :color="colorDefault"
+                                                           round class="white--text" @click="enviarTestemunho">
+                                                        &nbsp
+                                                        <v-icon large>send</v-icon>
+                                                    </v-btn>
+                                                </v-flex>
+                                            </v-layout>
+                                        </v-slide-y-transition>
+                                    </v-container>
+
+                                </v-card-actions>
+                            </div>
                         </v-card>
                     </v-flex>
                 </v-layout>
@@ -406,6 +489,12 @@
                 showDetails: false,
                 isLoading: true,
                 actualScroll: 0,
+                myTestemunho: {
+                    rate: 3
+                },
+                testemunhoValido: true,
+                loadingTestemunho: false,
+                showEscrever: false,
             };
         },
         methods: {
@@ -429,6 +518,7 @@
                             this.mensagensDoChat = mensagens.slice(mensagens.length - this.offset);
                             this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
                         }
+                        this.testemunhos = this.atividade.testemunhos;
                         this.isLoading = false;
                     }).catch(error => {
                     this.isLoading = false;
@@ -463,10 +553,51 @@
                 this.mensagemAEnviar = '';
                 axios.post('/api/chat', chatMensagem).then(response => {
                     this.$socket.emit('chat_mensagem', response.data, this.atividade.chat.id);
-                    this.mensagemAEnviar = '';
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
+            },
+            getTestemunhos() {
+                this.loadingTestemunho = true;
+                axios.get('/api/atividade/' + this.atividade.id + '/testemunhos').then(response => {
+                    this.testemunhos = response.data;
+                    this.loadingTestemunho = false;
+                }).catch(error => {
+                    this.loadingTestemunho = false;
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                })
+            },
+            enviarTestemunho() {
+
+                if (this.myTestemunho.texto && this.myTestemunho.rate) {
+                    this.myTestemunho.atividade_id = this.atividade.id;
+                    this.myTestemunho.user_id = this.$store.state.user.id;
+                    this.loadingTestemunho = true;
+                    axios.post('/api/atividade/' + this.atividade.id + '/testemunho', this.myTestemunho).then(response => {
+                        this.myTestemunho = {};
+                        this.showEscrever = false;
+                        this.getTestemunhos();
+                    }).catch(error => {
+                        this.loadingTestemunho = false;
+                        this.toastPopUp("error", `${error.response.data.message}`);
+                    })
+                }
+
+            },
+            showEditTestemunho(testemunho) {
+                this.getTestemunhos();
+
+            },
+            apagarTestemunho(testemunho) {
+                this.loadingTestemunho = true;
+                axios.delete('/api/atividade/' + this.atividade.id + '/testemunho/' + testemunho.user_id).then(response => {
+                    this.toastPopUp("success", "Testemunho apagado");
+                    this.getTestemunhos();
+                }).catch(error => {
+                    this.loadingTestemunho = false;
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                })
+
             },
             onScroll(e) {
                 if (this.actualScroll < e.target.scrollTop) {
@@ -522,12 +653,27 @@
                 if (this.atividade.coordenador.email === me.email) {
                     return true;
                 }
+                let resp = false;
                 this.atividade.participantes.forEach(function (element) {
-                    if (element.email === me.email) {
-                        return true;
+                    if (element.id == me.id) {
+                        resp = true;
+                        return;
                     }
                 });
-                return false;
+                console.log(resp);
+                return resp;
+            },
+            canWriteTestemunho() {
+                let me = this.$store.state.user;
+                let resp = true;
+                this.testemunhos.forEach(function (element) {
+                    if (element.user_id === me.id) {
+                        console.log("nao pode escrever")
+                        resp = false;
+                        return;
+                    }
+                });
+                return resp;
             }
         },
         sockets: {

@@ -48,7 +48,7 @@
         <v-dialog v-model="dialog" max-width="290">
             <v-card>
                 <v-card-title class="headline">Confirmação</v-card-title>
-                <v-card-text v-if="userAApagar.tipo == 'aluno'">Tem a certeza que quer elimiar o aluno?</v-card-text>
+                <v-card-text v-if="userAApagar.tipo == 'aluno'">Tem a certeza que quer eliminar o aluno?</v-card-text>
                 <v-card-text v-else>
                     Todas as turmas associadas a este professor ficaram sem professor.
                     <p>Tem a certeza que quer continuar?</p>

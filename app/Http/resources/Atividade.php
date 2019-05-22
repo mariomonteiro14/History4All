@@ -30,6 +30,7 @@ class Atividade extends JsonResource
             'participantes' => $participantes->exists() ? ShortUser::collection($participantes->get()->pluck('user')) : [],
             'ciclo' => $this->ciclo(),
             'epoca' => $this->epoca(),
+            'testemunhos' => $this->testemunhos()->exists() ? $this->testemunhos()->get() : [],
         ];
     }
 
