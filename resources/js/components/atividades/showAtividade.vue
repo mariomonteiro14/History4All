@@ -417,7 +417,7 @@
                                     </v-data-table>
                                 </v-card-text>
                                 <v-divider></v-divider>
-                                <v-card-actions v-if="canWriteTestemunho">
+                                <v-card-actions v-if="canWriteTestemunho && participa">
                                     <v-container fluid grid-list-sm>
                                         <a @click="showEscrever = !showEscrever" class="indigo--text">
                                             <h5>Escrever Testemunho</h5></a>
@@ -605,6 +605,7 @@
                     axios.post('/api/atividade/' + this.atividade.id + '/testemunho', this.myTestemunho).then(response => {
                         this.myTestemunho = {rate: 3};
                         this.showEscrever = false;
+                        this.toastPopUp("success", "Testemunho registado");
                         this.getTestemunhos();
                     }).catch(error => {
                         this.loadingTestemunho = false;
@@ -702,7 +703,6 @@
                         return;
                     }
                 });
-                console.log(resp);
                 return resp;
             },
             canWriteTestemunho() {
@@ -710,7 +710,6 @@
                 let resp = true;
                 this.testemunhos.forEach(function (element) {
                     if (element.user_id === me.id) {
-                        console.log("nao pode escrever")
                         resp = false;
                         return;
                     }

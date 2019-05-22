@@ -86,11 +86,15 @@ class AtividadeControllerAPI extends Controller
     public
     function atividadesPublicas()
     {
-        return ShortAtividadeResource::collection(Atividade::select('atividades.*')
-            ->leftJoin('atividade_participantes', 'atividade_id', 'atividades.id')
-            ->join('users', 'users.id', 'coordenador')
-            ->where('escola_id', Auth::user()->escola_id)
-            ->where('visibilidade', 'NOT LIKE', 'privado')
+        if (Auth::user()->tipo != "admin") {
+            return ShortAtividadeResource::collection(Atividade::select('atividades.*')
+                ->leftJoin('atividade_participantes', 'atividade_id', 'atividades.id')
+                ->join('users', 'users.id', 'coordenador')
+                ->where('escola_id', Auth::user()->escola_id)
+                ->where('visibilidade', 'NOT LIKE', 'privado')
+                ->distinct()->get());
+        }
+        return ShortAtividadeResource::collection(Atividade::where('visibilidade', 'LIKE', 'publico')
             ->distinct()->get());
     }
 
