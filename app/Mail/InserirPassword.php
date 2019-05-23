@@ -30,7 +30,7 @@ class InserirPassword extends Mailable
      */
     public function build()
     {
-        if ($this->link == 'email.registar'){
+        if ($this->blade == 'email.registar'){
             $this->subject('Confirmação de email - History4All');
         }else{
             $this->subject('Nova password - History4All');

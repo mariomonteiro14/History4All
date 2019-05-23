@@ -23,9 +23,11 @@
         <body>
 
         <div class="container-fluid" id="app">
-            <navbarc></navbarc>
-            @yield('content')
-            <footerc></footerc>
+            <v-app>
+                <navbarc></navbarc>
+                @yield('content')
+                <footerc></footerc>
+            </v-app>
         </div>
 
      @yield('pagescript')

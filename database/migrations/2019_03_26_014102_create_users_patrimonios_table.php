@@ -85,7 +85,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('chat_id')->references('id')->on('chats')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
-            $table->longText('mensagem');
+            $table->text('mensagem');
         });
 
         Schema::create('atividades', function (Blueprint $table) {
