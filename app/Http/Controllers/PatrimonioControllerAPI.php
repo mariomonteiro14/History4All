@@ -29,8 +29,12 @@ class PatrimonioControllerAPI extends Controller
         $patrim = Patrimonio::findOrFail($id);
         if($request->has('novas_imagens')) {
             foreach ($request->novas_imagens as $image) {
-                $filename = str_random(8) . '.' . $image->getClientOriginalExtension();;
+                $filename = str_random(8) . '.' . $image->getClientOriginalExtension();
                 Storage::disk('public')->putFileAs('patrimonios', $image, $filename);
+                if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                    exec('exiftool -all= /var/www/html/History4All/public/storage/patrimonios/' . $filename);
+                    Storage::disk('public')->delete('patrimonios/' . $filename . '_original');
+                }
                 $patrim_image = new PatrimonioImagens();
 
                 $patrim_image->patrimonio_id = $id;
@@ -62,8 +66,12 @@ class PatrimonioControllerAPI extends Controller
 
         if($request->has('novas_imagens')) {
             foreach ($request->novas_imagens as $image) {
-                $filename = str_random(8) . '.' . $image->getClientOriginalExtension();;
+                $filename = str_random(8) . '.' . $image->getClientOriginalExtension();
                 Storage::disk('public')->putFileAs('patrimonios', $image, $filename);
+                if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                    exec('exiftool -all= /var/www/html/History4All/public/storage/patrimonios/' . $filename);
+                    Storage::disk('public')->delete('patrimonios/' . $filename . '_original');
+                }
                 $patrim_image = new PatrimonioImagens();
 
                 $patrim_image->patrimonio_id = $patrim->id;
@@ -100,8 +108,12 @@ class PatrimonioControllerAPI extends Controller
 
         if($request->has('imagens')) {
             foreach ($request->imagens as $image) {
-                $filename = str_random(8) . '.' . $image->getClientOriginalExtension();;
+                $filename = str_random(8) . '.' . $image->getClientOriginalExtension();
                 Storage::disk('public')->putFileAs('patrimonios', $image, $filename);
+                if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                    exec('exiftool -all= /var/www/html/History4All/public/storage/patrimonios/' . $filename);
+                    Storage::disk('public')->delete('patrimonios/' . $filename . '_original');
+                }
                 $patrim_image = new PatrimonioImagens();
 
                 $patrim_image->patrimonio_id = $patrim->id;

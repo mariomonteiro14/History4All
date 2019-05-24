@@ -104,15 +104,20 @@ class UserControllerAPI extends Controller
             }
 
             //Store new photo
-            $filename = str_random(16) . '.' . $request->newFoto->getClientOriginalExtension();;
+            $filename = str_random(16) . '.' . $request->newFoto->getClientOriginalExtension();
             Storage::disk('public')->putFileAs('profiles', $request->newFoto, $filename);
+            if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                exec('exiftool -all= /var/www/html/History4All/public/storage/profiles/' . $filename);
+                Storage::disk('public')->delete('profiles/' . $filename . '_original');
+            }
+            
             $user->foto = $filename;
         }
 
         $user->save();
 
         return response()->json([
-            'data' => $user
+            'data' => new UserResource($user)
         ], 201);
 
     }
@@ -221,9 +226,12 @@ class UserControllerAPI extends Controller
             $user->remember_token = '';
 
             if ($request->has('foto')) {
-                $filename = str_random(16) . '.' . $request->foto->getClientOriginalExtension();;
+                $filename = str_random(16) . '.' . $request->foto->getClientOriginalExtension();
                 Storage::disk('public')->putFileAs('profiles', $request->foto, $filename);
-
+                if (strtoupper(substr(PHP_OS, 0, 3)) !== 'WIN') {
+                    exec('exiftool -all= /var/www/html/History4All/public/storage/profiles/' . $filename);
+                    Storage::disk('public')->delete('profiles/' . $filename . '_original');
+                }
                 $user->foto = $filename;
 
                 /*return response()->json([
@@ -407,7 +415,7 @@ class UserControllerAPI extends Controller
             $user->remember_token = '';
             $user->save();
             return response()->json([
-                'data' => $user,
+                'data' => new UserResource($user),
                 'message' => 'Password alterada'
             ], 201);
         }
@@ -428,7 +436,7 @@ class UserControllerAPI extends Controller
         $user->setRememberToken(null);
         $user->save();
         return response()->json([
-            'data' => $user,
+            'data' => new UserResource($user),
             'message' => 'Email alterado'
         ], 201);
     }
