@@ -2,35 +2,71 @@
     <div>
         <br><br><br>
         <v-container fluid grid-list-lg>
-        <v-card id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-            <ol class="carousel-indicators">
-                <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-            </ol>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <v-img aspect-ratio="1.5" center  class="d-block w-100" :src="getPatrimonioPhoto('001.jpg')" min-height="250" max-height="350"
-                           alt="First slide"/>
+            <v-card id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                    <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                </ol>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <v-img aspect-ratio="1.5" center class="d-block w-100 grey lighten-2" :src="getPatrimonioPhoto('001.jpg')"
+                               min-height="250" max-height="350">
+                            <template v-slot:placeholder>
+                                <v-layout
+                                    fill-height
+                                    align-center
+                                    justify-center
+                                    ma-0
+                                >
+                                    <v-progress-circular indeterminate
+                                                         color="grey lighten-5"></v-progress-circular>
+                                </v-layout>
+                            </template>
+                        </v-img>
+                    </div>
+                    <div class="carousel-item">
+                        <v-img aspect-ratio="1.5" center class=" grey lighten-2 d-block w-100" :src="getPatrimonioPhoto('002.jpg')"
+                               min-height="250" max-height="350">
+                            <template v-slot:placeholder>
+                                <v-layout
+                                    fill-height
+                                    align-center
+                                    justify-center
+                                    ma-0
+                                >
+                                    <v-progress-circular indeterminate
+                                                         color="grey lighten-5"></v-progress-circular>
+                                </v-layout>
+                            </template>
+                        </v-img>
+                    </div>
+                    <div class="carousel-item">
+                        <v-img aspect-ratio="1.5" center class="d-block w-100 grey lighten-2" :src="getPatrimonioPhoto('003.jpg')"
+                               min-height="250" max-height="350">
+                            <template v-slot:placeholder>
+                                <v-layout
+                                    fill-height
+                                    align-center
+                                    justify-center
+                                    ma-0
+                                >
+                                    <v-progress-circular indeterminate
+                                                         color="grey lighten-5"></v-progress-circular>
+                                </v-layout>
+                            </template>
+                        </v-img>
+                    </div>
                 </div>
-                <div class="carousel-item">
-                    <v-img aspect-ratio="1.5" center class="d-block w-100" :src="getPatrimonioPhoto('002.jpg')" min-height="250" max-height="350"
-                           alt="Second slide"/>
-                </div>
-                <div class="carousel-item">
-                    <v-img aspect-ratio="1.5" center class="d-block w-100" :src="getPatrimonioPhoto('003.jpg')" min-height="250" max-height="350"
-                           alt="Third slide"/>
-                </div>
-            </div>
-            <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </v-card>
+                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </v-card>
         </v-container>
 
         <v-container fluid grid-list-lg>
@@ -50,7 +86,8 @@
                         <br>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                            <v-btn color="green darken-2" class="font-weight-regular title" flat round data-toggle="modal" data-target="#aboutUsModal">
+                            <v-btn color="green darken-2" class="font-weight-regular title" flat round
+                                   data-toggle="modal" data-target="#aboutUsModal">
                                 Saber Mais
                             </v-btn>
                         </v-card-actions>
@@ -71,7 +108,9 @@
                         </h2>
                         <v-card-actions>
                             <v-spacer></v-spacer>
-                        <v-btn class="font-weight-regular title"  data-toggle="modal" data-target="#contactModal" round flat color="light-green darken-3">Formulário</v-btn>
+                            <v-btn class="font-weight-regular title" data-toggle="modal" data-target="#contactModal"
+                                   round flat color="light-green darken-3">Formulário
+                            </v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-flex>

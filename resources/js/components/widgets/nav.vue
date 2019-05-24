@@ -104,8 +104,20 @@
                     <template slot="button-content">
                         <v-btn icon large flat slot="activator">
                             <v-avatar size="30px" class="bg-white">
-                                <img v-if="this.$store.state.user.foto"
-                                     v-bind:src="getUserPhoto(this.$store.state.user.foto)"/>
+                                <v-img v-if="this.$store.state.user.foto"
+                                     v-bind:src="getUserPhoto(this.$store.state.user.foto)">
+                                    <template v-slot:placeholder>
+                                        <v-layout
+                                            fill-height
+                                            align-center
+                                            justify-center
+                                            ma-0
+                                        >
+                                            <v-progress-circular indeterminate
+                                                                 color="grey lighten-5"></v-progress-circular>
+                                        </v-layout>
+                                    </template>
+                                </v-img>
                                 <v-icon v-else class="indigo--text darken-4" small>far fa-user</v-icon>
                             </v-avatar>
                         </v-btn>

@@ -450,7 +450,7 @@
                         {text: 'Email', value: 'email'},
                         {text: 'Escola', value: 'escola', align: 'center', sortable: true},
                         {text: 'Turma', value: 'turma', align: 'center', sortable: true},
-                        {text: 'Actions', value: '', sortable: false, align: 'center'},
+                        {text: '', value: '', sortable: false, align: 'center'},
                     ];
                 }
             }
