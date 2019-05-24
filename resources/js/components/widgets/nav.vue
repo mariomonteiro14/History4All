@@ -1,100 +1,136 @@
 <template>
-        <div>
-            <v-toolbar :color="colorDefault" fixed>
+    <div>
+        <v-toolbar :color="colorDefault" fixed>
 
             <v-btn to="/">
                 HISTORY4ALL
             </v-btn>
-        <!--</v-toolbar-items>-->
-        <v-toolbar-items>
-            <v-btn flat to="/patrimonios">Patrimonios</v-btn>
-            <v-btn to="/atividades" v-if="this.$store.state.user" flat>Atividades</v-btn>
-        </v-toolbar-items>
-        <v-spacer></v-spacer>
-        <!--<v-text-field
-            flat
-            solo-inverted
-            label="Pesquisar"
-            class="hidden-sm-and-down align-center"
-            color="white"
-            clearable
-        >
-        </v-text-field>-->
-        <v-spacer></v-spacer>
-            <b-dropdown v-if="this.$store.state.user && $store.state.user.tipo !== 'aluno'" text="Outline Danger" right variant="Success" class="m-2">
+            <!--</v-toolbar-items>-->
+            <v-toolbar-items>
+                <v-btn flat to="/patrimonios">Patrimonios</v-btn>
+                <v-btn to="/atividades" v-if="this.$store.state.user" flat>Atividades</v-btn>
+            </v-toolbar-items>
+            <v-spacer></v-spacer>
+            <!--<v-text-field
+                flat
+                solo-inverted
+                label="Pesquisar"
+                class="hidden-sm-and-down align-center"
+                color="white"
+                clearable
+            >
+            </v-text-field>-->
+            <v-spacer></v-spacer>
+            <b-dropdown v-if="this.$store.state.user && $store.state.user.tipo !== 'aluno'" text="Outline Danger" right
+                        variant="Success" class="m-2">
                 <template slot="button-content">GESTÃO</template>
                 <div v-if="$store.state.user.tipo === 'admin'">
-                    <b-dropdown-item to="/admin/patrimonios"><v-icon> &nbsp build</v-icon> Gerir Patrimónios</b-dropdown-item>
-                    <b-dropdown-item to="/admin/users"><v-icon>group</v-icon> &nbsp Gerir Utilizadores</b-dropdown-item>
-                    <b-dropdown-item to="/admin/escolas"><v-icon>home</v-icon> &nbsp Gerir Escolas | Turmas</b-dropdown-item>
+                    <b-dropdown-item to="/admin/patrimonios">
+                        <v-icon> &nbsp build</v-icon>
+                        Gerir Patrimónios
+                    </b-dropdown-item>
+                    <b-dropdown-item to="/admin/users">
+                        <v-icon>group</v-icon>
+                        &nbsp Gerir Utilizadores
+                    </b-dropdown-item>
+                    <b-dropdown-item to="/admin/escolas">
+                        <v-icon>home</v-icon>
+                        &nbsp Gerir Escolas | Turmas
+                    </b-dropdown-item>
                 </div>
                 <div v-if="$store.state.user.tipo === 'professor'">
-                    <b-dropdown-item to="/escola/turmas"><v-icon>group</v-icon>&nbsp Turmas</b-dropdown-item>
+                    <b-dropdown-item to="/escola/turmas">
+                        <v-icon>group</v-icon>
+                        &nbsp Turmas
+                    </b-dropdown-item>
                 </div>
             </b-dropdown>
-        <v-toolbar-items v-if="!this.$store.state.user">
-            <v-btn v-if="!isLoading" flat data-toggle="modal" data-target="#loginModal">
-                Login
-            </v-btn>
-            <v-layout v-else align-center  fluid justify-left>
-                <loader :color="loader_color" :size="loader_size"></loader>
-            </v-layout>
-        </v-toolbar-items>
-        <div v-else>
-            <v-menu offset-y origin="center left" nudge-left class="dropdown elelvation-1" :nudge-bottom="14" transition="scale-transition" data-toggle="dropdown">
-                <v-btn icon flat slot="activator" @click="notificacoesLidas">
-                    <v-badge color="red" overlap>
-                        <span slot="badge">{{novasNotificacoes}}</span>
-                        <v-icon medium>notifications</v-icon>
-                    </v-badge>
+            <v-toolbar-items v-if="!this.$store.state.user">
+                <v-btn v-if="!isLoading" flat data-toggle="modal" data-target="#loginModal">
+                    Login
                 </v-btn>
-            </v-menu>
-                <div v-show="this.$store.state.user" class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-                    <div class="p-4" style="width: 80vh">
-                        <div class="container-fluid">
-                            <template v-for="(notificacao, index) in notificacoes">
-                                <v-list-tile :key="index" avatar>
-                                    <v-list-tile-content>
-                                        <v-list-tile-title v-text="notificacao.de"></v-list-tile-title>
-                                        <v-list-tile-title v-text="notificacao.data"></v-list-tile-title>
-                                        <v-list-tile-title v-text="notificacao.mensagem"></v-list-tile-title>
-                                    </v-list-tile-content>
-                                </v-list-tile>
+                <v-layout v-else align-center fluid justify-left>
+                    <loader :color="loader_color" :size="loader_size"></loader>
+                </v-layout>
+            </v-toolbar-items>
+            <div v-else>
+                <v-menu offset-y origin="center left" nudge-left class="dropdown elelvation-1" :nudge-bottom="14"
+                        transition="scale-transition" data-toggle="dropdown">
+                    <v-btn icon flat slot="activator" @click="notificacoesLidas">
+                        <v-badge color="red" overlap>
+                            <span slot="badge">{{novasNotificacoes}}</span>
+                            <v-icon medium>notifications</v-icon>
+                        </v-badge>
+                    </v-btn>
+                </v-menu>
+                <div  class="dropdown-menu dropdown-menu-right"
+                     aria-labelledby="dropdownMenuLink"
+                      style="max-height:400px; max-width:75vh;">
+                    <div  style="width: 70vh">
+                        <v-data-table v-show="this.$store.state.user"
+                            :items="notificacoes"
+                            class="elevation-1"
+                            hide-actions
+                            hide-headers
+                            style="max-height:400px; max-width:69vh; overflow-y:auto"
+                        >
+                            <template v-slot:items="props">
+                                <tr>
+                                    <td>
+                                        <v-layout>
+                                            <v-flex sm8>
+                                                <span>{{props.item.de}}</span>
+                                            </v-flex>
+                                            <v-spacer></v-spacer>
+                                            <v-flex sm3>
+                                                {{formatarData(props.item.data)}}
+                                            </v-flex>
+
+                                        </v-layout>
+
+                                        <strong>
+                                            {{props.item.mensagem}}
+                                        </strong>
+                                        <br>
+                                        <br>
+                                    </td>
+                                </tr>
                             </template>
-                        </div>
+                        </v-data-table>
                     </div>
                 </div>
-            <!--AVATAR-->
-            <b-dropdown v-if="this.$store.state.user" right variant="Success" class="m-2" no-caret>
-                <template slot="button-content" >
-                    <v-btn icon large flat slot="activator">
-                        <v-avatar size="30px" class="bg-white">
-                            <img v-if="this.$store.state.user.foto" v-bind:src="getUserPhoto(this.$store.state.user.foto)"/>
-                            <v-icon v-else class="indigo--text darken-4" small>far fa-user</v-icon>
-                        </v-avatar>
-                    </v-btn>
-                </template>
-                <v-list class="pa-0" absolute>
-                    <v-list-tile ripple="ripple" rel="noopener" to="/me/perfil">
-                        <v-list-tile-action >
-                            <v-icon>account_circle</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Perfil</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                    <v-list-tile ripple="ripple" rel="noopener" @click="logout">
-                        <v-list-tile-action >
-                            <v-icon>fullscreen_exit</v-icon>
-                        </v-list-tile-action>
-                        <v-list-tile-content>
-                            <v-list-tile-title>Logout</v-list-tile-title>
-                        </v-list-tile-content>
-                    </v-list-tile>
-                </v-list>
-            </b-dropdown>
-       </div>
-    </v-toolbar>
+                <!--AVATAR-->
+                <b-dropdown v-if="this.$store.state.user" right variant="Success" class="m-2" no-caret>
+                    <template slot="button-content">
+                        <v-btn icon large flat slot="activator">
+                            <v-avatar size="30px" class="bg-white">
+                                <img v-if="this.$store.state.user.foto"
+                                     v-bind:src="getUserPhoto(this.$store.state.user.foto)"/>
+                                <v-icon v-else class="indigo--text darken-4" small>far fa-user</v-icon>
+                            </v-avatar>
+                        </v-btn>
+                    </template>
+                    <v-list class="pa-0" absolute>
+                        <v-list-tile ripple="ripple" rel="noopener" to="/me/perfil">
+                            <v-list-tile-action>
+                                <v-icon>account_circle</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Perfil</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                        <v-list-tile ripple="ripple" rel="noopener" @click="logout">
+                            <v-list-tile-action>
+                                <v-icon>fullscreen_exit</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Logout</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
+                    </v-list>
+                </b-dropdown>
+            </div>
+        </v-toolbar>
 
         <!-- Login Modal -->
         <login v-on:logging="logging" v-on:logged="getNotificacoes()"></login>
@@ -103,6 +139,7 @@
 <script>
     import login from './login.vue';
     import BContainer from "bootstrap-vue/src/components/layout/container";
+
     export default {
         name: 'app-toolbar',
         components: {
@@ -112,18 +149,46 @@
         data: () => ({
             isLoading: false,
             loader_color: '#ffffff',
-            loader_size:'30px',
+            loader_size: '30px',
             notificacoes: [],
             novasNotificacoes: 0
         }),
         computed: {
-            toolbarColor () {
+            toolbarColor() {
                 return this.$vuetify.options.extra.mainNav;
             },
+
         },
         methods: {
-            handleDrawerToggle () {
+            handleDrawerToggle() {
                 window.getApp.$emit('APP_DRAWER_TOGGLED');
+            },
+            formatarData(data){
+                let aux = new Date(data);
+                let m = new Date();
+                if(aux.getFullYear() == m.getFullYear() && aux.getMonth() == m.getMonth()){
+                    if (aux.getDate() == m.getDate()){
+                        if (aux.getHours() == m.getHours()) {
+                            if ((m.getMinutes() - aux.getMinutes()) <= 1){
+                                return "Agora"
+                            }
+                            return "Há " + (m.getMinutes() - aux.getMinutes()) + " minutos";
+                        }
+                        let difHoras = m.getHours() - aux.getHours();
+                        if (difHoras == 1) {
+                            return "Há 1 hora"
+                        }
+                        if (difHoras <= 12) {
+                            return "Há " + difHoras + " horas";
+                        }
+                        return "Hoje";
+                    }
+                    if ((m.getDate() - aux.getDate()) == 1){
+                        return "Ontem";
+                    }
+                }
+                console.log(aux);
+                return aux.getDate() + "/" + aux.getMonth() + "/" + aux.getFullYear();
             },
             logout() {
                 this.logging();
@@ -140,11 +205,11 @@
                 });
 
             },
-            logging(){
+            logging() {
                 this.isLoading = !this.isLoading;
             },
-            notificacoesLidas(){
-                if (this.novasNotificacoes > 0){
+            notificacoesLidas() {
+                if (this.novasNotificacoes > 0) {
                     axios.put('/api/me/notificacoes').then(response => {
                         this.notificacoes = response.data;
                         this.novasNotificacoes = 0;
@@ -153,8 +218,8 @@
                     });
                 }
             },
-            getNotificacoes(){
-                if (!this.$store.state.user){
+            getNotificacoes() {
+                if (!this.$store.state.user) {
                     return;
                 }
                 axios.get('/api/me/notificacoes')
@@ -163,13 +228,13 @@
                         this.novasNotificacoes =
                             this.notificacoes.filter(notificacao => notificacao.nova === 1).length;
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                        this.isLoading = false;
-                    });
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.isLoading = false;
+                });
             }
         },
         mounted() {
-            if (this.$store.state.user){
+            if (this.$store.state.user) {
                 this.getNotificacoes();
             }
         },
@@ -178,7 +243,7 @@
                 this.notificacoes.unshift(mensagem);
                 this.novasNotificacoes++;
             },
-            atualizarNotificacoes(){
+            atualizarNotificacoes() {
                 this.getNotificacoes();
             }
         }
@@ -187,11 +252,12 @@
 <style>
     .modal-open {
         overflow: hidden;
-        position:fixed;
+        position: fixed;
         width: 100%;
         height: 100%;
-        margin-right:0px !important;
+        margin-right: 0px !important;
     }
+
     body.with-modal {
         position: static;
         height: auto;

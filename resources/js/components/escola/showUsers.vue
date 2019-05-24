@@ -90,7 +90,7 @@
             },
             apagar() {
                 this.dialog = false;
-                axios.delete('/api/users/' + this.userAApagar)
+                axios.delete('/api/users/' + this.userAApagar.id)
                     .then(response => {
                         this.toastPopUp("success", "Utilizador Apagado!");
                         this.$emit('atualizar');

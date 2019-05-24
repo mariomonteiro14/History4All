@@ -72,8 +72,9 @@ class UserControllerAPI extends Controller
     {
         $user = User::findOrFail($id);
         $userAtual = User::where('id', Auth::id())->first();
-        if ($userAtual->tipo == 'aluno' && $userAtual->escola_id != $user->escola_id ||
-            $userAtual->tipo == 'professor' && $user->tipo == 'aluno' && $userAtual->escola_id != $user->escola_id){
+        if (($userAtual->tipo == 'aluno' && $userAtual->escola_id != $user->escola_id) ||
+            ($userAtual->tipo == 'professor' && $user->tipo == 'aluno' && $userAtual->escola_id != $user->escola_id) ||
+            ($userAtual->tipo == "admin" && $user->tipo == "aluno") || ($userAtual->tipo != "admin" && $user->tipo == "admin")) {
             return null;
         }
         return new UserResource($user);
@@ -84,7 +85,7 @@ class UserControllerAPI extends Controller
         $user = User::findOrFail(Auth::id());
 
         if ($request->has('newEmail') && $request->input('newEmail') != "" && $user->email != $request->newEmail) {
-            if (User::where('email', $request->newEmail)->first()){
+            if (User::where('email', $request->newEmail)->first()) {
                 return abort(403, "Email invalido: Ja registado.");
             }
             $user->setRememberToken(Str::random(100));
@@ -157,6 +158,11 @@ class UserControllerAPI extends Controller
             'escola' => 'nullable',
             'turma' => 'nullable',
         ]);
+
+        if ((Auth::user()->tipo == "admin" && $request->tipo == "aluno") ||
+                Auth::user()->tipo == "professor" && $request->tipo != "aluno"){
+            return abort(403, "Nao tem permissoes para criar ". $request->tipo);
+        }
         $user = new User([
             'nome' => $request->input('nome'),
             'email' => $request->input('email'),
@@ -247,15 +253,15 @@ class UserControllerAPI extends Controller
             $escola = Escola::where('nome', $request->escola)->first();
 
             if ($escola->id != $user->escola_id) {
-                if (!$escola){
+                if (!$escola) {
                     $this->notificacaoEEmail($user,
                         "Foi removido(a) da escola " . $escola->nome . " estando de momento sem escola associada",
                         "Ficou sem escola associada escola associada",
                         "<h3>Foi removido(a) da sua escola no <a href='http://142.93.219.146/'>History4All</a></h3><p>Já não está na escola " . $escola->nome . ". De momento não tem escola associada</p>");
-                } else{
+                } else {
                     $this->notificacaoEEmail($user,
-                        "Foi movido(a) para a escola " . $escola->nome . " estando de momento sem escola associada",
-                        "A sua escola foi alterada",
+                        "Foi movido(a) para a escola " . $escola->nome,
+                        "Alteração de escola",
                         "<h3>Foi movido(a) para a escola no <a href='http://142.93.219.146/'>History4All</a></h3><p>A sua escola passou a ser a " . $escola->nome . "</p>");
                 }
                 $turmas = Turma::where('professor_id', $user->id)->get();
@@ -286,7 +292,7 @@ class UserControllerAPI extends Controller
     {
 
         $user = User::withTrashed()->find($id);
-        if (Auth::user()->tipo == "professor" && $user->turma()->first()->professor_id != Auth::id()){
+        if (Auth::user()->tipo == "professor" && $user->turma()->first()->professor_id != Auth::id()) {
             return response()->json([
                 'message' => 'Unauthorized.'
             ], 403);
@@ -313,26 +319,29 @@ class UserControllerAPI extends Controller
         return response()->json("user restored", 201);
     }
 
-    public function contactHistory4all(Request $request){
+    public function contactHistory4all(Request $request)
+    {
         $request->validate([
             'assunto' => 'required|string|min:6',
             'email' => 'required|string|email',
             'texto' => 'required|string|min:10',
             'emailPara' => 'nullable|string|email',
         ]);
-        $para = $request->emailPara != null ? $request->emailPara : User::where('tipo','admin')->first()->pluck('email');
+        $para = $request->emailPara != null ? $request->emailPara : User::where('tipo', 'admin')->first()->pluck('email');
         $user = User::where('email', $request->email)->first();
         $de = $user ? new UserResource($user) : $request->email;
-        Mail::to($para)->send(new ContactarAdmin($de , $request->assunto, $request->texto));
+        Mail::to($para)->send(new ContactarAdmin($de, $request->assunto, $request->texto));
     }
 
-    public function notificacoes(Request $request){
+    public function notificacoes(Request $request)
+    {
         return response()->json([
-            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data')->orderBy('id', 'desc')->get()
+            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data')->orderBy('data', 'desc')->get()
         ]);
     }
 
-    public function storeNotificacao(Request $request) {
+    public function storeNotificacao(Request $request)
+    {
         $request->validate([
             'users' => 'required',
             'mensagem' => 'required|min:1',
@@ -358,7 +367,8 @@ class UserControllerAPI extends Controller
         return response()->json(null, 201);
     }
 
-    public function updateNotificacoes(Request $request){
+    public function updateNotificacoes(Request $request)
+    {
         $notificacoes = Notificacao::where('user_id', Auth::id())->where('nova', 1)->get();
         foreach ($notificacoes as $notificacao) {
             $notificacao->nova = 0;
@@ -385,7 +395,8 @@ class UserControllerAPI extends Controller
         ], 200);
     }
 
-    public function novaPassword(Request $request, $id){
+    public function novaPassword(Request $request, $id)
+    {
         $request->validate([
             'password' => 'required|min:4',
         ]);
@@ -402,7 +413,8 @@ class UserControllerAPI extends Controller
         }
     }
 
-    public function novoEmail(Request $request, $id){
+    public function novoEmail(Request $request, $id)
+    {
         /*if (Auth::id() != $id) {
             abort(403, 'Unauthorized action.');
         }*/

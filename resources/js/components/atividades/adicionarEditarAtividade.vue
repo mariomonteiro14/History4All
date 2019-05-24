@@ -181,7 +181,7 @@
         },
         methods: {
             isCreated() {
-                return this.atividade_id > 0 ? false : true;
+                return (this.atividade.id && this.atividade.id) > 0 ? false : true;
             },
             getTipos() {
                 this.isLoading = true;

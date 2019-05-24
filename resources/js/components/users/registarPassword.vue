@@ -41,10 +41,11 @@
                                                    @change="handleFile">
                                         </div>
                                         <br><br>
-                                        <button type="submit" class="btn btn-success btn-lg float-right" id="btnLogin"
+                                        <button v-if="!aEnviar" type="submit" class="btn btn-success btn-lg float-right" id="btnLogin"
                                                 v-on:click.prevent="formValidateAndSend" :disabled="!formCompleted">
                                             Guardar
                                         </button>
+                                        <loader v-else color="green" size="32px"></loader>
                                     </form>
                                 </div>
                             </div>
@@ -68,6 +69,7 @@
                 user: {},
                 passwordConfirmation: '',
                 foto: '',
+                aEnviar: false,
             };
         },
         methods: {
@@ -86,10 +88,13 @@
                     const config = {
                         headers: {'content-type': 'multipart/form-data'}
                     };
+                    this.aEnviar = true;
                     axios.post('/api/register/activate/' + this.user.id, this.formCreate(), config).then(response => {
                         this.toastPopUp('success', 'Conta Ativada');
+                        this.aEnviar = false;
                         this.$router.push('/');
                     }).catch(error => {
+                        this.aEnviar = false;
                         this.toastPopUp("error", `${error.response.data.message}`);
                     });
                 } else {

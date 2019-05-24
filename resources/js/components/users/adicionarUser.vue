@@ -99,7 +99,7 @@
         data: function () {
             return {
                 escolas: [],
-                userTipos: ['admin', 'professor', 'aluno'],
+                userTipos: ['admin', 'professor'],
                 emailRules: [
                     (v) => !!v || 'email é obrigatório',
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'

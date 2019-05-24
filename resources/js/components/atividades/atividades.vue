@@ -136,7 +136,7 @@
         <v-dialog v-model="dialog" max-width="290">
             <v-card>
                 <v-card-title class="headline">Confirmação</v-card-title>
-                <v-card-text>Tem a certeza que que elimiar a atividade?</v-card-text>
+                <v-card-text>Tem a certeza que quer elimiar a atividade?</v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn color="red darken-1" flat="flat" @click="dialog = false">

@@ -1,13 +1,12 @@
 <template>
     <div>
-        <!-- Modal Add Order-->
         <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModal"
              aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="container box">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="contactModal">Contactar History4All</h5>
+                            <h5 class="modal-title" id="contactModal">{{getTitle}}</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
                                     aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -46,13 +45,14 @@
 
                     </div>
 
-                    <div class="modal-footer">
+                    <div class="modal-footer" v-if="!aEnviar">
                         <button class="btn btn-info" :disabled="hasErrors" v-on:click.prevent="save">Enviar</button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
-
+                    <div v-else class="modal-footer">
+                        <loader color="green" size="32px"></loader>
+                    </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -61,9 +61,9 @@
 <script>
     export default {
 
-        props:['emailFrom'],
-        mounted(){
-            if (this.emailFrom){
+        props: ['emailFrom'],
+        mounted() {
+            if (this.emailFrom) {
                 this.mensagem.emailPara = this.emailFrom;
                 this.mensagem.email = this.$store.state.user.email;
             }
@@ -75,22 +75,26 @@
                     assunto: '',
                     email: '',
                     texto: '',
-                    emailPara: null
+                    emailPara: null,
                 },
                 emailRules: [
                     (v) => !!v || 'email é obrigatório',
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'
                 ],
+                aEnviar: false,
             };
         },
         methods: {
 
             save: function () {
+                this.aEnviar = true;
                 axios.post('/api/sendEmail/history4all', this.mensagem).then(response => {
                     this.toastPopUp("success", "Mensagem Enviada");
                     this.cleanForm();
                     $('#contactModal').modal('hide');
+                    this.aEnviar = false;
                 }).catch(error => {
+                    this.aEnviar = false;
                     this.toastPopUp("error", `${error.response.data.message}`);
                 })
             },
@@ -109,7 +113,7 @@
         },
         computed: {
             hasErrors: function () {
-                if (!this.mensagem.email){
+                if (!this.mensagem.email) {
                     return true;
                 }
 
@@ -125,6 +129,9 @@
                 }
 
                 return false;
+            },
+            getTitle: function () {
+                return this.emailFrom ? "Contactar utilizador via email" : "Contactar History4All";
             },
         },
     }

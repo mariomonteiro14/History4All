@@ -49,17 +49,18 @@
             </v-card>
             <v-data-table :headers="headers" :items="filteredUsers" :search="search" class="elevation-1"
                           :pagination.sync="pagination" :expand="expand" :loading="isLoading">
-
                 <template v-slot:items="props">
                     <tr v-bind:class="colorUserType(props.item.tipo)">
                         <td class="text-xs-center">
                             <v-avatar size="90px" color="white">
-                                <img v-if="props.item.foto" v-bind:src="getUserPhoto(props.item.foto)"/>
-
+                                <img v-if="props.item.foto && props.item.tipo !='aluno'" v-bind:src="getUserPhoto(props.item.foto)"/>
                                 <v-icon v-else class="indigo--text" large>far fa-user</v-icon>
                             </v-avatar>
                         </td>
-                        <td class="text-xs-left"><strong>{{ props.item.nome }}</strong></td>
+                        <td class="text-xs-left">
+                            <strong v-if="props.item.tipo !='aluno'">{{ props.item.nome }}</strong>
+                            <span v-else>(confidencial)</span>
+                        </td>
                         <td class="text-xs-left">{{ props.item.email }}</td>
                         <!-- Se Filtro for Todos -->
                         <td v-if="tipoUser=='Todos'" class="text-xs-center">{{ props.item.tipo }}</td>
@@ -76,10 +77,10 @@
 
                         <td class="text-xs-center" v-if="!trashed && $store.state.user.id != props.item.id ">
 
-                            <v-btn icon v-if="props.item.tipo!='admin'" @click="showEdit(props.item)">
+                            <v-btn icon v-if="props.item.tipo =='professor'" @click="showEdit(props.item)">
                                 <v-icon color="warning" medium>edit</v-icon>
                             </v-btn>
-                            <v-btn icon @click.stop="showDeleteVerif(props.item.id)">
+                            <v-btn icon v-if="props.item.tipo !='aluno'" @click.stop="showDeleteVerif(props.item.id)">
                                 <v-icon color="error" medium>delete_forever</v-icon>
                             </v-btn>
 

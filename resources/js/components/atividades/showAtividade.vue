@@ -1,80 +1,6 @@
 <template>
     <div id="app">
         <br><br><br><br>
-
-        <!--<v-app id="inspire">
-            <v-layout justify-center>
-                <v-flex xs12 sm12 md12>
-                    <v-card>
-                        <v-container fluid grid-list-md>
-                            <v-flex v-if="atividade">
-                                <v-layout row wrap>
-                                    <v-toolbar flat>
-                                        <v-toolbar-title>
-                                            <h3 class="headline mb-0">{{atividade.titulo}}</h3>
-                                            {{atividade.tipo}}
-                                        </v-toolbar-title>
-                                        <v-btn v-if="estado == 'coordenador'" color="info" @click.stop="notificacaoDialog = true; mensagemNotificacao = ''">
-                                            enviar notificação
-                                        </v-btn>
-                                    </v-toolbar>
-                                    <v-flex :xs12="!atividade.chat" :xs8="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
-                                        <v-card>
-                                            <v-card-text>
-                                                <span>{{atividade.descricao}}</span>
-                                                <br><br><br><br>
-                                                <p v-if="atividade.coordenador">Coordenador: {{atividade.coordenador.nome}}</p>
-                                                Número de elementos por grupo: {{atividade.numeroElementos}}
-                                                <div>
-                                                    <v-btn small @click="showPatrimonios()">Patrimónios relacionados</v-btn>
-                                                </div>
-                                                <p v-if="!estado">
-                                                    <v-btn color="info" @click="participar()">Participar</v-btn><span> - data de término: {{atividade.data}}</span>
-                                                </p>
-                                            </v-card-text>
-                                            <br><br><br>
-                                        </v-card>
-                                        <br><br><br>
-                                    </v-flex>
-                                    <v-flex xs4 v-if="atividade.chat && (estado == 'pendente' || estado == 'coordenador')">
-                                        <v-card>
-                                            <v-container fluid grid-list-md id="scroll-target" style="max-height: 400px" class="scroll-y">
-                                                <div id="scrolled-content">
-                                                    <v-layout row wrap v-scroll:#scroll-target="onScroll">
-                                                        <v-list three-line>
-                                                            {{atividade.chat.assunto}}
-                                                            <template v-for="(mensagem, index) in mensagensDoChat">
-                                                                <v-list-tile :key="index" avatar>
-                                                                    <v-list-tile-avatar>
-                                                                        <img v-if="mensagem.user.foto" width="30px" height="30px" v-bind:src="getUserPhoto(mensagem.user.foto)"/>
-                                                                    </v-list-tile-avatar>
-                                                                    <v-list-tile-content>
-                                                                        <v-list-tile-title v-html="mensagem.user.nome"></v-list-tile-title>
-                                                                        <v-list-tile-sub-title v-html="mensagem.mensagem"></v-list-tile-sub-title>
-                                                                    </v-list-tile-content>
-                                                                </v-list-tile>
-                                                            </template>
-                                                        </v-list>
-                                                        <div id="#botton">
-                                                            <v-textarea v-model="mensagemAEnviar" auto-grow box color="brown" label="mensagem" rows="1"></v-textarea>
-                                                            <v-btn color="success" @click="enviarMensagem">enviar</v-btn>
-                                                        </div>
-                                                    </v-layout>
-                                                </div>
-                                            </v-container>
-                                        </v-card>
-                                    </v-flex>
-                                    <br><br><br>
-                                    <p>
-                                        Testemunhos:
-                                    </p>
-                                </v-layout>
-                            </v-flex>
-                        </v-container>
-                    </v-card>
-                </v-flex>
-            </v-layout>
-        </v-app>-->
         <div v-if="isLoading">
             <br><br><br>
             <v-progress-linear v-slot:progress :color="colorDefault"
@@ -377,7 +303,8 @@
 
                                             </td>
                                             <td class="text-xs-right">
-                                                <v-rating v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
+                                                <v-rating
+                                                    v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
                                                     v-model="props.item.rate"
                                                     readonly
                                                     :background-color="colorDefault"
@@ -385,10 +312,10 @@
                                                     small
                                                 ></v-rating>
                                                 <v-rating v-else
-                                                    v-model="myTestemunho.rate"
-                                                     :background-color="colorDefault"
-                                                    :color="colorDefault"
-                                                    small
+                                                          v-model="myTestemunho.rate"
+                                                          :background-color="colorDefault"
+                                                          :color="colorDefault"
+                                                          hover
                                                 ></v-rating>
                                             </td>
                                             <td class="text-xs-right" v-if="props.item.user_id == $store.state.user.id">
@@ -455,7 +382,6 @@
                                             </v-layout>
                                         </v-slide-y-transition>
                                     </v-container>
-
                                 </v-card-actions>
                             </div>
                         </v-card>

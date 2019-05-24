@@ -68,8 +68,7 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
-    public
-    function getMinhas(Request $request)
+    public function getMinhas(Request $request)
     {
         $user = Auth::user();
         if ($user->tipo == "professor") {
@@ -83,23 +82,25 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
-    public
-    function atividadesPublicas()
+    public function atividadesPublicas()
     {
         if (Auth::user()->tipo != "admin") {
             return ShortAtividadeResource::collection(Atividade::select('atividades.*')
-                ->leftJoin('atividade_participantes', 'atividade_id', 'atividades.id')
                 ->join('users', 'users.id', 'coordenador')
-                ->where('escola_id', Auth::user()->escola_id)
-                ->where('visibilidade', 'NOT LIKE', 'privado')
+                ->where(function($q){
+                    $q->where('escola_id', Auth::user()->escola_id)
+                        ->where('visibilidade', 'LIKE', 'visivel para a escola');
+                })
+                ->orWhere('visibilidade', 'LIKE', 'publico')
                 ->distinct()->get());
+
+
         }
         return ShortAtividadeResource::collection(Atividade::where('visibilidade', 'LIKE', 'publico')
             ->distinct()->get());
     }
 
-    public
-    function getTipos()
+    public function getTipos()
     {
         $data = Atividade::select('tipo')->distinct()->get()->pluck('tipo')->toArray();
         array_push($data, 'visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio');
