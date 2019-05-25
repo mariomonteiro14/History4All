@@ -65,6 +65,7 @@ import pedidoNovaPassword from './pedidoNovaPassword.vue';
                 }).then(response => {
                     this.$store.commit('setUser',response.data.data);
                     this.$emit("logging");
+                    this.$emit("logged");
                     this.toastPopUp("success", `Bem Vindo ${this.$store.state.user.nome}`);
                     this.user.email = '';
                     this.user.password = '';

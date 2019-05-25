@@ -10,7 +10,7 @@
                 </ol>
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <v-img aspect-ratio="1.5" center class="d-block w-100 grey lighten-2" :src="getPatrimonioPhoto('001.jpg')"
+                        <v-img aspect-ratio="1.5" class=" w-100 grey lighten-2" :src="getPatrimonioPhoto('001.jpg')"
                                min-height="250" max-height="350">
                             <template v-slot:placeholder>
                                 <v-layout
@@ -23,6 +23,18 @@
                                                          color="grey lighten-5"></v-progress-circular>
                                 </v-layout>
                             </template>
+                            <!--<v-container center align-center fluid>
+                                <v-layout align-end justify-center row fill-height>
+                                    <br><br><br><br><br>
+                                    <br><br><br><br><br>
+                                    <br><br><br><br><br>
+                                    <v-spacer></v-spacer>
+                                    <v-flex xs12 sm10 justify-center flexbox>
+                                        <h1 class="white--text">A vontade de aprender</h1>
+                                    </v-flex>
+                                    <v-spacer></v-spacer>
+                                </v-layout>
+                            </v-container>-->
                         </v-img>
                     </div>
                     <div class="carousel-item">

@@ -176,7 +176,7 @@
                 window.getApp.$emit('APP_DRAWER_TOGGLED');
             },
             formatarData(data){
-                let aux = new Date(data);
+                let aux = new Date(data.replace(/-/g, "/"));
                 let m = new Date();
                 if(aux.getFullYear() == m.getFullYear() && aux.getMonth() == m.getMonth()){
                     if (aux.getDate() == m.getDate()){
@@ -200,7 +200,7 @@
                     }
                 }
                 console.log(aux);
-                return aux.getDate() + "/" + aux.getMonth() + "/" + aux.getFullYear();
+                return aux.getDate() + "/" + (aux.getMonth() + 1) + "/" + aux.getFullYear(); //janeiro começa em 0
             },
             logout() {
                 this.logging();
@@ -208,6 +208,7 @@
                     this.logging();
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("success", "Logged out");
+                    this.notificacoes = [];
                     this.$socket.emit('user_exit', this.$store.state.user);
                     this.$router.push({name: 'index'});
                 }).catch(error => {
