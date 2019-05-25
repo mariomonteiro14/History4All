@@ -56,21 +56,26 @@
                         </div>
                         <br>
                         <div class="form-group">
+                            <v-checkbox
+                                v-model="temGrupo"
+                                label="Atividade em grupo?"
+                            ></v-checkbox>
                             <v-text-field
+                                v-if="temGrupo"
                                 type="number"
-                                min="1"
+                                min="2"
                                 step="1"
-                                default="1"
-                                @change="atividade.numeroElementos = Math.max(Math.min(Math.round(atividade.numeroElementos), 99), 1)"
+                                default="2"
+                                @keyup="numeroElementos = Math.max(Math.min(Math.round(numeroElementos), 99), 2)"
                                 id="inputNumeroElementos"
-                                v-model="atividade.numeroElementos"
-                                label="Numero de elementos por grupo (1 caso seja individual)"
-                                :rules="[v => !!v && !isNaN(v) || 'Numero de elementos é obrigatório']"
+                                v-model="numeroElementos"
+                                label="Numero de elementos por grupo"
+                                :rules="[v => Number.isInteger(v) && v > 1 || 'Numero de elementos é obrigatório ser inteiro e maior que 1']"
                                 required
                             ></v-text-field>
                         </div>
                         <v-spacer></v-spacer>
-                        <div class="form-group ">
+                        <div class="form-group">
                             <v-checkbox
                                 v-model="chatExist"
                                 label="Atividade tem Chat?"
@@ -80,7 +85,6 @@
                                 id="inputChatAssunto"
                                 v-model="chatAssunto"
                                 label="Chat Descrição"
-                                :rules="[v => !!v || 'Assunto do chat é obrigatória']"
                                 counter="150"
                                 required
                             ></v-textarea>
@@ -176,6 +180,8 @@
                 chatExist: false,
                 patrimoniosSelecionados: [],
                 chatAssunto: '',
+                temGrupo: false,
+                numeroElementos: 2,
                 isLoading: false,
             };
         },
@@ -210,7 +216,7 @@
                     this.cleanForm();
                 }).catch(error => {
                     this.isLoading = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastPopUp("error", `${error.response.data.errors[Object.keys(error.response.data.errors)[0]]}`);
                 })
             },
             edit: function () {
@@ -228,7 +234,7 @@
                     this.cleanForm();
                 }).catch(error => {
                     this.isLoading = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastPopUp("error", `${error.response.data.errors[Object.keys(error.response.data.errors)[0]]}`);
                 })
             },
             prepararAtividade() {
@@ -236,9 +242,7 @@
                 this.atividade.chat = {assunto: this.chatAssunto};
                 this.atividade.patrimonios = this.patrimoniosSelecionados;
                 this.atividade.tipo = this.tipoSelected === 'outro' ? this.outroTipo : this.tipoSelected;
-                if (this.atividade.visibilidade == 'privado') {
-                    this.participantes = [];
-                }
+                this.atividade.numeroElementos = this.temGrupo ? this.numeroElementos : 1;
             },
             cancel: function () {
                 $('#addAtividadeModal').modal('hide');
@@ -321,10 +325,10 @@
         },
         computed: {
             hasErrors: function () {
-                return (this.chatExist && !this.chatAssunto || this.patrimoniosSelecionados.length === 0 ||
+                return (this.temGrupo && !Number.isInteger(this.numeroElementos) || this.patrimoniosSelecionados.length === 0 ||
                     !this.atividade.titulo || !this.atividade.descricao || this.atividade.descricao.length < 25 ||
                     !this.tipoSelected || this.tipoSelected === 'outro' && !this.outroTipo ||
-                    !this.atividade.numeroElementos || !this.atividade.visibilidade);
+                    !this.atividade.visibilidade);
             },
             getTitle: function () {
                 return this.isCreated() ? "Criar Atividade" : "Editar Atividade";
@@ -346,6 +350,12 @@
                             this.chatAssunto = "";
                         }
                         this.chatExist = false;
+                    }
+                    if (atividade.numeroElementos == 1){
+                        this.temGrupo = false;
+                    } else{
+                        this.temGrupo = true;
+                        this.numeroElementos = atividade.numeroElementos;
                     }
                     this.tipoSelected = this.atividade.tipo;
                 }else{

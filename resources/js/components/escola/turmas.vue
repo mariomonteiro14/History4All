@@ -206,7 +206,11 @@
                         this.myEscola = response.data.data;
                         this.isLoadingTurmas = false;
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        if (error.response.status == 404){
+                            this.toastPopUp("error", 'Não existem turmas na sua escola');
+                        } else{
+                            this.toastPopUp("error", `${error.response.data.message}`);
+                        }
                         this.isLoadingTurmas = false;
                 });
             },
