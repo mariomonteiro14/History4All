@@ -1,5 +1,6 @@
 <template>
     <div>
+        <!-- Modal Add Order-->
         <div class="modal fade" id="contactModal" tabindex="-1" role="dialog" aria-labelledby="contactModal"
              aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -8,7 +9,7 @@
                         <div class="modal-header">
                             <h5 class="modal-title" id="contactModal">{{getTitle}}</h5>
                             <button type="button" @click="cancel()" class="close" data-dismiss="modal"
-                                    aria-label="Close">
+                                    aria-label="Close" :disabled="aEnviar">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -53,6 +54,7 @@
                         <loader color="green" size="32px"></loader>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -75,13 +77,13 @@
                     assunto: '',
                     email: '',
                     texto: '',
-                    emailPara: null,
+                    emailPara: null
                 },
                 emailRules: [
                     (v) => !!v || 'email é obrigatório',
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'
                 ],
-                aEnviar: false,
+                aEnviar: false
             };
         },
         methods: {

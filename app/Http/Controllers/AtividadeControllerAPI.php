@@ -50,8 +50,7 @@ class AtividadeControllerAPI extends Controller
     }
 
 
-    public
-    function getPendentes(Request $request, $id)
+    public function getPendentes(Request $request, $id)
     {
         return response()->json([
             'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
@@ -59,8 +58,7 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
-    public
-    function getConcluidas(Request $request, $id)
+    public function getConcluidas(Request $request, $id)
     {
         return response()->json([
             'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
@@ -109,8 +107,7 @@ class AtividadeControllerAPI extends Controller
         ]);
     }
 
-    public
-    function store(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'titulo' => 'required|min:3',
@@ -174,8 +171,7 @@ class AtividadeControllerAPI extends Controller
         return response()->json(new AtividadeResource($atividade), 201);
     }
 
-    public
-    function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'titulo' => 'required|min:3',
@@ -294,8 +290,7 @@ class AtividadeControllerAPI extends Controller
         return response()->json(new AtividadeResource($atividade), 201);
     }
 
-    public
-    function destroy($id)
+    public function destroy($id)
     {
         $atividade = Atividade::findOrFail($id);
         $atividade->delete();

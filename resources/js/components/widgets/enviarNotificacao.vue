@@ -35,7 +35,7 @@
                                     ref="selectUsers"
                                     autofocus
                                     @click="selUsersAberto=true"
-                                    :disabled="!usersSelected || usersSelected.length == 0"
+                                    :disabled="!users || users.length == 0"
                             ></v-combobox>
                         </div>
                     </div>
@@ -69,6 +69,9 @@
         methods: {
             enviar: function () {
                 this.aEnviar = true;
+                if (!this.usersSelected || this.usersSelected.length == 0){
+                    return;
+                }
                 axios.post('/api/notificacoes', {
                     'de': (this.tipo !== 'turma' ? 'coordenador da atividade: ' + this.tipo :
                         this.$store.state.user.tipo + ' ' + this.$store.state.user.nome),
