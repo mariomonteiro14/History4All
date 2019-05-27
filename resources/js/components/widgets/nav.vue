@@ -74,6 +74,9 @@
                             hide-headers
                             style="max-height:400px; max-width:69vh; overflow-y:auto"
                         >
+                            <template slot="no-data">
+                                Não tem nenhuma notificação
+                            </template>
                             <template v-slot:items="props">
                                 <tr>
                                     <td>
@@ -199,7 +202,6 @@
                         return "Ontem";
                     }
                 }
-                console.log(aux);
                 return aux.getDate() + "/" + (aux.getMonth() + 1) + "/" + aux.getFullYear(); //janeiro começa em 0
             },
             logout() {

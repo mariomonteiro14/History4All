@@ -282,6 +282,10 @@
                 this.getAtividades();
                 this.limite = 8;
             },
+            minhasAtividadesSelected() {
+                this.getAtividades();
+                this.limite = 8;
+            },
         }
     }
 </script>

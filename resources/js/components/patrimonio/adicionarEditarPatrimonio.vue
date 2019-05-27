@@ -291,7 +291,7 @@
                 let $patrimonio = this.formCreate();
                 if (this.links) {
                     let descricao = $patrimonio.get('descricao') + "<div id='links'><h4>Links sobre o património:</h4><ul>";
-                    this.links.split(" ").forEach(link => {descricao += "<li><a href='" + link + "'\>" + link + "</a></li>"});
+                    this.links.split(" ").forEach(link => {descricao += "<li><a target='_blank' href='" + link + "'\>" + link + "</a></li>"});
                     descricao += "</ul></div>";
                     $patrimonio.set('descricao', descricao);
                 }
