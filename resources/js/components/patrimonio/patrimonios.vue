@@ -8,8 +8,8 @@
             <v-card append float>
 
                 <v-card-title>
-                    <v-container fluid grid-list-xl>
-                        <v-layout row wrap align-center>
+                    <v-container fluid grid-list-md>
+                        <v-layout row wrap>
                             <v-flex xs12 sm3 d-flex>
                                 <v-select
                                     v-model="distritoSelected"
@@ -32,20 +32,22 @@
                                 <v-select
                                     v-model="cicloSelected"
                                     :items="ciclos"
-                                    chips
                                     label="Filtrar por ciclos"
                                     multiple
                                 ></v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
-                            <v-text-field
-                                v-model="search"
-                                append-icon="pesquisa"
-                                label="Pesquisar em todos os campos"
-                                single-line
-                                hide-details
-                                clearable
-                            ></v-text-field>
+                            <v-flex xs3>
+                                <v-text-field
+                                    v-model="search"
+                                    append-icon="pesquisa"
+                                    label="Pesquisar em todos os campos"
+                                    single-line
+                                    hide-details
+                                    clearable
+                                    align-bottom
+                                ></v-text-field>
+                            </v-flex>
                         </v-layout>
                     </v-container>
                 </v-card-title>

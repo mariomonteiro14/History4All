@@ -5,7 +5,7 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="loginModal">Login</h5>
+                        <h5 class="modal-title" id="loginModal">Entrar</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -17,10 +17,10 @@
                                 <input
                                     type="text" class="form-control" v-model.trim="user.email"
                                     name="emailUsername" id="inputEmailUsername"
-                                    placeholder="Email address" @keyup.enter="login"/>
+                                    @keyup.enter="login"/>
                             </div>
                             <div class="form-group">
-                                <label for="inputPassword">Password</label>
+                                <label for="inputPassword">Senha</label>
                                 <input
                                     type="password" class="form-control" v-model="user.password"
                                     name="password" id="inputPassword" @keyup.enter="login"/>
@@ -29,7 +29,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button class="btn btn-info" v-on:click.prevent="login" :disabled="!formCompleted">Login</button>
+                        <button class="btn btn-info" v-on:click.prevent="login" :disabled="!formCompleted">Entrar</button>
                     </div>
                 </div>
             </div>

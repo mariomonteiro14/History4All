@@ -66,11 +66,10 @@
                                 min="2"
                                 step="1"
                                 default="2"
-                                @keyup="numeroElementos = Math.max(Math.min(Math.round(numeroElementos), 99), 2)"
                                 id="inputNumeroElementos"
                                 v-model="numeroElementos"
                                 label="Numero de elementos por grupo"
-                                :rules="[v => Number.isInteger(v) && v > 1 || 'Numero de elementos é obrigatório ser inteiro e maior que 1']"
+                                :rules="[v => !!v && Number.isInteger(Number(v)) && v > 1 || 'Numero de elementos é obrigatório ser inteiro e maior que 1']"
                                 required
                             ></v-text-field>
                         </div>
@@ -325,10 +324,10 @@
         },
         computed: {
             hasErrors: function () {
-                return (this.temGrupo && !Number.isInteger(this.numeroElementos) || this.patrimoniosSelecionados.length === 0 ||
-                    !this.atividade.titulo || !this.atividade.descricao || this.atividade.descricao.length < 25 ||
-                    !this.tipoSelected || this.tipoSelected === 'outro' && !this.outroTipo ||
-                    !this.atividade.visibilidade);
+                return (this.temGrupo && (!Number.isInteger(Number(this.numeroElementos)) || this.numeroElementos < 2) ||
+                    this.patrimoniosSelecionados.length === 0 || !this.atividade.titulo || !this.atividade.descricao ||
+                    this.atividade.descricao.length < 25 || !this.tipoSelected ||
+                    this.tipoSelected === 'outro' && !this.outroTipo || !this.atividade.visibilidade);
             },
             getTitle: function () {
                 return this.isCreated() ? "Criar Atividade" : "Editar Atividade";

@@ -12,6 +12,7 @@
                             <v-select
                                 :items="tiposDePesquisa"
                                 v-model="tipoDePesquisaSelected"
+                                label="Filtrar por visibilidade"
                             ></v-select>
                         </v-flex>
                         <v-flex xs3 d-flex
@@ -33,32 +34,17 @@
             </v-card>
             <v-card append float>
                 <v-card-title>
-                    <v-container fluid grid-list-xl>
-                        <v-layout row wrap align-center>
-                            <v-text-field
-                                v-model="search"
-                                append-icon="pesquisa"
-                                label="Pesquisar por título"
-                                single-line
-                                hide-details
-                            ></v-text-field>
-                            <v-spacer></v-spacer>
-                            <v-flex xs12 sm3 d-flex>
-                                <v-select
-                                    v-model="epocaSelected"
-                                    :items="epocas"
-                                    label="Filtrar por época históricas"
-                                    class="input-group--focused"
-                                ></v-select>
-                            </v-flex>
-                            <v-flex xs12 sm3>
-                                <v-select
-                                    v-model="cicloSelected"
-                                    :items="ciclos"
-                                    chips
-                                    label="Filtrar por ciclos"
-                                    multiple
-                                ></v-select>
+                    <v-container fluid grid-list-md>
+                        <v-layout row wrap>
+                            <v-flex xs3>
+                                <v-text-field
+                                    v-model="search"
+                                    append-icon="pesquisa"
+                                    label="Pesquisar por título"
+                                    single-line
+                                    hide-details
+                                    align-bottom
+                                ></v-text-field>
                             </v-flex>
                             <v-spacer></v-spacer>
                             <v-flex xs12 sm3 d-flex>
@@ -70,6 +56,26 @@
                                 ></v-select>
                             </v-flex>
                             <v-spacer></v-spacer>
+                            <v-flex xs12 sm3 d-flex>
+                                <v-select
+                                    v-model="epocaSelected"
+                                    :items="epocas"
+                                    label="Filtrar por época históricas"
+                                    class="input-group--focused"
+                                ></v-select>
+                            </v-flex>
+                            <v-spacer></v-spacer>
+                            <v-flex xs12 sm3 d-flex>
+                                <v-select
+                                    v-model="cicloSelected"
+                                    :items="ciclos"
+                                    chips
+                                    label="Filtrar por ciclos"
+                                    multiple
+                                    class="input-group--focused custom"
+                                    pa-0="" ma-0=""
+                                ></v-select>
+                            </v-flex>
                         </v-layout>
                     </v-container>
                 </v-card-title>
@@ -89,7 +95,7 @@
                                            v-if="atividade.imagem" v-bind:src="getPatrimonioPhoto(atividade.imagem)">
                                         <v-expand-transition>
                                             <div v-if="hover" class="blue darken-4 v-card--reveal white--text"
-                                                 style="height: 100%;">
+                                                style="height: 100%;">
                                                 <span>{{atividade.descricao}}</span>
                                             </div>
                                         </v-expand-transition>
@@ -297,5 +303,11 @@
         opacity: .7;
         position: absolute;
         width: 100%;
+    }
+    .custom.v-text-field>.v-input__control>.v-input__slot:before {
+        border-style: none;
+    }
+    .custom.v-text-field>.v-input__control>.v-input__slot:after {
+        border-style: none;
     }
 </style>
