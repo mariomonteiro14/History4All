@@ -11,11 +11,9 @@
 
             <v-layout align-content-start v-if="!isLoading">
                 <v-flex xs1>
-                    <v-btn flat @click="$router.push('/atividades')">
-                        <h5 class="primary--text">
-                            <v-icon>fa fa-arrow-left</v-icon>
-                            &nbsp Atividades
-                        </h5>
+                    <v-btn class="primary--text subheading" round flat @click="$router.push('/atividades')">
+                        <v-icon>fa fa-arrow-left</v-icon>
+                        &nbsp Atividades
                     </v-btn>
                 </v-flex>
             </v-layout>

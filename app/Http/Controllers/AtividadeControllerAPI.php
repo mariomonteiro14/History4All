@@ -114,7 +114,7 @@ class AtividadeControllerAPI extends Controller
             'descricao' => 'required|min:10:max:1000',
             'tipo' => 'required',
             'numeroElementos' => 'required|numeric|digits_between:1,99',
-            'visibilidade' => 'required',
+            'visibilidade' => 'required|string',
             'data' => 'nullable',
         ]);
         if (Auth::user()->tipo !== "professor") {
@@ -139,7 +139,7 @@ class AtividadeControllerAPI extends Controller
         }
         $atividade->save();
 
-        if ($request->get('visibilidade') == 'privado' && $request->has('participantes')
+        if ($request->has('participantes')
             && sizeof($request->get('participantes')) > 0) {
             $coordenador = User::findOrFail(Auth::id());
             foreach ($request->participantes as $participante) {

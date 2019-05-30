@@ -2,7 +2,8 @@
     <div id="app">
         <br><br><br><br>
         <v-app id="inspire" v-if="isLoadingPatrimonio || patrimonio.id">
-            <v-progress-linear v-show="isLoadingPatrimonio" v-slot:progress :color="colorDefault" indeterminate></v-progress-linear>
+            <v-progress-linear v-show="isLoadingPatrimonio" v-slot:progress :color="colorDefault"
+                               indeterminate></v-progress-linear>
             <v-layout align-content-center>
                 <v-flex xs12 sm7 offset-sm3>
                     <v-card>
@@ -21,10 +22,12 @@
                             </div>
                         </v-card-title>
                         <v-card-actions>
-                            <v-btn flat color="orange" v-if="patrimonio.imagens && patrimonio.imagens.length > 1" @click="showGallery=!showGallery">
+                            <v-btn flat color="orange" v-if="patrimonio.imagens && patrimonio.imagens.length > 1"
+                                   @click="showGallery=!showGallery">
                                 Galeria
                             </v-btn>
-                            <v-btn flat color="green" v-if="patrimonio.id && $store.state.user && $store.state.user.tipo === 'professor'"
+                            <v-btn flat color="green"
+                                   v-if="patrimonio.id && $store.state.user && $store.state.user.tipo === 'professor'"
                                    data-toggle="modal" data-target="#adicionarImagemModal">
                                 Adicionar Imagens
                             </v-btn>
@@ -67,15 +70,14 @@
                 </v-flex>
             </v-layout>
         </v-app>
-            <v-layout align-content-center>
-                <v-flex xs1 sm7 offset-sm3>
-                    <v-btn flat @click="$router.go(-1)">
-                        <h6 class="primary--text">
-                            <v-icon>fa fa-arrow-left</v-icon>&nbsp Voltar
-                        </h6>
-                    </v-btn>
-                </v-flex>
-            </v-layout>
+        <v-layout align-content-center>
+            <v-flex xs1 sm7 offset-sm3>
+                <v-btn class="primary--text subheading" round flat @click="$router.go(-1)">
+                    <v-icon>fa fa-arrow-left</v-icon>
+                    &nbsp Voltar
+                </v-btn>
+            </v-flex>
+        </v-layout>
         <div class="modal fade" id="adicionarImagemModal" tabindex="-1" role="dialog" aria-labelledby="contactModal"
              data-keyboard="false" data-backdrop="static" aria-hidden="true">
             <div class="modal-dialog" role="document">
@@ -95,7 +97,9 @@
                         </div>
                     </div>
                     <div v-if="!isLoadingImagens" class="modal-footer">
-                        <button class="btn btn-info" v-on:click.prevent="adicionarImagens" :disabled="attachments.length < 1">Guardar</button>
+                        <button class="btn btn-info" v-on:click.prevent="adicionarImagens"
+                                :disabled="attachments.length < 1">Guardar
+                        </button>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
                     <div v-else class="modal-footer">

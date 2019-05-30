@@ -108,10 +108,9 @@
         </div>
         <v-layout align-content-start v-if="!isLoading && id">
             <v-flex xs1 offset-sm1>
-                <v-btn flat @click="$router.go(-1)">
-                    <h6 class="primary--text">
-                        <v-icon>fa fa-arrow-left</v-icon>&nbsp Voltar
-                    </h6>
+                <v-btn class="primary--text subheading" round flat @click="$router.go(-1)">
+                    <v-icon>fa fa-arrow-left</v-icon>
+                    &nbsp Voltar
                 </v-btn>
             </v-flex>
         </v-layout>
@@ -139,9 +138,9 @@
                         this.profileUser = response.data.data ? response.data.data : 'Não tem permissão para visualizar o utilizador';
                         this.isLoading = false;
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
-                        this.isLoading = false;
-                    });
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.isLoading = false;
+                });
             } else {
                 this.profileUser = this.$store.state.user;
             }
@@ -165,9 +164,9 @@
                             this.profileUser = response.data.data;
                             this.isLoading = false;
                         }).catch(error => {
-                            this.toastPopUp("error", `${error.response.data.message}`);
-                            this.isLoading = false;
-                        });
+                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.isLoading = false;
+                    });
                 } else {
                     this.profileUser = this.$store.state.user;
                 }
