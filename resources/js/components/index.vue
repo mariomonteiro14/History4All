@@ -128,7 +128,7 @@
                 </v-flex>
             </v-layout>
         </v-container>
-        <contact :email-from="''"></contact>
+        <contact :email-to="''"></contact>
         <about-us></about-us>
     </div>
 </template>

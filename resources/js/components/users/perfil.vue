@@ -116,7 +116,7 @@
         </v-layout>
         <br><br><br>
         <edit-profile @reloadUser="profileUser = $store.state.user"></edit-profile>
-        <contact-user v-if="profileUser.email" :email-from="profileUser.email"></contact-user>
+        <contact-user v-if="profileUser.email" :email-to="profileUser.email"></contact-user>
     </div>
 </template>
 <script type="text/javascript">

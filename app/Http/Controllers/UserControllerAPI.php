@@ -110,7 +110,7 @@ class UserControllerAPI extends Controller
                 exec('exiftool -all= /var/www/html/History4All/public/storage/profiles/' . $filename);
                 Storage::disk('public')->delete('profiles/' . $filename . '_original');
             }
-            
+
             $user->foto = $filename;
         }
 
@@ -335,10 +335,22 @@ class UserControllerAPI extends Controller
             'texto' => 'required|string|min:10',
             'emailPara' => 'nullable|string|email',
         ]);
-        $para = $request->emailPara != null ? $request->emailPara : User::where('tipo', 'admin')->first()->pluck('email');
+
+        $para = $request->emailPara != null ? User::where('email',$request->emailPara)->first() : User::where('tipo', 'admin')->first();
         $user = User::where('email', $request->email)->first();
         $de = $user ? new UserResource($user) : $request->email;
-        Mail::to($para)->send(new ContactarAdmin($de, $request->assunto, $request->texto));
+        Mail::to($para->email)->send(new ContactarAdmin($de, $request->assunto, $request->texto));
+
+        $notificacao = new Notificacao();
+        $mensagem = $user ? "Um ". $user->tipo ." enviou-lhe uma nova mensagem. Consulte o seu email." : "Recebeu uma nova mensagem de um utilizador não registado. Consulte o seu email.";
+        $notificacao->fill([
+            'user_id' => $para->id,
+            'mensagem' => $mensagem,
+            'de' => "",
+            'data' => date("Y-m-d H:i:s"),
+            'nova' => '1'
+        ]);
+        $notificacao->save();
     }
 
     public function notificacoes(Request $request)

@@ -23,7 +23,7 @@
                                           required
                             ></v-text-field>
                         </div>
-                        <div class="form-group" v-if="emailFrom == ''">
+                        <div class="form-group" v-if="emailTo === '' && !$store.state.user">
                             <v-text-field id="inputEmail"
                                           v-model="mensagem.email"
                                           label="Seu email"
@@ -63,10 +63,12 @@
 <script>
     export default {
 
-        props: ['emailFrom'],
+        props: ['emailTo'],
         mounted() {
-            if (this.emailFrom) {
-                this.mensagem.emailPara = this.emailFrom;
+            if (this.emailTo) {
+                this.mensagem.emailPara = this.emailTo;
+            }
+            if (this.$store.state.user) {
                 this.mensagem.email = this.$store.state.user.email;
             }
         },
@@ -133,7 +135,7 @@
                 return false;
             },
             getTitle: function () {
-                return this.emailFrom ? "Contactar utilizador via email" : "Contactar History4All";
+                return this.emailTo ? "Contactar utilizador via email" : "Contactar History4All";
             },
         },
     }
