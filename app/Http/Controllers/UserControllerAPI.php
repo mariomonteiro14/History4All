@@ -150,7 +150,7 @@ class UserControllerAPI extends Controller
         if ($errorCode == '200') {
             return json_decode((string)$response->getBody(), true);
         } else {
-            return response()->json(['message' => 'User credentials are invalid'], $errorCode);
+            return response()->json(['message' => 'As credenciais do utilizador estão erradas'], $errorCode);
         }
     }
 
