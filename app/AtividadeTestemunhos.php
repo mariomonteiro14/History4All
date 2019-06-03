@@ -19,7 +19,7 @@ class AtividadeTestemunhos extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'atividade_id', 'user_id', 'rate', 'texto'
+        'atividade_id', 'user_id', 'rate', 'texto', 'confirmado'
     ];
 
     public function atividade(){

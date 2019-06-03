@@ -84,7 +84,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->integer('chat_id')->unsigned();
             $table->foreign('chat_id')->references('id')->on('chats')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('mensagem');
         });
 
@@ -106,7 +106,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->integer('atividade_id')->unsigned();
             $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');;
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->enum('estado', ['pendente', 'concluida']);
             $table->primary(['atividade_id', 'user_id']);
         });
@@ -120,10 +120,11 @@ class CreateUsersPatrimoniosTable extends Migration
         Schema::create('atividade_testemunhos', function (Blueprint $table) {
             $table->integer('atividade_id')->unsigned();
             $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
-            $table->integer('user_id')->unsigned();
+            $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('rate');
             $table->longText('texto');
+            $table->boolean('confirmado')->default(false;;
         });
 
         Schema::table('turmas', function (Blueprint $table) {

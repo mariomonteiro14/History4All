@@ -343,7 +343,7 @@ class AtividadeControllerAPI extends Controller
 
         $atividade = Atividade::findOrFail($id);
 
-        $testemunhos = $atividade->testemunhos()->exists() ? $atividade->testemunhos()->select('user_id', 'texto', 'rate')->get() : [];
+        $testemunhos = $atividade->testemunhos()->exists() ? $atividade->testemunhos()->select('user_id', 'texto', 'rate', 'confirmado')->get() : [];
         return response()->json($testemunhos, 201);
 
     }
@@ -371,11 +371,15 @@ class AtividadeControllerAPI extends Controller
             'user_id' => $request->user_id,
             'texto' => $request->texto,
             'rate' => $request->rate,
-            ]);
+            'confirmado' => 0
+        ]);
+        if ($atividade->coordenador == Auth::id()){
+            $testemunho->confirmado = 1;
+        }
         $testemunho->save();
         return response()->json($testemunho, 201);
-
     }
+
     public function editTestemunho(Request $request, $id){
 
         $request->validate([
@@ -389,14 +393,26 @@ class AtividadeControllerAPI extends Controller
         }
 
         $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
-                    ->update(['texto' => $request->texto, 'rate' => $request->rate]);
-
+                    ->update(['texto' => $request->texto, 'rate' => $request->rate, 'confirmado' => 0]);
+        if ($atividade->coordenador == Auth::id()){
+            $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
+                    ->update(['confirmado' => 1]);
+        }
         return response()->json($testemunho, 201);
     }
 
+    public function confirmarTestemunho(Request $request, $id, $user_id){
+        $atividade = Atividade::findOrFail($id);
+        if($atividade->coordenador != Auth::id()){
+            abort(403, "Nao tem permissoes");
+        }
+        $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
+                    ->update(['confirmado' => 1]);
+        return response()->json($testemunho, 201);
+    }
 
     public function removerTestemunho(Request $request, $id, $user_id){
-        if(Auth::id() != $user_id){
+        if(Auth::id() != $user_id && Auth::id() != Atividade::findOrFail($id)->pluck('coordenador')[0]){
             abort(403, "Nao tem permissoes");
         }
 

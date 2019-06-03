@@ -17,11 +17,19 @@
                     </v-btn>
                 </v-flex>
             </v-layout>
+            <v-tabs fixed-tabs v-model="tabSelecionada">
+                <v-tab
+                    v-for="indice in 3"
+                    :key="indice"
+                >
+                    {{ tabs[indice - 1] }}
+                </v-tab>
+            </v-tabs>
             <v-container fluid grid-list-sm>
                 <v-layout justify-center>
                     <v-flex xs12 sm12 md12>
                         <!--HEADER -->
-                        <v-card v-if="atividade.titulo">
+                        <v-card v-if="atividade.titulo && tabSelecionada == 0">
                             <v-card-title primary-title>
                                 <v-layout row wrap>
                                     <v-flex d-flex xs12 sm5>
@@ -144,7 +152,7 @@
                         </v-card>
                         <br>
                         <!-- CHAT -->
-                        <v-card v-if="participa">
+                        <v-card v-if="participa && tabSelecionada == 1">
                             <v-card-text primary-title>
                                 <v-layout row wrap>
                                     <v-flex d-flex xs12 sm8 v-if="atividade.chat">
@@ -164,7 +172,7 @@
                                                         <div id="scrolled-content">
                                                             <v-list three-line>
                                                                 <span class="grey--text"
-                                                                      v-if="mensagensDoChat.length == 0">(Nao existem mensagens)</span>
+                                                                      v-if="mensagensDoChat.length == 0">(Não existem mensagens)</span>
                                                                 <template v-for="(mensagem, index) in mensagensDoChat">
                                                                     <v-list-tile :key="index" avatar>
                                                                         <v-list-tile-avatar>
@@ -261,7 +269,7 @@
                             </v-card-text>
                         </v-card>
                         <br>
-                        <v-card>
+                        <v-card v-if="tabSelecionada == 2">
                             <v-card-title primary-title>
                                 <div>
                                     <h4>Testemunhos:</h4>
@@ -280,64 +288,77 @@
                                                   style="max-height:200px; min-height:50px; overflow-y:auto"
                                     >
                                         <template v-slot:items="props">
-                                            <td class="text-xs-left">
-                                                <v-icon class="indigo--text" small>far fa-user</v-icon>
-                                            </td>
+                                            <div v-if="props.item.confirmado || $store.state.user.id == props.item.user_id || 
+                                                $store.state.user.id === atividade.coordenador.id"
+                                                :style="[props.item.confirmado ? '' : {'background': '#C0C0C0'}]">
+                                                <td class="text-xs-left">
+                                                    <v-icon class="indigo--text" small>far fa-user</v-icon>
+                                                </td>
 
-                                            <td class="text-xs-left" style="max-width:400px; min-width:400px;">
-                                                <div
-                                                    v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)">
-                                                    {{ props.item.texto }}
-                                                </div>
-                                                <v-text-field v-else
-                                                              v-model="myTestemunho.texto"
-                                                              clearable
-                                                              placeholder="Testemunho"
-                                                              :color="colorDefault"
-                                                              :rules="[v => !!v || 'Testemunho é obrigatório']"
-                                                              required
-                                                              @keyup.enter="saveEditTestemunho"
-                                                ></v-text-field>
+                                                <td class="text-xs-left" style="max-width:400px; min-width:400px;">
+                                                    <div
+                                                        v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)">
+                                                        {{ props.item.texto }}
+                                                    </div>
+                                                    <v-text-field v-else
+                                                                v-model="myTestemunho.texto"
+                                                                clearable
+                                                                placeholder="Testemunho"
+                                                                :color="colorDefault"
+                                                                :rules="[v => !!v || 'Testemunho é obrigatório']"
+                                                                required
+                                                                @keyup.enter="saveEditTestemunho"
+                                                    ></v-text-field>
 
-                                            </td>
-                                            <td class="text-xs-right">
-                                                <v-rating
-                                                    v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
-                                                    v-model="props.item.rate"
-                                                    readonly
-                                                    :background-color="colorDefault"
-                                                    :color="colorDefault"
-                                                    small
-                                                ></v-rating>
-                                                <v-rating v-else
-                                                          v-model="myTestemunho.rate"
-                                                          :background-color="colorDefault"
-                                                          :color="colorDefault"
-                                                          hover
-                                                ></v-rating>
-                                            </td>
-                                            <td class="text-xs-right" v-if="props.item.user_id == $store.state.user.id">
-                                                <v-btn
-                                                    v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
-                                                    icon color="warning" @click="showEditTestemunho(props.item)">
-                                                    <v-icon small>edit</v-icon>
-                                                </v-btn>
-                                                <v-btn
-                                                    v-if="(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
-                                                    icon color="success" @click="saveEditTestemunho()">
-                                                    <v-icon small>check</v-icon>
-                                                </v-btn>
-                                                <v-btn
-                                                    v-if="(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
-                                                    icon color="warning" @click="cancelEdit">
-                                                    <v-icon small>close</v-icon>
-                                                </v-btn>
-                                                <v-btn color="error" icon
-                                                       @click.stop="apagarTestemunho(props.item)">
-                                                    <v-icon small>delete_forever</v-icon>
-                                                </v-btn>
-                                            </td>
-                                            <td class="text-xs-right" v-else></td>
+                                                </td>
+                                                <td class="text-xs-right">
+                                                    <v-rating
+                                                        v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id)"
+                                                        v-model="props.item.rate"
+                                                        readonly
+                                                        :background-color="colorDefault"
+                                                        :color="colorDefault"
+                                                        small
+                                                    ></v-rating>
+                                                    <v-rating v-else
+                                                            v-model="myTestemunho.rate"
+                                                            :background-color="colorDefault"
+                                                            :color="colorDefault"
+                                                            hover
+                                                    ></v-rating>
+                                                </td>
+                                                <td class="text-xs-right" v-if="props.item.user_id == $store.state.user.id || 
+                                                    $store.state.user.id === atividade.coordenador.id && props.item.confirmado === 0">
+                                                    <v-btn
+                                                        v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id) &&
+                                                        ($store.state.user.tipo !== 'professor' || props.item.user_id == $store.state.user.id)"
+                                                        icon color="warning" @click="showEditTestemunho(props.item)">
+                                                        <v-icon small>edit</v-icon>
+                                                    </v-btn>
+                                                    <v-btn
+                                                        v-if="(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id) &&
+                                                        ($store.state.user.tipo !== 'professor' || props.item.user_id == $store.state.user.id)"
+                                                        icon color="success" @click="saveEditTestemunho()">
+                                                        <v-icon small>check</v-icon>
+                                                    </v-btn>
+                                                    <v-btn
+                                                        v-if="(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id) &&
+                                                        ($store.state.user.tipo !== 'professor' || props.item.user_id == $store.state.user.id)"
+                                                        icon color="warning" @click="cancelEdit">
+                                                        <v-icon small>close</v-icon>
+                                                    </v-btn>
+                                                    <v-btn
+                                                        v-if="atividade.coordenador.id == $store.state.user.id && props.item.confirmado === 0"
+                                                        icon color="success" @click="confirmarTestemunho(props.item)">
+                                                        <v-icon small>check</v-icon>
+                                                    </v-btn>
+                                                    <v-btn color="error" icon
+                                                        @click.stop="apagarTestemunho(props.item)">
+                                                        <v-icon small>delete_forever</v-icon>
+                                                    </v-btn>
+                                                </td>
+                                                <td class="text-xs-right" v-else></td>
+                                            </div>
                                         </template>
                                     </v-data-table>
                                 </v-card-text>
@@ -449,6 +470,8 @@
                 testemunhoValido: true,
                 loadingTestemunho: false,
                 showEscrever: false,
+                tabs: ['Descrição', 'Chat', 'Testemunhos'],
+                tabSelecionada: 0
             };
         },
         methods: {
@@ -529,7 +552,11 @@
                     axios.post('/api/atividade/' + this.atividade.id + '/testemunho', this.myTestemunho).then(response => {
                         this.myTestemunho = {rate: 3};
                         this.showEscrever = false;
-                        this.toastPopUp("success", "Testemunho registado");
+                        if (this.$store.state.user.id === this.atividade.coordenador.id){
+                            this.toastPopUp("success", "Testemunho registado");
+                        } else{
+                            this.toastPopUp("success", "Testemunho registado, ficará visivel assim que o coordenador da atividade o validar");
+                        }
                         this.getTestemunhos();
                     }).catch(error => {
                         this.loadingTestemunho = false;
@@ -549,7 +576,23 @@
                 axios.put('/api/atividade/' + this.atividade.id + '/testemunho', this.myTestemunho).then(response => {
                     this.myTestemunho = {rate: 3};
                     this.getTestemunhos();
-                    this.toastPopUp("success", "Testemunho atualizado");
+                    if (this.$store.state.user.id === this.atividade.coordenador.id){
+                        this.toastPopUp("success", "Testemunho atualizado");
+                    } else{
+                        this.toastPopUp("success", "Testemunho atualizado, ficará visivel assim que o coordenador da atividade o validar");
+                    }
+                    this.loadingTestemunho = false;
+                }).catch(error => {
+                    this.loadingTestemunho = false;
+                    this.toastPopUp("error", `${error.response.data.message}`);
+                })
+            },
+            confirmarTestemunho(testemunho) {
+                this.loadingTestemunho = true;
+                axios.put('/api/atividade/' + this.atividade.id + '/testemunho/' + testemunho.user_id).then(response => {
+                    this.toastPopUp("success", "Testemunho visível");
+                    this.getTestemunhos();
+                    this.loadingTestemunho = false;
                 }).catch(error => {
                     this.loadingTestemunho = false;
                     this.toastPopUp("error", `${error.response.data.message}`);
@@ -560,6 +603,7 @@
                 axios.delete('/api/atividade/' + this.atividade.id + '/testemunho/' + testemunho.user_id).then(response => {
                     this.toastPopUp("success", "Testemunho apagado");
                     this.getTestemunhos();
+                    this.loadingTestemunho = false;
                 }).catch(error => {
                     this.loadingTestemunho = false;
                     this.toastPopUp("error", `${error.response.data.message}`);

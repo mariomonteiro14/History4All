@@ -47,7 +47,7 @@
             </b-dropdown>
             <v-toolbar-items v-if="!this.$store.state.user">
                 <v-btn v-if="!isLoading" flat data-toggle="modal" data-target="#loginModal">
-                    Login
+                    Entrar
                 </v-btn>
                 <v-layout v-else align-center fluid justify-left>
                     <loader :color="loader_color" :size="loader_size"></loader>
@@ -71,7 +71,7 @@
                             :items="notificacoes"
                             class="elevation-1"
                             hide-actions
-                            hide-headers
+                            hide-headers disable-initial-sort
                             style="max-height:400px; max-width:69vh; overflow-y:auto"
                         >
                             <template slot="no-data">
@@ -139,7 +139,7 @@
                                 <v-icon>fullscreen_exit</v-icon>
                             </v-list-tile-action>
                             <v-list-tile-content>
-                                <v-list-tile-title>Logout</v-list-tile-title>
+                                <v-list-tile-title>Sair</v-list-tile-title>
                             </v-list-tile-content>
                         </v-list-tile>
                     </v-list>
@@ -209,7 +209,7 @@
                 axios.get('/api/logout').then(response => {
                     this.logging();
                     this.$store.commit('clearUserAndToken');
-                    this.toastPopUp("success", "Logged out");
+                    this.toastPopUp("success", "Saiu da sua conta com sucesso!");
                     this.notificacoes = [];
                     this.$socket.emit('user_exit', this.$store.state.user);
                     this.$router.push({name: 'index'});
