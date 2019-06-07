@@ -59,6 +59,7 @@ import pedidoNovaPassword from './pedidoNovaPassword.vue';
                     return;
                 }
                 this.$emit("logging");
+                $('#loginModal').modal('hide');
                 axios.post('/api/login', this.user).then(response => {
                     this.$store.commit('setToken',response.data.access_token);
                     return axios.get('/api/users/me');
@@ -71,12 +72,14 @@ import pedidoNovaPassword from './pedidoNovaPassword.vue';
                     this.user.password = '';
                     this.$socket.emit('user_enter', this.$store.state.user);
                     $('#loginModal').modal('hide');
-                }).catch(error => {
+                }).catch(error =>
+                {
+                    $('#loginModal').modal('show');
                     this.$emit("logging");
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("error", `${error.response.data.message}`);
                 });
-                $('#loginModal').modal('hide');
+
             },
             fechar(){
                 $('#loginModal').modal('hide');

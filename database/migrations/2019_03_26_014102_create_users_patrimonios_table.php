@@ -124,7 +124,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->integer('rate');
             $table->longText('texto');
-            $table->boolean('confirmado')->default(false;;
+            $table->boolean('confirmado')->default(false);
         });
 
         Schema::table('turmas', function (Blueprint $table) {

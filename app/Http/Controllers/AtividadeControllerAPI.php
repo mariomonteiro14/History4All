@@ -85,7 +85,7 @@ class AtividadeControllerAPI extends Controller
         if (Auth::user()->tipo != "admin") {
             return ShortAtividadeResource::collection(Atividade::select('atividades.*')
                 ->join('users', 'users.id', 'coordenador')
-                ->where(function($q){
+                ->where(function ($q) {
                     $q->where('escola_id', Auth::user()->escola_id)
                         ->where('visibilidade', 'LIKE', 'visivel para a escola');
                 })
@@ -339,7 +339,8 @@ class AtividadeControllerAPI extends Controller
         return response()->json($participante, 201);
     }
 
-    public function getTestemunhos(Request $request, $id){
+    public function getTestemunhos(Request $request, $id)
+    {
 
         $atividade = Atividade::findOrFail($id);
 
@@ -348,15 +349,19 @@ class AtividadeControllerAPI extends Controller
 
     }
 
-    public function novoTestemunho(Request $request, $id){
+    public function novoTestemunho(Request $request, $id)
+    {
         $atividade = Atividade::findOrFail($id);
 
         $request->validate([
             'texto' => 'required|string',
             'rate' => 'required|numeric|min:1|max:5',
         ]);
-
-        if (AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)->first()){
+        if (!AtividadeParticipantes::where("atividade_id", $id)->where("user_id", $request->user_id)->first()
+            && $atividade->coordenador != Auth::id()) {
+            return abort(403, "Nao pode escrever testemunho nesta atividade");
+        }
+        if (AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)->first()) {
             return abort(403, "Nao pode submeter mais do que uma vez");
         }
 
@@ -373,14 +378,25 @@ class AtividadeControllerAPI extends Controller
             'rate' => $request->rate,
             'confirmado' => 0
         ]);
-        if ($atividade->coordenador == Auth::id()){
+        if ($atividade->coordenador == Auth::id()) {
             $testemunho->confirmado = 1;
+        } else {
+            $notif = new Notificacao();
+            $notif->fill([
+                'user_id' => $atividade->coordenador,
+                'mensagem' => "Um aluno submeteu um novo testemunho na atividade " . $atividade->nome . ".",
+                'de' => "Aluno",
+                'data' => date("Y-m-d H:i:s"),
+                'nova' => '1'
+            ]);
+            $notif->save();
         }
         $testemunho->save();
         return response()->json($testemunho, 201);
     }
 
-    public function editTestemunho(Request $request, $id){
+    public function editTestemunho(Request $request, $id)
+    {
 
         $request->validate([
             'texto' => 'required|string',
@@ -388,32 +404,58 @@ class AtividadeControllerAPI extends Controller
         ]);
         $atividade = Atividade::findOrFail($id);
 
-        if(Auth::id() != $request->user_id){
+        if (Auth::id() != $request->user_id) {
             abort(403, "Nao tem permissoes");
         }
 
-        $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
-                    ->update(['texto' => $request->texto, 'rate' => $request->rate, 'confirmado' => 0]);
-        if ($atividade->coordenador == Auth::id()){
+        if ($atividade->coordenador == Auth::id()) {
             $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
-                    ->update(['confirmado' => 1]);
+                ->update(['texto' => $request->texto, 'rate' => $request->rate, 'confirmado' => 1]);
+        } else {
+            $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
+                ->update(['texto' => $request->texto, 'rate' => $request->rate, 'confirmado' => 0]);
+
+            $notif = new Notificacao();
+            $notif->fill([
+                'user_id' => $atividade->coordenador,
+                'mensagem' => "Um aluno alterou um testemunho na atividade " . $atividade->nome . ".",
+                'de' => "Aluno",
+                'data' => date("Y-m-d H:i:s"),
+                'nova' => '1'
+            ]);
+            $notif->save();
         }
         return response()->json($testemunho, 201);
     }
 
-    public function confirmarTestemunho(Request $request, $id, $user_id){
+    public function confirmarTestemunho(Request $request, $id, $user_id)
+    {
         $atividade = Atividade::findOrFail($id);
-        if($atividade->coordenador != Auth::id()){
+        if ($atividade->coordenador != Auth::id()) {
             abort(403, "Nao tem permissoes");
         }
         $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
-                    ->update(['confirmado' => 1]);
+            ->update(['confirmado' => 1]);
         return response()->json($testemunho, 201);
     }
 
-    public function removerTestemunho(Request $request, $id, $user_id){
-        if(Auth::id() != $user_id && Auth::id() != Atividade::findOrFail($id)->pluck('coordenador')[0]){
+    public function removerTestemunho(Request $request, $id, $user_id)
+    {
+        $atividade = Atividade::findOrFail($id);
+        if (Auth::id() != $user_id && Auth::id() != $atividade->coordenador) {
             abort(403, "Nao tem permissoes");
+        }
+
+        if (Auth::id() != $user_id) {
+            $notif = new Notificacao();
+            $notif->fill([
+                'user_id' => $user_id,
+                'mensagem' => "O seu testemunho na atividade " . $atividade->nome . " foi recusado.",
+                'de' => "Coordenador da atividade " . $atividade->coordenador,
+                'data' => date("Y-m-d H:i:s"),
+                'nova' => '1'
+            ]);
+            $notif->save();
         }
 
         AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $user_id)->delete();
