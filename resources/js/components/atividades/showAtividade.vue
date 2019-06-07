@@ -1,6 +1,7 @@
 <template>
     <div id="app">
         <br><br><br><br>
+        <atividade-edit :atividade="atividadeBackup" v-on:atualizar="getAtividade()"></atividade-edit>
         <div v-if="isLoading">
             <br><br><br>
             <v-progress-linear v-slot:progress :color="colorDefault"
@@ -33,12 +34,21 @@
                             <v-card-title primary-title>
                                 <v-layout row wrap>
                                     <v-flex d-flex xs12 sm5>
+                                        <v-flex d-flex xs12 sm10>
                                         <v-card flat>
                                             <br>
                                             <h3 class="display-1 font-weight-light">{{atividade.titulo}}</h3>
                                             <p class="title green--text font-weight-light">{{atividade.tipo}}</p>
                                         </v-card>
+                                        </v-flex>
+                                        <v-flex xs12 sm2>
+                                            <v-btn icon v-if="$store.state.user.id==atividade.coordenador.id" flat data-toggle="modal"
+                                                   data-target="#addAtividadeModal" @click="atividadeBackup = Object.assign({}, atividade)">
+                                                <v-icon color="warning">edit</v-icon>
+                                            </v-btn>
+                                        </v-flex>
                                     </v-flex>
+
                                     <v-flex d-flex xs12 sm7 fluid>
                                         <v-layout justify-end row d-flex fluid>
                                             <v-spacer
@@ -125,9 +135,13 @@
                                             <h6>{{atividade.numeroElementos}}</h6>
                                         </v-flex>
                                         <v-flex>
+                                            <span v-if="!atividade.dataFinal" class=" font-weight-light grey--text">Data de conclusao:</span>
+                                            <span v-else class=" font-weight-light grey--text">Data de Inicio:</span>
+                                            <h6>{{atividade.dataInicio}}</h6>
+                                        </v-flex>
+                                        <v-flex v-if="atividade.dataFinal">
                                             <span class=" font-weight-light grey--text">Data de conclusao:</span>
-                                            <h6 v-if="atividade.data">{{atividade.data}}</h6>
-                                            <h6 v-else>Sem Data</h6>
+                                            <h6>{{atividade.dataFinal}}</h6>
                                         </v-flex>
                                     </v-layout>
                                     <br>
@@ -162,12 +176,14 @@
                                                     <v-icon class="blue--text">far fa-comments</v-icon>
                                                     &nbsp Chat
                                                 </h5>
+                                                <div v-if="atividade.chat.assunto">
                                                 <v-divider></v-divider>
                                                 <span class=" font-weight-light grey--text">Assunto:</span>
                                                 <h6>{{atividade.chat.assunto}}</h6>
+                                                </div>
                                                 <v-divider></v-divider>
                                                 <v-flex xs12 id="scroll-target"
-                                                        style="max-height:350px; min-height:200px; overflow-y:auto">
+                                                        style="max-height:350px; min-height:250px; overflow-y:auto">
                                                     <v-layout row wrap v-scroll:#scroll-target="onScroll">
                                                         <div id="scrolled-content">
                                                             <v-list three-line>
@@ -531,12 +547,14 @@
 </template>
 <script type="text/javascript">
     import BRow from "bootstrap-vue/src/components/layout/row";
+    import editarAtividade from './adicionarEditarAtividade.vue';
     import enviarNotificacao from '../widgets/enviarNotificacao';
 
     export default {
         components: {
             BRow,
-            'enviar-notificacao': enviarNotificacao
+            'enviar-notificacao': enviarNotificacao,
+            'atividade-edit': editarAtividade
         },
         props: ['id'],
         data: function () {
@@ -558,8 +576,8 @@
                 testemunhoValido: true,
                 loadingTestemunho: false,
                 showEscrever: false,
-                tabs: ['Descrição', 'Chat', 'Testemunhos'],
-                tabSelecionada: 0
+                tabSelecionada: 0,
+                atividadeBackup:{}
             };
         },
         methods: {
@@ -806,6 +824,12 @@
                     }
                 });
                 return resp;
+            },
+            tabs(){
+                if (this.atividade.chat) {
+                    return['Descrição', 'Chat', 'Testemunhos'];
+                }
+                return['Descrição', 'Participantes', 'Testemunhos'];
             }
         },
         sockets: {

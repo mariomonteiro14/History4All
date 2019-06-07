@@ -99,7 +99,8 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('coordenador')->references('id')->on('users')->onDelete('set null');
             $table->integer('chat_id')->unsigned()->nullable();
             $table->foreign('chat_id')->references('id')->on('chats')->onDelete('set null');
-            $table->date('data')->nullable();
+            $table->date('dataInicio')->nullable();
+            $table->date('dataFinal')->nullable();
         });
 
         Schema::create('atividade_participantes', function (Blueprint $table) {

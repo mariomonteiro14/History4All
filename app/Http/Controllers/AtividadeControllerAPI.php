@@ -113,9 +113,10 @@ class AtividadeControllerAPI extends Controller
             'titulo' => 'required|min:3',
             'descricao' => 'required|min:10:max:1000',
             'tipo' => 'required',
-            'numeroElementos' => 'required|numeric|digits_between:1,99',
+            'numeroElementos' => 'required|numeric|digits_between:1,6',
             'visibilidade' => 'required|string',
-            'data' => 'nullable',
+            'dataInicio' => 'required',
+            'dataFinal' => 'nullable',
         ]);
         if (Auth::user()->tipo !== "professor") {
             abort(403, 'Unauthorized action.');
@@ -129,11 +130,15 @@ class AtividadeControllerAPI extends Controller
             'numeroElementos' => $request->get('numeroElementos'),
             'visibilidade' => $request->get('visibilidade'),
             'coordenador' => Auth::id(),
+            'dataInicio' => $request->dataInicio,
+            'dataFinal' => $request->dataFinal ? $request->dataFinal : null,
         ]);
         if ($request->get('chatExist')) {
             $chat = new Chat();
-            $chat->assunto = $request->chat['assunto'];
-            $chat->privado = $request->get('visibilidade') != 'publico';
+            if ($request->chat['assunto'] && $request->chat['assunto'] != "") {
+                $chat->assunto = $request->chat['assunto'];
+            }
+            $chat->privado = 1;
             $chat->save();
             $atividade->chat_id = $chat->id;
         }
@@ -179,7 +184,8 @@ class AtividadeControllerAPI extends Controller
             'tipo' => 'required',
             'numeroElementos' => 'required|numeric|digits_between:1,99',
             'visibilidade' => 'required',
-            'data' => 'nullable',
+            'dataInicio' => 'required',
+            'dataFinal' => 'nullable',
         ]);
 
         $atividade = Atividade::findOrFail($id);
@@ -278,12 +284,15 @@ class AtividadeControllerAPI extends Controller
             }
         }
 
+
         $atividade->fill([
             'titulo' => $request->get('titulo'),
             'descricao' => $request->get('descricao'),
             'tipo' => $request->get('tipo'),
             'numeroElementos' => $request->get('numeroElementos'),
             'visibilidade' => $request->get('visibilidade'),
+            'dataInicio' => $request->dataInicio,
+            'dataFinal' => $request->dataFinal ? $request->dataFinal : null,
         ]);
 
         $atividade->save();

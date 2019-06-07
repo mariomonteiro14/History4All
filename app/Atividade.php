@@ -19,7 +19,7 @@ class Atividade extends Model
     public $timestamps = false;
     protected $dates = ['data'];
     protected $fillable = [
-        'titulo', 'descricao', 'tipo', 'numeroElementos', 'visibilidade', 'coordenador', 'chat_id', 'data'
+        'titulo', 'descricao', 'tipo', 'numeroElementos', 'visibilidade', 'coordenador', 'chat_id', 'dataInicio', 'dataFinal'
     ];
 
     public function coordenador(){

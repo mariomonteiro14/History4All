@@ -257,7 +257,12 @@
                 });
             },
             resetAtividadeAtual() {
-                this.atividadeAtual = {};
+                this.atividadeAtual = {
+                    'titulo' : "",
+                    'descricao' : "",
+                    'participantes': [],
+                    'visibilidade': "",
+                };
             }
         },
         computed: {
