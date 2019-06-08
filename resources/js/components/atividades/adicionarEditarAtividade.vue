@@ -301,7 +301,7 @@
                                                 color="primary"
                                             >
                                                 <template v-slot:append>
-                                                    <v-tooltip right>
+                                                    <v-tooltip right v-if="!chatExist">
                                                         <template v-slot:activator="{ on }">
                                                             <v-icon v-on="on">help</v-icon>
                                                         </template>
@@ -315,6 +315,7 @@
                                                 v-model="chatAssunto"
                                                 label="Assunto"
                                                 counter="100"
+                                                clearable
                                             >
                                                 <template v-slot:append v-if="!chatAssunto">
                                                     <v-tooltip left>
