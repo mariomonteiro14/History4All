@@ -67,12 +67,22 @@
                             <v-stepper-items>
                                 <v-stepper-content step="1">
                                     <div class="form-group">
-                                        <v-text-field id="inputTitulo"
-                                                      v-model="atividade.titulo"
-                                                      label="Título"
-                                                      :rules="[v => !!v || 'Titulo é obrigatório']"
-                                                      required
-                                        ></v-text-field>
+                                            <v-text-field id="inputTitulo"
+                                                          v-model="atividade.titulo"
+                                                          label="Título"
+                                                          :rules="[v => !!v || 'Titulo é obrigatório']"
+                                                          required
+                                                          clearable
+                                            >
+                                                <template v-slot:append v-if="!atividade.titulo">
+                                                    <v-tooltip left>
+                                                        <template v-slot:activator="{ on }">
+                                                            <v-icon v-on="on">help</v-icon>
+                                                        </template>
+                                                        Nome da atividade
+                                                    </v-tooltip>
+                                                </template>
+                                            </v-text-field>
                                     </div>
                                     <div class="form-group">
                                         <v-textarea
@@ -83,7 +93,16 @@
                                              v => v && v.length >= 25 || 'minimo 25 caracteres']"
                                             counter="1000"
                                             required
-                                        ></v-textarea>
+                                        >
+                                            <template v-slot:append v-if="!atividade.descricao">
+                                            <v-tooltip left>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-icon v-on="on">help</v-icon>
+                                                </template>
+                                                Descrição dos objetivos e informações relevantes sobre a atividade
+                                            </v-tooltip>
+                                            </template>
+                                        </v-textarea>
                                     </div>
                                     <br>
                                     <v-layout>
@@ -98,7 +117,16 @@
                                                     required
                                                     clearable
                                                     ref="selectTipo"
-                                                ></v-select>
+                                                >
+                                                    <template v-slot:append v-if="!tipoSelected">
+                                                        <v-tooltip left>
+                                                            <template v-slot:activator="{ on }">
+                                                                <v-icon v-on="on">help</v-icon>
+                                                            </template>
+                                                            Formato da atividade
+                                                        </v-tooltip>
+                                                    </template>
+                                                </v-select>
                                             </div>
                                         </v-flex>
                                         <v-spacer v-if="tipoSelected === 'outro'"></v-spacer>
@@ -108,6 +136,7 @@
                                                               v-model="outroTipo"
                                                               label="Indique o tipo da atividade"
                                                               :rules="[v => !!v || 'Tipo é obrigatório']"
+                                                              clearable
                                                               required
                                                 ></v-text-field>
                                             </div>
@@ -124,14 +153,31 @@
                                             required
                                             clearable
                                             ref="selectVisibilidade"
-                                        ></v-select>
+                                        >
+                                            <template v-slot:append v-if="!atividade.visibilidade">
+                                                <v-tooltip left>
+                                                    <template v-slot:activator="{ on }">
+                                                        <v-icon v-on="on">help</v-icon>
+                                                    </template>
+                                                    <span>Restringir a visualização desta atividade perante os utilizadores:</span>
+                                                    <br>
+                                                    <span>Apenas os utilizadores inseridos na categoria escolhida poderão ver a atividade</span>
+                                                </v-tooltip>
+                                            </template>
+                                        </v-select>
                                     </div>
                                     <br>
                                     <v-layout>
                                         <v-spacer></v-spacer>
-                                        <v-btn icon flat color="primary" @click="stepper = 2">
-                                            <v-icon>fa fa-angle-right</v-icon>
-                                        </v-btn>
+                                        <v-tooltip left>
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn icon flat v-on="on" color="primary" @click="stepper = 2">
+                                                    <v-icon>fa fa-angle-right</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Separador Seguinte</span>
+                                        </v-tooltip>
+                                        <v-btn color="teal lighten-5" @click="stepper=4">fim</v-btn>
                                     </v-layout>
                                 </v-stepper-content>
 
@@ -152,17 +198,38 @@
                                             autofocus
                                             hide-no-data
                                             required
-                                        ></v-combobox>
+                                        >
+                                            <template v-slot:append v-if="patrimoniosSelecionados.length == 0">
+                                                <v-tooltip left>
+                                                    <template v-slot:activator="{ on }">
+                                                        <v-icon v-on="on">help</v-icon>
+                                                    </template>
+                                                    Escolher patrimónios relacionados com a atividade
+                                                </v-tooltip>
+                                            </template>
+                                        </v-combobox>
                                     </div>
                                     <br>
                                     <v-layout>
-                                        <v-btn icon flat color="primary" @click="stepper = 1">
-                                            <v-icon>fa fa-angle-left</v-icon>
-                                        </v-btn>
+                                        <v-tooltip right>
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn icon flat v-on="on" color="primary" @click="stepper = 1">
+                                                    <v-icon>fa fa-angle-left</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Separador Anterior</span>
+                                        </v-tooltip>
                                         <v-spacer></v-spacer>
-                                        <v-btn icon flat color="primary" @click="stepper = 3">
-                                            <v-icon>fa fa-angle-right</v-icon>
-                                        </v-btn>
+                                        <v-tooltip left>
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn icon flat v-on="on" color="primary" @click="stepper = 3">
+                                                    <v-icon>fa fa-angle-right</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Separador Seguinte</span>
+                                        </v-tooltip>
+
+                                        <v-btn color="teal lighten-5" @click="stepper=4">fim</v-btn>
                                     </v-layout>
                                 </v-stepper-content>
 
@@ -181,7 +248,16 @@
                                             ref="selectAlunos"
                                             autofocus
                                             hide-no-data
-                                        ></v-combobox>
+                                        >
+                                            <template v-slot:append v-if="!atividade.participantes || atividade.participantes.length == 0">
+                                                <v-tooltip left>
+                                                    <template v-slot:activator="{ on }">
+                                                        <v-icon v-on="on">help</v-icon>
+                                                    </template>
+                                                    Selecionar alunos que participarão na atividade
+                                                </v-tooltip>
+                                            </template>
+                                        </v-combobox>
                                     </div>
                                     <br>
                                     <div class="form-group">
@@ -204,7 +280,16 @@
                                                  v => v > 1 || 'O minimo de elementos é 1',
                                                  v => v < 7 || 'O maximo de elementos é 6']"
                                                 required
-                                            ></v-text-field>
+                                            >
+                                                <template v-slot:append v-if="!numeroElementos">
+                                                    <v-tooltip left>
+                                                        <template v-slot:activator="{ on }">
+                                                            <v-icon v-on="on">help</v-icon>
+                                                        </template>
+                                                        Numero maximo de alunos por grupo
+                                                    </v-tooltip>
+                                                </template>
+                                            </v-text-field>
                                         </v-layout>
                                     </div>
                                     <v-spacer></v-spacer>
@@ -214,25 +299,53 @@
                                                 v-model="chatExist"
                                                 :label="chatExist ? 'Chat Ativo': 'Chat Desativado'"
                                                 color="primary"
-                                            ></v-switch>
+                                            >
+                                                <template v-slot:append>
+                                                    <v-tooltip right>
+                                                        <template v-slot:activator="{ on }">
+                                                            <v-icon v-on="on">help</v-icon>
+                                                        </template>
+                                                        Chat onde os participantes poderão comunicar durante a atividade
+                                                    </v-tooltip>
+                                                </template>
+                                            </v-switch>
                                             <v-text-field
                                                 v-if="chatExist"
                                                 id="inputChatAssunto"
                                                 v-model="chatAssunto"
                                                 label="Assunto"
                                                 counter="100"
-                                            ></v-text-field>
+                                            >
+                                                <template v-slot:append v-if="!chatAssunto">
+                                                    <v-tooltip left>
+                                                        <template v-slot:activator="{ on }">
+                                                            <v-icon v-on="on">help</v-icon>
+                                                        </template>
+                                                        Titulo/Assunto do chat
+                                                    </v-tooltip>
+                                                </template>
+                                            </v-text-field>
                                         </v-layout>
                                     </div>
                                     <v-spacer></v-spacer>
                                     <v-layout>
-                                        <v-btn icon flat color="primary" @click="stepper = 2">
-                                            <v-icon>fa fa-angle-left</v-icon>
-                                        </v-btn>
+                                        <v-tooltip right>
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn icon flat v-on="on" color="primary" @click="stepper = 2">
+                                                    <v-icon>fa fa-angle-left</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Separador Anterior</span>
+                                        </v-tooltip>
                                         <v-spacer></v-spacer>
-                                        <v-btn icon flat color="primary" @click="stepper = 4">
-                                            <v-icon>fa fa-angle-right</v-icon>
-                                        </v-btn>
+                                        <v-tooltip left>
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn icon flat v-on="on" color="primary" @click="stepper = 4">
+                                                    <v-icon>fa fa-angle-right</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Separador Seguinte</span>
+                                        </v-tooltip>
                                     </v-layout>
                                 </v-stepper-content>
 
@@ -298,12 +411,19 @@
                                     </v-layout>
                                     <br>
                                     <v-layout>
-                                        <v-btn icon flat color="primary" @click="stepper = 3">
-                                            <v-icon>fa fa-angle-left</v-icon>
-                                        </v-btn>
+                                        <v-tooltip right>
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn icon flat v-on="on" color="primary" @click="stepper = 3">
+                                                    <v-icon>fa fa-angle-left</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Separador Anterior</span>
+                                        </v-tooltip>
                                         <v-spacer></v-spacer>
                                         <div v-if="!isLoading">
-
+                                            <v-btn color="red" class="btn white--text" v-on:click.prevent="cancel">
+                                                cancelar
+                                            </v-btn>
                                             <v-btn v-if="!atividade.id" color="primary" class="btn"
                                                    v-on:click.prevent="save"
                                                    :disabled="hasErrors">
@@ -313,9 +433,7 @@
                                                    :disabled="hasErrors">
                                                 Guardar
                                             </v-btn>
-                                            <v-btn color="red" class="btn" v-on:click.prevent="cancel">
-                                                cancelar
-                                            </v-btn>
+
                                         </div>
                                         <div v-else>
                                             <loader color="green" size="32px"></loader>
@@ -350,7 +468,7 @@
                 tipos: ['visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio', 'outro'],
                 tipoSelected: '',
                 outroTipo: '',
-                visibilidades: ['privado', 'publico', 'visivel para a escola'],
+                visibilidades: ['privado', 'visivel para a escola', 'publico'],
                 alunos: [],
                 patrimonios: [],
                 selTipoAberto: false,
@@ -433,7 +551,7 @@
                 this.atividade.dataInicio = this.dataInicio;
                 if (this.duracao == 2) {
                     this.atividade.dataFinal = this.dataFinal;
-                }else{
+                } else {
                     this.atividade.dataFinal = null;
                 }
             },
@@ -522,7 +640,6 @@
         },
         computed: {
             hasErrors: function () {
-                console.log(1);
                 if (!this.atividade.titulo || (!this.atividade.descricao ||
                     this.atividade.descricao.length < 25) || !this.atividade.visibilidade ||
                     !this.tipoSelected || (this.tipoSelected == 'outro' && !this.outroTipo)) {
@@ -585,23 +702,23 @@
                         this.dataFinal = this.atividade.dataFinal;
                         this.duracao = 2;
                     }
+
                     let myTipo = this.atividade.tipo;
-                    let aux =
-                        this.tipos.forEach(function (tipo) {
-                            if (tipo == "outro") {
-                                return 0;
-                            }
-                            if (tipo == myTipo) {
-                                return 1;
-                            }
-                        });
-                    if (aux == 0) {
+                    let aux = 0;
+                    this.tipos.forEach(function (tipo) {
+                        if (tipo == myTipo) {
+                            aux = 1;
+                            return;
+                        }
+                    });
+
+                    if (aux == 1) {
                         this.tipoSelected = this.atividade.tipo;
                     } else {
                         this.tipoSelected = "outro";
                         this.outroTipo = this.atividade.tipo;
-
                     }
+
                 } else {
                     this.cleanForm();
                 }

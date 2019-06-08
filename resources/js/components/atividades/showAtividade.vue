@@ -135,7 +135,7 @@
                                             <h6>{{atividade.numeroElementos}}</h6>
                                         </v-flex>
                                         <v-flex>
-                                            <span v-if="!atividade.dataFinal" class=" font-weight-light grey--text">Data de conclusao:</span>
+                                            <span v-if="!atividade.dataFinal" class=" font-weight-light grey--text">Data da Atividade:</span>
                                             <span v-else class=" font-weight-light grey--text">Data de Inicio:</span>
                                             <h6>{{atividade.dataInicio}}</h6>
                                         </v-flex>
