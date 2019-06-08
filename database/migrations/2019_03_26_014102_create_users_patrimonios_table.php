@@ -86,6 +86,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('mensagem');
+            $table->primary(['chat_id', 'user_id']);
         });
 
         Schema::create('atividades', function (Blueprint $table) {
@@ -117,6 +118,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
             $table->integer('patrimonio_id')->unsigned();
             $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');
+            $table->primary(['atividade_id', 'patrimonio_id']);
         });
         Schema::create('atividade_testemunhos', function (Blueprint $table) {
             $table->integer('atividade_id')->unsigned();
@@ -126,6 +128,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->integer('rate');
             $table->longText('texto');
             $table->boolean('confirmado')->default(false);
+            $table->primary(['atividade_id', 'user_id']);
         });
 
         Schema::table('turmas', function (Blueprint $table) {

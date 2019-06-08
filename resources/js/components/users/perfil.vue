@@ -138,7 +138,7 @@
                         this.profileUser = response.data.data ? response.data.data : 'Não tem permissão para visualizar o utilizador';
                         this.isLoading = false;
                     }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                     this.isLoading = false;
                 });
             } else {
@@ -164,7 +164,7 @@
                             this.profileUser = response.data.data;
                             this.isLoading = false;
                         }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                         this.isLoading = false;
                     });
                 } else {

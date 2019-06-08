@@ -151,7 +151,7 @@
                     this.$emit('getEscolas');
                 }).catch(error => {
                     this.isLoading = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
             edit: function () {
@@ -171,7 +171,7 @@
                 }).catch(error => {
                     this.isLoading = false;
 
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
 

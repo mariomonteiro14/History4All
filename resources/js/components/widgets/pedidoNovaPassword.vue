@@ -59,7 +59,7 @@
                     this.$emit('fechar');
                 }).catch(error => {
                     this.aEnviarEmail = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
             cancel: function () {

@@ -134,7 +134,7 @@
                     })
                     .catch(error => {
                         this.isLoadingPatrimonio = false;
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                     });
             },
             handleFile: function (e) {
@@ -173,7 +173,7 @@
                     $('#adicionarImagemModal').modal('hide');
                     this.patrimonio.imagens = response.data;
                 }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                     this.isLoadingImagens = false;
                 });
             },

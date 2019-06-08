@@ -122,7 +122,7 @@
 
                 }).catch(error => {
                     this.isLoading = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
 
@@ -142,7 +142,7 @@
                 axios.get("/api/escolas").then(response => {
                     this.escolas = response.data.data;
                 }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
             },
 

@@ -502,7 +502,7 @@
                         this.tipos.push('outro');
                         this.isLoading = false;
                     }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                     this.isLoading = false;
                 });
             },*/
@@ -521,7 +521,7 @@
                     this.cleanForm();
                 }).catch(error => {
                     this.isLoading = false;
-                    this.toastPopUp("error", `${error.response.data.errors[Object.keys(error.response.data.errors)[0]]}`);
+                    this.toastErrorApi(error);
                 })
             },
             edit: function () {
@@ -539,7 +539,7 @@
                     this.cleanForm();
                 }).catch(error => {
                     this.isLoading = false;
-                    this.toastPopUp("error", `${error.response.data.errors[Object.keys(error.response.data.errors)[0]]}`);
+                    this.toastErrorApi(error);this.toastErrorApi(error);
                 })
             },
             prepararAtividade() {
@@ -584,7 +584,7 @@
                     .then(response => {
                         this.alunos = response.data.data;
                     }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
             },
             getPatrimonios(url = '/api/patrimonios') {
@@ -592,7 +592,7 @@
                     .then(response => {
                         this.patrimonios = response.data.data;
                     }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
             },
             setOpenList(lista) {

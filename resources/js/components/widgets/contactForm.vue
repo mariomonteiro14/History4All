@@ -99,7 +99,7 @@
                     this.aEnviar = false;
                 }).catch(error => {
                     this.aEnviar = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
 

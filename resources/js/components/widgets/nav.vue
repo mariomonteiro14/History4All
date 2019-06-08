@@ -215,7 +215,7 @@
                     this.$router.push({name: 'index'});
                 }).catch(error => {
                     this.$store.commit('clearUserAndToken');
-                    this.toastPopUp("error", "Error on logout");
+                    this.toastPopUp("error", "Erro ao sair");
                     this.logging();
                 });
 
@@ -229,7 +229,7 @@
                         this.notificacoes = response.data;
                         this.novasNotificacoes = 0;
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                     });
                 }
             },
@@ -243,7 +243,7 @@
                         this.novasNotificacoes =
                             this.notificacoes.filter(notificacao => notificacao.nova === 1).length;
                     }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                     this.isLoading = false;
                 });
             }

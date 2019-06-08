@@ -127,7 +127,7 @@
 
                 }).catch(error => {
                     this.isLoading = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
 

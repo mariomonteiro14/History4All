@@ -142,7 +142,7 @@
                     this.isLoading = false;
                 }).catch(error => {
                     this.isLoading = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
             },
 
@@ -157,7 +157,7 @@
                         this.toastPopUp("success", "Património Apagado!");
                         this.getPatrimonios();
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                 });
             },
             resetPatrimonioAtual() {

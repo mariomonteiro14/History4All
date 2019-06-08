@@ -48,7 +48,7 @@
                 axios.put("/api/register/novoEmail/" + this.user.id, {'email': this.emailCompleto}).then(response => {
 
                 }).catch(errors => {
-                    console.log(errors);
+                    this.toastErrorApi(error);
                 });
             },
             logout() {
@@ -57,7 +57,7 @@
                     this.$socket.emit('user_exit', this.$store.state.user);
                 }).catch(error => {
                     this.$store.commit('clearUserAndToken');
-                    console.log(error);
+                    this.toastErrorApi(error);
                 });
             },
             getUser: function () {

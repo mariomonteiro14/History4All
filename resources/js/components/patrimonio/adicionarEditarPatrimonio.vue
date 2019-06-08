@@ -240,7 +240,7 @@
                     this.isLoading= false;
                 }).catch(error => {
                     this.isLoading= false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
             update() {
@@ -258,7 +258,7 @@
 
                 }).catch(error => {
                     this.isLoading= false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
             },
             cancel: function () {

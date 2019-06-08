@@ -242,7 +242,7 @@
                         this.toastPopUp("success", "Turma Apagado!");
                         this.atualizarDados();
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                 });
                 this.turmaAtual = {};
             },
