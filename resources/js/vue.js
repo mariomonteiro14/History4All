@@ -123,6 +123,10 @@ var common = {
                 return;
             }
         },
+        toastErrorApi(error){
+            this.toastPopUp("error", error.response.data.errors ? 
+                `${error.response.data.errors[Object.keys(error.response.data.errors)[0]]}` : `${error.response.data.message}`);
+        },
         getUserPhoto(url){
             return "/storage/profiles/" + url;
         },

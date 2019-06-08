@@ -237,7 +237,7 @@
                         this.trashed = false;
                         this.isLoading = false;
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                         this.isLoading = false;
                     });
             },
@@ -258,7 +258,7 @@
                         }
                         this.isLoading = false;
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                         this.isLoading = false;
 
                     });
@@ -299,7 +299,7 @@
                             this.getUsers();
                         }
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                 });
             },
             saveEdit() {
@@ -312,7 +312,7 @@
                         this.getUsers();
                         $('#editUserModal').modal('hide');
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                         this.aEnviar = false;
                 });
             },
@@ -322,7 +322,7 @@
                     this.$socket.emit('atualizar_notificacoes', $user.id);
                     this.getUsersTrashed();
                 }).catch(function (error) {
-                    this.toastPopUp("error", "`${error.response.data.message}`");
+                    this.toastErrorApi(error);
                     console.log(error);
                 });
             },
@@ -342,7 +342,7 @@
                 axios.get("/api/escolas").then(response => {
                     this.escolas = response.data.data;
                 }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
             },
             //Metodos pra corrigir bug nos Modal

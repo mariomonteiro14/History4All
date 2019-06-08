@@ -209,7 +209,7 @@
                         this.atividades = response.data.data;
                         this.isLoading = false;
                     }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                     this.isLoading = false;
                 });
             },
@@ -221,7 +221,7 @@
                         this.tipos.unshift('Todos');
                         this.isLoading = false;
                     }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                     this.isLoading = false;
                 });
             },
@@ -238,7 +238,7 @@
                         this.atividadeAtual = response.data.data;
                         $('#addAtividadeModal').modal('show');
                     }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
 
             },
@@ -253,7 +253,7 @@
                         this.toastPopUp("success", "Atividade Apagada!");
                         this.getAtividades();
                     }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
             },
             resetAtividadeAtual() {

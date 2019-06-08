@@ -150,7 +150,9 @@
             'add-professor': AddUser,
         },
         mounted() {
-            this.getEscolas();
+            if (this.$store.state.user.tipo === 'admin'){
+                this.getEscolas();
+            }
         },
         data() {
             return {
@@ -260,7 +262,7 @@
                         this.toastPopUp("success", "Escola Apagado!");
                         this.atualizarEscolas();
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                 });
                 this.escolaAtual = {};
             },
@@ -276,7 +278,7 @@
                             this.escolaAtual = {};
                         }
                     }).catch(error => {
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                 });
                 this.turmaAtual = {};
             },

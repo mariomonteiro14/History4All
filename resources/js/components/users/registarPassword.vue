@@ -80,7 +80,7 @@
                     }
                     this.user = response.data;
                 }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
             },
             formValidateAndSend() {
@@ -95,7 +95,7 @@
                         this.$router.push('/');
                     }).catch(error => {
                         this.aEnviar = false;
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                     });
                 } else {
                     this.toastPopUp("error", "A password e a passowrd de confirmação são diferentes");

@@ -440,7 +440,7 @@
                                                             v-if="(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id) &&
                                                         props.item.user_id == $store.state.user.id"
                                                             icon color="success" @click="saveEditTestemunho()"
-                                                            :disabled="myTestemunho.texto == props.item.texto && myTestemunho.rate == props.item.rate">
+                                                            :disabled="!myTestemunho.texto || myTestemunho.texto == props.item.texto && myTestemunho.rate == props.item.rate">
                                                             <v-icon small>check</v-icon>
                                                         </v-btn>
                                                         <v-btn
@@ -605,7 +605,7 @@
                         this.isLoading = false;
                     }).catch(error => {
                     this.isLoading = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                     this.$router.push('/atividades');
 
                 });
@@ -624,7 +624,7 @@
                     }
                     this.toastPopUp("success", "A atividade encontra-se na sua lista de atividades pendentes!");
                 }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
             enviarMensagem() {
@@ -637,7 +637,7 @@
                 axios.post('/api/chat', chatMensagem).then(response => {
                     this.$socket.emit('chat_mensagem', response.data, this.atividade.chat.id);
                 }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
             getTestemunhos() {
@@ -647,7 +647,7 @@
                     this.loadingTestemunho = false;
                 }).catch(error => {
                     this.loadingTestemunho = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
             enviarTestemunho() {
@@ -666,7 +666,7 @@
                         this.getTestemunhos();
                     }).catch(error => {
                         this.loadingTestemunho = false;
-                        this.toastPopUp("error", `${error.response.data.message}`);
+                        this.toastErrorApi(error);
                     })
                 }
 
@@ -690,7 +690,7 @@
                     this.loadingTestemunho = false;
                 }).catch(error => {
                     this.loadingTestemunho = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
             confirmarTestemunho(testemunho) {
@@ -701,7 +701,7 @@
                     this.loadingTestemunho = false;
                 }).catch(error => {
                     this.loadingTestemunho = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
             },
             apagarTestemunho(testemunho) {
@@ -712,7 +712,7 @@
                     this.loadingTestemunho = false;
                 }).catch(error => {
                     this.loadingTestemunho = false;
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 })
 
             },

@@ -70,7 +70,7 @@
                     }
                     this.user = response.data;
                 }).catch(error => {
-                    this.toastPopUp("error", `${error.response.data.message}`);
+                    this.toastErrorApi(error);
                 });
             },
             formValidateAndSend() {
