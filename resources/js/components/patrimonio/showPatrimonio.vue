@@ -1,10 +1,13 @@
 <template>
     <div id="app">
         <br><br><br><br>
-        <v-app id="inspire" v-if="isLoadingPatrimonio || patrimonio.id">
-            <v-progress-linear v-show="isLoadingPatrimonio" v-slot:progress :color="colorDefault"
+        <v-app id="inspire">
+            <div v-if="isLoadingPatrimonio">
+            <br><br><br>
+            <v-progress-linear  v-slot:progress :color="colorDefault"
                                indeterminate></v-progress-linear>
-            <v-layout align-content-center>
+            </div>
+            <v-layout v-else align-content-center>
                 <v-flex xs12 sm7 offset-sm3>
                     <v-card>
                         <v-img v-if="patrimonio.imagens && patrimonio.imagens.length >0"

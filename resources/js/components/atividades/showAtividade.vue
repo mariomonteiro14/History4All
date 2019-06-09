@@ -18,13 +18,11 @@
                     </v-btn>
                 </v-flex>
             </v-layout>
-            <v-tabs fixed-tabs v-model="tabSelecionada">
-                <v-tab
-                    v-for="indice in 3"
-                    :key="indice"
-                >
-                    {{ tabs[indice - 1] }}
-                </v-tab>
+            <v-tabs fixed-tabs>
+                <v-tab @click="tabSelecionada=0">Descricao</v-tab>
+                <v-tab v-if="atividade.chat && participa" @click="tabSelecionada=1">Chat</v-tab>
+                <v-tab v-if="!atividade.chat && participa" @click="tabSelecionada=1">Participantes</v-tab>
+                <v-tab @click="tabSelecionada=2">Testemunhos</v-tab>
             </v-tabs>
             <v-container fluid grid-list-sm>
                 <v-layout justify-center>
@@ -825,12 +823,6 @@
                 });
                 return resp;
             },
-            tabs(){
-                if (this.atividade.chat) {
-                    return['Descrição', 'Chat', 'Testemunhos'];
-                }
-                return['Descrição', 'Participantes', 'Testemunhos'];
-            }
         },
         sockets: {
             connect() {
