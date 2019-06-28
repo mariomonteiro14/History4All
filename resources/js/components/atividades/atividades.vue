@@ -152,8 +152,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()"
-                            v-on:atualizarTipos="getTipos()"></atividade-add-edit>
+        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()"></atividade-add-edit>
     </div>
 </template>
 
@@ -169,7 +168,6 @@
                 this.tipoDePesquisaSelected = 'Publicas';
             }
             this.getAtividades();
-            this.getTipos();
         },
         data() {
             return {
@@ -177,7 +175,7 @@
                 epocaSelected: 'Todas',
                 cicloSelected: [],
                 search: '',
-                tipos: ['Todos', 'visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio'],
+                tipos: [],
                 epocas: ['Todas', 'pré-história', 'idade antiga', 'idade média', 'idade contemporânea'],
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
 
@@ -202,23 +200,20 @@
                         this.minhasAtividadesSelected === 'Pendentes' ? '/api/users/' + this.$store.state.user.id + '/atividades/pendentes' :
                             '/api/users/' + this.$store.state.user.id + '/atividades/concluidas';
                 }
-
                 this.isLoading = true;
                 axios.get(url)
                     .then(response => {
-                        this.atividades = response.data.data;
-                        this.isLoading = false;
-                    }).catch(error => {
-                    this.toastErrorApi(error);
-                    this.isLoading = false;
-                });
-            },
-            getTipos() {
-                this.isLoading = true;
-                axios.get('/api/atividades/tipos')
-                    .then(response => {
-                        this.tipos = response.data.data;
-                        this.tipos.unshift('Todos');
+                        this.atividades = response.data.data;        
+                        this.tipoSelected = "Todos";
+                        this.tipos = [];
+                        response.data.data.forEach((ativ, index) => {
+                            if (!this.tipos.includes(ativ.tipo)){
+                                this.tipos.push(ativ.tipo);
+                            }
+                            if(index === response.data.data.length - 1) {
+                                this.tipos.unshift('Todos');
+                            }
+                        });
                         this.isLoading = false;
                     }).catch(error => {
                     this.toastErrorApi(error);

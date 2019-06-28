@@ -98,15 +98,6 @@ class AtividadeControllerAPI extends Controller
             ->distinct()->get());
     }
 
-    public function getTipos()
-    {
-        $data = Atividade::select('tipo')->distinct()->get()->pluck('tipo')->toArray();
-        array_push($data, 'visita de estudo', 'trabalho em familia', 'trabalho de pesquisa', 'definir tipos de patrimonio');
-        return response()->json([
-            'data' => array_values(array_unique($data))
-        ]);
-    }
-
     public function store(Request $request)
     {
         $request->validate([

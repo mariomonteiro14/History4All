@@ -514,9 +514,6 @@
                     this.toastPopUp("success", "Atividade Criada!");
                     this.$socket.emit('multiplos_atualizar_notificacoes', this.atividade.participantes);
                     this.$emit('atualizar');
-                    if (this.tipoSelected === 'outro') {
-                        this.$emit('atualizarTipos');
-                    }
                     $('#addAtividadeModal').modal('hide');
                     this.isLoading = false;
                     this.cleanForm();
@@ -699,7 +696,6 @@
                     this.dataInicio = this.atividade.dataInicio;
 
                     if (this.atividade.dataFinal) {
-                        console.log(this.dataFinal);
                         this.dataFinal = this.atividade.dataFinal;
                         this.duracao = 2;
                     }
