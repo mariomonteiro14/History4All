@@ -198,6 +198,7 @@
                                             autofocus
                                             hide-no-data
                                             required
+                                            @input="patrimoniosSelecionados = validarInputComboBox(patrimonios, patrimoniosSelecionados)"
                                         >
                                             <template v-slot:append v-if="patrimoniosSelecionados.length == 0">
                                                 <v-tooltip left>
@@ -248,6 +249,7 @@
                                             ref="selectAlunos"
                                             autofocus
                                             hide-no-data
+                                            @input="atividade.participantes = validarInputComboBox(alunos, atividade.participantes)"
                                         >
                                             <template v-slot:append v-if="!atividade.participantes || atividade.participantes.length == 0">
                                                 <v-tooltip left>
@@ -495,18 +497,6 @@
             isCreated() {
                 return (this.atividade.id && this.atividade.id) > 0 ? false : true;
             },
-            /*getTipos() {
-                this.isLoading = true;
-                axios.get('/api/atividades/tipos')
-                    .then(response => {
-                        this.tipos = response.data.data;
-                        this.tipos.push('outro');
-                        this.isLoading = false;
-                    }).catch(error => {
-                    this.toastErrorApi(error);
-                    this.isLoading = false;
-                });
-            },*/
             save: function () {
                 this.isLoading = true;
                 this.prepararAtividade();

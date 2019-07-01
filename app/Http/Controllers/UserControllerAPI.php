@@ -373,6 +373,11 @@ class UserControllerAPI extends Controller
         }
 
         $userIds = array_column($request->get('users'), 'id');
+        
+        if (count($userIds) != count($request->get('users'))){
+            abort(400, 'Inseridos utilizadores inválidos');
+        }
+
         foreach ($userIds as $userId) {
             $notificacao = new Notificacao();
             $notificacao->fill([
