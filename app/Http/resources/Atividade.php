@@ -15,6 +15,16 @@ class Atividade extends JsonResource
     public function toArray($request)
     {
         $participantes = $this->atividadeParticipantes();
+        if ($participantes->exists()){
+            $participantes = $participantes->get()->pluck('user');
+            for($i = 0; $i < count($participantes); $i++) {
+                if ($participantes[$i] == null) {
+                    unset($participantes[$i]);
+                }
+            }
+        }else{
+            $participantes = null;
+        }
         $patrimonios = $this->atividadePatrimonios();
         return [
             'id' => $this->id,
@@ -27,7 +37,7 @@ class Atividade extends JsonResource
             'chat' => $this->chat()->first(),
             'data' => $this->data,
             'patrimonios' => $patrimonios->exists() ? ShortPatrimonio::collection($patrimonios->get()->pluck('patrimonio')) : [],
-            'participantes' => $participantes->exists() ? ShortUser::collection($participantes->get()->pluck('user')) : [],
+            'participantes' => $participantes ? ShortUser::collection($participantes) : [],
             'ciclo' => $this->ciclo(),
             'epoca' => $this->epoca(),
             'dataInicio' => $this->dataInicio,

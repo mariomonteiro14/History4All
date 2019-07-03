@@ -131,7 +131,7 @@ class UserControllerAPI extends Controller
             if ($user != null) {
                 if ($user->email_verified_at == '') abort(403, 'Conta não verificada');
             } else {
-                abort(403, 'Unknown user');
+                abort(403, 'Não existe nenhum utilizador com esse email');
             }
         }
         $response = $http->post(YOUR_SERVER_URL . '/oauth/token', [
