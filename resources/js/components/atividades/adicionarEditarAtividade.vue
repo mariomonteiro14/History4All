@@ -198,7 +198,7 @@
                                             autofocus
                                             hide-no-data
                                             required
-                                            @input="patrimoniosSelecionados = validarInputComboBox(patrimonios, patrimoniosSelecionados)"
+                                            @input="setPatrimoniosSelecionadosCarregados()"
                                         >
                                             <template v-slot:append v-if="patrimoniosSelecionados.length == 0">
                                                 <v-tooltip left>
@@ -249,7 +249,6 @@
                                             ref="selectAlunos"
                                             autofocus
                                             hide-no-data
-                                            @input="atividade.participantes = validarInputComboBox(alunos, atividade.participantes)"
                                         >
                                             <template v-slot:append v-if="!atividade.participantes || atividade.participantes.length == 0">
                                                 <v-tooltip left>
@@ -480,6 +479,7 @@
                 selPatrimoniosAbertos: false,
                 chatExist: false,
                 patrimoniosSelecionados: [],
+                patrimoniosSelecionadosCarregados: false,
                 chatAssunto: '',
                 temGrupo: false,
                 numeroElementos: 2,
@@ -625,6 +625,11 @@
                     this.$refs.selectPatrimonios.isMenuActive = false;
                 }
             },
+            setPatrimoniosSelecionadosCarregados(){
+                if (!this.patrimoniosSelecionadosCarregados){
+                    this.patrimoniosSelecionadosCarregados = true;
+                }
+            }
         },
         computed: {
             hasErrors: function () {
@@ -660,6 +665,25 @@
 
         },
         watch: {
+            patrimoniosSelecionados(novo, anterior){
+                if (!this.patrimoniosSelecionadosCarregados || anterior.length >= novo.length){
+                    return;
+                }
+                novo = novo[novo.length - 1];
+                if (!novo.nome){
+                    let patrimonio = this.patrimonios.find(function (patrim){
+                        return patrim.nome.toLowerCase() === novo.toLowerCase();
+                    });
+                    this.patrimoniosSelecionados.pop();
+                    if (patrimonio != undefined){
+                        this.patrimoniosSelecionados.push(patrimonio);
+                    }
+                } else{
+                    if (!this.patrimonios.includes(novo)){
+                        this.patrimoniosSelecionados.pop();
+                    }
+                }
+            },
             atividade: function (atividade, oldAtividade) {
                 if (atividade.id) {
                     if (this.atividade.patrimonios) {

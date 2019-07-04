@@ -133,25 +133,6 @@ var common = {
         getPatrimonioPhoto(url){
             return "/storage/patrimonios/" + url;
         },
-        validarInputComboBox(tudo, selected){
-            if (selected.length === 0){
-                return selected;
-            }
-            if (!selected[selected.length - 1].nome){ //valida valores inseridos através do teclado
-                let objeto = tudo.find(function (t){//procura o objeto
-                    return t.nome.toLowerCase() === selected[selected.length - 1].toLowerCase();
-                });
-                selected.pop(); //remove texto
-                if (objeto != undefined){ //substitui o texto pelo objeto se existir um objeto com esse nome
-                    selected.push(objeto);
-                }
-            } else{ //valida checkbox
-                if (!tudo.includes(selected[selected.length - 1])){
-                    selected.pop();
-                }
-            }
-            return selected;
-        },
     },
     computed:{
         getAuthUser: function(){

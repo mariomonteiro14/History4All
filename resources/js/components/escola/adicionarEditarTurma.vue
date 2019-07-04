@@ -74,7 +74,6 @@
                                 ref="selectAlunos"
                                 autofocus
                                 :disabled="filteredAlunos.length == 0"
-                                @input="turma.alunos = validarInputComboBox(filteredAlunos, turma.alunos)"
                             >
                                 <!--<template v-slot:selection="data">
                                     <v-chip
