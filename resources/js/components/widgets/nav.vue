@@ -134,6 +134,14 @@
                                 <v-list-tile-title>Perfil</v-list-tile-title>
                             </v-list-tile-content>
                         </v-list-tile>
+                        <v-list-tile ripple="ripple" rel="noopener" to="/professores/chat">
+                            <v-list-tile-action>
+                                <v-icon class="blue--text">far fa-comments</v-icon>
+                            </v-list-tile-action>
+                            <v-list-tile-content>
+                                <v-list-tile-title>Chat</v-list-tile-title>
+                            </v-list-tile-content>
+                        </v-list-tile>
                         <v-list-tile ripple="ripple" rel="noopener" @click="logout">
                             <v-list-tile-action>
                                 <v-icon>fullscreen_exit</v-icon>

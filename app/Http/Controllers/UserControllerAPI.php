@@ -9,6 +9,7 @@ use App\Mail\MensagemEmail;
 use App\Mail\ConfirmarNovoEmail;
 use App\Notificacao;
 use App\Turma;
+use App\Chat;
 use Illuminate\Http\Request;
 
 use App\Http\Resources\User as UserResource;
@@ -456,5 +457,18 @@ class UserControllerAPI extends Controller
             'data' => new UserResource($user),
             'message' => 'Email alterado'
         ], 201);
+    }
+
+    public function chatProfessores(Request $request)
+    {
+        if (Auth::user()->tipo != "professor") {
+            return response()->json([
+                'message' => 'Unauthorized.'
+            ], 403);
+        }
+        $chat = Chat::where('id', 1)->with('chatMensagens')->first();
+        return response()->json([
+            'data' => $chat
+        ], 200);
     }
 }

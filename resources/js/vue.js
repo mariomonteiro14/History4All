@@ -53,6 +53,7 @@ const routes = [
     { path: '/users/resetPassword/:token', name: 'resetPassword',component: require('./components/users/resetPassword.vue').default, props: true},
     { path: '/escola/turmas', name: 'turmas',component: require('./components/escola/turmas.vue').default},
     { path: '/users/alterarEmail/:token/:email', name: 'alterarEmail',component: require('./components/users/alterarEmail.vue').default,props: true},
+    { path: '/professores/chat', name: 'chatProfessores',component: require('./components/widgets/chatProfessores.vue').default},
     { path: '/*', name: 'unknown'},
 
 ];
@@ -73,7 +74,7 @@ router.beforeEach((to, from, next) => {
             return;
         }
     }
-    if(to.name == 'turmas' || to.name == 'gerirAtividades'){
+    if(to.name == 'turmas' || to.name == 'gerirAtividades' || to.name == 'chatProfessores'){
         if(!user || user.tipo !== "professor"){
             next("/");
             return;

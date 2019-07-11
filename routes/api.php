@@ -65,6 +65,7 @@ Route::group(['middleware' => 'auth:api'], function() {
         Route::delete('atividades/{id}', 'AtividadeControllerAPI@destroy');
         Route::post('patrimonios/{id}/imagens', 'PatrimonioControllerAPI@adicionarImagens');
         Route::put('atividade/{id}/testemunho/{user_id}', 'AtividadeControllerAPI@confirmarTestemunho');
+        Route::get('chat/professores', 'UserControllerAPI@chatProfessores');
     });
 
     Route::group(['middleware' => 'adminOuProfessor'], function() {
