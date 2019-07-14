@@ -78,7 +78,7 @@
                     'users': this.usersSelected,
                     'mensagem': this.mensagem
                 }).then(response => {
-                    this.$socket.emit('nova_notificacao', response.data, this.usersSelected);
+                    this.$socket.emit('nova_notificacao', response.data.data, this.usersSelected);
                     this.toastPopUp("success", "Notificação enviada com sucesso!");
                     this.cancel();
                     this.aEnviar = false;

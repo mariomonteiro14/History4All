@@ -390,7 +390,7 @@ class UserControllerAPI extends Controller
             ]);
             $notificacao->save();
         };
-        return response()->json(null, 201);
+        return response()->json(['data' => $notificacao], 201);
     }
 
     public function updateNotificacoes(Request $request)
@@ -401,7 +401,9 @@ class UserControllerAPI extends Controller
             $notificacao->save();
         };
 
-        return response()->json(Notificacao::where('user_id', Auth::id())->get(), 201);
+        return response()->json([
+            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data')->orderBy('data', 'desc')->get()
+        ], 201);
     }
 
     public function resetPassword(Request $request)

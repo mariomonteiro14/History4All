@@ -134,9 +134,9 @@
                                 <v-list-tile-title>Perfil</v-list-tile-title>
                             </v-list-tile-content>
                         </v-list-tile>
-                        <v-list-tile ripple="ripple" rel="noopener" to="/professores/chat">
+                        <v-list-tile ripple="ripple" rel="noopener" to="/professores/chat" v-if="$store.state.user.tipo === 'professor'">
                             <v-list-tile-action>
-                                <v-icon class="blue--text">far fa-comments</v-icon>
+                                <v-icon>far fa-comments</v-icon>
                             </v-list-tile-action>
                             <v-list-tile-content>
                                 <v-list-tile-title>Chat</v-list-tile-title>
@@ -234,7 +234,7 @@
             notificacoesLidas() {
                 if (this.novasNotificacoes > 0) {
                     axios.put('/api/me/notificacoes').then(response => {
-                        this.notificacoes = response.data;
+                        this.notificacoes = response.data.data;
                         this.novasNotificacoes = 0;
                     }).catch(error => {
                         this.toastErrorApi(error);

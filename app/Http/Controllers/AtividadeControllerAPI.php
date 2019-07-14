@@ -253,25 +253,40 @@ class AtividadeControllerAPI extends Controller
                 }
             }
         }
-        $alteracoes = '';
+        $alteracoes = [];
         if ($atividade->tipo != $request->tipo) {
-            $alteracoes .= "passou de " . $atividade->tipo . " para " . $request->tipo . ", ";
+            array_push($alteracoes, "o tipo de atividade passou de " . $atividade->tipo . " para " . $request->tipo);
         }
         if ($atividade->numeroElementos != $request->numeroElementos) {
-            $alteracoes .= "passou de grupos de " . $atividade->numeroElementos . " para grupos de " . $request->numeroElementos . ", ";
+            array_push($alteracoes, "o número de elementos por grupo passou de " . $atividade->numeroElementos . " para " . $request->numeroElementos);
         }
-        if ($atividade->data != $request->data) {
-            $alteracoes .= "a data limite é " . date('d-m-Y', strtotime($request->data)) . ".";
+        if ($atividade->dataInicio != $request->dataInicio) {
+            array_push($alteracoes, "a data inicial passou a ser " . date('d-m-Y', strtotime($request->dataInicio)));
         }
-        if ($alteracoes != '') {
+        if ($atividade->dataFinal != $request->dataFinal) {
+            array_push($alteracoes, "a data limite passou a ser " . date('d-m-Y', strtotime($request->dataFinal)));
+        }
+        if (count($alteracoes) > 0) {
+            $alteracoesFormatadas = "";
+            $alteracoesFormatadasHtml = "<ul>";
+            foreach ($alteracoes as $indice => $alt) {
+                $alteracoesFormatadas .= $alt;
+                $alteracoesFormatadasHtml .= "<li>" . $alt . "</li>";
+                if ($indice != count($alteracoes) - 1){
+                    $alteracoesFormatadas .= ", ";
+                } else{
+                    $alteracoesFormatadas .= ".";
+                }
+            }
+            $alteracoesFormatadasHtml .= "</ul>";
             $ids = AtividadeParticipantes::where('atividade_id', $id)->get()->pluck('user_id')->toArray();
             foreach ($ids as $id) {
                 $this->notificacaoEEmail(User::findOrFail($id),
-                    "As especificações da atividade " . $request->titulo . " foram alteradas, " . $alteracoes,
+                    "As especificações da atividade " . $request->titulo . " foram alteradas, " . $alteracoesFormatadas,
                     "A atividade " . $request->titulo . " foi alterada",
                     "<h3>As especificações da atividade " . $request->titulo . " foram alteradas</h3><p>A atividade 
                     é coordenada pelo(a) porfessor(a) " . $coordenador->nome . " e passou a ter as seguintes configurações: " .
-                    $alteracoes . "</p>");
+                    $alteracoesFormatadasHtml . "</p>");
             }
         }
 
