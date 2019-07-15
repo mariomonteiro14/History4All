@@ -51,9 +51,10 @@ const routes = [
     { path: '/admin/users', name: 'gestorUsers',component: require('./components/users/users.vue').default},
     { path: '/users/registarPassword/:token', name: 'registarPassword',component: require('./components/users/registarPassword.vue').default, props: true},
     { path: '/users/resetPassword/:token', name: 'resetPassword',component: require('./components/users/resetPassword.vue').default, props: true},
-    { path: '/escola/turmas', name: 'turmas',component: require('./components/escola/turmas.vue').default},
+    //{ path: '/escola/turmas', name: 'turmas',component: require('./components/escola/turmas.vue').default},
     { path: '/users/alterarEmail/:token/:email', name: 'alterarEmail',component: require('./components/users/alterarEmail.vue').default,props: true},
-    { path: '/professores/chat', name: 'chatProfessores',component: require('./components/widgets/chatProfessores.vue').default},
+    //{ path: '/professores/chat', name: 'chatProfessores',component: require('./components/widgets/chatProfessores.vue').default},
+    { path: '/professores/gestor', name: 'professorGestor',component: require('./components/users/professorGestor.vue').default, props: true},
     { path: '/*', name: 'unknown'},
 
 ];
@@ -74,7 +75,7 @@ router.beforeEach((to, from, next) => {
             return;
         }
     }
-    if(to.name == 'turmas' || to.name == 'gerirAtividades' || to.name == 'chatProfessores'){
+    if(to.name == 'turmas' || to.name == 'gerirAtividades' || to.name == 'chatProfessores' || to.name =='professorGestor'){
         if(!user || user.tipo !== "professor"){
             next("/");
             return;
@@ -125,7 +126,7 @@ var common = {
             }
         },
         toastErrorApi(error){
-            this.toastPopUp("error", error.response.data.errors ? 
+            this.toastPopUp("error", error.response.data.errors ?
                 `${error.response.data.errors[Object.keys(error.response.data.errors)[0]]}` : `${error.response.data.message}`);
         },
         getUserPhoto(url){

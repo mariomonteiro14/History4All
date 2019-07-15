@@ -60,6 +60,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::group(['middleware' => 'professor'], function() {
         Route::get('escolas/{id}/turmas', 'EscolaControllerAPI@escolaTurmas');
         Route::get('me/escola', 'EscolaControllerAPI@myEscola');
+        Route::get('me/escola/estatisticas', 'EscolaControllerAPI@myEscolaEstatisticas');
         Route::post('atividades', 'AtividadeControllerAPI@store');
         Route::put('atividades/{id}', 'AtividadeControllerAPI@update');
         Route::delete('atividades/{id}', 'AtividadeControllerAPI@destroy');

@@ -128,8 +128,7 @@
                                             <h6>{{atividade.participantes.length}}</h6>
                                         </v-flex>
                                         <v-flex>
-                                            <span
-                                                class=" font-weight-light grey--text">Numero de elementos por grupo:</span>
+                                            <span class=" font-weight-light grey--text">Numero de elementos por grupo:</span>
                                             <h6>{{atividade.numeroElementos}}</h6>
                                         </v-flex>
                                         <v-flex>

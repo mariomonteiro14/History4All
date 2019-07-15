@@ -1,9 +1,6 @@
 <template>
     <div>
         <v-app id="inspire">
-            <br><br><br><br><br>
-            <h3>Turmas / Gerir</h3>
-            <br>
             <v-card append float>
                 <v-container fluid grid-list-xl>
                     <v-layout>
@@ -147,6 +144,8 @@
     import enviarNotificacao from '../widgets/enviarNotificacao';
 
     export default {
+        props:['isLoadingTurmas', 'myEscola'],
+
         components: {
             'lista-alunos': listaAlunos,
             'criar-editar-turma': criarTurma,
@@ -181,10 +180,6 @@
                     {text: '', align: 'right', value: '', sortable: false},
                     {text: 'Actions', align: 'center', value: 'acoes', sortable: false}
                 ],
-                myEscola: {
-                    nome: '',
-                    turmas: [],
-                },
                 dialog: false,
                 turmaAtual: {},
                 userForm: {
@@ -194,13 +189,11 @@
                     escola: this.$store.state.user.escola[0],
                     turma: '',
                 },
-                isLoadingTurmas: true,
             }
         },
         methods: {
             getMyEscola(url = '/api/me/escola') {
-
-                this.isLoadingTurmas = true;
+                this.isLoading = true;
                 axios.get(url)
                     .then(response => {
                         this.myEscola = response.data.data;

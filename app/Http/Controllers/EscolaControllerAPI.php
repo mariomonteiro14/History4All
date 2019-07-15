@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Chat;
 use App\Escola;
+use App\Http\Resources\EscolaEstatisticas;
 use App\Turma;
 use App\User;
 use Illuminate\Http\Request;
@@ -35,6 +36,14 @@ class EscolaControllerAPI extends Controller
         $escola = Escola::findOrFail(Auth::user()->escola_id);
         return response()->json([
             'data' => new EscolaResource($escola),
+        ]);
+    }
+
+    public function myEscolaEstatisticas(Request $request){
+
+        $escola = Auth::user()->escola()->first();
+        return response()->json([
+            'data' => new EscolaEstatisticas($escola),
         ]);
     }
 

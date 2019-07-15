@@ -21,30 +21,41 @@
             >
             </v-text-field>-->
             <v-spacer></v-spacer>
-            <b-dropdown v-if="this.$store.state.user && $store.state.user.tipo !== 'aluno'" text="Outline Danger" right
+            <b-dropdown v-if="this.$store.state.user && $store.state.user.tipo === 'admin'" text="Outline Danger" right
                         variant="Success" class="m-2">
                 <template slot="button-content">GESTÃO</template>
-                <div v-if="$store.state.user.tipo === 'admin'">
-                    <b-dropdown-item to="/admin/patrimonios">
-                        <v-icon> &nbsp build</v-icon>
-                        Gerir Patrimónios
-                    </b-dropdown-item>
-                    <b-dropdown-item to="/admin/users">
-                        <v-icon>group</v-icon>
-                        &nbsp Gerir Utilizadores
-                    </b-dropdown-item>
-                    <b-dropdown-item to="/admin/escolas">
-                        <v-icon>home</v-icon>
-                        &nbsp Gerir Escolas | Turmas
-                    </b-dropdown-item>
-                </div>
-                <div v-if="$store.state.user.tipo === 'professor'">
-                    <b-dropdown-item to="/escola/turmas">
-                        <v-icon>group</v-icon>
-                        &nbsp Turmas
-                    </b-dropdown-item>
-                </div>
+                <b-dropdown-item to="/admin/patrimonios">
+                    <v-icon> &nbsp build</v-icon>
+                    Gerir Patrimónios
+                </b-dropdown-item>
+                <b-dropdown-item to="/admin/users">
+                    <v-icon>group</v-icon>
+                    &nbsp Gerir Utilizadores
+                </b-dropdown-item>
+                <b-dropdown-item to="/admin/escolas">
+                    <v-icon>home</v-icon>
+                    &nbsp Gerir Escolas | Turmas
+                </b-dropdown-item>
+
             </b-dropdown>
+            <b-dropdown v-if="this.$store.state.user && $store.state.user.tipo === 'professor'" text="Outline Danger"
+                        right
+                        variant="Success" class="m-2">
+                <template slot="button-content">Minha Escola</template>
+                <b-dropdown-item @click="$router.push({ name: 'professorGestor', params: {tabSelecionada: 0 }})">
+                    <v-icon> &nbsp home</v-icon>
+                    Minha Escola
+                </b-dropdown-item>
+                <b-dropdown-item @click="$router.push({ name: 'professorGestor', params: {tabSelecionada: 1 }})">
+                    <v-icon>group</v-icon>
+                    &nbsp Gerir Turmas | Alunos
+                </b-dropdown-item>
+                <b-dropdown-item @click="$router.push({ name: 'professorGestor', params: {tabSelecionada: 2 }})">
+                    <v-icon>far fa-comments</v-icon>
+                    &nbsp Professores | Chat
+                </b-dropdown-item>
+            </b-dropdown>
+
             <v-toolbar-items v-if="!this.$store.state.user">
                 <v-btn v-if="!isLoading" flat data-toggle="modal" data-target="#loginModal">
                     Entrar
@@ -63,16 +74,16 @@
                         </v-badge>
                     </v-btn>
                 </v-menu>
-                <div  class="dropdown-menu dropdown-menu-right"
+                <div class="dropdown-menu dropdown-menu-right"
                      aria-labelledby="dropdownMenuLink"
-                      style="max-height:400px; max-width:75vh;">
-                    <div  style="width: 70vh">
+                     style="max-height:400px; max-width:75vh;">
+                    <div style="width: 70vh">
                         <v-data-table v-show="this.$store.state.user"
-                            :items="notificacoes"
-                            class="elevation-1"
-                            hide-actions
-                            hide-headers disable-initial-sort
-                            style="max-height:400px; max-width:69vh; overflow-y:auto"
+                                      :items="notificacoes"
+                                      class="elevation-1"
+                                      hide-actions
+                                      hide-headers disable-initial-sort
+                                      style="max-height:400px; max-width:69vh; overflow-y:auto"
                         >
                             <template slot="no-data">
                                 Não tem nenhuma notificação
@@ -108,7 +119,7 @@
                         <v-btn icon large flat slot="activator">
                             <v-avatar size="30px" class="bg-white">
                                 <v-img v-if="this.$store.state.user.foto"
-                                     v-bind:src="getUserPhoto(this.$store.state.user.foto)">
+                                       v-bind:src="getUserPhoto(this.$store.state.user.foto)">
                                     <template v-slot:placeholder>
                                         <v-layout
                                             fill-height
@@ -134,7 +145,8 @@
                                 <v-list-tile-title>Perfil</v-list-tile-title>
                             </v-list-tile-content>
                         </v-list-tile>
-                        <v-list-tile ripple="ripple" rel="noopener" to="/professores/chat" v-if="$store.state.user.tipo === 'professor'">
+                        <v-list-tile ripple="ripple" rel="noopener" to="/professores/chat"
+                                     v-if="$store.state.user.tipo === 'professor'">
                             <v-list-tile-action>
                                 <v-icon>far fa-comments</v-icon>
                             </v-list-tile-action>
@@ -186,13 +198,13 @@
             handleDrawerToggle() {
                 window.getApp.$emit('APP_DRAWER_TOGGLED');
             },
-            formatarData(data){
+            formatarData(data) {
                 let aux = new Date(data.replace(/-/g, "/"));
                 let m = new Date();
-                if(aux.getFullYear() == m.getFullYear() && aux.getMonth() == m.getMonth()){
-                    if (aux.getDate() == m.getDate()){
+                if (aux.getFullYear() == m.getFullYear() && aux.getMonth() == m.getMonth()) {
+                    if (aux.getDate() == m.getDate()) {
                         if (aux.getHours() == m.getHours()) {
-                            if ((m.getMinutes() - aux.getMinutes()) <= 1){
+                            if ((m.getMinutes() - aux.getMinutes()) <= 1) {
                                 return "Agora"
                             }
                             return "Há " + (m.getMinutes() - aux.getMinutes()) + " minutos";
@@ -206,7 +218,7 @@
                         }
                         return "Hoje";
                     }
-                    if ((m.getDate() - aux.getDate()) == 1){
+                    if ((m.getDate() - aux.getDate()) == 1) {
                         return "Ontem";
                     }
                 }

@@ -20,6 +20,7 @@ class Escola extends JsonResource
             'distrito' => $this->distrito,
             'turmas' => Turma::collection($this->turmas()),
             'alunos' => User::collection($this->alunos()),
+            'professores' => ShortUser::collection($this->professores()),
         ];
     }
 
