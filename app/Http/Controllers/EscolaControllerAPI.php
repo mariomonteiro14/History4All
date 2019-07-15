@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Chat;
 use App\Escola;
 use App\Turma;
 use App\User;
@@ -59,6 +60,13 @@ class EscolaControllerAPI extends Controller
 
         $escola = new Escola();
         $escola->fill($request->all());
+
+        $chat = new Chat();
+        $chat->privado = 1;
+        $chat->assunto = "Chat dos professores";
+        $chat->save();
+
+        $escola->chat_professores_id = $chat->id;
         $escola->save();
 
         return response()->json(new EscolaResource($escola), 201);

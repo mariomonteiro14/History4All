@@ -18,7 +18,7 @@ class Escola extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'id', 'nome', 'distrito'
+        'id', 'nome', 'distrito', 'chat_professores_id'
     ];
 
     public function users(){
@@ -35,4 +35,10 @@ class Escola extends Model
     public function alunos(){
         return User::where('tipo', 'aluno')->where('escola_id', $this->id)->get();
     }
+
+    public function chatProfessores(){
+        return $this->hasOne(Chat::class, 'id','chat_professores_id');
+    }
+
+
 }

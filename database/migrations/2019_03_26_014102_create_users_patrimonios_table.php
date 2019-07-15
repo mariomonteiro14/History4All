@@ -13,12 +13,27 @@ class CreateUsersPatrimoniosTable extends Migration
      */
     public function up()
     {
+        Schema::create('chats', function (Blueprint $table) {
+            $table->increments('id');
+            $table->boolean('privado')->default(true);
+            $table->string('assunto')->nullable();
+        });
+
+        Schema::create('chat_mensagens', function (Blueprint $table) {
+            $table->integer('chat_id')->unsigned();
+            $table->foreign('chat_id')->references('id')->on('chats')->onDelete('cascade');
+            $table->bigInteger('user_id')->unsigned();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->text('mensagem');
+        });
+        
         Schema::create('escolas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome')->unique();
             $table->enum('distrito', ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
                 'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
                 'Vila Real', 'Viseu', 'Açores', 'Madeira']);
+            $table->foreign('chat_professores_id')->references('id')->on('chat')->onDelete('cascade');
         });
 
         Schema::create('turmas', function (Blueprint $table) {
@@ -74,19 +89,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->string('foto');
         });
 
-        Schema::create('chats', function (Blueprint $table) {
-            $table->increments('id');
-            $table->boolean('privado')->default(true);
-            $table->string('assunto')->nullable();
-        });
 
-        Schema::create('chat_mensagens', function (Blueprint $table) {
-            $table->integer('chat_id')->unsigned();
-            $table->foreign('chat_id')->references('id')->on('chats')->onDelete('cascade');
-            $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->text('mensagem');
-        });
 
         Schema::create('atividades', function (Blueprint $table) {
             $table->increments('id');

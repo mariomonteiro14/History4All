@@ -374,7 +374,7 @@ class UserControllerAPI extends Controller
         }
 
         $userIds = array_column($request->get('users'), 'id');
-        
+
         if (count($userIds) != count($request->get('users'))){
             abort(400, 'Inseridos utilizadores inválidos');
         }
@@ -468,7 +468,9 @@ class UserControllerAPI extends Controller
                 'message' => 'Unauthorized.'
             ], 403);
         }
-        $chat = Chat::where('id', 1)->with('chatMensagens')->first();
+        $escola = Auth::user()->escola()->first();
+        $chat = $escola->chatProfessores()->with('chatMensagens')->first();
+
         return response()->json([
             'data' => $chat
         ], 200);

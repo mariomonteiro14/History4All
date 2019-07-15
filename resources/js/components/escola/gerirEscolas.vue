@@ -9,10 +9,8 @@
                     <v-layout row align-center>
                         <v-text-field
                             v-model="search"
-                            append-icon="pesquisa"
+                            append-icon="search"
                             label="Pesquisar"
-                            single-line
-                            hide-details
                             clearable
                         ></v-text-field>
                         <v-spacer></v-spacer>
