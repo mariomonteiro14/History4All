@@ -55,6 +55,7 @@ const routes = [
     { path: '/users/alterarEmail/:token/:email', name: 'alterarEmail',component: require('./components/users/alterarEmail.vue').default,props: true},
     //{ path: '/professores/chat', name: 'chatProfessores',component: require('./components/widgets/chatProfessores.vue').default},
     { path: '/professores/gestor', name: 'professorGestor',component: require('./components/users/professorGestor.vue').default, props: true},
+    { path: '/alunos/escola', name: 'alunosGestor',component: require('./components/users/alunoGestor.vue').default, props: true},
     { path: '/*', name: 'unknown'},
 
 ];
@@ -87,6 +88,14 @@ router.beforeEach((to, from, next) => {
             return;
         }
     }
+
+    if(to.name == 'alunosGestor'){
+        if(!user || user.tipo !== "aluno"){
+            next("/");
+            return;
+        }
+    }
+
     if(to.name == 'unknown') {
         next("/");
         return;

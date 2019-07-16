@@ -39,6 +39,14 @@ class EscolaControllerAPI extends Controller
         ]);
     }
 
+    public function myTurma(Request $request){
+
+        $turma = Turma::findOrFail(Auth::user()->turma_id);
+        return response()->json([
+            'data' => new TurmaResource($turma),
+        ]);
+    }
+
     public function myEscolaEstatisticas(Request $request){
 
         $escola = Auth::user()->escola()->first();

@@ -169,7 +169,7 @@
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
                 search: '',
                 tipos: ['Todas', 'Minhas'],
-                tipoSelected: 'Todas',
+                tipoSelected: 'Minhas',
 
                 headers: [
                     {text: 'Nome', value: 'nome', align: 'left'},

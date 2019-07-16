@@ -86,7 +86,6 @@
                 }).catch(error => {
                     this.toastPopUp("error", `${error.response.data.message}`);
                     this.isLoadingEstatisticas = false;
-
                 });
 
             }

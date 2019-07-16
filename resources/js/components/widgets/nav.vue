@@ -55,6 +55,10 @@
                     &nbsp Professores | Chat
                 </b-dropdown-item>
             </b-dropdown>
+            <v-btn v-if="this.$store.state.user && $store.state.user.tipo === 'aluno'"
+            flat to="/alunos/escola">
+                Minha Escola | Turma
+            </v-btn>
 
             <v-toolbar-items v-if="!this.$store.state.user">
                 <v-btn v-if="!isLoading" flat data-toggle="modal" data-target="#loginModal">
@@ -145,7 +149,7 @@
                                 <v-list-tile-title>Perfil</v-list-tile-title>
                             </v-list-tile-content>
                         </v-list-tile>
-                        <v-list-tile ripple="ripple" rel="noopener" to="/professores/chat"
+                        <!--<v-list-tile ripple="ripple" rel="noopener" to="/professores/chat"
                                      v-if="$store.state.user.tipo === 'professor'">
                             <v-list-tile-action>
                                 <v-icon>far fa-comments</v-icon>
@@ -153,7 +157,7 @@
                             <v-list-tile-content>
                                 <v-list-tile-title>Chat</v-list-tile-title>
                             </v-list-tile-content>
-                        </v-list-tile>
+                        </v-list-tile>-->
                         <v-list-tile ripple="ripple" rel="noopener" @click="logout">
                             <v-list-tile-action>
                                 <v-icon>fullscreen_exit</v-icon>
