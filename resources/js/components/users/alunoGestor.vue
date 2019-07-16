@@ -74,10 +74,10 @@
                                 <v-slide-y-transition>
                                     <v-card-text v-show="showAlunos">
                                         <v-divider></v-divider>
-                                        <v-layout align-start justify-start>
-                                            <v-flex sm1 v-for="aluno in turma.alunos" :key="aluno.id"
+                                        <v-layout align-start justify-start style="overflow-x:auto">
+                                            <div  v-for="aluno in turma.alunos" :key="aluno.id"
                                                     @click="$router.push('/users/'+ aluno.id)"
-                                                    class="align-text-center">
+                                                    class="col-lg-1 align-content-center">
                                                 <a>
                                                     <v-avatar size="55px" class="bg-white">
                                                         <v-img v-if="aluno.foto" v-bind:src="getUserPhoto(aluno.foto)">
@@ -95,11 +95,11 @@
                                                         </v-img>
                                                         <v-icon v-else class="indigo--text" small>far fa-user</v-icon>
                                                     </v-avatar>
-                                                    <v-spacer></v-spacer>
-                                                    <h5 v-if="aluno.id != $store.state.user.id">{{aluno.nome}}</h5>
-                                                    <h5 v-else>Eu</h5>
+                                                    <br>
+                                                    <h5 class="align-center" v-if="aluno.id != $store.state.user.id">{{aluno.nome}}</h5>
+                                                    <h5 class="align-center" v-else>Eu</h5>
                                                 </a>
-                                            </v-flex>
+                                            </div>
                                         </v-layout>
                                     </v-card-text>
                                 </v-slide-y-transition>
