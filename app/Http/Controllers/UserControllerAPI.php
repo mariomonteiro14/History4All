@@ -28,7 +28,7 @@ define('CLIENT_SECRET', '9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
 
 class UserControllerAPI extends Controller
 {
-    ///APAGAR
+
     public function users(Request $request)
     {
         $users = UserResource::collection(User::all());

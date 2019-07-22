@@ -29,19 +29,17 @@
                             </v-flex>
                             <v-spacer></v-spacer>
                             <v-flex xs12 sm4 d-flex>
-                                <v-flex xs12 sm5 d-flex>
+                                <v-layout>
                                     <v-btn color="success" round data-toggle="modal" data-target="#addUserModal">
                                         <v-icon class="material-icons">add</v-icon>
                                         &nbsp Utilizador
                                     </v-btn>
-                                </v-flex>
-                                <v-flex xs12 sm7 d-flex>
-                                    <v-btn round v-if="trashed" color="warning" @click="getUsers()">Utilizadores Ativos
+                                    <v-btn round v-if="trashed" color="warning" @click="changeUsers">Utilizadores Ativos
                                     </v-btn>
-                                    <v-btn round v-else color="warning" @click="getUsersTrashed()">Utilizadores
+                                    <v-btn round v-else color="warning" @click="changeUsers">Utilizadores
                                         Eliminados
                                     </v-btn>
-                                </v-flex>
+                                </v-layout>
                             </v-flex>
                         </v-layout>
                     </v-container>
@@ -53,7 +51,8 @@
                     <tr v-bind:class="colorUserType(props.item.tipo)">
                         <td class="text-xs-center">
                             <v-avatar size="90px" color="white">
-                                <img v-if="props.item.foto && props.item.tipo !='aluno'" v-bind:src="getUserPhoto(props.item.foto)"/>
+                                <img v-if="props.item.foto && props.item.tipo !='aluno'"
+                                     v-bind:src="getUserPhoto(props.item.foto)"/>
                                 <v-icon v-else class="indigo--text" large>far fa-user</v-icon>
                             </v-avatar>
                         </td>
@@ -64,18 +63,25 @@
                         <td class="text-xs-left">{{ props.item.email }}</td>
                         <!-- Se Filtro for Todos -->
                         <td v-if="tipoUser=='Todos'" class="text-xs-center">{{ props.item.tipo }}</td>
-                        <td v-if="tipoUser=='Todos'" class="text-sm-right">
+
+                        <!-- Se Filtro for Professor ou Alunos -->
+                        <td v-if="tipoUser=='professor' || tipoUser=='aluno'" class="text-xs-center">{{
+                            props.item.escola[0] }}
+                        </td>
+                        <td v-if="tipoUser=='Todos' || (tipoUser=='professor' && props.item.turmas.length > 0)" class="text-sm-right">
                             <v-btn @click="props.expanded = !props.expanded" icon>
                                 <v-icon color="brown darken-1" medium>info</v-icon>
                             </v-btn>
                         </td>
-                        <!-- Se Filtro for Professor ou Alunos -->
-                        <td v-if="tipoUser=='professor' || tipoUser=='aluno'" class="text-xs-center">{{ props.item.escola[0] }}</td>
+                        <td v-if="tipoUser=='professor' && props.item.turmas.length == 0" class="text-sm-right"/>
                         <!-- Se Filtro for Alunos -->
-                        <td v-if="tipoUser=='aluno' &&  props.item.turma[0]" class="text-xs-center">{{ props.item.turma[0] }}</td>
-                        <td v-if="tipoUser=='aluno' &&  !props.item.turma[0]" class="text-xs-center"> --- </td>
+                        <td v-if="tipoUser=='aluno' &&  props.item.turma[0]" class="text-xs-center">{{
+                            props.item.turma[0] }}
+                        </td>
+                        <td v-if="tipoUser=='aluno' &&  !props.item.turma[0]" class="text-xs-center"> ---</td>
 
-                        <td class="text-xs-center" v-if="!trashed && $store.state.user.id != props.item.id ">
+                        <td class="text-xs-center"
+                            v-if="!trashed && $store.state.user.id != props.item.id && !editingUsers.includes(props.item.id)">
 
                             <v-btn icon v-if="props.item.tipo =='professor'" @click="showEdit(props.item)">
                                 <v-icon color="warning" medium>edit</v-icon>
@@ -85,8 +91,13 @@
                             </v-btn>
 
                         </td>
+                        <td class="" v-if="editingUsers.includes(props.item.id)">
+                            <center>
+                                <loader color="green" size="32px"></loader>
+                            </center>
+                        </td>
                         <td v-if="$store.state.user.id == props.item.id"></td>
-                        <td class="text-xs-center" v-if="trashed">
+                        <td class="text-xs-center" v-if="trashed && !editingUsers.includes(props.item.id)">
                             <v-btn round color="warning" @click="restaurarUser(props.item)">
                                 Restaurar
                             </v-btn>
@@ -124,12 +135,13 @@
 
         <div @focusout="closeLists">
             <div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="editUserModal"
-                aria-hidden="true" data-keyboard="false" data-backdrop="static">
+                 aria-hidden="true" data-keyboard="false" data-backdrop="static">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content" @click="closeLists">
                         <div class="modal-header">
                             <h5 class="modal-title" id="editUserModal">Editar Utilizador</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" :disabled="aEnviar">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                                    :disabled="aEnviar">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
@@ -147,9 +159,11 @@
                                         required
                                     ></v-select>
                                 </div>
-                                <span v-if="userAtual.tipo == 'professor'">Se alterar a escola, todas as turmas associadas a este professor ficaram sem professor</span>
+                                <span v-if="userAtual.tipo == 'professor' && userAtual.turmas && userAtual.turmas.length > 0">
+                                    Se alterar a escola, a(s) turma(s) associada(s) a este professor ({{getProfessorTurmasText}}) ficaram sem professor.
+                                </span>
                                 <div class="form-group" v-if="userAtual.tipo == 'aluno' && userAtual.escola"
-                                    @click="setOpenList">
+                                     @click="setOpenList">
                                     <v-select
                                         ref="selectT"
                                         label="Turma"
@@ -225,43 +239,67 @@
                 escolas: [],
                 selAberto: false, //atributo pra corrigir bug no modal
                 isLoading: true,
-                aEnviar: false
+                aEnviar: false,
+                editingUsers: []
             }
         },
         methods: {
-            getUsers(url = '/api/users') {
+            getUsers(removeUserId = 0) {
                 this.isLoading = true;
-                axios.get(url)
+                axios.get('/api/users')
                     .then(response => {
                         this.users = response.data.data;
                         this.trashed = false;
                         this.isLoading = false;
+                        if (removeUserId > 0) {
+                            this.removeUserEditing(removeUserId);
+                        }
                     }).catch(error => {
-                        this.toastErrorApi(error);
-                        this.isLoading = false;
-                    });
+                    this.toastErrorApi(error);
+                    this.isLoading = false;
+                    if (removeUserId > 0) {
+                        this.removeUserEditing(removeUserId);
+                    }
+
+                });
             },
 
-            getUsersTrashed(url = '/api/usersTrashed') {
+            getUsersTrashed(removeUserId = 0) {
                 this.isLoading = true;
-                axios.get(url)
+                axios.get('/api/usersTrashed')
                     .then(response => {
                         if (!response.data.data.length) {
-                            this.toastPopUp('show', 'Nao existem utilizadores apagados');
+                            if(this.trashed) {
+                                this.users = [];
+                            }
+                            this.toastPopUp('show', 'Nao existem utilizadores eliminados');
                             if (this.trashed) {
-                                this.trashed = false;
-                                this.getUsers();
+                                this.changeUsers();
                             }
                         } else {
                             this.users = response.data.data;
                             this.trashed = true;
                         }
+                        if (removeUserId > 0) {
+                            this.removeUserEditing(removeUserId);
+                        }
                         this.isLoading = false;
                     }).catch(error => {
-                        this.toastErrorApi(error);
-                        this.isLoading = false;
+                    this.toastErrorApi(error);
+                    if (removeUserId > 0) {
+                        this.removeUserEditing(removeUserId);
+                    }
+                    this.isLoading = false;
 
-                    });
+                });
+            },
+            changeUsers() {
+                if (this.trashed) {
+                    this.getUsers();
+                } else {
+                    this.getUsersTrashed();
+                }
+                this.editingUsers = [];
             },
 
             getDetail(user) {
@@ -269,7 +307,43 @@
                     return "Administrador do History4All"
                 }
                 if (user.tipo == "professor") {
-                    return "Professor da " + user.escola[0];
+                    if (this.tipoUser == 'Todos') {
+                        let string = "Professor da " + user.escola[0] + ".";
+                        if (user.turmas && user.turmas.length > 0) {
+                            if (user.turmas.length == 1) {
+                                string = string + " Leciona a turma " + user.turmas[0] + ".";
+                            } else {
+                                string = string + " Leciona as turmas ";
+                                for (let i = 0; i < user.turmas.length; i++) {
+                                    string = string + user.turmas[i];
+                                    if (i < user.turmas.length - 1) {
+                                        string = string + ", "
+                                    }
+                                }
+                                string = string + ".";
+                            }
+                        }
+                        return string;
+                    }else{
+                        if (user.turmas && user.turmas.length > 0) {
+                            let string = "";
+                            if (user.turmas.length == 1) {
+                                 string = " Leciona a turma " + user.turmas[0] + ".";
+                            } else {
+                                 string = " Leciona as turmas ";
+                                for (let i = 0; i < user.turmas.length; i++) {
+                                    string = string + user.turmas[i];
+                                    if (i < user.turmas.length - 1) {
+                                        string = string + ", "
+                                    }
+                                }
+                                string = string + ".";
+                            }
+
+                            return string;
+                        }
+                        return;
+                    }
                 }
                 if (user.tipo == "aluno" && user.turma[0]) {
                     return "Aluno da " + user.escola[0] + ", turma " + user.turma[0];
@@ -290,41 +364,49 @@
             },
             apagar() {
                 this.dialog = false;
+                this.editingUsers.push(this.userAApagar);
                 axios.delete('/api/users/' + this.userAApagar)
                     .then(response => {
                         this.toastPopUp("success", "Utilizador Apagado!");
                         if (this.trashed == true) {
-                            this.getUsersTrashed();
+                            this.getUsersTrashed(this.userAApagar);
                         } else {
-                            this.getUsers();
+                            this.getUsers(this.userAApagar);
                         }
                     }).catch(error => {
-                        this.toastErrorApi(error);
+                    this.toastErrorApi(error);
+                    this.removeUserEditing(this.userAApagar);
+
                 });
             },
             saveEdit() {
                 this.aEnviar = true;
+                this.editingUsers.push(this.userAtual.id);
                 axios.put('/api/users/' + this.userAtual.id, this.userAtual)
                     .then(response => {
                         this.aEnviar = false;
                         this.toastPopUp("success", "Utilizador Atualizado");
                         this.$socket.emit('atualizar_notificacoes', this.userAtual.id);
-                        this.getUsers();
+                        this.getUsers(this.userAtual.id);
                         $('#editUserModal').modal('hide');
                     }).catch(error => {
-                        this.toastErrorApi(error);
-                        this.aEnviar = false;
+                    this.toastErrorApi(error);
+                    this.removeUserEditing(this.userAtual.id);
+                    this.aEnviar = false;
                 });
             },
-            restaurarUser($user) {
-                axios.put('/api/users/restaurar/' + $user.id).then(res => {
+            restaurarUser(user) {
+                this.editingUsers.push(user.id);
+                axios.put('/api/users/restaurar/' + user.id).then(res => {
                     this.toastPopUp("success", "Uilizador restaurado");
-                    this.$socket.emit('atualizar_notificacoes', $user.id);
-                    this.getUsersTrashed();
-                }).catch(function (error) {
+                    this.$socket.emit('atualizar_notificacoes', user.id);
+                    this.getUsersTrashed(user.id);
+                }).catch(error => {
+                    this.removeUserEditing(user.id);
                     this.toastErrorApi(error);
                     console.log(error);
                 });
+
             },
             colorUserType: function (tipo) {
                 if (tipo == "admin") {
@@ -360,11 +442,23 @@
                 if (this.selAberto == true) {
                     this.selAberto = false;
                     this.$refs.selectE.isMenuActive = false;
-                    if (this.$refs.selectT){
+                    if (this.$refs.selectT) {
                         this.$refs.selectT.isMenuActive = false;
                     }
                 }
             },
+
+            removeUserEditing(user_id) {
+                //console.log(this.editingUsers);
+                for (let i = 0; i < this.editingUsers.length; i++) {
+                    if (this.editingUsers[i] == user_id) {
+                        this.editingUsers.splice(i, 1);
+                        i--;
+                    }
+                }
+                // console.log(this.editingUsers);
+
+            }
             ////////////////////////////////////////////////
         },
         computed: {
@@ -380,20 +474,33 @@
                     }
                 }
             },
-            titulo: function(){
+            titulo: function () {
                 let t = "Utilizadores / Gestão "
-                if (this.tipoUser == "Todos"){
+                if (this.tipoUser == "Todos") {
                     return t;
                 }
-                if (this.tipoUser == "admin"){
+                if (this.tipoUser == "admin") {
                     return t + "/ Administradores";
                 }
-                if (this.tipoUser == "professor"){
+                if (this.tipoUser == "professor") {
                     return t + "/ Professores";
                 }
-                if (this.tipoUser == "aluno"){
+                if (this.tipoUser == "aluno") {
                     return t + "/ Alunos";
                 }
+            },
+            getProfessorTurmasText: function () {
+                if (this.userAtual.turmas.lenght == 0) {
+                    return;
+                }
+                let string = "";
+                for (let i = 0; i < this.userAtual.turmas.length; i++) {
+                    string = string + this.userAtual.turmas[i];
+                    if (i < this.userAtual.turmas.length - 1) {
+                        string = string + ", "
+                    }
+                }
+                return string;
             },
             headers: function () {
                 if (this.tipoUser == "Todos") {
@@ -435,6 +542,7 @@
                         {text: 'Nome', value: 'nome'},
                         {text: 'Email', value: 'email'},
                         {text: 'Escola', value: 'escola', align: 'center', sortable: true},
+                        {text: '', value: 'info', align: 'right', sortable: false},
                         {text: 'Actions', value: '', sortable: false, align: 'center'},
                     ];
                 }

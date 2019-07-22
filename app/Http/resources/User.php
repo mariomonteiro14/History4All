@@ -22,6 +22,7 @@ class User extends JsonResource
             'tipo' => $this->tipo,
             'escola' => $this->escola()->pluck('nome'),
             'turma' => $this->turma()->pluck('nome'),
+            'turmas' => $this->turmas()->pluck('nome'),
         ];
     }
 
