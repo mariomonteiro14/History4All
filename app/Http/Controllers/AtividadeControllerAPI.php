@@ -53,7 +53,7 @@ class AtividadeControllerAPI extends Controller
     {
         return response()->json([
             'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
-                ->where('user_id', $id)->whereNull('dataFinal')->orWhere('dataFinal', '>', Carbon::now()->toDateString())->/*distinct()->*/get())
+                ->where('user_id', $id)->whereNull('dataFinal')->orWhere('dataFinal', '>', Carbon::now()->toDateString())->get())
         ]);
     }
 
@@ -61,7 +61,7 @@ class AtividadeControllerAPI extends Controller
     {
         return response()->json([
             'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
-                ->where('user_id', $id)->where('dataFinal', '<=', Carbon::now()->toDateString())/*->distinct()*/->get())
+                ->where('user_id', $id)->where('dataFinal', '<=', Carbon::now()->toDateString())->get())
         ]);
     }
 
@@ -134,9 +134,15 @@ class AtividadeControllerAPI extends Controller
         }
         $atividade->save();
 
-        if ($request->has('participantes')
-            && sizeof($request->get('participantes')) > 0) {
+        if ($request->has('participantes') && sizeof($request->get('participantes')) > 0) {
             $coordenador = User::findOrFail(Auth::id());
+
+            $notificacaoMensagem = "Foi inserido(a) na atividade " . $atividade->titulo . " que está a ser coordenada pelo(a) porfessor(a) " . $coordenador->nome;
+            $assunto = "Foi inserido(a) na atividade" . $atividade->titulo;
+            $emailMensagem = "<h3>Foi inserido(a) na atividade" . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " . 
+                $coordenador->nome . "</p><p>A atividade consiste em: " . $atividade->descricao . "</p>";
+            $link = 'atividade/' . $atividade->id;
+
             foreach ($request->participantes as $participante) {
                 $atividadeParticipante = new AtividadeParticipantes();
                 $atividadeParticipante->fill([
@@ -144,11 +150,7 @@ class AtividadeControllerAPI extends Controller
                     'user_id' => $participante['id']
                 ]);
                 $atividadeParticipante->save();
-                $this->notificacaoEEmail(User::findOrFail($participante['id']),
-                    "Foi inserido(a) na atividade" . $atividade->titulo . " que está a ser coordenada pelo(a) porfessor(a) " . $coordenador->nome,
-                    "Foi inserido(a) na atividade" . $atividade->titulo,
-                    "<h3>Foi inserido(a) na atividade" . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " .
-                    $coordenador->nome . "</p><p>A atividade consiste em: " . $atividade->descricao . "</p>");
+                $this->notificacaoEEmail(User::findOrFail($participante['id']), $notificacaoMensagem, $assunto, $emailMensagem, $link);
             }
         }
 
@@ -200,10 +202,17 @@ class AtividadeControllerAPI extends Controller
             Chat::findOrFail($oldChatId)->delete();
         }
         //participantes
-        if ($request->get('visibilidade') == 'privado' && sizeof($request->get('participantes')) > 0) {
+        if (sizeof($request->get('participantes')) > 0) {
             $participantesRecebidos = array_column($request->get('participantes'), 'id');
             $participantes = AtividadeParticipantes::where('atividade_id', $id)->get()->pluck('user_id')->toArray();
             $inseridos = array_diff($participantesRecebidos, $participantes);//array de id's
+
+            $notificacaoMensagem = "Foi inserido(a) na atividade " . $atividade->titulo . " que está a ser coordenada pelo(a) porfessor(a) " . $coordenador->nome;
+            $assunto = "Foi inserido(a) na atividade" . $atividade->titulo;
+            $emailMensagem = "<h3>Foi inserido(a) na atividade" . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " . 
+                $coordenador->nome . "</p><p>A atividade consiste em: " . $atividade->descricao . "</p>";
+            $link = 'atividade/' . $atividade->id;
+
             foreach ($inseridos as $participanteId) {
                 $atividadeParticipante = new AtividadeParticipantes();
                 $atividadeParticipante->fill([
@@ -211,21 +220,19 @@ class AtividadeControllerAPI extends Controller
                     'user_id' => $participanteId,
                 ]);
                 $atividadeParticipante->save();
-                $this->notificacaoEEmail(User::findOrFail($participanteId),
-                    "Foi inserido(a) na atividade " . $atividade->titulo . " que está a ser coordenada pelo(a) porfessor(a) " . $coordenador->nome,
-                    "Foi inserido(a) na atividade" . $atividade->titulo,
-                    "<h3>Foi inserido(a) na atividade " . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " .
-                    $coordenador->nome . "</p><p>A atividade consiste em: " . $atividade->descricao . "</p>");
+                $this->notificacaoEEmail(User::findOrFail($participanteId), $notificacaoMensagem, $assunto, $emailMensagem, $link);
             }
             $removidos = array_diff($participantes, $participantesRecebidos);
+            
+            $notificacaoMensagem = "Foi removido(a) da atividade " . $atividade->titulo . " que é coordenada pelo(a) porfessor(a) " . $coordenador->nome;
+            $assunto = "Foi removido(a) na atividade " . $atividade->titulo;
+            $emailMensagem = "<h3>Foi removido(a) na atividade " . $atividade->titulo . "</h3><p>A atividade é coordenada pelo(a) porfessor(a) " .
+                $coordenador->nome . "</p>";
+
             foreach ($removidos as $participanteId) {
                 $participante = AtividadeParticipantes::where('atividade_id', $id)->where('user_id', $participanteId);
                 $participante->delete();
-                $this->notificacaoEEmail(User::findOrFail($participanteId),
-                    "Foi removido(a) da atividade " . $atividade->titulo . " que é coordenada pelo(a) porfessor(a) " . $coordenador->nome,
-                    "Foi removido(a) na atividade" . $atividade->titulo,
-                    "<h3>Foi removido(a) na atividade " . $atividade->titulo . "</h3><p>A atividade é coordenada pelo(a) porfessor(a) " .
-                    $coordenador->nome . "</p>");
+                $this->notificacaoEEmail(User::findOrFail($participanteId), $notificacaoMensagem, $assunto, $emailMensagem, null);
             }
         }
         //patrimonios
@@ -275,13 +282,16 @@ class AtividadeControllerAPI extends Controller
             }
             $alteracoesFormatadasHtml .= "</ul>";
             $ids = AtividadeParticipantes::where('atividade_id', $id)->get()->pluck('user_id')->toArray();
+
+            $notificacaoMensagem = "As especificações da atividade " . $request->titulo . " foram alteradas, " . $alteracoesFormatadas;
+            $assunto = "A atividade " . $request->titulo . " foi alterada";
+            $emailMensagem = "<h3>As especificações da atividade " . $request->titulo . " foram alteradas</h3><p>A atividade 
+                é coordenada pelo(a) porfessor(a) " . $coordenador->nome . " e passou a ter as seguintes configurações: " .
+                $alteracoesFormatadasHtml . "</p>";
+            $link = 'atividade/' . $atividade->id;
+            
             foreach ($ids as $id) {
-                $this->notificacaoEEmail(User::findOrFail($id),
-                    "As especificações da atividade " . $request->titulo . " foram alteradas, " . $alteracoesFormatadas,
-                    "A atividade " . $request->titulo . " foi alterada",
-                    "<h3>As especificações da atividade " . $request->titulo . " foram alteradas</h3><p>A atividade 
-                    é coordenada pelo(a) porfessor(a) " . $coordenador->nome . " e passou a ter as seguintes configurações: " .
-                    $alteracoesFormatadasHtml . "</p>");
+                $this->notificacaoEEmail(User::findOrFail($id), $notificacaoMensagem, $assunto, $emailMensagem, $link);
             }
         }
 
@@ -373,7 +383,8 @@ class AtividadeControllerAPI extends Controller
                 'mensagem' => "Um aluno submeteu um novo testemunho na atividade " . $atividade->nome . ".",
                 'de' => "Aluno",
                 'data' => date("Y-m-d H:i:s"),
-                'nova' => '1'
+                'nova' => "1",
+                'link' => "atividade/" . $atividade->id
             ]);
             $notif->save();
         }
@@ -407,7 +418,8 @@ class AtividadeControllerAPI extends Controller
                 'mensagem' => "Um aluno alterou um testemunho na atividade " . $atividade->nome . ".",
                 'de' => "Aluno",
                 'data' => date("Y-m-d H:i:s"),
-                'nova' => '1'
+                'nova' => "1",
+                'link' => "atividade/" . $atividade->id
             ]);
             $notif->save();
         }
@@ -439,7 +451,8 @@ class AtividadeControllerAPI extends Controller
                 'mensagem' => "O seu testemunho na atividade " . $atividade->nome . " foi recusado.",
                 'de' => "Coordenador da atividade " . $atividade->coordenador,
                 'data' => date("Y-m-d H:i:s"),
-                'nova' => '1'
+                'nova' => "1",
+                'link' => "atividade/" . $atividade->id
             ]);
             $notif->save();
         }

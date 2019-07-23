@@ -22,6 +22,7 @@ use App\User;
 use DateTime;
 
 define('YOUR_SERVER_URL', 'http://h4a.local/');
+define('YOUR_SERVER_URL', 'http://history4all.test/');
 // Check "oauth_clients" table for next 2 values:
 define('CLIENT_ID', '2');
 define('CLIENT_SECRET', '9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
@@ -262,16 +263,19 @@ class UserControllerAPI extends Controller
             $escola = Escola::where('nome', $request->escola)->first();
 
             if ($escola->id != $user->escola_id) {
-                if (!$escola) {
-                    $this->notificacaoEEmail($user,
-                        "Foi removido(a) da escola " . $escola->nome . " estando de momento sem escola associada",
-                        "Ficou sem escola associada escola associada",
-                        "<h3>Foi removido(a) da sua escola no <a href='http://142.93.219.146/'>History4All</a></h3><p>Já não está na escola " . $escola->nome . ". De momento não tem escola associada</p>");
+                $link = $user == 'aluno' ? "alunos/escola" : "professores/gestor";
+                if (!$user->escola_id) {//inserido
+                    $notificacaoMensagem = "Foi inserido(a) na escola " . $escola->nome;
+                    $assunto = "Foi associado(a) à escola " . $escola->nome;
+                    $emailMensagem = "<h3>Foi inserido(a) da sua escola no <a href='http://142.93.219.146/'>History4All</a>" . 
+                        "</h3><p>Agora está na escola " . $escola->nome . ".</p>";
+                    $this->notificacaoEEmail($user, $notificacaoMensagem, $assunto, $emailMensagem, $link);
                 } else {
-                    $this->notificacaoEEmail($user,
-                        "Foi movido(a) para a escola " . $escola->nome,
-                        "Alteração de escola",
-                        "<h3>Foi movido(a) para a escola no <a href='http://142.93.219.146/'>History4All</a></h3><p>A sua escola passou a ser a " . $escola->nome . "</p>");
+                    $notificacaoMensagem = "Foi movido(a) para a escola " . $escola->nome;
+                    $assunto = "Foi movido(a) para outra escola";
+                    $emailMensagem = "<h3>Foi movido(a) para a escola no <a href='http://142.93.219.146/'>History4All</a>" . "
+                        </h3><p>A sua escola passou a ser a " . $escola->nome . "</p>";
+                    $this->notificacaoEEmail($user, $notificacaoMensagem, $assunto, $emailMensagem, $link);
                 }
                 $turmas = Turma::where('professor_id', $user->id)->get();
                 foreach ($turmas as $turma) {
@@ -307,14 +311,17 @@ class UserControllerAPI extends Controller
             ], 403);
         }
         if ($user->trashed()) {
-            $this->notificacaoEEmail($user, "A sua conta foi apagada", "A sua conta foi apagada",
-                "<h3>A sua conta no <a href='<ahttp://142.93.219.146/'>History4All</a> foi permanentemente apagada</h3>");
             Storage::disk('public')->delete('profiles/' . $user->foto);
             $user->forceDelete();
+            $assunto = "A sua conta foi apagada";
+            $emailMensagem = "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi apagada permantentemente</h3>";
+            Mail::to($user->email)->send(new MensagemEmail(User::findOrFail(Auth::id()), $assunto, $emailMensagem));
         } else {
-            $this->notificacaoEEmail($user, "A sua conta foi apagada", "A sua conta foi apagada",
-                "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi apagada</h3>");
             $user->delete();
+            $assunto = "A sua conta foi apagada";
+            $emailMensagem = "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi apagada temporátiamente, " . "
+                se deseja recurerá-la por favor contacte um dos administradores do site, para isso pode fazê-lo através da página inicial do History4All</h3>";
+            Mail::to($user->email)->send(new MensagemEmail(User::findOrFail(Auth::id()), $assunto, $emailMensagem));
         }
         return response()->json(null, 204);
     }
@@ -323,8 +330,9 @@ class UserControllerAPI extends Controller
     {
         $user = User::onlyTrashed()->find($id);
         $user->restore();
-        $this->notificacaoEEmail($user, "A sua conta foi restaurada", "A sua conta foi restaurada",
-            "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi restaurada</h3>");
+        $assunto = "A sua conta foi restaurada";
+        $emailMensagem = "<h3>A sua conta no <a href='http://142.93.219.146/'>History4All</a> foi restaurada</h3>";
+        Mail::to($user->email)->send(new MensagemEmail(User::findOrFail(Auth::id()), $assunto, $emailMensagem));
         return response()->json("user restored", 201);
     }
 
@@ -349,7 +357,8 @@ class UserControllerAPI extends Controller
             'mensagem' => $mensagem,
             'de' => "",
             'data' => date("Y-m-d H:i:s"),
-            'nova' => '1'
+            'nova' => '1',
+            'link' => null
         ]);
         $notificacao->save();
     }
@@ -357,7 +366,7 @@ class UserControllerAPI extends Controller
     public function notificacoes(Request $request)
     {
         return response()->json([
-            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data')->orderBy('data', 'desc')->get()
+            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data', 'link')->orderBy('data', 'desc')->get()
         ]);
     }
 
@@ -386,7 +395,8 @@ class UserControllerAPI extends Controller
                 'mensagem' => $request->mensagem,
                 'de' => $request->de,
                 'data' => date("Y-m-d H:i:s"),
-                'nova' => '1'
+                'nova' => '1',
+                'link' => $request->link
             ]);
             $notificacao->save();
         };
@@ -402,7 +412,7 @@ class UserControllerAPI extends Controller
         };
 
         return response()->json([
-            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data')->orderBy('data', 'desc')->get()
+            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data', 'link')->orderBy('data', 'desc')->get()
         ], 201);
     }
 

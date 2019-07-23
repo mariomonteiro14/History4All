@@ -70,6 +70,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->string('de');
             $table->dateTime('data');
             $table->boolean('nova');
+            $table->string('link')->nullable();
         });
 
         Schema::create('patrimonios', function (Blueprint $table) {

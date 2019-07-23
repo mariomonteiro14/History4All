@@ -57,7 +57,7 @@
 
 <script>
     export default {
-        props: ['tipo', 'users'],
+        props: ['atividadeTitulo', 'users', 'atividadeId'],
         data: function () {
             return {
                 mensagem: '',
@@ -76,7 +76,8 @@
                     'de': (this.tipo !== 'turma' ? 'coordenador da atividade: ' + this.tipo :
                         this.$store.state.user.tipo + ' ' + this.$store.state.user.nome),
                     'users': this.usersSelected,
-                    'mensagem': this.mensagem
+                    'mensagem': this.mensagem,
+                    'link': !this.atividadeId ? null : 'atividade/' + this.atividadeId
                 }).then(response => {
                     this.$socket.emit('nova_notificacao', response.data.data, this.usersSelected);
                     this.toastPopUp("success", "Notificação enviada com sucesso!");
@@ -113,8 +114,8 @@
                 return this.mensagem.length === 0 || this.usersSelected.length === 0;
             },
             getTitle() {
-                return this.tipo === 'turma' ? 'Notificação para todos os alunos da turma' :
-                    "Notificação para todos os alunos que estão com a atividade pendente";
+                return !this.atividadeId ? 'Notificação para todos os alunos da turma' :
+                    "Notificação para todos os alunos que estão a participar na atividade";
             },
         },
         watch:{

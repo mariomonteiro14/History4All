@@ -166,30 +166,35 @@ class EscolaControllerAPI extends Controller
             $turma->professor_id = null;
         }
 
-        if($request->has('alunos') && sizeof($request->alunos) > 0){
+        if($request->has('alunos') && sizeof($request->alunos) > 0 || count(User::where('turma_id', $turma->id)->get()) > 0){
             $alunosId = array_column($request->alunos, 'id');
+
+            $notificacaoMensagem = "Foi removido(a) da turma" . $turma->nome . " estando de momento sem turma associada";
+            $assunto = "Foi desassociado(a) da sua turma";
+            $emailMensagem = "<h3>Foi removido(a) da sua turma</h3><p>Já não está na turma " . $turma->nome . ". De momento não tem turma associada 
+                no <a href='http://142.93.219.146/'>History4All</a></p>";
+
             foreach (User::where('turma_id', $turma->id)->get() as $aluno){
                 if (!in_array($aluno->id, $alunosId)){//se foi removido
                     $aluno->turma_id = null;
                     $aluno->save();
-                    $this->notificacaoEEmail($aluno,
-                        "Foi removido(a) da turma" . $turma->nome . " estando de momento sem turma associada",
-                        "Ficou se turma associada",
-                        "<h3>Foi removido(a) da sua turma</h3><p>Já não está na turma " . $turma->nome . ". De momento não tem turma associada 
-                        no <a href='http://142.93.219.146/'>History4All</a></p>");
+                    $this->notificacaoEEmail($aluno, $notificacaoMensagem, $assunto, $emailMensagem, null);
                 }
             }
             $alunos = User::where('turma_id', $turma->id)->get()->pluck('id')->toArray();
+
+            $notificacaoMensagem = "Foi movido(a) para a turma " . $turma->nome . " que é lecionada pelo(a) professor(a) " . $professor->nome;
+            $assunto = "A sua turma foi alterada";
+            $emailMensagem = "<h3>Foi movido(a) para a turma</h3><p>A sua turma passou a ser a " . $turma->nome .
+                " que é lecionada pelo(a) professor(a) " . $professor->nome . "no <a href='http://142.93.219.146/'>History4All</a></p>";
+            $link = "alunos/escola";
+
             foreach ($request->alunos as $aluno){
                 if (!in_array($aluno['id'], $alunos)) {//se foi inserid
                     $aluno = User::findOrFail($aluno['id']);
                     $aluno->turma_id = $turma->id;
                     $aluno->save();
-                    $this->notificacaoEEmail($aluno,
-                        "Foi movido(a) para a turma " . $turma->nome . " que é lecionada pelo(a) professor(a) " . $professor->nome,
-                        "A sua turma foi alterada",
-                        "<h3>Foi movido(a) para a turma</h3><p>A sua turma passou a ser a " . $turma->nome .
-                        " que é lecionada pelo(a) professor(a) " . $professor->nome . "no <a href='http://142.93.219.146/'>History4All</a></p>");
+                    $this->notificacaoEEmail($aluno, $notificacaoMensagem, $assunto, $emailMensagem, $link);
                 }
             }
         }

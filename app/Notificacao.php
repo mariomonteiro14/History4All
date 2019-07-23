@@ -19,7 +19,7 @@ class Notificacao extends Model
     public $timestamps = false;
     protected $dates = ['data'];
     protected $fillable = [
-        'user_id', 'mensagem', 'de', 'data', 'nova'
+        'user_id', 'mensagem', 'de', 'data', 'nova', 'link'
     ];
 
     public function user(){

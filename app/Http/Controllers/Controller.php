@@ -16,7 +16,7 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function notificacaoEEmail($user, $notificacaoMensagem, $assunto, $emailMensagem){
+    public function notificacaoEEmail($user, $notificacaoMensagem, $assunto, $emailMensagem, $link){
         $de = User::findOrFail(Auth::id());
         $notificacao = new Notificacao();
         $notificacao->fill([
@@ -24,7 +24,8 @@ class Controller extends BaseController
             'mensagem' => $notificacaoMensagem,
             'de' => $de->tipo . " " . $de->nome,
             'data' => date("Y-m-d H:i:s"),
-            'nova' => '1'
+            'nova' => '1',
+            'link' => $link
         ]);
         $notificacao->save();
         Mail::to($user->email)->send(new MensagemEmail($de, $assunto, $emailMensagem));
