@@ -23,7 +23,6 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->integer('chat_id')->unsigned();
             $table->foreign('chat_id')->references('id')->on('chats')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->text('mensagem');
         });
         
@@ -33,13 +32,14 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->enum('distrito', ['Aveiro', 'Beja', 'Braga', 'Bragança', 'Castelo Branco', 'Coimbra', 'Évora', 'Faro',
                 'Guarda', 'Leiria', 'Lisboa', 'Portalegre', 'Porto', 'Santarém', 'Setúbal', 'Viana do Castelo',
                 'Vila Real', 'Viseu', 'Açores', 'Madeira']);
-            $table->foreign('chat_professores_id')->references('id')->on('chat')->onDelete('cascade');
+            $table->integer('chat_professores_id')->unsigned();
+            $table->foreign('chat_professores_id')->references('id')->on('chats')->onDelete('cascade');
         });
 
         Schema::create('turmas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome');
-            $table->bigInteger('professor_id')->unsigned()->nullable();;
+            $table->bigInteger('professor_id')->unsigned()->nullable();
             $table->integer('escola_id')->unsigned();
             $table->foreign('escola_id')->references('id')->on('escolas')->onDelete('cascade');
             $table->enum('ciclo', ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário']);
@@ -111,7 +111,6 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('atividade_id')->references('id')->on('atividades')->onDelete('cascade');
             $table->bigInteger('user_id')->unsigned();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->enum('estado', ['pendente', 'concluida']);
             $table->primary(['atividade_id', 'user_id']);
         });
 
@@ -136,6 +135,11 @@ class CreateUsersPatrimoniosTable extends Migration
         Schema::table('turmas', function (Blueprint $table) {
            // $table->bigInteger('professor_id')->unsigned();
             $table->foreign('professor_id')->references('id')->on('users')->onDelete('set null');
+        });
+
+        
+        Schema::table('chat_mensagens', function (Blueprint $table) {
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

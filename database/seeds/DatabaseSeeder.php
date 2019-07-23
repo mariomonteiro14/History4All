@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PatrimoniosSeeder::class);
         $this->call(PatrimonioImagesSeeder::class);
         $this->call(UsersSeeder::class);
-        $this->call(ChatProfessoresSeeder::class);
 
     }
 }

@@ -16,6 +16,7 @@ use App\Notificacao;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Carbon;
 
 class AtividadeControllerAPI extends Controller
 {
@@ -27,20 +28,18 @@ class AtividadeControllerAPI extends Controller
             if ($atividade->visibilidade == 'privado') {
                 if (!AtividadeParticipantes::where('atividade_id', $id)->where('user_id', Auth::id())->first()
                     && $atividade->coordenador != Auth::id()) {
-                    return abort(403, "Nao pode aceder a esta informaçao");
+                    return abort(403, "Não pode aceder a esta informaçao");
                 }
             }
 
             if ($atividade->coordenador()->escola_id != Auth::user()->escola_id) {
-                return abort(403, "Nao pode aceder a esta informaçao");
+                return abort(403, "Não pode aceder a esta informaçao");
             }
         }
 
         if (Auth::user()->tipo == 'aluno') {
             return response()->json([
-                'data' => new AtividadeResource($atividade),
-                'estado' => AtividadeParticipantes::where('atividade_id', $id)->where('user_id', Auth::user()->id)
-                    ->select('estado')->first()
+                'data' => new AtividadeResource($atividade)
             ]);
         }
 
@@ -54,7 +53,7 @@ class AtividadeControllerAPI extends Controller
     {
         return response()->json([
             'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
-                ->where('user_id', $id)->where('estado', 'pendente')->get())
+                ->where('user_id', $id)->whereNull('dataFinal')->orWhere('dataFinal', '>', Carbon::now()->toDateString())->/*distinct()->*/get())
         ]);
     }
 
@@ -62,7 +61,7 @@ class AtividadeControllerAPI extends Controller
     {
         return response()->json([
             'data' => ShortAtividadeResource::collection(Atividade::join('atividade_participantes', 'atividade_id', 'id')
-                ->where('user_id', $id)->where('estado', 'concluida')->get())
+                ->where('user_id', $id)->where('dataFinal', '<=', Carbon::now()->toDateString())/*->distinct()*/->get())
         ]);
     }
 
@@ -142,8 +141,7 @@ class AtividadeControllerAPI extends Controller
                 $atividadeParticipante = new AtividadeParticipantes();
                 $atividadeParticipante->fill([
                     'atividade_id' => $atividade->id,
-                    'user_id' => $participante['id'],
-                    'estado' => 'pendente'
+                    'user_id' => $participante['id']
                 ]);
                 $atividadeParticipante->save();
                 $this->notificacaoEEmail(User::findOrFail($participante['id']),
@@ -211,7 +209,6 @@ class AtividadeControllerAPI extends Controller
                 $atividadeParticipante->fill([
                     'atividade_id' => $id,
                     'user_id' => $participanteId,
-                    'estado' => 'pendente'
                 ]);
                 $atividadeParticipante->save();
                 $this->notificacaoEEmail(User::findOrFail($participanteId),
@@ -223,14 +220,12 @@ class AtividadeControllerAPI extends Controller
             $removidos = array_diff($participantes, $participantesRecebidos);
             foreach ($removidos as $participanteId) {
                 $participante = AtividadeParticipantes::where('atividade_id', $id)->where('user_id', $participanteId);
-                if ($participante->first()->estado == 'pendente') {
-                    $participante->delete();
-                    $this->notificacaoEEmail(User::findOrFail($participanteId),
-                        "Foi removido(a) da atividade " . $atividade->titulo . " que é coordenada pelo(a) porfessor(a) " . $coordenador->nome,
-                        "Foi removido(a) na atividade" . $atividade->titulo,
-                        "<h3>Foi removido(a) na atividade " . $atividade->titulo . "</h3><p>A atividade é coordenada pelo(a) porfessor(a) " .
-                        $coordenador->nome . "</p>");
-                }
+                $participante->delete();
+                $this->notificacaoEEmail(User::findOrFail($participanteId),
+                    "Foi removido(a) da atividade " . $atividade->titulo . " que é coordenada pelo(a) porfessor(a) " . $coordenador->nome,
+                    "Foi removido(a) na atividade" . $atividade->titulo,
+                    "<h3>Foi removido(a) na atividade " . $atividade->titulo . "</h3><p>A atividade é coordenada pelo(a) porfessor(a) " .
+                    $coordenador->nome . "</p>");
             }
         }
         //patrimonios
@@ -328,30 +323,6 @@ class AtividadeControllerAPI extends Controller
         $mensagem->save();
 
         return response()->json(new ChatMensagensResource($mensagem), 201);
-    }
-
-    public function storeParticipante(Request $request, $id)
-    {
-        $request->validate([
-            'user_id' => 'required',
-        ]);
-
-        User::findOrFail($request->user_id);
-        Atividade::findOrFail($id);
-
-        if (Auth::id() != $request->user_id) {
-            abort(403, 'Unauthorized action.');
-        }
-
-        $participante = new AtividadeParticipantes();
-        $participante->fill([
-            'atividade_id' => $id,
-            'user_id' => $request->user_id,
-            'estado' => 'pendente'
-        ]);
-        $participante->save();
-
-        return response()->json($participante, 201);
     }
 
     public function getTestemunhos(Request $request, $id)

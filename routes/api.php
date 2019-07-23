@@ -87,7 +87,6 @@ Route::group(['middleware' => 'auth:api'], function() {
     });
 
     Route::group(['middleware' => 'aluno'], function() {
-        Route::post('atividades/{id}/participar', 'AtividadeControllerAPI@storeParticipante');
         Route::get('me/escola/turma', 'EscolaControllerAPI@myTurma');
     });
 

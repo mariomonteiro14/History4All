@@ -270,7 +270,7 @@
                                                     </v-list>
 
                                                 </v-flex>
-                                                <v-btn v-if="estado === 'coordenador'" color="orange"
+                                                <v-btn v-if="atividade.coordenador.id === $store.state.user.id" color="orange"
                                                        round class="white--text" @click="enviarNotificacao">
                                                     Notificar &nbsp
                                                     <v-icon small>send</v-icon>
@@ -557,7 +557,6 @@
         data: function () {
             return {
                 atividade: {},
-                estado: '',
                 mensagensDoChat: [],
                 offset: 4,
                 mensagemAEnviar: '',
@@ -583,17 +582,7 @@
                 axios.get('/api/atividades/' + this.id)
                     .then(response => {
                         this.atividade = response.data.data;
-                        if (response.data.estado && response.data.estado.estado) {
-                            this.estado = response.data.estado.estado;
-                        } else if (response.data.estado !== undefined) {
-                            this.estado = null;
-                        } else {
-                            this.estado = 'outros';//professores e admins
-                        }
-                        if (this.atividade.coordenador.id === this.$store.state.user.id) {
-                            this.estado = 'coordenador';
-                        }
-                        if (this.atividade.chat && this.estado) {
+                        if (this.atividade.chat) {
                             let mensagens = this.atividade.chat.chat_mensagens;
                             this.mensagensDoChat = mensagens.slice(mensagens.length - this.offset);
                             this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
@@ -615,8 +604,7 @@
             },
             participar() {
                 axios.post('/api/atividades/' + this.id + '/participar', {'user_id': this.$store.state.user.id}).then(response => {
-                    this.estado = 'pendente';
-                    if (this.atividade.chat && this.estado) {
+                    if (this.atividade.chat) {
                         this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
                     }
                     this.toastPopUp("success", "A atividade encontra-se na sua lista de atividades pendentes!");
@@ -825,7 +813,7 @@
         },
         sockets: {
             connect() {
-                if (this.atividade.chat && this.estado) {
+                if (this.atividade.chat) {
                     this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
                 }
             },
@@ -836,7 +824,7 @@
             }
         },
         destroyed: function () {
-            if (this.atividade.chat && this.estado && this.$store.state.user) {
+            if (this.atividade.chat && this.$store.state.user) {
                 this.$socket.emit('user_exit_chat', this.$store.state.user, this.atividade.chat.id);
             }
         },

@@ -39,9 +39,12 @@ class EscolasSeeder extends Seeder
 
     private function addEscola(Faker\Generator $faker, $nome, $distrito)
     {
+        $chatId = DB::table('chats')->insertGetId(['privado' => 1, 'assunto' => 'Chat dos professores da ' . $nome]);
+        $this->command->line($chatId);
         $item = [
             'nome' => $nome,
             'distrito' => $distrito,
+            'chat_professores_id' => $chatId
             ];
         $this->contadorGlobal ++;
         DB::table('escolas')->insert($item);

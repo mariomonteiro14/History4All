@@ -18,7 +18,7 @@ class AtividadeParticipantes extends Model
 
     public $timestamps = false;
     protected $fillable = [
-        'atividade_id', 'user_id', 'estado'
+        'atividade_id', 'user_id'
     ];
 
     public function atividade(){
