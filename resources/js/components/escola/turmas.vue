@@ -132,7 +132,8 @@
         <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual"
                             v-on:getEscolas="atualizarDados"></criar-editar-turma>
         <criar-aluno ref="addAluno" :user="userForm" v-on:getUsers="atualizarDados"></criar-aluno>
-        <enviar-notificacao ref="enviarNotificacaoModal" :users="turmaAtual.alunos"></enviar-notificacao>
+        <enviar-notificacao ref="enviarNotificacaoModal" :atividadeTitulo="null" :atividadeId="null"
+            :users="turmaAtual.alunos"></enviar-notificacao>
     </div>
 </template>
 

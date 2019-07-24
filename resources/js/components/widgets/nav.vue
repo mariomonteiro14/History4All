@@ -71,7 +71,7 @@
             <div v-else>
                 <v-menu offset-y origin="center left" nudge-left class="dropdown elelvation-1" :nudge-bottom="14"
                         transition="scale-transition" data-toggle="dropdown">
-                    <v-btn icon flat slot="activator" @click="notificacoesLidas">
+                    <v-btn icon flat slot="activator">
                         <v-badge color="red" overlap>
                             <span slot="badge">{{novasNotificacoes}}</span>
                             <v-icon medium>notifications</v-icon>
@@ -81,7 +81,8 @@
                 <div class="dropdown-menu dropdown-menu-right"
                      aria-labelledby="dropdownMenuLink"
                      style="max-height:400px; max-width:75vh;">
-                    <div style="width: 70vh">
+                    <div style="width: 70vh;">
+                        <v-btn flat @click="notificacoesLidas" color="blue">Marcar todas como lidas</v-btn>
                         <v-data-table v-show="this.$store.state.user"
                                       :items="notificacoes"
                                       class="elevation-1"
@@ -92,25 +93,20 @@
                             <template slot="no-data">
                                 Não tem nenhuma notificação
                             </template>
-                            <template v-slot:items="props">
-                                <tr>
-                                    <td>
-                                        <v-layout>
-                                            <v-flex sm8>
-                                                <span>{{props.item.de}}</span>
-                                            </v-flex>
-                                            <v-spacer></v-spacer>
-                                            <v-flex sm3>
-                                                {{formatarData(props.item.data)}}
-                                            </v-flex>
-
-                                        </v-layout>
-
+                            <template v-slot:items="props" style="width: 100%; display: inline-block; able-layout: fixed;">
+                                <tr :style="[props.item.nova === 1 ? {'backgroundColor' : 'DarkSalmon'} : {}]">
+                                    <td @click="pushNotificacaoLink(props.item.link)" style="width: 60vh; overflow: hidden; display: inline; white-space: normal;">
+                                        <span>{{props.item.de}}</span>
+                                        <v-spacer></v-spacer>
                                         <strong>
                                             {{props.item.mensagem}}
                                         </strong>
                                         <br>
                                         <br>
+                                    </td>
+                                    <td style="width: 10vh; overflow: hidden; white-space: nowrap;">
+                                        <v-icon v-if="props.item.link">link</v-icon>
+                                        <!--<v-icon v-else>link_off</v-icon>-->
                                     </td>
                                 </tr>
                             </template>
@@ -270,6 +266,11 @@
                     this.toastErrorApi(error);
                     this.isLoading = false;
                 });
+            },
+            pushNotificacaoLink(link){
+                if (link){
+                    '/' + link === this.$route.path ? this.toastPopUp('show', 'Já se encontra na página') : this.$router.push(link);
+                }
             }
         },
         mounted() {
