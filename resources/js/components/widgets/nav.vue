@@ -108,6 +108,10 @@
                                         <v-icon v-if="props.item.link">link</v-icon>
                                         <!--<v-icon v-else>link_off</v-icon>-->
                                     </td>
+                                    <div>
+                                        <v-icon class="material-icons" v-if="props.item.nova === 1" @click="marcarNotificacaoLida(props.item.id)">check_circle</v-icon>
+                                        <v-icon v-else @click="marcarNotificacaoNaoLida(props.item.id)">email</v-icon>
+                                    </div>
                                 </tr>
                             </template>
                         </v-data-table>
@@ -271,7 +275,27 @@
                 if (link){
                     '/' + link === this.$route.path ? this.toastPopUp('show', 'Já se encontra na página') : this.$router.push(link);
                 }
-            }
+            },
+            marcarNotificacaoNaoLida(notificacaoId){
+                this.novasNotificacoes++;
+                axios.put('/api/me/notificacoes/' + notificacaoId + '/lida').then(response => {
+                    var index = this.notificacoes.findIndex(element => element.id === notificacaoId);
+                    this.notificacoes[index].nova = 1;
+                }).catch(error => {
+                    this.toastErrorApi(error);
+                    this.novasNotificacoes = this.notificacoes.length;
+                });
+            },
+            marcarNotificacaoLida(notificacaoId){
+                this.novasNotificacoes--;
+                axios.put('/api/me/notificacoes/' + notificacaoId + '/naoLida').then(response => {
+                    var index = this.notificacoes.findIndex(element => element.id === notificacaoId);
+                    this.notificacoes[index].nova = 0;
+                }).catch(error => {
+                    this.toastErrorApi(error);
+                    this.novasNotificacoes = this.notificacoes.length;
+                });
+            },
         },
         mounted() {
             if (this.$store.state.user) {

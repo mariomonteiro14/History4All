@@ -379,7 +379,7 @@ class UserControllerAPI extends Controller
         ]);
 
         if (!$request->has('users') || sizeof($request->get('users')) < 1) {
-            abort(403, 'Unauthorized action.');
+            abort(403, 'Não tem as permissoes necessárias');
         }
 
         $userIds = array_column($request->get('users'), 'id');
@@ -414,6 +414,28 @@ class UserControllerAPI extends Controller
         return response()->json([
             'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data', 'link')->orderBy('data', 'desc')->get()
         ], 201);
+    }
+
+    public function updateNotificacaoNaoLida(Request $request, $id)
+    {
+        $notificacao = Notificacao::findOrFail($id);
+        if ($notificacao->user_id != Auth::id()){
+            abort(403, 'A notificação que está a tentar alterar não é a sua');
+        }
+        $notificacao->nova = 0;
+        $notificacao->save();
+        return response()->json(null, 200);
+    }
+    
+    public function updateNotificacaoLida(Request $request, $id)
+    {
+        $notificacao = Notificacao::findOrFail($id);
+        if ($notificacao->user_id != Auth::id()){
+            abort(403, 'A notificação que está a tentar alterar não é a sua');
+        }
+        $notificacao->nova = 1;
+        $notificacao->save();
+        return response()->json(null, 200);
     }
 
     public function resetPassword(Request $request)
