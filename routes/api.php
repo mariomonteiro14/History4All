@@ -22,6 +22,23 @@ Route::post('sendEmail/history4all', 'UserControllerAPI@contactHistory4all');
 Route::post('sendEmail/resetPassword', 'UserControllerAPI@resetPassword');
 Route::put('register/novoEmail/{id}', 'UserControllerAPI@novoEmail');
 
+///////////////FORUMS///////////////////////////////////////
+Route::get('forums', 'ForumControllerAPI@forums');
+Route::post('forums', 'ForumControllerAPI@storeForum');
+//Route::put('forums/{id}', 'ForumControllerAPI@updateForum');
+Route::delete('forums/{id}', 'ForumControllerAPI@destroyForum');
+Route::get('forums/{id}/comentarios', 'ForumControllerAPI@comments');
+Route::post('forums/{id}/comentarios', 'ForumControllerAPI@storeComment');
+//Route::put('comentarios/{id}', 'ForumControllerAPI@updateComment');
+Route::put('comentarios/{id}/incrementLike', 'ForumControllerAPI@incrementLike');
+Route::put('comentarios/{id}/decrementLike', 'ForumControllerAPI@decrementLike');
+Route::put('comentarios/{id}/incrementDislike', 'ForumControllerAPI@incrementDislike');
+Route::put('comentarios/{id}/decrementDislike', 'ForumControllerAPI@decrementDislike');
+Route::destroy('comentarios/{id}', 'ForumControllerAPI@destroyComment');
+///Apenas se o user nao estiver autenticado
+Route::post('forums/generateAccessCode', 'ForumControllerAPI@generateAccessCode');
+//////////////////////////////////////////////////////////////////////////////////////////////
+///
 Route::group(['middleware' => 'auth:api'], function() {
     Route::get('logout', 'UserControllerAPI@logout');
     Route::get('users/me', 'UserControllerAPI@myProfile');

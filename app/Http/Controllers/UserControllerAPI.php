@@ -22,7 +22,7 @@ use App\User;
 use DateTime;
 
 define('YOUR_SERVER_URL', 'http://h4a.local/');
-define('YOUR_SERVER_URL', 'http://history4all.test/');
+//define('YOUR_SERVER_URL', 'http://history4all.test/');
 // Check "oauth_clients" table for next 2 values:
 define('CLIENT_ID', '2');
 define('CLIENT_SECRET', '9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
@@ -267,7 +267,7 @@ class UserControllerAPI extends Controller
                 if (!$user->escola_id) {//inserido
                     $notificacaoMensagem = "Foi inserido(a) na escola " . $escola->nome;
                     $assunto = "Foi associado(a) à escola " . $escola->nome;
-                    $emailMensagem = "<h3>Foi inserido(a) da sua escola no <a href='http://142.93.219.146/'>History4All</a>" . 
+                    $emailMensagem = "<h3>Foi inserido(a) da sua escola no <a href='http://142.93.219.146/'>History4All</a>" .
                         "</h3><p>Agora está na escola " . $escola->nome . ".</p>";
                     $this->notificacaoEEmail($user, $notificacaoMensagem, $assunto, $emailMensagem, $link);
                 } else {

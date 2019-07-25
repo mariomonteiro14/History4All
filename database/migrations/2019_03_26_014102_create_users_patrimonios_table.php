@@ -25,7 +25,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->bigInteger('user_id')->unsigned();
             $table->text('mensagem');
         });
-        
+
         Schema::create('escolas', function (Blueprint $table) {
             $table->increments('id');
             $table->string('nome')->unique();
@@ -138,10 +138,47 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('professor_id')->references('id')->on('users')->onDelete('set null');
         });
 
-        
+
         Schema::table('chat_mensagens', function (Blueprint $table) {
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
+
+        Schema::create('forums', function (Blueprint $table) {
+            $table->increments('id');
+            $table->longText('assunto');
+            $table->string('user_email');
+            $table->boolean('show_email');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('comentarios', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('forum_id')->unsigned();
+            $table->foreign('forum_id')->references('id')->on('forums')->onDelete('cascade');
+            $table->longText('comentario');
+            $table->string('user_email')->nullable();
+            $table->integer('likes')->default(0);
+            $table->integer('dislikes')->default(0);
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('forum_patrimonios', function (Blueprint $table) {
+            $table->integer('forum_id')->unsigned();
+            $table->foreign('forum_id')->references('id')->on('forum')->onDelete('cascade');
+            $table->integer('patrimonio_id')->unsigned();
+            $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');
+            $table->primary(['atividade_id', 'patrimonio_id']);
+        });
+        /*
+        Schema::create('historico_gerenciador_codigos', function (Blueprint $table) {
+            $table->enum('tipo', ['forum', 'comentario']);
+            $table->integer('forum_coment_id');
+            $table->integer('codigo');
+            $table->date('data_expira');
+        });
+        */
     }
 
     /**
