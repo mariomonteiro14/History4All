@@ -56,7 +56,7 @@
                 </b-dropdown-item>
             </b-dropdown>
             <v-btn v-if="this.$store.state.user && $store.state.user.tipo === 'aluno'"
-            flat to="/alunos/escola">
+                   flat to="/alunos/escola">
                 Minha Escola | Turma
             </v-btn>
 
@@ -70,7 +70,8 @@
             </v-toolbar-items>
             <div v-else>
                 <v-menu offset-y origin="center left" nudge-left class="dropdown elelvation-1" :nudge-bottom="14"
-                        transition="scale-transition" data-toggle="dropdown">
+                        transition="scale-transition" data-toggle="dropdown"
+                        data-backdrop="static">
                     <v-btn icon flat slot="activator">
                         <v-badge color="red" overlap>
                             <span slot="badge">{{novasNotificacoes}}</span>
@@ -79,38 +80,63 @@
                     </v-btn>
                 </v-menu>
                 <div class="dropdown-menu dropdown-menu-right"
-                     aria-labelledby="dropdownMenuLink"
+                     id="dropdownNotificacoes"
+                     aria-labelledby="dropdownNotificacoes"
                      style="max-height:400px; max-width:75vh;">
                     <div style="width: 70vh;">
-                        <v-btn flat @click="notificacoesLidas" color="blue">Marcar todas como lidas</v-btn>
+                        <v-btn flat v-if="novasNotificacoes > 0" @click="notificacoesLidas" color="blue">Marcar todas
+                            como lidas
+                        </v-btn>
                         <v-data-table v-show="this.$store.state.user"
                                       :items="notificacoes"
                                       class="elevation-1"
                                       hide-actions
                                       hide-headers disable-initial-sort
-                                      style="max-height:400px; max-width:69vh; overflow-y:auto"
+                                      style="max-height:400px; max-width:70vh; overflow-y:auto"
+
                         >
                             <template slot="no-data">
                                 Não tem nenhuma notificação
                             </template>
-                            <template v-slot:items="props" style="width: 100%; display: inline-block; able-layout: fixed;">
+                            <template v-slot:items="props"
+                                      style="width: 100%; display: inline-block; able-layout: fixed;">
                                 <tr :style="[props.item.nova === 1 ? {'backgroundColor' : 'DarkSalmon'} : {}]">
-                                    <td @click="pushNotificacaoLink(props.item.link)" style="width: 60vh; overflow: hidden; display: inline; white-space: normal;">
+                                    <td style=" overflow: hidden; display: inline; white-space: normal;" >
                                         <span>{{props.item.de}}</span>
                                         <v-spacer></v-spacer>
-                                        <strong>
-                                            {{props.item.mensagem}}
-                                        </strong>
-                                        <br>
-                                        <br>
+                                        <div style="padding-left: 20px">
+                                            <strong>
+                                                {{props.item.mensagem}}
+                                            </strong>
+                                        </div>
                                     </td>
-                                    <td style="width: 10vh; overflow: hidden; white-space: nowrap;">
-                                        <v-icon v-if="props.item.link">link</v-icon>
+                                    <td style="width: 1vh; overflow: hidden; white-space: nowrap;">
+                                        <v-tooltip bottom v-if="props.item.link">
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn icon flat @click="pushNotificacaoLink(props.item.link)">
+                                                    <v-icon v-on="on" @click="pushNotificacaoLink(props.item.link)">
+                                                        link
+                                                    </v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>hiperligação para {{props.item.link}}</span>
+                                        </v-tooltip>
                                         <!--<v-icon v-else>link_off</v-icon>-->
                                     </td>
                                     <div>
-                                        <v-icon class="material-icons" v-if="props.item.nova === 1" @click="marcarNotificacaoLida(props.item.id)">check_circle</v-icon>
-                                        <v-icon v-else @click="marcarNotificacaoNaoLida(props.item.id)">email</v-icon>
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on }">
+                                                <v-icon v-on="on" class="material-icons" v-if="props.item.nova === 1"
+                                                        @click="marcarNotificacaoLida(props.item)">&#9711
+                                                </v-icon>
+                                                <v-icon v-else v-on="on" @click="marcarNotificacaoNaoLida(props.item)">
+                                                    check_circle
+                                                </v-icon>
+                                            </template>
+                                            <span v-if="props.item.nova === 1">marcar como lida</span>
+                                            <span v-else>marcar como não lida</span>
+                                        </v-tooltip>
+
                                     </div>
                                 </tr>
                             </template>
@@ -176,6 +202,7 @@
     </div>
 </template>
 <script>
+
     import login from './login.vue';
     import BContainer from "bootstrap-vue/src/components/layout/container";
 
@@ -271,29 +298,31 @@
                     this.isLoading = false;
                 });
             },
-            pushNotificacaoLink(link){
-                if (link){
+            pushNotificacaoLink(link) {
+                if (link) {
                     '/' + link === this.$route.path ? this.toastPopUp('show', 'Já se encontra na página') : this.$router.push(link);
                 }
             },
-            marcarNotificacaoNaoLida(notificacaoId){
-                this.novasNotificacoes++;
-                axios.put('/api/me/notificacoes/' + notificacaoId + '/lida').then(response => {
-                    var index = this.notificacoes.findIndex(element => element.id === notificacaoId);
-                    this.notificacoes[index].nova = 1;
+            //colocar notificaçao como lida
+            marcarNotificacaoLida(notificacao) {
+                this.novasNotificacoes--;
+                notificacao.nova = 0;
+                axios.put('/api/me/notificacoes/' + notificacao.id + '/lida').then(response => {
                 }).catch(error => {
                     this.toastErrorApi(error);
-                    this.novasNotificacoes = this.notificacoes.length;
+                    this.novasNotificacoes++;
+                    notificacao.nova = 1;
                 });
             },
-            marcarNotificacaoLida(notificacaoId){
-                this.novasNotificacoes--;
-                axios.put('/api/me/notificacoes/' + notificacaoId + '/naoLida').then(response => {
-                    var index = this.notificacoes.findIndex(element => element.id === notificacaoId);
-                    this.notificacoes[index].nova = 0;
+            //colocar notificaçao como nao lida
+            marcarNotificacaoNaoLida(notificacao) {
+                this.novasNotificacoes++;
+                notificacao.nova = 1;
+                axios.put('/api/me/notificacoes/' + notificacao.id + '/naolida').then(response => {
                 }).catch(error => {
                     this.toastErrorApi(error);
-                    this.novasNotificacoes = this.notificacoes.length;
+                    this.novasNotificacoes--;
+                    notificacao.nova = 0;
                 });
             },
         },
@@ -301,6 +330,9 @@
             if (this.$store.state.user) {
                 this.getNotificacoes();
             }
+            $('#dropdownNotificacoes').on('click', function (event) {
+                event.stopPropagation();
+            });
         },
         sockets: {
             novaNotificacao(mensagem) {

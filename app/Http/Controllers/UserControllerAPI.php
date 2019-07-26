@@ -416,24 +416,25 @@ class UserControllerAPI extends Controller
         ], 201);
     }
 
-    public function updateNotificacaoNaoLida(Request $request, $id)
-    {
-        $notificacao = Notificacao::findOrFail($id);
-        if ($notificacao->user_id != Auth::id()){
-            abort(403, 'A notificação que está a tentar alterar não é a sua');
-        }
-        $notificacao->nova = 0;
-        $notificacao->save();
-        return response()->json(null, 200);
-    }
-    
-    public function updateNotificacaoLida(Request $request, $id)
+    //colocar notificaçao como nao lida
+    public function updateNotificacaoNaoLida($id, Request $request)
     {
         $notificacao = Notificacao::findOrFail($id);
         if ($notificacao->user_id != Auth::id()){
             abort(403, 'A notificação que está a tentar alterar não é a sua');
         }
         $notificacao->nova = 1;
+        $notificacao->save();
+        return response()->json(null, 200);
+    }
+    //colocar notificaçao como lida
+    public function updateNotificacaoLida($id, Request $request)
+    {
+        $notificacao = Notificacao::findOrFail($id);
+        if ($notificacao->user_id != Auth::id()){
+            abort(403, 'A notificação que está a tentar alterar não é a sua');
+        }
+        $notificacao->nova = 0;
         $notificacao->save();
         return response()->json(null, 200);
     }

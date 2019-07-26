@@ -34,7 +34,7 @@ Route::put('comentarios/{id}/incrementLike', 'ForumControllerAPI@incrementLike')
 Route::put('comentarios/{id}/decrementLike', 'ForumControllerAPI@decrementLike');
 Route::put('comentarios/{id}/incrementDislike', 'ForumControllerAPI@incrementDislike');
 Route::put('comentarios/{id}/decrementDislike', 'ForumControllerAPI@decrementDislike');
-Route::destroy('comentarios/{id}', 'ForumControllerAPI@destroyComment');
+Route::delete('comentarios/{id}', 'ForumControllerAPI@destroyComment');
 ///Apenas se o user nao estiver autenticado
 Route::post('forums/generateAccessCode', 'ForumControllerAPI@generateAccessCode');
 //////////////////////////////////////////////////////////////////////////////////////////////
@@ -52,6 +52,8 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::post('chat', 'AtividadeControllerAPI@storeChatMensagem');
     Route::get('me/notificacoes', 'UserControllerAPI@notificacoes');
     Route::put('me/notificacoes', 'UserControllerAPI@updateNotificacoes');
+    Route::put('me/notificacoes/{id}/lida', 'UserControllerAPI@updateNotificacaoLida');
+    Route::put('me/notificacoes/{id}/naolida', 'UserControllerAPI@updateNotificacaoNaoLida');
 
     Route::get('atividade/{id}/testemunhos', 'AtividadeControllerAPI@getTestemunhos');
     Route::post('atividade/{id}/testemunho', 'AtividadeControllerAPI@novoTestemunho');
