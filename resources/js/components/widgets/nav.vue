@@ -101,8 +101,8 @@
                             <template v-slot:items="props"
                                       style="width: 100%; display: inline-block; able-layout: fixed;">
                                 <tr :style="[props.item.nova === 1 ? {'backgroundColor' : 'DarkSalmon'} : {}]">
-                                    <td style=" overflow: hidden; display: inline; white-space: normal;" >
-                                        <span>{{props.item.de}}</span>
+                                    <td style=" overflow: hidden; display: inline; white-space: normal;">
+                                        <span>{{props.item.de}} - {{formatarData(props.item.data)}}</span>
                                         <v-spacer></v-spacer>
                                         <div style="padding-left: 20px">
                                             <strong>
@@ -110,10 +110,30 @@
                                             </strong>
                                         </div>
                                     </td>
-                                    <td style="width: 1vh; overflow: hidden; white-space: nowrap;">
+                                    <td class="text-xs-center">
+                                        <v-tooltip bottom>
+                                            <template v-slot:activator="{ on }">
+                                                <v-icon v-on="on" class="material-icons"
+                                                        v-if="props.item.nova === 1"
+                                                        size="21px" @click="marcarNotificacaoLida(props.item)">
+                                                    &#9711
+                                                </v-icon>
+                                                <v-icon v-else v-on="on"
+                                                        @click="marcarNotificacaoNaoLida(props.item)"
+                                                        size="25px">
+                                                    check_circle
+                                                </v-icon>
+                                            </template>
+                                            <span v-if="props.item.nova === 1">marcar como lida</span>
+                                            <span v-else>marcar como não lida</span>
+                                        </v-tooltip>
+                                        <v-spacer></v-spacer>
+                                        <v-spacer></v-spacer>
+
                                         <v-tooltip bottom v-if="props.item.link">
                                             <template v-slot:activator="{ on }">
-                                                <v-btn icon flat @click="pushNotificacaoLink(props.item.link)">
+                                                <v-btn small icon flat
+                                                       @click="pushNotificacaoLink(props.item.link)">
                                                     <v-icon v-on="on" @click="pushNotificacaoLink(props.item.link)">
                                                         link
                                                     </v-icon>
@@ -121,23 +141,9 @@
                                             </template>
                                             <span>hiperligação para {{props.item.link}}</span>
                                         </v-tooltip>
-                                        <!--<v-icon v-else>link_off</v-icon>-->
-                                    </td>
-                                    <div>
-                                        <v-tooltip bottom>
-                                            <template v-slot:activator="{ on }">
-                                                <v-icon v-on="on" class="material-icons" v-if="props.item.nova === 1"
-                                                        @click="marcarNotificacaoLida(props.item)">&#9711
-                                                </v-icon>
-                                                <v-icon v-else v-on="on" @click="marcarNotificacaoNaoLida(props.item)">
-                                                    check_circle
-                                                </v-icon>
-                                            </template>
-                                            <span v-if="props.item.nova === 1">marcar como lida</span>
-                                            <span v-else>marcar como não lida</span>
-                                        </v-tooltip>
 
-                                    </div>
+                                    </td>
+
                                 </tr>
                             </template>
                         </v-data-table>
