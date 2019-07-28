@@ -139,7 +139,7 @@ class AtividadeControllerAPI extends Controller
 
             $notificacaoMensagem = "Foi inserido(a) na atividade " . $atividade->titulo . " que está a ser coordenada pelo(a) porfessor(a) " . $coordenador->nome;
             $assunto = "Foi inserido(a) na atividade" . $atividade->titulo;
-            $emailMensagem = "<h3>Foi inserido(a) na atividade" . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " . 
+            $emailMensagem = "<h3>Foi inserido(a) na atividade" . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " .
                 $coordenador->nome . "</p><p>A atividade consiste em: " . $atividade->descricao . "</p>";
             $link = 'atividade/' . $atividade->id;
 
@@ -209,7 +209,7 @@ class AtividadeControllerAPI extends Controller
 
             $notificacaoMensagem = "Foi inserido(a) na atividade " . $atividade->titulo . " que está a ser coordenada pelo(a) porfessor(a) " . $coordenador->nome;
             $assunto = "Foi inserido(a) na atividade" . $atividade->titulo;
-            $emailMensagem = "<h3>Foi inserido(a) na atividade" . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " . 
+            $emailMensagem = "<h3>Foi inserido(a) na atividade" . $atividade->titulo . "</h3><p>A atividade está a ser coordenada pelo(a) porfessor(a) " .
                 $coordenador->nome . "</p><p>A atividade consiste em: " . $atividade->descricao . "</p>";
             $link = 'atividade/' . $atividade->id;
 
@@ -223,7 +223,7 @@ class AtividadeControllerAPI extends Controller
                 $this->notificacaoEEmail(User::findOrFail($participanteId), $notificacaoMensagem, $assunto, $emailMensagem, $link);
             }
             $removidos = array_diff($participantes, $participantesRecebidos);
-            
+
             $notificacaoMensagem = "Foi removido(a) da atividade " . $atividade->titulo . " que é coordenada pelo(a) porfessor(a) " . $coordenador->nome;
             $assunto = "Foi removido(a) na atividade " . $atividade->titulo;
             $emailMensagem = "<h3>Foi removido(a) na atividade " . $atividade->titulo . "</h3><p>A atividade é coordenada pelo(a) porfessor(a) " .
@@ -289,7 +289,7 @@ class AtividadeControllerAPI extends Controller
                 é coordenada pelo(a) porfessor(a) " . $coordenador->nome . " e passou a ter as seguintes configurações: " .
                 $alteracoesFormatadasHtml . "</p>";
             $link = 'atividade/' . $atividade->id;
-            
+
             foreach ($ids as $id) {
                 $this->notificacaoEEmail(User::findOrFail($id), $notificacaoMensagem, $assunto, $emailMensagem, $link);
             }
@@ -380,7 +380,7 @@ class AtividadeControllerAPI extends Controller
             $notif = new Notificacao();
             $notif->fill([
                 'user_id' => $atividade->coordenador,
-                'mensagem' => "Um aluno submeteu um novo testemunho na atividade " . $atividade->nome . ".",
+                'mensagem' => "Um aluno submeteu um novo testemunho na atividade " . $atividade->titulo . ".",
                 'de' => "Aluno",
                 'data' => date("Y-m-d H:i:s"),
                 'nova' => "1",
@@ -405,25 +405,32 @@ class AtividadeControllerAPI extends Controller
             abort(403, "Nao tem permissoes");
         }
 
+        $testemunho = $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)->first();
+        $testemunho->texto = $request->texto;
+        $testemunho->rate = $request->rate;
+
         if ($atividade->coordenador == Auth::id()) {
             $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
                 ->update(['texto' => $request->texto, 'rate' => $request->rate, 'confirmado' => 1]);
         } else {
+            $confirmado = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)->pluck('confirmado');
             $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
                 ->update(['texto' => $request->texto, 'rate' => $request->rate, 'confirmado' => 0]);
 
-            $notif = new Notificacao();
-            $notif->fill([
-                'user_id' => $atividade->coordenador,
-                'mensagem' => "Um aluno alterou um testemunho na atividade " . $atividade->nome . ".",
-                'de' => "Aluno",
-                'data' => date("Y-m-d H:i:s"),
-                'nova' => "1",
-                'link' => "atividade/" . $atividade->id
-            ]);
-            $notif->save();
+            if($confirmado[0] == 1) {
+                $notif = new Notificacao();
+                $notif->fill([
+                    'user_id' => $atividade->coordenador,
+                    'mensagem' => "Um aluno alterou um testemunho na atividade " . $atividade->titulo . ".",
+                    'de' => "Aluno",
+                    'data' => date("Y-m-d H:i:s"),
+                    'nova' => "1",
+                    'link' => "atividade/" . $atividade->id
+                ]);
+                $notif->save();
+            }
         }
-        return response()->json($testemunho, 201);
+        return response()->json($confirmado, 201);
     }
 
     public function confirmarTestemunho(Request $request, $id, $user_id)
@@ -432,8 +439,20 @@ class AtividadeControllerAPI extends Controller
         if ($atividade->coordenador != Auth::id()) {
             abort(403, "Nao tem permissoes");
         }
-        $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $request->user_id)
+        $testemunho = AtividadeTestemunhos::where('atividade_id', $id)->where('user_id', $user_id)
             ->update(['confirmado' => 1]);
+
+        $notif = new Notificacao();
+        $notif->fill([
+            'user_id' => $user_id,
+            'mensagem' => "O seu testemunho na atividade " . $atividade->titulo . " foi confirmado.",
+            'de' => "Coordenador da atividade " . $atividade->titulo,
+            'data' => date("Y-m-d H:i:s"),
+            'nova' => "1",
+            'link' => "atividade/" . $atividade->id
+        ]);
+        $notif->save();
+
         return response()->json($testemunho, 201);
     }
 
@@ -448,8 +467,8 @@ class AtividadeControllerAPI extends Controller
             $notif = new Notificacao();
             $notif->fill([
                 'user_id' => $user_id,
-                'mensagem' => "O seu testemunho na atividade " . $atividade->nome . " foi recusado.",
-                'de' => "Coordenador da atividade " . $atividade->coordenador,
+                'mensagem' => "O seu testemunho na atividade " . $atividade->titulo . " foi recusado.",
+                'de' => "Coordenador da atividade " . $atividade->titulo,
                 'data' => date("Y-m-d H:i:s"),
                 'nova' => "1",
                 'link' => "atividade/" . $atividade->id
