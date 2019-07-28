@@ -93,7 +93,7 @@ class EscolaControllerAPI extends Controller
     public function criarTurma($id, Request $request)
     {
         $request->validate([
-            'nome' => 'required|min:1|max:9|unique:turmas,nome',
+            'nome' => 'required|min:1|max:9',
             'ciclo' => 'required',
             'professor' => 'nullable|email',
         ]);
@@ -136,7 +136,7 @@ class EscolaControllerAPI extends Controller
     public function editarTurma($id, Request $request)
     {
         $request->validate([
-            'nome' => 'required|min:1|max:9|unique:turmas,nome',
+            'nome' => 'required|min:1|max:9',
             'ciclo' => 'required',
             'professor' => 'nullable|email',
         ]);

@@ -96,7 +96,7 @@
 
                         >
                             <template slot="no-data">
-                                Não tem nenhuma notificação
+                                Não tem notificações
                             </template>
                             <template v-slot:items="props"
                                       style="width: 100%; display: inline-block; able-layout: fixed;">
