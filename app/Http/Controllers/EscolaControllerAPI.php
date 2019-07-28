@@ -93,7 +93,7 @@ class EscolaControllerAPI extends Controller
     public function criarTurma($id, Request $request)
     {
         $request->validate([
-            'nome' => 'required|min:1|max:9',
+            'nome' => 'required|min:1|max:9|unique:turmas,nome',
             'ciclo' => 'required',
             'professor' => 'nullable|email',
         ]);
@@ -101,7 +101,7 @@ class EscolaControllerAPI extends Controller
         $escola = Escola::findOrFail($id);
 
         if (Turma::where('escola_id', $id)->where('nome', $request->input('nome'))->first()){
-            return response()->json("Erro: Nome ja existente", 500);
+            return response()->json(['message' => 'Nome já existente'], 409);
         }
 
         $turma = new Turma();
@@ -111,7 +111,7 @@ class EscolaControllerAPI extends Controller
         if ($request->has('professor') && $request->input('professor') != "") {
             $professor = User::where('email', $request->input('professor'))->first();
             if (!$professor || $professor->tipo != 'professor') {
-                return response()->json("Professor Invalido", 500);
+                return response()->json(['message' => 'Professor Invalido'], 400);
             }
             $turma->professor_id = $professor->id;
         }
@@ -136,7 +136,7 @@ class EscolaControllerAPI extends Controller
     public function editarTurma($id, Request $request)
     {
         $request->validate([
-            'nome' => 'required|min:1|max:9',
+            'nome' => 'required|min:1|max:9|unique:turmas,nome',
             'ciclo' => 'required',
             'professor' => 'nullable|email',
         ]);
@@ -149,7 +149,7 @@ class EscolaControllerAPI extends Controller
 
         if ($request->input('nome') != $turma->nome) {
             if (Turma::where('escola_id', $turma->escola_id)->where('nome', $request->input('nome'))->first()) {
-                return response()->json("Erro: Nome ja existente", 500);
+                return response()->json(['message' => 'Nome já existente'], 409);
             }
             $turma->nome = $request->input('nome');
         }
@@ -159,7 +159,7 @@ class EscolaControllerAPI extends Controller
         $professor = User::where('email', $request->input('professor'))->first();
         if ($request->has('professor') && $request->input('professor') != "") {
             if (!$professor || $professor->tipo != 'professor') {
-                return response()->json("Professor Invalido", 500);
+                return response()->json(['message' => 'Professor Invalido'], 400);
             }
             $turma->professor_id = $professor->id;
         } elseif ($turma->professor_id != null){//se tinha professor e foi removido
