@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Comentario;
 use App\Forum;
 use App\ForumPatrimonios;
+use App\HistoricoGerenciadorCodigos;
 use App\Http\Resources\Comentario as ComentarioResource;
 use App\Http\Resources\Forum as ForumResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Date;
 
 class ForumControllerAPI extends Controller
 {
@@ -34,6 +37,15 @@ class ForumControllerAPI extends Controller
                 'showEmail' => 'required|boolean',
                 'patrimonios' => 'required'
             ]);
+
+        if (!Auth::user()){
+            if (!$request->has("codigo")){
+               return abort(400, "o email nao foi verificado");
+            }
+            if(!HistoricoGerenciadorCodigos::where('email', $request->email)->where('codigo', $request->codigo)->first()){
+                return abort(403,"Codigo introduzido invalido!");
+            }
+        }
 
         $forum = new Forum([
             'assunto' => $request->assunto,
@@ -81,11 +93,16 @@ class ForumControllerAPI extends Controller
         // Random numero de 6 digitos
         $random = intval( "0" . rand(1,9) . rand(1,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) );
 
+        $novoRegisto = new HistoricoGerenciadorCodigos();
+        $novoRegisto->fill([
+            'email' => $request->email,
+            'codigo' => $random,
+            'data' => new Date()
+            ]);
+
         //enviar email com $random para $request->email
 
-        return response()->json([
-            'data' => $random,
-        ]);
+        return response()->json(null, 200);
     }
 
     public function updateForum ($id, Request $request){
@@ -127,16 +144,44 @@ class ForumControllerAPI extends Controller
         return response()->json(null, 200);
     }
 
-    public function destroyForum($id)
+    public function destroyForum($id, Request $request)
     {
         $forum = Forum::findOrFail($id);
+
+        if (!Auth::user()){
+            if (!$request->has("eamil") || !$request->has("codigo") ){
+                return abort(400,"necessita de provar ser o criador do forum");
+            }
+            if(!HistoricoGerenciadorCodigos::where('email', $request->email)->where('codigo', $request->codigo)->first()){
+                return abort(401,"Codigo introduzido invalido!");
+            }
+        }else{
+            if ($forum->user_email != Auth::user()->email || Auth::user()->tipo != 'admin'){
+                return abort(403, "nao tens permissoes para eliminar este forum");
+            }
+        }
+
         $forum->delete();
         return response()->json(null, 201);
     }
 
-    public function destroyComment($id)
+    public function destroyComment($id, Request $request)
     {
         $comment = Comentario::findOrFail($id);
+
+        if (!Auth::user()){
+            if (!$request->has("eamil") || !$request->has("codigo") ){
+                return abort(400,"necessita de provar ser o criador do forum");
+            }
+            if(!HistoricoGerenciadorCodigos::where('email', $request->email)->where('codigo', $request->codigo)->first()){
+                return abort(401,"Codigo introduzido invalido!");
+            }
+        }else{
+            if ($comment->user_email != Auth::user()->email || Auth::user()->tipo != 'admin'){
+                return abort(403, "nao tens permissoes para eliminar este forum");
+            }
+        }
+
         $comment->delete();
         return response()->json(null, 201);
     }
