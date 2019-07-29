@@ -145,7 +145,8 @@ class CreateUsersPatrimoniosTable extends Migration
 
         Schema::create('forums', function (Blueprint $table) {
             $table->increments('id');
-            $table->longText('assunto');
+            $table->string('titulo');
+            $table->longText('descricao');
             $table->string('user_email');
             $table->boolean('show_email');
             $table->softDeletes();
@@ -171,14 +172,13 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');
             $table->primary(['atividade_id', 'patrimonio_id']);
         });
-        /*
+
         Schema::create('historico_gerenciador_codigos', function (Blueprint $table) {
-            $table->enum('tipo', ['forum', 'comentario']);
-            $table->integer('forum_coment_id');
+            $table->string('email');
             $table->integer('codigo');
-            $table->date('data_expira');
+            $table->date('data');
         });
-        */
+
     }
 
     /**

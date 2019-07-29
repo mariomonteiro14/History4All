@@ -18,7 +18,8 @@ class Forum extends JsonResource
 
         return [
             'id' => $this->id,
-            'assunto' => $this->assunto,
+            'titulo' => $this->titulo,
+            'descricao' => $this->descricao,
             'user_email' => $this->show_email ? $this->user_email : null,
             'patrimonios' => $patrimonios->exists() ? ShortPatrimonio::collection($patrimonios->get()->pluck('patrimonio')) : [],
            // 'comentarios' => Comentario::collection($this->comentarios()->get()),
