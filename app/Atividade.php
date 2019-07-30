@@ -5,6 +5,9 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\User;
+use Illuminate\Support\Facades\DB;
+
 
 class Atividade extends Model
 {
@@ -56,5 +59,21 @@ class Atividade extends Model
     public function imagem(){
         return PatrimonioImagens::where('patrimonio_id', AtividadePatrimonios::where('atividade_id', $this->id)
             ->pluck('patrimonio_id')->first())->pluck('foto')->first();
+    }
+
+    public function turmasParticipantes(){
+        $turmasDosParticipantes = AtividadeParticipantes::where('atividade_id', $this->id)->join('users', 'id', 'user_id')
+            ->pluck('turma_id')->toArray();
+        $turmasComUsers = User::whereIn('turma_id', $turmasDosParticipantes)
+            ->select('turma_id', DB::raw("COUNT(turma_id) quantidade"))->groupBy("turma_id")->orderBy('turma_id')->get()->toArray();
+        $participantesPorTurmas = AtividadeParticipantes::where('atividade_id', $this->id)->join('users', 'id', 'user_id')
+            ->select('turma_id', DB::raw("COUNT(turma_id) quantidade"))->groupBy("turma_id")->orderBy('turma_id')->get()->toArray();
+        $turmasCompletas = [];
+        foreach($turmasComUsers as $id => $turma){
+            if ($turma['quantidade'] == $participantesPorTurmas[$id]['quantidade']){
+                array_push($turmasCompletas, $turma['turma_id']);
+            }
+        }
+        return Turma::whereIn('id', $turmasCompletas);
     }
 }

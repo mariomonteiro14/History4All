@@ -649,6 +649,7 @@
                             this.toastPopUp("success", "Testemunho registado, ficará visivel assim que o coordenador da atividade o validar");
                         }
                         this.getTestemunhos();
+                        this.$socket.emit('atualizar_notificacoes', this.atividade.coordenador.id);
                     }).catch(error => {
                         this.loadingTestemunho = false;
                         this.toastErrorApi(error);
@@ -673,6 +674,7 @@
                         this.toastPopUp("success", "Testemunho atualizado, ficará visivel assim que o coordenador da atividade o validar");
                     }
                     this.loadingTestemunho = false;
+                    this.$socket.emit('atualizar_notificacoes', this.atividade.coordenador.id);
                 }).catch(error => {
                     this.loadingTestemunho = false;
                     this.toastErrorApi(error);
@@ -684,6 +686,7 @@
                     this.toastPopUp("success", "Testemunho visível");
                     this.getTestemunhos();
                     this.loadingTestemunho = false;
+                    this.$socket.emit('atualizar_notificacoes', testemunho.user_id);
                 }).catch(error => {
                     this.loadingTestemunho = false;
                     this.toastErrorApi(error);
@@ -695,6 +698,7 @@
                     this.toastPopUp("success", "Testemunho apagado");
                     this.getTestemunhos();
                     this.loadingTestemunho = false;
+                    this.$socket.emit('atualizar_notificacoes', testemunho.user_id);
                 }).catch(error => {
                     this.loadingTestemunho = false;
                     this.toastErrorApi(error);

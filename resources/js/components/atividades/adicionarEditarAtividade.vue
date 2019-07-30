@@ -238,9 +238,31 @@
                                 <v-stepper-content step="3">
                                     <div @click="setOpenList('alunos')">
                                         <v-combobox
+                                            v-model="turmasSelecionadas"
+                                            :items="turmas"
+                                            item-text="nome"
+                                            label="Turmas"
+                                            multiple
+                                            chips
+                                            class="input-group--focused"
+                                            deletable-chips
+                                            autofocus
+                                            hide-no-data
+                                        >
+                                            <template v-slot:append v-if="!turmasSelecionadas || turmasSelecionadas.length == 0">
+                                                <v-tooltip left>
+                                                    <template v-slot:activator="{ on }">
+                                                        <v-icon v-on="on">help</v-icon>
+                                                    </template>
+                                                    Selecionar turmas que participarão na atividade
+                                                </v-tooltip>
+                                            </template>
+                                        </v-combobox>
+                                        <v-combobox
                                             v-model="atividade.participantes"
                                             :items="alunos"
                                             item-text="nome"
+                                            item-value=item
                                             label="Alunos"
                                             multiple
                                             chips
@@ -473,6 +495,8 @@
                 visibilidades: ['privado', 'visivel para a escola', 'publico'],
                 alunos: [],
                 patrimonios: [],
+                turmas: [],
+                turmasSelecionadas: [],
                 selTipoAberto: false,
                 selVisibilidadeAberto: false,
                 selAlunosAberto: false,
@@ -567,10 +591,11 @@
                 this.dataFinal = null;
                 this.closeLists();
             },
-            getAlunos(url = '/api/me/escola/alunos') {
+            getAlunos(url = '/api/me/escola') {
                 axios.get(url)
                     .then(response => {
-                        this.alunos = response.data.data;
+                        this.alunos = response.data.data.alunos;
+                        this.turmas = response.data.data.turmas.filter(turma => turma.alunos.length > 0);
                     }).catch(error => {
                     this.toastErrorApi(error);
                 });
@@ -684,6 +709,26 @@
                     }
                 }
             },
+            turmasSelecionadas(novo, anterior){
+                if (novo.length > anterior.length && novo.length - anterior.length == 1){
+                    let inserido = novo.filter(x => !anterior.includes(x))[0];
+                    inserido.alunos.forEach((aluno) => {
+                        let index = this.atividade.participantes.findIndex(x => x.id === aluno.id);
+                        if (index == -1){
+                            this.atividade.participantes.push(aluno);
+                        }
+                    });
+                } else{
+                    let removido = anterior.filter(x => !novo.includes(x))[0];
+                    if (removido == undefined){
+                        return;
+                    }
+                    removido.alunos.forEach((aluno) => {
+                        let index = this.atividade.participantes.findIndex(x => x.id === aluno.id);
+                        this.atividade.participantes.splice(index, 1);
+                    });
+                }
+            },
             atividade: function (atividade, oldAtividade) {
                 if (atividade.id) {
                     if (this.atividade.patrimonios) {
@@ -729,7 +774,7 @@
                         this.tipoSelected = "outro";
                         this.outroTipo = this.atividade.tipo;
                     }
-
+                    this.turmasSelecionadas = this.atividade.turmas_participantes;
                 } else {
                     this.cleanForm();
                 }

@@ -26,6 +26,7 @@ class Atividade extends JsonResource
             $participantes = null;
         }
         $patrimonios = $this->atividadePatrimonios();
+        $turmasParticipantes = $this->turmasParticipantes();
         return [
             'id' => $this->id,
             'tipo' => $this->tipo,
@@ -38,6 +39,7 @@ class Atividade extends JsonResource
             'data' => $this->data,
             'patrimonios' => $patrimonios->exists() ? ShortPatrimonio::collection($patrimonios->get()->pluck('patrimonio')) : [],
             'participantes' => $participantes ? ShortUser::collection($participantes) : [],
+            'turmas_participantes' => $turmasParticipantes->exists() ? Turma::collection($turmasParticipantes->get()) : [],
             'ciclo' => $this->ciclo(),
             'epoca' => $this->epoca(),
             'dataInicio' => $this->dataInicio,
