@@ -14,6 +14,8 @@ class HistoricoGerenciadorCodigos extends Model
      * @var array
      */
 
+    protected $table = 'historico_gerenciador_codigos';
+    public $timestamps = false;
     protected $fillable = [
         'email', 'codigo', 'data'
     ];

@@ -36,6 +36,7 @@
                                     autofocus
                                     @click="selUsersAberto=true"
                                     :disabled="!users || users.length == 0"
+                                    @input="usersSelected = validarInputComboBox(usersSelected)"
                             ></v-combobox>
                         </div>
                     </div>

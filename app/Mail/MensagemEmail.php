@@ -32,7 +32,9 @@ class MensagemEmail extends Mailable
      */
     public function build()
     {
-        $this->from($this->de->email, $this->de->nome);
+        if($this->de){
+            $this->from($this->de->email, $this->de->nome);
+        }
         $this->subject($this->assunto);
         return $this->view('email.vazio');
     }

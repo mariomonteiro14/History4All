@@ -56,6 +56,7 @@ const routes = [
     //{ path: '/professores/chat', name: 'chatProfessores',component: require('./components/widgets/chatProfessores.vue').default},
     { path: '/professores/gestor', name: 'professorGestor',component: require('./components/users/professorGestor.vue').default, props: true},
     { path: '/alunos/escola', name: 'alunosGestor',component: require('./components/users/alunoGestor.vue').default, props: true},
+    { path: '/forums', name: 'forums',component: require('./components/forum/forums.vue').default},
     { path: '/*', name: 'unknown'},
 
 ];
@@ -137,6 +138,15 @@ var common = {
         toastErrorApi(error){
             this.toastPopUp("error", error.response.data.errors ?
                 `${error.response.data.errors[Object.keys(error.response.data.errors)[0]]}` : `${error.response.data.message}`);
+        },
+        validarInputComboBox(selected){//impede que se insira através do teclado
+            if (selected.length === 0){
+                return selected;
+            }
+            if (typeof selected[selected.length - 1] == "string"){
+                selected.pop();
+            }
+            return selected;
         },
         getUserPhoto(url){
             return "/storage/profiles/" + url;

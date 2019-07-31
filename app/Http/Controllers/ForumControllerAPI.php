@@ -11,12 +11,15 @@ use App\Http\Resources\Forum as ForumResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\MensagemEmail;
+use Illuminate\Support\Carbon;
 
 class ForumControllerAPI extends Controller
 {
     public function forums(Request $request)
     {
-        $forums = Forum::collection(Forum::all());
+        $forums = ForumResource::collection(Forum::all());
         return response()->json([
             'data' => $forums,
         ]);
@@ -24,34 +27,36 @@ class ForumControllerAPI extends Controller
 
     public function comments($id, Request $request){
 
-        $forum = Forum::findOrFail($id);
+        $forum = ForumResource::findOrFail($id);
         return response()->json(ComentarioResource::collection($forum->comentarios()->get()), 200);
     }
 
 
     public function storeForum(Request $request)
     {
+        $request->showEmail = filter_var($request->showEmail, FILTER_VALIDATE_BOOLEAN);
         $request->validate([
-                'assunto' => 'required|string',
+                'titulo' => 'required|string',
+                'descricao' => 'required|string',
                 'userEmail' => 'required|email',
-                'showEmail' => 'required|boolean',
+                'showEmail' => 'required',
                 'patrimonios' => 'required'
             ]);
 
-        if (!Auth::user()){
+        if (!$request->user('api')){
             if (!$request->has("codigo")){
-               return abort(400, "o email nao foi verificado");
+               return abort(400, "O email não foi verificado");
             }
-            if(!HistoricoGerenciadorCodigos::where('email', $request->email)->where('codigo', $request->codigo)->first()){
-                return abort(403,"Codigo introduzido invalido!");
+            if(!HistoricoGerenciadorCodigos::where('email', $request->userEmail)->where('codigo', $request->codigo)->first()){
+                return abort(403, "Codigo introduzido invalido!");
             }
         }
 
         $forum = new Forum([
-            'assunto' => $request->assunto,
+            'titulo' => $request->titulo,
+            'descricao' => $request->descricao,
             'user_email' => $request->userEmail,
-            'show_email' => $request->showEmail ? 1 : 0,
-
+            'show_email' => $request->showEmail ? 1 : 0
         ]);
         $forum ->save();
 
@@ -88,20 +93,22 @@ class ForumControllerAPI extends Controller
 
     public function generateAccessCode(Request $request){ //funçao para verificar email na criaçao/ediçao do forum ou comentario
         $request->validate([
-            'email' => 'required|email']
+            'userEmail' => 'required|email']
         );
         // Random numero de 6 digitos
         $random = intval( "0" . rand(1,9) . rand(1,9) . rand(0,9) . rand(0,9) . rand(0,9) . rand(0,9) );
 
         $novoRegisto = new HistoricoGerenciadorCodigos();
         $novoRegisto->fill([
-            'email' => $request->email,
+            'email' => $request->userEmail,
             'codigo' => $random,
-            'data' => new Date()
-            ]);
+            'data' => new Carbon()
+        ]);
+        $novoRegisto->save();
 
         //enviar email com $random para $request->email
-
+        Mail::to($request->userEmail)->send(new MensagemEmail(null, 'Código de acesso do History4All', 
+            '<p>Use o seguinte código para poder criar e editar os seus fórums e poder comentar neles: <b>' . $random . '</b>'));
         return response()->json(null, 200);
     }
 

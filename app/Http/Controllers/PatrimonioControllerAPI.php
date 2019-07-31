@@ -6,13 +6,22 @@ use App\Patrimonio;
 use App\PatrimonioImagens;
 use Illuminate\Http\Request;
 use App\Http\Resources\Patrimonio as PatrimonioResource;
+use App\Http\Resources\ShortPatrimonio as ShortPatrimonioResource;
 use Illuminate\Support\Facades\Storage;
 
 class PatrimonioControllerAPI extends Controller
 {
     public function patrimoniosDataTable(Request $request)
     {
-        $patrim = PatrimonioResource::collection(Patrimonio::all());
+        $patrim = PatrimonioResource::collection(Patrimonio::orderBy('nome')->get());
+        return response()->json([
+            'data' => $patrim,
+        ]);
+    }
+
+    public function patrimoniosShortDataTable(Request $request)
+    {
+        $patrim = ShortPatrimonioResource::collection(Patrimonio::orderBy('nome')->get());
         return response()->json([
             'data' => $patrim,
         ]);

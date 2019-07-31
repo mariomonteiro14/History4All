@@ -28,7 +28,7 @@ class Forum extends Model
 
     public function patrimonios()
     {
-         return $this->hasMany(AtividadePatrimonios::class, 'forum_id','id')->with('patrimonio');
+         return $this->hasMany(ForumPatrimonios::class, 'forum_id','id')->with('patrimonio');
     }
 
 

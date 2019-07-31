@@ -33,10 +33,10 @@
                                 <v-divider></v-divider>
 
                                 <v-stepper-step
-                                    :complete="patrimoniosSelecionados.length > 0"
+                                    :complete="atividade.patrimonios && atividade.patrimonios.length > 0"
                                     editable
                                     step="2"
-                                    :rules="[() => !(patrimoniosSelecionados.length == 0 && stepper > 2)]"
+                                    :rules="[() => !(atividade.patrimonios && atividade.patrimonios.length == 0 && stepper > 2)]"
                                 >Escolher patrimonio(s)
                                 </v-stepper-step>
 
@@ -185,7 +185,7 @@
                                 <v-stepper-content step="2">
                                     <div @click="setOpenList('patrimonios')">
                                         <v-combobox
-                                            v-model="patrimoniosSelecionados"
+                                            v-model="atividade.patrimonios"
                                             :items="patrimonios"
                                             item-text="nome"
                                             label="Patrimonios"
@@ -198,9 +198,9 @@
                                             autofocus
                                             hide-no-data
                                             required
-                                            @input="setPatrimoniosSelecionadosCarregados()"
+                                            @input="atividade.patrimonios = validarInputComboBox(atividade.patrimonios)"
                                         >
-                                            <template v-slot:append v-if="patrimoniosSelecionados.length == 0">
+                                            <template v-slot:append v-if="atividade.patrimonios && atividade.patrimonios.length == 0">
                                                 <v-tooltip left>
                                                     <template v-slot:activator="{ on }">
                                                         <v-icon v-on="on">help</v-icon>
@@ -248,6 +248,7 @@
                                             deletable-chips
                                             autofocus
                                             hide-no-data
+                                            @input="turmasSelecionadas = validarInputComboBox(turmasSelecionadas)"
                                         >
                                             <template v-slot:append v-if="!turmasSelecionadas || turmasSelecionadas.length == 0">
                                                 <v-tooltip left>
@@ -271,6 +272,7 @@
                                             ref="selectAlunos"
                                             autofocus
                                             hide-no-data
+                                            @input="atividade.participantes = validarInputComboBox(atividade.participantes)"
                                         >
                                             <template v-slot:append v-if="!atividade.participantes || atividade.participantes.length == 0">
                                                 <v-tooltip left>
@@ -502,8 +504,6 @@
                 selAlunosAberto: false,
                 selPatrimoniosAbertos: false,
                 chatExist: false,
-                patrimoniosSelecionados: [],
-                patrimoniosSelecionadosCarregados: false,
                 chatAssunto: '',
                 temGrupo: false,
                 numeroElementos: 2,
@@ -557,7 +557,6 @@
             prepararAtividade() {
                 this.atividade.chatExist = this.chatExist;
                 this.atividade.chat = {assunto: this.chatAssunto};
-                this.atividade.patrimonios = this.patrimoniosSelecionados;
                 this.atividade.tipo = this.tipoSelected === 'outro' ? this.outroTipo : this.tipoSelected;
                 this.atividade.numeroElementos = this.temGrupo ? this.numeroElementos : 1;
                 this.atividade.dataInicio = this.dataInicio;
@@ -580,7 +579,6 @@
                 this.atividade.data = "";
                 this.atividade.participantes = [];
                 this.atividade.patrimonios = [];
-                this.patrimoniosSelecionados = [];
                 this.tipoSelected = '';
                 this.outroTipo = '';
                 this.chatAssunto = "";
@@ -649,11 +647,6 @@
                     this.selPatrimoniosAberto = false;
                     this.$refs.selectPatrimonios.isMenuActive = false;
                 }
-            },
-            setPatrimoniosSelecionadosCarregados(){
-                if (!this.patrimoniosSelecionadosCarregados){
-                    this.patrimoniosSelecionadosCarregados = true;
-                }
             }
         },
         computed: {
@@ -664,7 +657,7 @@
                     return true;
                 }
 
-                if (this.patrimoniosSelecionados.length == 0 || !this.atividade.participantes || this.atividade.participantes.length == 0) {
+                if (this.atividade.patrimonios.length == 0 || !this.atividade.participantes || this.atividade.participantes.length == 0) {
                     return true;
                 }
 
@@ -690,25 +683,6 @@
 
         },
         watch: {
-            patrimoniosSelecionados(novo, anterior){
-                if (!this.patrimoniosSelecionadosCarregados || anterior.length >= novo.length){
-                    return;
-                }
-                novo = novo[novo.length - 1];
-                if (!novo.nome){
-                    let patrimonio = this.patrimonios.find(function (patrim){
-                        return patrim.nome.toLowerCase() === novo.toLowerCase();
-                    });
-                    this.patrimoniosSelecionados.pop();
-                    if (patrimonio != undefined){
-                        this.patrimoniosSelecionados.push(patrimonio);
-                    }
-                } else{
-                    if (!this.patrimonios.includes(novo)){
-                        this.patrimoniosSelecionados.pop();
-                    }
-                }
-            },
             turmasSelecionadas(novo, anterior){
                 if (novo.length > anterior.length && novo.length - anterior.length == 1){
                     let inserido = novo.filter(x => !anterior.includes(x))[0];
@@ -731,11 +705,6 @@
             },
             atividade: function (atividade, oldAtividade) {
                 if (atividade.id) {
-                    if (this.atividade.patrimonios) {
-                        this.patrimoniosSelecionados = this.atividade.patrimonios;
-                    } else {
-                        this.patrimoniosSelecionados = [];
-                    }
                     if (this.atividade.chat && this.atividade.chat.id) {
                         this.chatAssunto = this.atividade.chat.assunto;
                         this.chatExist = true;

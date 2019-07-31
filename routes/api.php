@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 Route::get('users/token/{token}','UserControllerAPI@getUserByToken');
 Route::get('patrimonios', 'PatrimonioControllerAPI@patrimoniosDataTable');
+Route::get('patrimoniosShort', 'PatrimonioControllerAPI@patrimoniosShortDataTable');
 Route::get('patrimonios/{id}', 'PatrimonioControllerAPI@find');
 Route::post('login', 'UserControllerAPI@login')->name('login');
 Route::post('register/activate/{id}', 'UserControllerAPI@activateAccount');
