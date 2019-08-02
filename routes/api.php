@@ -26,7 +26,7 @@ Route::put('register/novoEmail/{id}', 'UserControllerAPI@novoEmail');
 ///////////////FORUMS///////////////////////////////////////
 Route::get('forums', 'ForumControllerAPI@forums');
 Route::post('forums', 'ForumControllerAPI@storeForum');
-//Route::put('forums/{id}', 'ForumControllerAPI@updateForum');
+Route::put('forums/{id}', 'ForumControllerAPI@updateForum');
 Route::delete('forums/{id}', 'ForumControllerAPI@destroyForum');
 Route::get('forums/{id}/comentarios', 'ForumControllerAPI@comments');
 Route::post('forums/{id}/comentarios', 'ForumControllerAPI@storeComment');
@@ -38,6 +38,9 @@ Route::put('comentarios/{id}/decrementDislike', 'ForumControllerAPI@decrementDis
 Route::delete('comentarios/{id}', 'ForumControllerAPI@destroyComment');
 ///Apenas se o user nao estiver autenticado
 Route::post('forums/generateAccessCode', 'ForumControllerAPI@generateAccessCode');
+Route::post('forums/{id}/compararEmails', 'ForumControllerAPI@compararEmails');
+Route::post('forums/compararCodigo', 'ForumControllerAPI@compararCodigo');
+
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///
 Route::group(['middleware' => 'auth:api'], function() {
@@ -45,6 +48,7 @@ Route::group(['middleware' => 'auth:api'], function() {
     Route::get('users/me', 'UserControllerAPI@myProfile');
     Route::get('user/{id}', 'UserControllerAPI@getUser');
     Route::post('users/me', 'UserControllerAPI@editProfile');
+    Route::get('users/me/token', 'UserControllerAPI@getUserToken');
     Route::get('atividades/publicas', 'AtividadeControllerAPI@atividadesPublicas');
     Route::get('me/atividades/', 'AtividadeControllerAPI@getMinhas');
     Route::get('users/{id}/atividades/pendentes', 'AtividadeControllerAPI@getPendentes');

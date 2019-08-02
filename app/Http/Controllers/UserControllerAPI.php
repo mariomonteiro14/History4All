@@ -21,7 +21,6 @@ use Illuminate\Support\Facades\Auth;
 use App\User;
 use DateTime;
 
-define('YOUR_SERVER_URL', 'http://h4a.local/');
 //define('YOUR_SERVER_URL', 'http://history4all.test/');
 // Check "oauth_clients" table for next 2 values:
 define('CLIENT_ID', '2');
@@ -80,6 +79,14 @@ class UserControllerAPI extends Controller
             return null;
         }
         return new UserResource($user);
+    }
+
+    public function getUserToken(Request $request)
+    {
+        $user = Auth::user();
+        return response()->json([
+            'data' => $user->token()->id
+        ], 201);
     }
 
     public function editProfile(Request $request)

@@ -61,20 +61,20 @@
                                 </v-flex>
                             </v-layout>
                             <v-layout class="form-group" row align-center>
-                                <v-text-field id="inputEmail"
-                                            v-model="forum.userEmail"
+                                <v-text-field id="inputEmail" v-if="!this.$store.state.user"
+                                            v-model="forum.user_email"
                                             label="Email"
                                             :rules="emailRules"
                                             clearable
                                             required
                                 ></v-text-field>
                                 <v-switch
-                                    v-model="forum.showEmail" :false-value="false" :true-value="true"
-                                    :label="forum.showEmail ? 'Email visivel': 'Email não visivel'"
+                                    v-model="forum.show_email" :false-value="false" :true-value="true"
+                                    :label="forum.show_email ? 'Email visivel': 'Email não visivel'"
                                     color="primary"
                                 >
                                     <template v-slot:append>
-                                        <v-tooltip right v-if="!forum.showEmail">
+                                        <v-tooltip right v-if="!forum.show_email">
                                             <template v-slot:activator="{ on }">
                                                 <v-icon v-on="on">help</v-icon>
                                             </template>
@@ -96,9 +96,18 @@
                     </div>
 
                     <div v-if="!isLoading" class="modal-footer">
-                        <div class="grey--text" v-if="!this.$store.state.user">
-                            <v-btn v-if="!this.$store.state.user" class="btn btn-success" @click="gerarCodigo">Enviar código por email</v-btn>
-                            Se ainda não tem o código de acesso, por favor confirme o seu email
+                        <div class="grey--text" v-if="!this.$store.state.user && emailEnviado">
+                            <v-btn class="btn btn-success" @click="gerarCodigo">Enviar código por email
+                                <template v-slot:append v-if="!forum.codigo">
+                                    <v-tooltip left>
+                                        <template v-slot:activator="{ on }">
+                                            <v-icon v-on="on">help</v-icon>
+                                        </template>
+                                        Clique aqui para reenviar o email com o código
+                                    </v-tooltip>
+                                </template>
+                            </v-btn>
+                            Verifique o seu email
                             <v-text-field class="text-sm-left"
                                 v-model="forum.codigo"
                                 label="Código de acesso"
@@ -110,15 +119,15 @@
                                         <template v-slot:activator="{ on }">
                                             <v-icon v-on="on">help</v-icon>
                                         </template>
-                                        Insira aqui o seu código de acesso, tem de inserir o seu email e carregar em "Enviar código por email"
+                                        Insira o seu código de acesso que lhe foi enviado por email
                                     </v-tooltip>
                                 </template>
                             </v-text-field>
                         </div>
                         <div>
                             <button v-if="isCreated()" class="btn btn-info" v-on:click.prevent="save" 
-                                :disabled="hasErrors || !this.$store.state.user && !forum.codigo">Registar</button>
-                            <button v-else class="btn btn-info" v-on:click.prevent="update" :disabled="hasErrors || forum.codigo">Guardar</button>
+                                :disabled="hasErrors || !this.$store.state.user && emailEnviado && !forum.codigo">Registar</button>
+                            <button v-else class="btn btn-info" v-on:click.prevent="update" :disabled="hasErrors">Guardar</button>
                         </div>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
@@ -160,6 +169,7 @@
                     length: len => v => (v || '').length <= len || `Numero de caracteres invalido, Maximo ${len}`,
                     required: v => !!v || 'Este campo é necessário'
                 },
+                emailEnviado: false,
                 isLoading: false
             };
         },
@@ -183,9 +193,9 @@
                     });
             },
             gerarCodigo(){
-                this.isLoading= true;
                 axios.post('/api/forums/generateAccessCode', this.forum).then(response => {
                     this.toastPopUp("success", "Enviámos-lhe um email com o código de acesso");
+                    this.emailEnviado = true;
                     this.isLoading= false;
                 }).catch(error => {
                     this.isLoading= false;
@@ -194,21 +204,29 @@
             },
             save: function () {
                 this.isLoading= true;
+                if (!this.$store.state.user && !this.emailEnviado){
+                    this.gerarCodigo();
+                    return;
+                }
                 axios.post('/api/forums', this.forum).then(response => {
                     this.toastPopUp("success", "Fórum Criado!");
-                    this.cleanForm();
                     this.$emit('getFor');
                     $('#addForumModal').modal('hide');
+                    this.cleanForm();
                     this.isLoading= false;
                 }).catch(error => {
                     this.isLoading= false;
                     this.toastErrorApi(error);
-                })
+                });
             },
             update() {
                 this.isLoading= true;
-                axios.post('/api/forums/' + this.forum.id, this.forum).then(response => {
-                    this.toastPopUp("success", "Fórum Editado!");
+                if (!this.$store.state.user && !this.emailEnviado){
+                    this.gerarCodigo();
+                    return;
+                }
+                axios.put('/api/forums/' + this.forum.id, this.forum).then(response => {
+                    this.toastPopUp("success", "Fórum atualizado!");
                     this.cleanForm();
                     this.$emit('getFor');
                     $('#addForumModal').modal('hide');
@@ -226,15 +244,25 @@
                 this.forum.id = undefined;
                 this.forum.titulo = "";
                 this.forum.descricao = "";
-                this.forum.userEmail = "";
-                this.forum.showEmail = false;
+                this.forum.user_email = "";
+                this.forum.show_email = false;
                 this.forum.patrimonios = [];
             },
         },
         computed: {
             hasErrors: function () {
                 let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return !this.forum.titulo || !this.forum.descricao || !re.test(String(this.forum.userEmail).toLowerCase()) || !this.forum.patrimonios;
+                return !this.forum.titulo || !this.forum.descricao || !re.test(String(this.forum.user_email).toLowerCase()) || this.forum.patrimonios && this.forum.patrimonios.length == 0;
+            }
+        },
+        watch: {
+            forum(novo, anterior){
+                if (novo.user_email && (anterior && anterior.id != novo.id || !anterior)){
+                    this.forum.show_email = true;
+                }
+                if (this.$store.state.user && !this.forum.user_email){
+                    this.forum.user_email = this.$store.state.user.email;
+                }
             }
         }
     };
