@@ -26,10 +26,17 @@ class ForumControllerAPI extends Controller
         ]);
     }
 
+    public function forum($id, Request $request){
+        $forum = Forum::findOrFail($id);
+        return response()->json([
+            'data' => new ForumResource($forum)
+        ]);
+    }
+
     public function comments($id, Request $request){
 
-        $forum = ForumResource::findOrFail($id);
-        return response()->json(ComentarioResource::collection($forum->comentarios()->get()), 200);
+        $forum = Forum::findOrFail($id);
+        return response()->json(['data' => ComentarioResource::collection($forum->comentarios()->get())]);
     }
 
 
@@ -114,7 +121,7 @@ class ForumControllerAPI extends Controller
         $novoRegisto->save();
 
         //enviar email com $random para $request->email
-        Mail::to($request->user_email)->send(new MensagemEmail(null, 'Código de acesso do History4All', 
+        Mail::to($request->user_email)->send(new MensagemEmail(null, 'Código de acesso do History4All',
             '<p>Use o seguinte código para poder criar e editar os seus fórums e poder comentar neles: <b>' . $random . '</b>'));
         return response()->json(null, 200);
     }
@@ -221,7 +228,7 @@ class ForumControllerAPI extends Controller
     }
 
     public function destroyForum(Request $request, $id)
-    {   
+    {
         $forum = Forum::findOrFail($id);
         if (!$request->header('Authorization')){
             if (!$request->has("user_email") || !$request->has("codigo") ){

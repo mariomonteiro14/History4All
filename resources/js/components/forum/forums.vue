@@ -51,7 +51,7 @@
                         </v-layout>
                     </v-container>
                 </v-card-title>
-            </v-card>       
+            </v-card>
             <v-data-table :headers="headers" :items="filteredForums" :search="search" class="elevation-1"
                           :pagination.sync="pagination" :loading="isLoading">
                 <template v-slot:items="props">
@@ -167,7 +167,7 @@
                 $('#addForumModal').modal('show');
             },
             showForum(forum) {
-                //this.$router.push({path: '/forum/' + forum.id, params: {'forum': forum}});
+                this.$router.push({path: '/forums/' + forum.id, params: {'forum': forum}});
             },
             editarForumConfirmacao(forum, tipo){
                 let forumTemp = Object.assign({}, forum);

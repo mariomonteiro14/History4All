@@ -57,6 +57,7 @@ const routes = [
     { path: '/professores/gestor', name: 'professorGestor',component: require('./components/users/professorGestor.vue').default, props: true},
     { path: '/alunos/escola', name: 'alunosGestor',component: require('./components/users/alunoGestor.vue').default, props: true},
     { path: '/forums', name: 'forums',component: require('./components/forum/forums.vue').default},
+    { path: '/forums/:id', name: 'showForum',component: require('./components/forum/showForum.vue').default, props: true},
     { path: '/*', name: 'unknown'},
 
 ];
