@@ -69,6 +69,41 @@
                     </tr>
                 </template>
             </v-data-table>
+            <div class="modal fade" id="elimianarForumModal" tabindex="-1" role="dialog" aria-labelledby="elimianarForumModal"
+                aria-hidden="true" data-keyboard="false" data-backdrop="static" max-with="500">
+                <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmacaoEmailModal">Confirmação</h5>
+                            <button type="button" @click="fecharEliminarModal()" class="close" data-dismiss="modal"
+                                    aria-label="Close" :disabled="isLoading">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <v-card>
+                            <v-card-title>Tem a certeza que que apagar o fórum?</v-card-title>
+                            <v-container fluid grid-list-md v-if="this.$store.state.user.tipo === 'admin'">
+                                <v-layout row wrap>
+                                    <v-flex xs12 sm9 d-flex>
+                                        <v-textarea
+                                            v-model="justificaçao"
+                                            label="justificaçao para apagar este fórum"
+                                            no-resize
+                                        ></v-textarea>
+                                    </v-flex>
+                                </v-layout>
+                            </v-container>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="red darken-1" flat="flat" @click="fecharEliminarModal()" :disabled="isLoading">
+                                    Não
+                                </v-btn>
+                                <v-btn color="green darken-1" flat="flat" @click="eliminar()" :disabled="isLoading">Sim</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </div>
+                </div>
+            </div>
         </v-app>
         <br><br>
     </div>
@@ -114,6 +149,7 @@
                 confirmacaoTipo: '',
                 patrimoniosSelected: [],
                 patrimonios: [],
+                justificaçao: '',
                 isLoading: true,
             }
         },
@@ -176,7 +212,7 @@
                 this.confirmacaoTipo = tipo;
                 if (this.$store.state.user){
                     this.isLoading= true;
-                    axios.post('/api/forums/' + forum.id + '/compararEmails', {'user_email': this.$store.state.user.email}).then(response => {
+                    axios.post('/api/forums/' + forum.id + '/compararEmails', {'user_email': this.$store.state.user.email, 'tipo': tipo}).then(response => {
                         this.isLoading= false;
                         this.emailConfirmado();
                     }).catch(error => {
@@ -187,23 +223,36 @@
                     $('#confirmacaoEmailModal').modal('show');
                 }
             },
+            eliminar(){
+                this.isLoading= true;
+                let header;
+                let url = '/api/forums/' + this.forumAtual.id + '?codigo=' + this.codigoAtual + '&user_email=' + this.emailAtual;
+                if (this.$store.state.user){
+                    url = '/api/forums/' + this.forumAtual.id + '?user_id=' + this.$store.state.user.id;
+                    header = {headers: {Authorization: this.codigoAtual, 'Content-Type': 'application/json'}};
+                    if (this.$store.state.user.tipo == 'admin' && this.justificaçao.length > 0){
+                        url = '/api/forums/' + this.forumAtual.id + '?user_id=' + this.$store.state.user.id + '&justificaçao=' + this.justificaçao;
+                    }
+                }
+                axios.delete(url, header).then(response => {
+                    this.isLoading= false;
+                    this.justificaçao = '';
+                    $('#elimianarForumModal').modal('hide');
+                    this.toastPopUp("success", "Fórum Apagado!");
+                    this.getForums();
+                }).catch(error => {
+                    this.isLoading= false;
+                    this.toastErrorApi(error);
+                });
+            },
+            fecharEliminarModal(){
+                $('#elimianarForumModal').modal('hide');
+            },
             emailConfirmado(){
                 if (this.confirmacaoTipo == 'editar'){
                     setTimeout(function() { $('#addForumModal').modal('show'); }, 500);//sem o delay o modal perde o scroll
-                } else{//delete
-                    this.dialog = false;
-                    let header;
-                    let url = '/api/forums/' + this.forumAtual.id + '?codigo=' + this.codigoAtual + '&user_email=' + this.emailAtual;
-                    if (this.$store.state.user){
-                        url = '/api/forums/' + this.forumAtual.id + '?user_id=' + this.$store.state.user.id;
-                        header = {headers: {Authorization: this.codigoAtual, 'Content-Type': 'application/json'}};
-                    }
-                    axios.delete(url, header).then(response => {
-                        this.toastPopUp("success", "Fórum Apagado!");
-                        this.getForums();
-                    }).catch(error => {
-                        this.toastErrorApi(error);
-                    });
+                } else{
+                    $('#elimianarForumModal').modal('show');
                 }
             },
             receberCredenciais(email, codigo){

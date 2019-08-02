@@ -122,7 +122,7 @@ class ForumControllerAPI extends Controller
 
         //enviar email com $random para $request->email
         Mail::to($request->user_email)->send(new MensagemEmail(null, 'Código de acesso do History4All',
-            '<p>Use o seguinte código para poder criar e editar os seus fórums e poder comentar neles: <b>' . $random . '</b>'));
+            '<p>Use o seguinte código para poder criar e editar os seus fórums e poder comentar neles: <b>' . $random . '</b></p>'));
         return response()->json(null, 200);
     }
 
@@ -131,6 +131,9 @@ class ForumControllerAPI extends Controller
             'user_email' => 'required|email']
         );
         $forum = Forum::findOrFail($id);
+        if ($request->user('api') && $request->user('api')->tipo == 'admin' && $request->has('tipo') && $request->tipo == 'eliminar'){
+            return response()->json(null, 200);
+        }
         if ($forum->user_email != $request->user_email){
             if($request->user('api')){
                 return abort(403, "Esse fórum não foi criado por si");
@@ -140,6 +143,7 @@ class ForumControllerAPI extends Controller
         if (!$request->user('api')){
             return $this->generateAccessCode($request);
         }
+        return response()->json(null, 200);
     }
 
     public function updateForum ($id, Request $request){
@@ -237,7 +241,7 @@ class ForumControllerAPI extends Controller
             if(!HistoricoGerenciadorCodigos::where('email', $request->user_email)->where('codigo', $request->codigo)->first()){
                 return abort(401,"Codigo introduzido invalido!");
             }
-        }else{
+        } else{
             $autorizado = DB::table('oauth_access_tokens')->where('user_id', $request->user_id)->where('id', $request->header('Authorization'))->where('expires_at', '>', new Carbon())->first();
             if (!$autorizado){
                 return abort(403, "Autenticação inválida");
@@ -247,8 +251,17 @@ class ForumControllerAPI extends Controller
                 return abort(403, "Não tens permissões para eliminar este forum");
             }
         }
-
+        
+        if ($user && $user->tipo == 'admin' && $forum->user_email != $user->email){
+            $mensagem = '<p>O seu fórum ' . $forum->titulo . ' foi apagado por um dos adminsistradores do site</p>';
+            if ($request->has('justificaçao')){
+                $mensagem = '<p>O seu fórum <b>' . $forum->titulo . '</b> foi apagado por um dos adminsistradores do site com a seguinte justificaçao:</p><p>' .
+                    $request->justificaçao . '</p>';
+            }
+            Mail::to($forum->user_email)->send(new MensagemEmail(null, 'Fórum elimindado no History4All', $mensagem));
+        }
         $forum->delete();
+
         return response()->json(null, 201);
     }
 
