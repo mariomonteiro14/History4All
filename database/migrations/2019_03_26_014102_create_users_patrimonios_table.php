@@ -99,7 +99,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->string('descricao', 1000);
             $table->integer('numeroElementos');
             $table->enum('visibilidade', ['privado', 'publico', 'visivel para a escola']);
-            $table->bigInteger('coordenador')->unsigned();
+            $table->bigInteger('coordenador')->unsigned()->nullable();
             $table->foreign('coordenador')->references('id')->on('users')->onDelete('set null');
             $table->integer('chat_id')->unsigned()->nullable();
             $table->foreign('chat_id')->references('id')->on('chats')->onDelete('set null');
@@ -167,10 +167,10 @@ class CreateUsersPatrimoniosTable extends Migration
 
         Schema::create('forum_patrimonios', function (Blueprint $table) {
             $table->integer('forum_id')->unsigned();
-            $table->foreign('forum_id')->references('id')->on('forum')->onDelete('cascade');
+            $table->foreign('forum_id')->references('id')->on('forums')->onDelete('cascade');
             $table->integer('patrimonio_id')->unsigned();
             $table->foreign('patrimonio_id')->references('id')->on('patrimonios')->onDelete('cascade');
-            $table->primary(['atividade_id', 'patrimonio_id']);
+            $table->primary(['forum_id', 'patrimonio_id']);
         });
 
         Schema::create('historico_gerenciador_codigos', function (Blueprint $table) {

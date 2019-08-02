@@ -36,15 +36,17 @@
     import myEscola from '../escola/myEscola.vue';
 
     export default {
-        props: ['tabSelecionada'],
+        props: ['tab'],
         components: {
             BRow,
             'turmas': turmas,
             'professores-chat': professoresChat,
             'my-escola': myEscola
         },
+
         data: function () {
             return {
+                tabSelecionada: 0,
                 myEscola: {
                     nome: '',
                     turmas: [],
@@ -56,6 +58,9 @@
         },
 
         mounted() {
+            if (this.tab && this.tab > 0 && this.tab <3 ) {
+                this.tabSelecionada = this.tab;
+            }
             this.getMyEscola();
             this.getMyEscolaEstatisticas();
         },

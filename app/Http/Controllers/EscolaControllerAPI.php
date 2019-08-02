@@ -156,8 +156,9 @@ class EscolaControllerAPI extends Controller
 
         $turma->ciclo = $request->input('ciclo');
 
-        $professor = User::where('email', $request->input('professor'))->first();
         if ($request->has('professor') && $request->input('professor') != "") {
+            $professor = User::where('email', $request->input('professor'))->first();
+
             if (!$professor || $professor->tipo != 'professor') {
                 return response()->json(['message' => 'Professor Invalido'], 400);
             }
@@ -166,7 +167,7 @@ class EscolaControllerAPI extends Controller
             $turma->professor_id = null;
         }
 
-        if($request->has('alunos') && sizeof($request->alunos) > 0 || count(User::where('turma_id', $turma->id)->get()) > 0){
+        if($request->has('alunos') && (sizeof($request->input('alunos')) > 0 || count(User::where('turma_id', $turma->id)->get()) > 0)){
             $alunosId = array_column($request->alunos, 'id');
 
             $notificacaoMensagem = "Foi removido(a) da turma" . $turma->nome . " estando de momento sem turma associada";

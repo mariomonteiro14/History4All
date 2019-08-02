@@ -122,8 +122,7 @@
         data: function () {
             return {
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
-                professores: [],
-                alunos: [],
+                //professores: [],
                 //alunosSelected: [],
                 //removedAlunos: false,
 
@@ -160,6 +159,7 @@
                     this.turma.professor = this.turma.professor.email;
                 }
                 this.isLoading = true;
+                console.log(this.turma);
 
                 axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
                     this.toastPopUp("success", "Turma Atualizada!");
@@ -238,14 +238,14 @@
                 return false;
             },
 
-            filteredProfessores() {
+            /*filteredProfessores() {
                 if (this.$store.state.user.tipo == "admin") {
                     return this.professores.filter((i) => {
                         return i.escola[0] === this.escola.nome;
                     });
                 }
                 return [this.$store.state.user];
-            },
+            },*/
 
             filteredAlunos() {
                 if (this.escola && this.escola.alunos) {

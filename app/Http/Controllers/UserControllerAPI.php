@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use App\User;
 use DateTime;
 
-//define('YOUR_SERVER_URL', 'http://history4all.test/');
+define('YOUR_SERVER_URL', 'http://h4a.local/');
 // Check "oauth_clients" table for next 2 values:
 define('CLIENT_ID', '2');
 define('CLIENT_SECRET', '9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
