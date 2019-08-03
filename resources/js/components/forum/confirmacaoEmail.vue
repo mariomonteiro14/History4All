@@ -22,7 +22,7 @@
                                             required
                                 ></v-text-field>
                                 <div class="grey--text">
-                                    <v-btn class="btn btn-success" @click="gerarCodigo">Enviar código por email
+                                    <v-btn color="success" @click="gerarCodigo" :disabled="isLoading">Enviar código por email
                                         <template v-slot:append v-if="!codigo">
                                             <v-tooltip left>
                                                 <template v-slot:activator="{ on }">
@@ -93,18 +93,22 @@
             confirmarCodigo() {
                 axios.post('/api/forums/compararCodigo', {'user_email': this.email, 'codigo': this.codigo}).then(response => {
                     $('#confirmacaoEmailModal').modal('hide');
-                    this.$emit('codigo', this.email, this.codigo);
+                    this.$emit('credenciais', this.email, this.codigo);
                     this.isLoading= false;
+                    this.clearForm();
                     this.$emit('emailConfirmado');
                 }).catch(error => {
                     this.isLoading= false;
                     this.toastErrorApi(error);
                 })
             },
-            emit(){
-                this.$emit('emailConfirmado');
+            clearForm(){
+                this.email = '';
+                this.codigo = '';
+                this.emailEnviado = false;
             },
             cancel: function () {
+                this.clearForm();
                 $('#confirmacaoEmailModal').modal('hide');
             }
         }

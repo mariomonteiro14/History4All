@@ -3,8 +3,8 @@
         <v-app id="inspire">
             <br><br><br><br><br>
             <forum-add-edit :forum="forumAtual" :patrimonios="patrimonios" v-on:getFor="getForums()"></forum-add-edit>
-            <confirmacao-email :forum="forumAtual" v-on:emailConfirmado="emailConfirmado()" v-on:codigo="receberCredenciais"></confirmacao-email>
-            <h3>Fórum / Pesquisa</h3>
+            <confirmacao-email :forum="forumAtual" v-on:emailConfirmado="emailConfirmado()" v-on:credenciais="receberCredenciais"></confirmacao-email>
+            <h3>Fórum</h3>
             <br>
             <v-card append float>
                 <v-card-title>
@@ -14,7 +14,7 @@
                                 <v-text-field
                                     v-model="search"
                                     append-icon="pesquisa"
-                                    label="Pesquisar em todos os campos"
+                                    label="Pesquisar"
                                     single-line
                                     hide-details
                                     clearable
@@ -55,9 +55,10 @@
             <v-data-table :headers="headers" :items="filteredForums" :search="search" class="elevation-1"
                           :pagination.sync="pagination" :loading="isLoading">
                 <template v-slot:items="props">
-                    <tr @click="showForum(props.item)">
-                        <td class="text-xs-left">{{ props.item.titulo }}</td>
-                        <td class="text-xs-left">{{ props.item.comentarios.length }}</td>
+                    <tr>
+                        <td class="text-xs-left" @click="showForum(props.item)">{{ props.item.titulo }}</td>
+                        <td class="text-xs-left" @click="showForum(props.item)">{{ props.item.comentarios.length }}</td>
+                        <td class="text-xs-left" @click="showForum(props.item)">{{ new Date(props.item.data_ultima_atualizacao_comentario).toLocaleString() }}</td>
                         <td class="justify-left layout px-0">
                             <v-btn flat icon @click="editarForumConfirmacao(props.item, 'editar')">
                                 <v-icon color="warning" medium>edit</v-icon>
@@ -82,7 +83,7 @@
                         </div>
                         <v-card>
                             <v-card-title>Tem a certeza que que apagar o fórum?</v-card-title>
-                            <v-container fluid grid-list-md v-if="this.$store.state.user.tipo === 'admin'">
+                            <v-container fluid grid-list-md v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin'">
                                 <v-layout row wrap>
                                     <v-flex xs12 sm9 d-flex>
                                         <v-textarea
@@ -131,15 +132,16 @@
                 pagination: {
                     descending: true,
                     page: 1,
-                    rowsPerPage: 20,
+                    rowsPerPage: 10,
                     sortBy: 'comentarios.length',
                     totalItems: 0,
-                    rowsPerPageItems: [5, 10, 20, 50]
+                    rowsPerPageItems: [5, 10, 25]
                 },
                 search: '',
                 headers: [
                     {text: 'Titulo', value: 'titulo'},
                     {text: 'Número de comentários', value: 'comentarios.length'},
+                    {text: 'Ultimo comentário', value: 'data_ultima_atualizacao_comentario'},
                     {text: 'Ações', value: 'acoes', sortable: false}
                 ],
                 forums: [],
@@ -206,9 +208,8 @@
                 this.$router.push({path: '/forums/' + forum.id, params: {'forum': forum}});
             },
             editarForumConfirmacao(forum, tipo){
-                let forumTemp = Object.assign({}, forum);
-                forumTemp.codigo = this.codigoAtual;
-                this.forumAtual = forumTemp;
+                this.forumAtual = Object.assign({}, forum);
+                this.forumAtual.codigo = this.codigoAtual;
                 this.confirmacaoTipo = tipo;
                 if (this.$store.state.user){
                     this.isLoading= true;
@@ -257,7 +258,9 @@
             },
             receberCredenciais(email, codigo){
                 this.emailAtual = email;
+                this.forumAtual.user_email = email;
                 this.codigoAtual = codigo;
+                this.forumAtual.codigo = codigo;
             }
         },
         computed: {

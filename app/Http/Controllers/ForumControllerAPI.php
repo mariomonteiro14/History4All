@@ -252,7 +252,7 @@ class ForumControllerAPI extends Controller
             }
         }
         
-        if ($user && $user->tipo == 'admin' && $forum->user_email != $user->email){
+        if (isset($user) && $user->tipo == 'admin' && $forum->user_email != $user->email){
             $mensagem = '<p>O seu fórum ' . $forum->titulo . ' foi apagado por um dos adminsistradores do site</p>';
             if ($request->has('justificaçao')){
                 $mensagem = '<p>O seu fórum <b>' . $forum->titulo . '</b> foi apagado por um dos adminsistradores do site com a seguinte justificaçao:</p><p>' .

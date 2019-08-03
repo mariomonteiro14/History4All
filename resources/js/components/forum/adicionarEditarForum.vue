@@ -221,10 +221,6 @@
             },
             update() {
                 this.isLoading= true;
-                if (!this.$store.state.user && !this.emailEnviado){
-                    this.gerarCodigo();
-                    return;
-                }
                 axios.put('/api/forums/' + this.forum.id, this.forum).then(response => {
                     this.toastPopUp("success", "Fórum atualizado!");
                     this.cleanForm();
