@@ -574,11 +574,12 @@
                 this.atividade.id = null;
                 this.atividade.titulo = "";
                 this.atividade.descricao = "";
-                this.atividade.numeroElementos = "";
+                this.atividade.numeroElementos = 2;
                 this.atividade.visibilidade = "";
-                this.atividade.data = "";
                 this.atividade.participantes = [];
                 this.atividade.patrimonios = [];
+                this.atividade.chat = null;
+                this.atividade.tipo = null;
                 this.tipoSelected = '';
                 this.outroTipo = '';
                 this.chatAssunto = "";
@@ -656,8 +657,9 @@
                     !this.tipoSelected || (this.tipoSelected == 'outro' && !this.outroTipo)) {
                     return true;
                 }
-
-                if (this.atividade.patrimonios.length == 0 || !this.atividade.participantes || this.atividade.participantes.length == 0) {
+                this.atividade.patrimonios;
+                this.atividade.participantes;
+                if (!this.atividade.patrimonios || this.atividade.patrimonios.length == 0 || !this.atividade.participantes || this.atividade.participantes.length == 0) {
                     return true;
                 }
 

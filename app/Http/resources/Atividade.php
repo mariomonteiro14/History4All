@@ -36,7 +36,6 @@ class Atividade extends JsonResource
             'numeroElementos' => $this->numeroElementos,
             'coordenador' => new User($this->coordenador()),
             'chat' => $this->chat()->first(),
-            'data' => $this->data,
             'patrimonios' => $patrimonios->exists() ? ShortPatrimonio::collection($patrimonios->get()->pluck('patrimonio')) : [],
             'participantes' => $participantes ? ShortUser::collection($participantes) : [],
             'turmas_participantes' => $turmasParticipantes->exists() ? Turma::collection($turmasParticipantes->get()) : [],
