@@ -61,7 +61,7 @@
                                 </v-flex>
                             </v-layout>
                             <v-layout class="form-group" row align-center>
-                                <v-text-field id="inputEmail" v-if="!this.$store.state.user"
+                                <v-text-field id="inputEmail" v-if="!this.$store.state.user && isCreated()"
                                             v-model="forum.user_email"
                                             label="Email"
                                             :rules="emailRules"
@@ -97,7 +97,7 @@
 
                     <div v-if="!isLoading" class="modal-footer">
                         <div class="grey--text" v-if="!this.$store.state.user && emailEnviado">
-                            <v-btn class="btn btn-success" @click="gerarCodigo">Enviar código por email
+                            <v-btn class="btn btn-success" @click="gerarCodigo">Reenviar código por email
                                 <template v-slot:append v-if="!forum.codigo">
                                     <v-tooltip left>
                                         <template v-slot:activator="{ on }">
@@ -213,6 +213,7 @@
                     this.$emit('getFor');
                     $('#addForumModal').modal('hide');
                     this.cleanForm();
+                    this.$emit('clean');
                     this.isLoading= false;
                 }).catch(error => {
                     this.isLoading= false;
@@ -224,6 +225,7 @@
                 axios.put('/api/forums/' + this.forum.id, this.forum).then(response => {
                     this.toastPopUp("success", "Fórum atualizado!");
                     this.cleanForm();
+                    this.$emit('clean');
                     this.$emit('getFor');
                     $('#addForumModal').modal('hide');
                     this.isLoading= false;
@@ -234,6 +236,7 @@
             },
             cancel: function () {
                 this.cleanForm();
+                this.$emit('clean');
                 $('#addForumModal').modal('hide');
             },
             cleanForm: function () {
@@ -247,12 +250,16 @@
         },
         computed: {
             hasErrors: function () {
+                this.forum.patrimonios;
                 let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 return !this.forum.titulo || !this.forum.descricao || !re.test(String(this.forum.user_email).toLowerCase()) || this.forum.patrimonios && this.forum.patrimonios.length == 0;
             }
         },
         watch: {
             forum(novo, anterior){
+                if (Object.entries(novo).length === 0 && novo.constructor === Object){
+                    this.cleanForm();
+                }
                 if (novo.user_email && (anterior && anterior.id != novo.id || !anterior)){
                     this.forum.show_email = true;
                 }

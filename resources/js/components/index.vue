@@ -80,10 +80,19 @@
                 </a>
             </v-card>
         </v-container>
-
+        <v-container fluid grid-list-lg py-0>
+            <v-layout row wrap fluid py-0>
+                <v-flex d-flex sm12>
+                    <v-card class="btn" to="/forums" color="light-blue lighten-3" flat>
+                        <v-icon large color="green darken-4">forum</v-icon>
+                         Fórum de discussões sobre os patrimónios
+                    </v-card>
+                </v-flex>
+            </v-layout>
+        </v-container>
         <v-container fluid grid-list-lg>
             <v-layout row wrap>
-                <v-flex d-flex xs12 sm4>
+                <v-flex d-flex xs12 sm6>
                     <v-card class="btn" color="green lighten-4" flat>
                         <br>
                         <h3 class="align-content-center">
@@ -105,27 +114,7 @@
                         </v-card-actions>
                     </v-card>
                 </v-flex>
-                <v-flex d-flex xs12 sm4>
-                    <v-card class="btn" color="light-blue lighten-3" flat>
-                        <br>
-                        <h3 class="align-content-center">
-                            <v-icon large color="green darken-4">forum</v-icon>
-                            <br>
-                            <strong class="headline font-weight-light" font-weight-bold>Fórum</strong>
-                        </h3>
-
-                        <h2 class="font-weight-light">
-                            Fórum de discussão sobre os patrimónios
-                        </h2>
-                        <v-card-actions>
-                            <v-spacer></v-spacer>
-                            <v-btn class="font-weight-regular title" to="/forums"
-                                   round flat color="light-green darken-3">Fórum
-                            </v-btn>
-                        </v-card-actions>
-                    </v-card>
-                </v-flex>
-                <v-flex d-flex xs12 sm4>
+                <v-flex d-flex xs12 sm6>
                     <v-card class="btn" color="lime lighten-2" flat>
                         <br>
                         <h3 class="align-content-center">

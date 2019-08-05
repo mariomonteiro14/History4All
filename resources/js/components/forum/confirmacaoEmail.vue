@@ -22,7 +22,7 @@
                                             required
                                 ></v-text-field>
                                 <div class="grey--text">
-                                    <v-btn color="success" @click="gerarCodigo" :disabled="isLoading">Enviar código por email
+                                    <v-btn color="success" @click="gerarCodigo" :disabled="isLoading">{{!emailEnviado ? 'Enviar' : 'Reenviar'}} código por email
                                         <template v-slot:append v-if="!codigo">
                                             <v-tooltip left>
                                                 <template v-slot:activator="{ on }">
@@ -54,6 +54,9 @@
                         <div v-if="!isLoading" class="modal-footer">
                             <button class="btn btn-info" v-on:click.prevent="confirmarCodigo" :disabled="!codigo">confirmar código</button>
                             <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
+                        </div>
+                        <div v-else class="modal-footer">
+                            <loader color="green" size="32px"></loader>
                         </div>
                     </div>
                 </div>
@@ -95,20 +98,21 @@
                     $('#confirmacaoEmailModal').modal('hide');
                     this.$emit('credenciais', this.email, this.codigo);
                     this.isLoading= false;
-                    this.clearForm();
+                    this.cleanForm();
                     this.$emit('emailConfirmado');
                 }).catch(error => {
                     this.isLoading= false;
                     this.toastErrorApi(error);
                 })
             },
-            clearForm(){
+            cleanForm(){
                 this.email = '';
                 this.codigo = '';
                 this.emailEnviado = false;
             },
             cancel: function () {
-                this.clearForm();
+                this.cleanForm();
+                this.$emit('clean');
                 $('#confirmacaoEmailModal').modal('hide');
             }
         }

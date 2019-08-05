@@ -2,12 +2,12 @@
     <div>
         <v-app id="inspire">
             <br><br><br><br><br>
-            <forum-add-edit :forum="forumAtual" :patrimonios="patrimonios" v-on:getFor="getForums()"></forum-add-edit>
-            <confirmacao-email :forum="forumAtual" v-on:emailConfirmado="emailConfirmado()" v-on:credenciais="receberCredenciais"></confirmacao-email>
+            <forum-add-edit :forum="forumAtual" :patrimonios="patrimonios" v-on:getFor="getForums()"  v-on:clean="cleanForumAtual()"></forum-add-edit>
+            <confirmacao-email :forum="forumAtual" v-on:emailConfirmado="emailConfirmado()" v-on:clean="cleanForumAtual()" v-on:credenciais="receberCredenciais"></confirmacao-email>
             <h3>Fórum</h3>
             <br>
-            <v-card append float>
-                <v-card-title>
+            <v-card append float py-0>
+                <v-card-title py-0>
                     <v-container fluid grid-list-md>
                         <v-layout row wrap>
                             <v-flex xs12 sm4>
@@ -56,7 +56,7 @@
                           :pagination.sync="pagination" :loading="isLoading">
                 <template v-slot:items="props">
                     <tr>
-                        <td class="text-xs-left" @click="showForum(props.item)">{{ props.item.titulo }}</td>
+                        <td class="text-xs-left" @click="showForum(props.item)"><b>{{ props.item.titulo }}</b></td>
                         <td class="text-xs-left" @click="showForum(props.item)">{{ props.item.comentarios.length }}</td>
                         <td class="text-xs-left" @click="showForum(props.item)">{{ new Date(props.item.data_ultima_atualizacao_comentario).toLocaleString() }}</td>
                         <td class="justify-left layout px-0">
@@ -83,7 +83,7 @@
                         </div>
                         <v-card>
                             <v-card-title>Tem a certeza que que apagar o fórum?</v-card-title>
-                            <v-container fluid grid-list-md v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin'">
+                            <v-container fluid grid-list-md v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin' && !this.forumDoAdmin">
                                 <v-layout row wrap>
                                     <v-flex xs12 sm9 d-flex>
                                         <v-textarea
@@ -131,7 +131,7 @@
             return {
                 pagination: {
                     descending: true,
-                    page: 1,
+                    page: 10,
                     rowsPerPage: 10,
                     sortBy: 'comentarios.length',
                     totalItems: 0,
@@ -151,6 +151,7 @@
                 confirmacaoTipo: '',
                 patrimoniosSelected: [],
                 patrimonios: [],
+                forumDoAdmin: false,
                 justificaçao: '',
                 isLoading: true,
             }
@@ -215,6 +216,9 @@
                     this.isLoading= true;
                     axios.post('/api/forums/' + forum.id + '/compararEmails', {'user_email': this.$store.state.user.email, 'tipo': tipo}).then(response => {
                         this.isLoading= false;
+                        if (response.data.tipo && response.data.tipo == 'forumDoAdmin'){
+                            this.forumDoAdmin = true;
+                        }
                         this.emailConfirmado();
                     }).catch(error => {
                         this.isLoading= false;
@@ -238,19 +242,24 @@
                 axios.delete(url, header).then(response => {
                     this.isLoading= false;
                     this.justificaçao = '';
+                    this.forumDoAdmin = false;
                     $('#elimianarForumModal').modal('hide');
                     this.toastPopUp("success", "Fórum Apagado!");
                     this.getForums();
                 }).catch(error => {
+                    this.forumDoAdmin = false;
                     this.isLoading= false;
                     this.toastErrorApi(error);
                 });
             },
             fecharEliminarModal(){
+                this.cleanForumAtual();
+                this.forumDoAdmin = false
                 $('#elimianarForumModal').modal('hide');
             },
             emailConfirmado(){
                 if (this.confirmacaoTipo == 'editar'){
+                    this.forumDoAdmin = false;
                     setTimeout(function() { $('#addForumModal').modal('show'); }, 500);//sem o delay o modal perde o scroll
                 } else{
                     $('#elimianarForumModal').modal('show');
@@ -261,6 +270,9 @@
                 this.forumAtual.user_email = email;
                 this.codigoAtual = codigo;
                 this.forumAtual.codigo = codigo;
+            },
+            cleanForumAtual(){
+                this.forumAtual = Object.assign({}, null);
             }
         },
         computed: {
