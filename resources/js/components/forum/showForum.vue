@@ -61,8 +61,8 @@
                                                     <v-layout>
                                                         <v-flex sm6>
                                                             <center>
-                                                                <v-btn flat icon @click="like(props.item.id)">
-                                                                    <v-icon color="green" class="fas">far fa-thumbs-up
+                                                                <v-btn flat icon @click="like(props.item)">
+                                                                    <v-icon color="green">{{likeIcon(props.item.id)}}
                                                                     </v-icon>
                                                                 </v-btn>
                                                                 <span class="green--text">{{props.item.likes}}</span>
@@ -71,8 +71,8 @@
                                                         <v-spacer></v-spacer>
                                                         <v-flex sm6>
                                                             <center>
-                                                                <v-btn flat icon @click="dislike(props.item.id)">
-                                                                    <v-icon color="red" class="far">far fa-thumbs-down
+                                                                <v-btn flat icon @click="dislike(props.item)">
+                                                                    <v-icon color="red" class="far">{{dislikeIcon(props.item.id)}}
                                                                     </v-icon>
                                                                 </v-btn>
                                                                 <span class="error--text">{{props.item.dislikes}}</span>
@@ -125,7 +125,7 @@
                                                 </div>
                                                 <div v-if="meuComentario.comentario">
                                                     <v-spacer></v-spacer>
-                                                    <v-btn color="success">Publicar</v-btn>
+                                                    <v-btn @click="saveComentario" color="success">Publicar</v-btn>
                                                 </div>
                                             </v-card-text>
                                         </v-card>
@@ -153,6 +153,8 @@
                 isLoadingForum: {},
                 isLoadingComentarios: {},
                 meuComentario: {},
+                meuLikes: [],
+                meuDislikes: [],
 
                 editor: ClassicEditor,
                 editorConfig: {
@@ -165,6 +167,7 @@
                             {model: 'heading3', view: 'h3', title: 'Heading 3', class: 'ck-heading_heading3'}
                         ]
                     },
+
                 },
                 headers: [
                     {
@@ -193,6 +196,7 @@
                     .then(response => {
                         this.isLoadingForum = false;
                         this.forum = response.data.data;
+                        this.setCookies();
                     })
                     .catch(error => {
                         this.isLoadingForum = false;
@@ -200,7 +204,6 @@
                     });
             },
             getComentarios() {
-
                 this.isLoadingComentarios = true;
                 axios.get('/api/forums/' + this.id + '/comentarios')
                     .then(response => {
@@ -221,17 +224,161 @@
                 }
                 return "+" + classif;
             },
-            like(comentarioId) {
-                //se o id tiver no cookie decrementar like
-
-                //senao incrementar like
+            saveComentario(url = 'api/forums/' + this.forum.id + '/comentarios') {
+                axios.post(url)
+                    .then(response => {
+                        this.getComentarios();
+                        this.toastPopUp('success', 'Comentario criado!');
+                    })
+                    .catch(error => {
+                        this.toastErrorApi(error);
+                    });
             },
-            dislike(comentarioId) {
-                //se o id tiver no cookie decrementar like
+            like(comentario) {
+                if (this.meuDislikes.includes(comentario.id)){
+                    this.dislike(comentario);
+                }
+                let tipo = "";
+                if(this.meuLikes.includes(comentario.id)){ //decrementar
+                    this.meuLikes = this.removeItemFromArray(this.meuLikes, comentario.id);
+                    comentario.likes--;
+                    tipo = "decrementLike";
+                }else{
+                    this.meuLikes.push(comentario.id);
+                    comentario.likes++;
+                    tipo = "incrementLike";
+                }
 
-                //senao incrementar like
+                axios.put('/api/comentarios/' + this.forum.id +"/" + tipo).then(response => {
+                    if (tipo == "incrementLike"){
+                        this.updateCookies(1,1, comentario.id);
+                    } else {
+                        this.updateCookies(1,0, comentario.id);
+                    }
+                })
+                    .catch(error => {
+                        this.toastErrorApi(error);
+                        if (tipo == "incrementLike"){
+                            this.meuLikes = this.removeItemFromArray(this.meuLikes, comentario.id);
+
+                            comentario.likes--;
+                        } else {
+                            comentario.likes++;
+                            this.meuLikes.push(comentario.id);
+                        }
+                    });
             },
+            dislike(comentario) {
+                if (this.meuLikes.includes(comentario.id)){
+                    this.like(comentario);
+                }
+                let tipo = "";
+                if(this.meuDislikes.includes(comentario.id)){ //decrementar
+                    comentario.dislikes--;
+                    this.meuDislikes = this.removeItemFromArray(this.meuDislikes, comentario.id);
+                    tipo = "decrementDislike";
+                }else{
+                    comentario.dislikes++;
+                    this.meuDislikes.push(comentario.id);
+                    tipo = "incrementDislike";
+                }
+
+                axios.put('/api/comentarios/' + this.forum.id +"/"+ tipo).then(response => {
+                    if (tipo == "incrementDislike"){
+                        this.updateCookies(0,1, comentario.id);
+                    } else {
+                        this.updateCookies(0,0, comentario.id);
+                    }
+                })
+                    .catch(error => {
+                        this.toastErrorApi(error);
+                        if (tipo == "incrementDislike"){
+                            comentario.dislikes--;
+                            this.meuDislikes = this.removeItemFromArray(this.meuDislikes, comentario.id);
+
+                        } else {
+                            comentario.dislikes++;
+                            this.meuDislikes.push(comentario.id);
+                        }
+                    });
+            },
+            setCookies() {
+                //Default Likes cookie name = "forumTitulo"+"ForumId"+ "-" + "likes" EX: ComoVisitarContento19-likes
+                //Default Dislikes cookie name = "forumTitulo"+"ForumId"+ "-" + "dislikes" EX: ComoVisitarContento19-dislikes
+
+                let cookieName = this.forum.titulo.replace(/\s/g, "").concat(this.forum.id);
+
+                if (this.$cookies.isKey(cookieName + "-likes")) {
+                    this.meuLikes = this.$cookies.get(cookieName + "-likes").split(',').map(function(item) {
+                        return parseInt(item, 10);
+                    });
+                } else {
+                    this.$cookies.set(cookieName + "-likes", [] , "1y");
+                }
+                if (this.$cookies.isKey(cookieName + "-dislikes")) {
+                    this.meuDislikes = this.$cookies.get(cookieName + "-dislikes").split(',').map(function(item) {
+                        return parseInt(item, 10);
+                    });
+                } else {
+                    this.$cookies.set(cookieName + "-dislikes", [], "1y");
+                }
+                console.log(this.$cookies.get(cookieName + "-likes"));
+                console.log(this.meuLikes);
+            },
+            updateCookies(like, incrementar, comentarioId){
+                let cookieName = this.forum.titulo.replace(/\s/g, "").concat(this.forum.id);
+
+                if(like){
+                    if (incrementar){
+                        if(!this.meuLikes.includes(comentarioId)) {
+                            this.meuLikes.push(comentarioId);
+                        }
+                    }else{
+                        if (this.meuLikes.includes(comentarioId)){
+                            this.meuLikes = this.removeItemFromArray(this.meuLikes, comentarioId);
+
+                        }
+                    }
+                    this.$cookies.remove(cookieName + "-likes");
+                    this.$cookies.set(cookieName + "-likes", this.meuLikes, "1y");
+                }else{
+                    if (incrementar){
+                        if(!this.meuDislikes.includes(comentarioId)) {
+                            this.meuDislikes.push(comentarioId);
+                        }
+                    }else{
+                        if (this.meuDislikes.includes(comentarioId)){
+                            this.meuDislikes = this.removeItemFromArray(this.meuDislikes, comentarioId);
+                        }
+                    }
+                    this.$cookies.remove(cookieName + "-dislikes");
+                    this.$cookies.set(cookieName + "-dislikes", this.meuDislikes, "1y");
+                }
+            },
+            removeItemFromArray(array, item){
+                for (let i = 0; i < array.length; i++) {
+                    if (array[i] == item) {
+                        array.splice(i, 1);
+                        i--;
+                    }
+                }
+                return array;
+            },
+
+            likeIcon(comentarioId){
+                if(this.meuLikes.includes(comentarioId)){
+                    return "fas fa-thumbs-up";
+                }
+                return "far fa-thumbs-up";
+            },
+            dislikeIcon(comentarioId){
+                if(this.meuDislikes.includes(comentarioId)){
+                    return "fas fa-thumbs-down";
+                }
+                return "far fa-thumbs-down";
+            }
         },
+
         mounted() {
             this.getForum();
             this.getComentarios();

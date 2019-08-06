@@ -13,6 +13,7 @@ import VueSocketio from 'vue-socket.io';
 //import VueLoading from 'vue-loading';
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import SocialSharing from 'vue-social-sharing';
+import VueCookies from 'vue-cookies';
 
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
@@ -27,6 +28,7 @@ Vue.use(VueAgile);
 Vue.use(BootstrapVue);
 Vue.use(CKEditor);
 Vue.use(SocialSharing);
+Vue.use(VueCookies);
 
 const navbar = Vue.component('navbarc', require('./components/widgets/nav.vue').default);
 const footer = Vue.component('footerc', require('./components/widgets/foter.vue').default);
