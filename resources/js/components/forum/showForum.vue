@@ -322,8 +322,7 @@
                 } else {
                     this.$cookies.set(cookieName + "-dislikes", [], "1y");
                 }
-                console.log(this.$cookies.get(cookieName + "-likes"));
-                console.log(this.meuLikes);
+
             },
             updateCookies(like, incrementar, comentarioId){
                 let cookieName = this.forum.titulo.replace(/\s/g, "").concat(this.forum.id);
