@@ -304,8 +304,8 @@
             this.getComentarios();
             if (this.$cookies.isKey("credentials")) {
                 this.credenciais = this.$cookies.get("credentials")
-            }else{
-                this.credenciais = {email:'',codigo:''};
+            } else {
+                this.credenciais = {email: '', codigo: ''};
             }
         },
         methods: {
