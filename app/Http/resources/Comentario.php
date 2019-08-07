@@ -21,7 +21,7 @@ class Comentario extends JsonResource
             'comentario' => $this->comentario,
             'likes' => $this->likes,
             'dislikes' => $this->dislikes,
-            'data_criado' => $this->created_at,
+            'data' => $this->updated_at ? $this->updated_at->format('d/m/Y') : $this->created_at->format('d/m/Y'),
         ];
     }
 
