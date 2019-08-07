@@ -22,10 +22,10 @@ class Forum extends JsonResource
             'descricao' => $this->descricao,
             'user_email' => $this->show_email ? $this->user_email : null,
             'patrimonios' => $patrimonios->exists() ? ShortPatrimonio::collection($patrimonios->get()->pluck('patrimonio')) : [],
-            'comentarios' => Comentario::collection($this->comentarios()->get()),
+            'numComentarios' => $this->comentarios()->count(),
             'data_criado' => $this->created_at,
             'data_ultima_atualizacao' => $this->updated_at,
-            'data_ultima_atualizacao_comentario' => count($this->comentarios()->get()) > 0 ? 
+            'data_ultima_atualizacao_comentario' => count($this->comentarios()->get()) > 0 ?
                 $this->comentarios()->orderBy('updated_at')->pluck('updated_at')->first() : $this->updated_at,
         ];
     }

@@ -57,7 +57,7 @@
                 <template v-slot:items="props">
                     <tr>
                         <td class="text-xs-left" @click="showForum(props.item)"><b>{{ props.item.titulo }}</b></td>
-                        <td class="text-xs-left" @click="showForum(props.item)">{{ props.item.comentarios.length }}</td>
+                        <td class="text-xs-left" @click="showForum(props.item)">{{ props.item.numComentarios }}</td>
                         <td class="text-xs-left" @click="showForum(props.item)">{{ new Date(props.item.data_ultima_atualizacao_comentario).toLocaleString() }}</td>
                         <td class="justify-left layout px-0">
                             <v-btn flat icon @click="editarForumConfirmacao(props.item, 'editar')">
@@ -133,14 +133,14 @@
                     descending: true,
                     page: 10,
                     rowsPerPage: 10,
-                    sortBy: 'comentarios.length',
+                    sortBy: 'numComentarios',
                     totalItems: 0,
                     rowsPerPageItems: [5, 10, 25]
                 },
                 search: '',
                 headers: [
                     {text: 'Titulo', value: 'titulo'},
-                    {text: 'Número de comentários', value: 'comentarios.length'},
+                    {text: 'Número de comentários', value: 'numComentarios'},
                     {text: 'Ultimo comentário', value: 'data_ultima_atualizacao_comentario'},
                     {text: 'Ações', value: 'acoes', sortable: false}
                 ],

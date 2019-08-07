@@ -47,7 +47,7 @@
                                                 Escolher patrimónios relacionados com o fórum
                                             </v-tooltip>
                                         </template>
-                                        
+
                                         <template v-slot:selection="{ item, index }">
                                             <v-chip v-if="index === 0">
                                                 <span>{{ item.nome }}</span>
@@ -84,7 +84,7 @@
                                 </v-switch>
                                 <v-flex xs12 sm2></v-flex>
                             </v-layout>
-                            
+
                         </v-container>
                         <div class="grey--text">
                             Descrição
@@ -125,7 +125,7 @@
                             </v-text-field>
                         </div>
                         <div>
-                            <button v-if="isCreated()" class="btn btn-info" v-on:click.prevent="save" 
+                            <button v-if="isCreated()" class="btn btn-info" v-on:click.prevent="save"
                                 :disabled="hasErrors || !this.$store.state.user && emailEnviado && !forum.codigo">Registar</button>
                             <button v-else class="btn btn-info" v-on:click.prevent="update" :disabled="hasErrors">Guardar</button>
                         </div>
@@ -251,6 +251,9 @@
         computed: {
             hasErrors: function () {
                 this.forum.patrimonios;
+                if (this.$store.state.user){
+                    return !this.forum.titulo || !this.forum.descricao || this.forum.patrimonios && this.forum.patrimonios.length == 0;
+                }
                 let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 return !this.forum.titulo || !this.forum.descricao || !re.test(String(this.forum.user_email).toLowerCase()) || this.forum.patrimonios && this.forum.patrimonios.length == 0;
             }

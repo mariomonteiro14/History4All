@@ -14,9 +14,7 @@
                                 <strong>{{forum.titulo}}</strong>
                             </h2>
                             <br>
-                            <h4>
-                                {{forum.descricao}}
-                            </h4>
+                            <div style="font-size: 25px" v-html="forum.descricao"></div>
                             <br>
                             <div>
                                 <span>patrimonios relacionados:</span>
@@ -81,9 +79,7 @@
                                                     </v-layout>
                                                 </td>
                                                 <td class="text-lg-center">
-                                                    <html style="overflow: hidden;">
-                                                    {{props.item.comentario}}
-                                                    </html>
+                                                    <div style="overflow: hidden;font-size: 15px;" v-html="props.item.comentario"></div>
                                                     <span class="grey--text">{{props.item.data_criado}}</span>
                                                 </td>
                                             </tr>
@@ -189,6 +185,10 @@
                 },
             };
         },
+        mounted() {
+            this.getForum();
+            this.getComentarios();
+        },
         methods: {
             getForum() {
                 this.isLoadingForum = true;
@@ -196,7 +196,9 @@
                     .then(response => {
                         this.isLoadingForum = false;
                         this.forum = response.data.data;
-                        this.setCookies();
+                        if (this.forum.numComentarios > 0){
+                            this.setCookies();
+                        }
                     })
                     .catch(error => {
                         this.isLoadingForum = false;
@@ -208,9 +210,7 @@
                 axios.get('/api/forums/' + this.id + '/comentarios')
                     .then(response => {
                         this.isLoadingComentarios = false;
-                        //if (response.data.data) {
                         this.comentarios = response.data.data;
-                        // }
                     })
                     .catch(error => {
                         this.isLoadingComentarios = false;
@@ -306,7 +306,8 @@
                 //Default Likes cookie name = "forumTitulo"+"ForumId"+ "-" + "likes" EX: ComoVisitarContento19-likes
                 //Default Dislikes cookie name = "forumTitulo"+"ForumId"+ "-" + "dislikes" EX: ComoVisitarContento19-dislikes
 
-                let cookieName = this.forum.titulo.replace(/\s/g, "").concat(this.forum.id);
+                let cookieName = this.forum.titulo.replace(/\s/g, "").concat("%"+this.forum.id);
+
 
                 if (this.$cookies.isKey(cookieName + "-likes")) {
                     this.meuLikes = this.$cookies.get(cookieName + "-likes").split(',').map(function(item) {
@@ -325,7 +326,7 @@
 
             },
             updateCookies(like, incrementar, comentarioId){
-                let cookieName = this.forum.titulo.replace(/\s/g, "").concat(this.forum.id);
+                let cookieName = this.forum.titulo.replace(/\s/g, "").concat("%"+this.forum.id);
 
                 if(like){
                     if (incrementar){
@@ -377,10 +378,5 @@
                 return "far fa-thumbs-down";
             }
         },
-
-        mounted() {
-            this.getForum();
-            this.getComentarios();
-        }
     }
 </script>
