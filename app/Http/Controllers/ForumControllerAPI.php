@@ -109,6 +109,10 @@ class ForumControllerAPI extends Controller
             'user_email' => $request->has('userEmail') ? $request->userEmail : null,
         ]);
         $comment->save();
+
+        Mail::to($forum->user_email)->send(new MensagemEmail(null, 'Novo comentario dum forum do History4All',
+            '<p>Foi adicionado um novo comentario '.$forum->titulo.' (criado por si)</p><br><a href="http://142.93.219.146/forums/'.$forum->id.'">Ir para'.$forum->titulo.'</a>' ));
+
         return response()->json(new ComentarioResource($comment), 201);
 
     }

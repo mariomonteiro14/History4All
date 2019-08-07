@@ -107,27 +107,27 @@
                                                     </template>
                                                     <v-list class="pa-0" absolute dense>
                                                         <v-list-tile ripple="ripple" rel="noopener">
-                                                                <v-btn
-                                                                    flat
-                                                                    small
-                                                                    color="green"
-                                                                >
-                                                                    editar
-                                                                </v-btn>
-                                                                <v-btn
-                                                                    flat
-                                                                    small
-                                                                    color="red"
-                                                                >
-                                                                    Eliminar
-                                                                </v-btn>
-                                                                <v-btn
-                                                                    flat
-                                                                    small
-                                                                    color="indigo"
-                                                                >
-                                                                    Denunciar
-                                                                </v-btn>
+                                                            <v-btn
+                                                                flat
+                                                                small
+                                                                color="green"
+                                                            >
+                                                                editar
+                                                            </v-btn>
+                                                            <v-btn
+                                                                flat
+                                                                small
+                                                                color="red"
+                                                            >
+                                                                Eliminar
+                                                            </v-btn>
+                                                            <v-btn
+                                                                flat
+                                                                small
+                                                                color="indigo"
+                                                            >
+                                                                Denunciar
+                                                            </v-btn>
                                                         </v-list-tile>
                                                     </v-list>
                                                 </v-speed-dial>
@@ -149,7 +149,7 @@
                                                     <v-text-field id="inputEmail"
                                                                   v-model="meuComentario.userEmail"
                                                                   label="O seu email"
-                                                                  :rules="[(v) =>  !(v.length > 0 && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v))) || 'email tem de ser valido']"
+                                                                  :rules="[(v) =>  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido']"
                                                                   clearable
                                                     >
                                                         <template v-slot:append>
@@ -203,11 +203,12 @@
                 <v-card-title class="headline">Verificação de email</v-card-title>
 
                 <v-card-text>
-                    Foi enviado um email para o endereço inserido. Introduza o codigo presente nesse email para concluir o processo.
+                    Foi enviado um email para o endereço inserido. Introduza o codigo presente nesse email para concluir
+                    o processo.
                     <v-text-field class="text-sm-left"
                                   v-model="credenciais.codigo"
                                   label="Código de acesso"
-                                  :rules="[v => !!v || 'Código de acesso']"
+                                  :rules="[v => !!v || 'Código obrigatório']"
                                   clearable
                                   :disabled="sendingComentario"
                     />
@@ -301,10 +302,11 @@
         mounted() {
             this.getForum();
             this.getComentarios();
-            if (this.$cookies.isKey("credentials")){
+            if (this.$cookies.isKey("credentials")) {
                 this.credenciais = this.$cookies.get("credentials")
+            }else{
+                this.credenciais = {email:'',codigo:''};
             }
-            console.log(this.$cookies.get("credentials"));
         },
         methods: {
             getForum() {
@@ -341,18 +343,18 @@
                 }
                 return classif;
             },
-            changeFabId(id){
-                if(this.fabId != id){
-                    this.fabId= id;
-                }else{
+            changeFabId(id) {
+                if (this.fabId != id) {
+                    this.fabId = id;
+                } else {
                     this.fabId = 0;
                 }
             },
 
             saveComentario() {
-                if (this.meuComentario.userEmail && (!this.credenciais.codigo || this.credenciais.email != this.meuComentario.userEmail)){
+                if (this.meuComentario.userEmail && (!this.credenciais.codigo || this.credenciais.email != this.meuComentario.userEmail)) {
                     this.dialogCode = true;
-                    this.credenciais.codigo= null
+                    this.credenciais.codigo = null
                     this.gerarCodigo();
                     return;
                 }
@@ -360,7 +362,7 @@
                 this.sendingComentario = true;
                 if (this.$store.state.user) {
                     this.meuComentario.userEmail = this.$store.state.user.email;
-                }else{
+                } else {
                     this.meuComentario.codigo = this.credenciais.codigo;
                 }
                 axios.post('/api/forums/' + this.forum.id + '/comentarios', this.meuComentario)
@@ -373,7 +375,7 @@
                     .catch(error => {
                         this.sendingComentario = false;
                         console.log(error);
-                        if (error.response.data.message == "Codigo introduzido invalido!"){
+                        if (error.response.data.message == "Codigo introduzido invalido!") {
                             this.credenciais.codigo = null;
                             this.saveComentario();
                         } else {
@@ -381,17 +383,20 @@
                         }
                     });
             },
-            gerarCodigo(){
-                this.isLoading= true;
+            gerarCodigo() {
+                this.isLoading = true;
                 axios.post('/api/forums/generateAccessCode', {'user_email': this.meuComentario.userEmail}).then(response => {
                 }).catch(error => {
                     //this.dialogCode = false;
                     this.toastErrorApi(error);
                 })
             },
-            verificarCodigo(funcao = 0){
+            verificarCodigo(funcao = 0) {
                 this.verificandoCredenciais = true;
-                axios.post('/api/forums/compararCodigo', {'user_email': this.meuComentario.userEmail, 'codigo': this.credenciais.codigo}).then(response => {
+                axios.post('/api/forums/compararCodigo', {
+                    'user_email': this.meuComentario.userEmail,
+                    'codigo': this.credenciais.codigo
+                }).then(response => {
                     this.verificandoCredenciais = false;
                     if (funcao == 1) { //registar comentario
                         this.dialogCode = false;
@@ -558,8 +563,9 @@
                     !this.meuComentario.comentario || this.meuComentario.comentario.length <= 5) {
                     return true;
                 }
-                return  false;
+                return false;
             }
-            }
+        },
+
     }
 </script>
