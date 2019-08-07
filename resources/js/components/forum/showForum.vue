@@ -149,7 +149,7 @@
                                                     <v-text-field id="inputEmail"
                                                                   v-model="meuComentario.userEmail"
                                                                   label="O seu email"
-                                                                  :rules="[(v) =>  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido']"
+                                                                  :rules="[(v) =>  !(v.length > 0 && !(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v))) || 'email tem de ser valido']"
                                                                   clearable
                                                     >
                                                         <template v-slot:append>
@@ -554,7 +554,7 @@
         computed: {
             hasErrors: function () {
                 var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                if (!re.test(String(this.meuComentario.userEmail).toLowerCase()) ||
+                if ((this.meuComentario.userEmail && !re.test(String(this.meuComentario.userEmail).toLowerCase())) ||
                     !this.meuComentario.comentario || this.meuComentario.comentario.length <= 5) {
                     return true;
                 }
