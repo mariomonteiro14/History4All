@@ -10,14 +10,6 @@
         </div>
         <v-app v-else id="inspire">
 
-            <v-layout align-content-start v-if="!isLoading">
-                <v-flex xs1>
-                    <v-btn class="primary--text subheading" round flat @click="$router.push('/atividades')">
-                        <v-icon>fa fa-arrow-left</v-icon>
-                        &nbsp Atividades
-                    </v-btn>
-                </v-flex>
-            </v-layout>
             <v-tabs fixed-tabs>
                 <v-tab @click="tabSelecionada=0">Descricao</v-tab>
                 <v-tab v-if="atividade.chat && participa" @click="tabSelecionada=1">Chat</v-tab>
@@ -197,10 +189,10 @@
                                                                             </v-icon>
                                                                         </v-list-tile-avatar>
                                                                         <v-list-tile-content>
-                                                                            <v-list-tile-title
-                                                                                v-html="mensagem.user.nome"></v-list-tile-title>
-                                                                            <v-list-tile-sub-title
-                                                                                v-html="mensagem.mensagem"></v-list-tile-sub-title>
+                                                                            <v-list-tile-title>
+                                                                                {{mensagem.user.nome}}</v-list-tile-title>
+                                                                            <v-list-tile-sub-title>
+                                                                                {{mensagem.mensagem}}</v-list-tile-sub-title>
                                                                         </v-list-tile-content>
                                                                     </v-list-tile>
                                                                 </template>
@@ -509,6 +501,15 @@
                 </v-layout>
             </v-container>
         </v-app>
+        <v-layout align-content-center>
+            <v-flex xs12 sm12 md12>
+                <v-btn class="primary--text subheading" round flat @click="$router.go(-1)">
+                    <v-icon>fa fa-arrow-left</v-icon>
+                    &nbsp Voltar
+                </v-btn>
+            </v-flex>
+        </v-layout>
+        <br>
         <div class="modal fade" id="mostrarPatrimoniosModal" tabindex="-1" role="dialog"
              aria-labelledby="mostrarPatrimoniosModal"
              aria-hidden="true">

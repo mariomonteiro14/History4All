@@ -133,6 +133,14 @@
                 </v-flex>
             </v-layout>
         </v-app>
+        <v-layout align-content-center>
+            <v-flex xs1 sm7 offset-sm1>
+                <v-btn class="primary--text subheading" round flat @click="$router.go(-1)">
+                    <v-icon>fa fa-arrow-left</v-icon>
+                    &nbsp Voltar
+                </v-btn>
+            </v-flex>
+        </v-layout>
         <br>
     </div>
 

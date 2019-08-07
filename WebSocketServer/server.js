@@ -74,6 +74,9 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('nova_notificacao', function (mensagem, users) {
+		if (!users){
+			return;
+		}
 		if (mensagem !== undefined) {
 			users.forEach(user =>{
 				let userInfo = loggedUsers.userInfoByID(user.id);
@@ -94,6 +97,9 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('multiplos_atualizar_notificacoes', function (users) {
+		if (!users){
+			return;
+		}
 		users.forEach(user =>{
 			let userInfo = loggedUsers.userInfoByID(user.id);
 			let socket_id = userInfo !== undefined ? userInfo.socketID : null;

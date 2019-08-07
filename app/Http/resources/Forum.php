@@ -25,7 +25,7 @@ class Forum extends JsonResource
             'numComentarios' => $this->comentarios()->count(),
             'data_criado' => $this->created_at,
             'data_ultima_atualizacao' => $this->updated_at,
-            'data_ultima_atualizacao_comentario' => count($this->comentarios()->get()) > 0 ?
+            'data_ultima_atualizacao_comentario' => $this->comentarios()->count() > 0 ?
                 $this->comentarios()->orderBy('updated_at')->pluck('updated_at')->first() : $this->updated_at,
         ];
     }

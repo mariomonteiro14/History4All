@@ -31,7 +31,7 @@
                                                 <span class=" font-weight-light grey--text">Ciclo:</span>
                                                 <h6>{{turma.ciclo}}</h6>
                                             </v-flex>
-                                            <v-flex>
+                                            <v-flex v-if="turma.professor.length > 0">
                                                 <span class=" font-weight-light grey--text">Professor:</span>
                                                 <a @click="$router.push('/users/'+ turma.professor[0].id)">
                                                     <v-layout>
