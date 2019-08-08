@@ -88,48 +88,51 @@
                                                     </v-layout>
                                                 </td>
                                                 <v-speed-dial
-                                                    v-model="fab"
                                                     direction="left"
+                                                    v-model="fab"
                                                 >
                                                     <template v-slot:activator>
                                                         <v-btn
-                                                            v-model="fab"
                                                             color="blue darken-2"
                                                             dark
-                                                            flat
+                                                            :flat="!(fabId == props.item.id && fab)"
                                                             small
                                                             fab
                                                             @click="changeFabId(props.item.id)"
+                                                            :color="(fabId == props.item.id && fab)?'blue-grey lighten-5':''"
                                                         >
-                                                            <v-icon v-if="fab">close</v-icon>
+                                                            <v-icon color=grey v-if="fabId == props.item.id && fab">close</v-icon>
                                                             <v-icon color="grey" v-else>fas fa-ellipsis-v</v-icon>
                                                         </v-btn>
                                                     </template>
-                                                    <v-list class="pa-0" absolute dense>
-                                                        <v-list-tile ripple="ripple" rel="noopener">
+                                                    <v-card v-show="fabId==props.item.id" color="green lighten-4" >
+                                                        <v-layout>
                                                             <v-btn
-                                                                flat
+
                                                                 small
-                                                                color="green"
+                                                                text
+                                                                color="warning"
                                                             >
                                                                 editar
                                                             </v-btn>
                                                             <v-btn
-                                                                flat
                                                                 small
+                                                                class="white--text"
                                                                 color="red"
                                                             >
                                                                 Eliminar
                                                             </v-btn>
                                                             <v-btn
-                                                                flat
+                                                                v-if="!($store.state.user && $store.state.user.tipo == 'admin')"
                                                                 small
+                                                                class="white--text"
                                                                 color="indigo"
+                                                                @click="showDenuncia(props.item.id)"
                                                             >
                                                                 Denunciar
                                                             </v-btn>
-                                                        </v-list-tile>
-                                                    </v-list>
+                                                        </v-layout>
+                                                    </v-card>
                                                 </v-speed-dial>
                                             </tr>
                                         </template>
@@ -237,19 +240,24 @@
                 </v-card-actions>
                 <v-card-actions v-else>
                     <v-spacer></v-spacer>
-                    <loader style="padding: 10px" color="green"
-                            size="32px"></loader>
+                    <loader style="padding: 10px" color="green" size="32px"></loader>
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <denuncia-dialog ref="denunciarModal" :isForum="false" :id="comentEdit"></denuncia-dialog>
     </div>
 
 </template>
 <script type="text/javascript">
     import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+    import DenunciaModal from './denunciarModal';
 
     export default {
         props: ['id'],
+        components: {
+            'denuncia-dialog': DenunciaModal,
+        },
+
         data: function () {
             return {
                 forum: {},
@@ -263,8 +271,9 @@
                 verificandoCredenciais: false,
                 credenciais: {},
                 fab: false,
-                //fabId: 0,
+                fabId: 0,
                 dialogCode: false,
+                comentEdit: {id:0},
 
                 editor: ClassicEditor,
                 editorConfig: {
@@ -344,12 +353,14 @@
                 return classif;
             },
             changeFabId(id) {
-                if (this.fabId != id) {
-                    this.fabId = id;
-                } else {
+                if (!this.fab && this.fabId == id){
                     this.fabId = 0;
                 }
+                if (this.fabId != id) {
+                    this.fabId = id;
+                }
             },
+
 
             saveComentario() {
                 if (this.meuComentario.userEmail && (!this.credenciais.codigo || this.credenciais.email != this.meuComentario.userEmail)) {
@@ -554,7 +565,15 @@
                     return "fas fa-thumbs-down";
                 }
                 return "far fa-thumbs-down";
-            }
+            },
+
+            showDenuncia(comentarioId){
+                this.comentEdit = comentarioId;
+                this.$refs.denunciarModal.show = true;
+
+            },
+
+
         },
         computed: {
             hasErrors: function () {
@@ -566,6 +585,13 @@
                 return false;
             }
         },
+        watch:{
+            fabId(){
+                this.fab = this.fabId == 0;
+               // console.log(this.fab + "-"+ this.fabId);
+            }
+
+    }
 
     }
 </script>

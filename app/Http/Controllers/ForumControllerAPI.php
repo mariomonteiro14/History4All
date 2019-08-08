@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Comentario;
 use App\Forum;
+use App\Notificacao;
 use App\User;
 use App\ForumPatrimonios;
 use App\HistoricoGerenciadorCodigos;
@@ -324,6 +325,45 @@ class ForumControllerAPI extends Controller
 
         $comment->delete();
         return response()->json(null, 201);
+    }
+
+    public function denuncia(Request $request, $tipo, $id){
+        $request->validate(['denuncia' => 'required|string']);
+
+        $mensagem = "";
+        $link="";
+        if ($tipo == "forum"){
+           $forum = Forum::findOrFail($id);
+
+           $mensagem = "Um utilizador denunciou o forum: ". $forum->titulo ." Motivo: " . $request->denuncia . ".";
+           $link = "forums/" . $id;
+
+
+        }else if($tipo == "comentario"){
+            $comentario = Comentario::findOrFail($id);
+
+            $forum = $comentario->forum()->first();
+
+            $mensagem = "Um utilizador denunciou um comentario (id:".$id.") no forum: ". $forum->titulo ." Motivo: " . $request->denuncia . ".";
+            $link = "forums/" . $forum->id;
+
+        }else{
+            return(abort(403, "Essa rota nao existe"));
+        }
+
+        $admin = User::where('tipo', 'admin')->first();
+        $notif = new Notificacao();
+        $notif->fill([
+            'user_id' => $admin->id,
+            'mensagem' => $mensagem,
+            'de' => "Denuncia",
+            'data' => date("Y-m-d H:i:s"),
+            'nova' => "1",
+            'link' => $link
+        ]);
+        $notif->save();
+
+        return response()->json(null, 200);
     }
 
 }

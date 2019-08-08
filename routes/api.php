@@ -38,6 +38,8 @@ Route::put('comentarios/{id}/decrementLike', 'ForumControllerAPI@decrementLike')
 Route::put('comentarios/{id}/incrementDislike', 'ForumControllerAPI@incrementDislike');
 Route::put('comentarios/{id}/decrementDislike', 'ForumControllerAPI@decrementDislike');
 Route::delete('comentarios/{id}', 'ForumControllerAPI@destroyComment');
+Route::post('forums/denunciar/{tipo}/{id}', 'ForumControllerAPI@denuncia');
+
 ///Apenas se o user nao estiver autenticado
 Route::post('forums/generateAccessCode', 'ForumControllerAPI@generateAccessCode');
 Route::post('forums/{id}/compararEmails', 'ForumControllerAPI@compararEmails');
