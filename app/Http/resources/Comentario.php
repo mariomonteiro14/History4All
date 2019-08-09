@@ -17,7 +17,7 @@ class Comentario extends JsonResource
         return [
             'id' => $this->id,
             'forum_id' => $this->forum_id,
-            'user_email' => $this->user_email,
+            'hasEmail' => $this->user_email != null,
             'comentario' => $this->comentario,
             'likes' => $this->likes,
             'dislikes' => $this->dislikes,

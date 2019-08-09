@@ -310,19 +310,24 @@ class ForumControllerAPI extends Controller
     {
         $comment = Comentario::findOrFail($id);
 
-        if (!Auth::user()) {
-            if (!$request->has("eamil") || !$request->has("codigo")) {
+        if (!$request->user('api')) {
+            if (!$request->has("email") || !$request->has("codigo")) {
                 return abort(400, "necessita de provar ser o criador do forum");
+            }
+            if ($request->email != $comment->user_email){
+                return abort(403, "Operacao negada! O utilizador nao é o criador deste comentario");
             }
             if (!HistoricoGerenciadorCodigos::where('email', $request->email)->where('codigo', $request->codigo)->first()) {
                 return abort(401, "Codigo introduzido invalido!");
             }
         } else {
-            if ($comment->user_email != Auth::user()->email || Auth::user()->tipo != 'admin') {
+            $user = User::findOrFail($request->user('api')->id);
+            if ($comment->user_email != $user->email && $user->tipo != 'admin') {
                 return abort(403, "nao tens permissoes para eliminar este forum");
             }
         }
 
+        //return response()->json("deleted", 201);
         $comment->delete();
         return response()->json(null, 201);
     }

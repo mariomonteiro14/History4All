@@ -114,7 +114,6 @@
                     this.isSending = false;
                     this.denuncia = "";
                     this.outro = "";
-                    console.log("fechar")
                 }.bind(this), 500);
 
 

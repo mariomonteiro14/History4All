@@ -101,14 +101,16 @@
                                                             @click="changeFabId(props.item.id)"
                                                             :color="(fabId == props.item.id && fab)?'blue-grey lighten-5':''"
                                                         >
-                                                            <v-icon color=grey v-if="fabId == props.item.id && fab">close</v-icon>
+                                                            <v-icon color=grey v-if="fabId == props.item.id && fab">
+                                                                close
+                                                            </v-icon>
                                                             <v-icon color="grey" v-else>fas fa-ellipsis-v</v-icon>
                                                         </v-btn>
                                                     </template>
-                                                    <v-card v-show="fabId==props.item.id" color="green lighten-4" >
+                                                    <v-card v-show="fabId==props.item.id" color="green lighten-4">
                                                         <v-layout>
                                                             <v-btn
-
+                                                                v-if="props.item.hasEmail || ($store.state.user && $store.state.user.tipo=='admin')"
                                                                 small
                                                                 text
                                                                 color="warning"
@@ -116,9 +118,11 @@
                                                                 editar
                                                             </v-btn>
                                                             <v-btn
+                                                                v-if="props.item.hasEmail || ($store.state.user && $store.state.user.tipo=='admin')"
                                                                 small
                                                                 class="white--text"
                                                                 color="red"
+                                                                @click="eliminarComentario(props.item.id)"
                                                             >
                                                                 Eliminar
                                                             </v-btn>
@@ -204,8 +208,23 @@
         >
             <v-card>
                 <v-card-title class="headline">Verificação de email</v-card-title>
-
-                <v-card-text>
+                <v-card-text v-if="introduzirEmail">
+                    <span>Apenas o criador deste comentario poderá edita-lo ou elimina-lo.Introduza o seu email de modo a poder conprovar a sua identidade</span>
+                    <v-layout>
+                        <v-text-field class="text-sm-left"
+                                      v-model="credenciais.email"
+                                      label="Email"
+                                      :rules="[v => !!v || 'Email obrigatório',
+                                        (v) =>  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido']"
+                                      clearable
+                                      :disabled="sendingEmail"
+                        />
+                        <v-btn v-if="!sendingEmail" color="warning" round flat @click="gerarCodigo(credenciais.email)">Enviar</v-btn>
+                        <loader style="padding: 10px" v-else color="green"
+                                size="32px"></loader>
+                    </v-layout>
+                </v-card-text>
+                <v-card-text v-else>
                     Foi enviado um email para o endereço inserido. Introduza o codigo presente nesse email para concluir
                     o processo.
                     <v-text-field class="text-sm-left"
@@ -217,13 +236,13 @@
                     />
                 </v-card-text>
 
-                <v-card-actions v-if="!verificandoCredenciais">
+                <v-card-actions v-if="!verificandoCredenciais && !introduzirEmail">
                     <v-spacer></v-spacer>
 
                     <v-btn
                         color="green darken-1"
                         text
-                        flat
+                        flat round
                         @click="gerarCodigo"
                     >
                         Reenviar email
@@ -231,14 +250,14 @@
 
                     <v-btn
                         color="orange darken-1"
-                        text flat
+                        text flat round
                         @click="verificarCodigo(1)"
                         :disabled="!credenciais.codigo"
                     >
                         Enviar
                     </v-btn>
                 </v-card-actions>
-                <v-card-actions v-else>
+                <v-card-actions v-else-if="!introduzirEmail">
                     <v-spacer></v-spacer>
                     <loader style="padding: 10px" color="green" size="32px"></loader>
                 </v-card-actions>
@@ -273,7 +292,9 @@
                 fab: false,
                 fabId: 0,
                 dialogCode: false,
-                comentEdit: {id:0},
+                comentEdit: 0,
+                introduzirEmail: false,
+                sendingEmail:false,
 
                 editor: ClassicEditor,
                 editorConfig: {
@@ -353,7 +374,7 @@
                 return classif;
             },
             changeFabId(id) {
-                if (!this.fab && this.fabId == id){
+                if (!this.fab && this.fabId == id) {
                     this.fabId = 0;
                 }
                 if (this.fabId != id) {
@@ -361,11 +382,11 @@
                 }
             },
 
-
             saveComentario() {
                 if (this.meuComentario.userEmail && (!this.credenciais.codigo || this.credenciais.email != this.meuComentario.userEmail)) {
                     this.dialogCode = true;
-                    this.credenciais.codigo = null
+                    this.credenciais.codigo = null;
+                    this.introduzirEmail = false;
                     this.gerarCodigo();
                     return;
                 }
@@ -394,14 +415,53 @@
                         }
                     });
             },
-            gerarCodigo() {
+            eliminarComentario(comentarioId = 0) {
+                if (comentarioId != 0) {
+                    this.comentEdit = comentarioId;
+                }
+                let url;
+
+                if (this.$store.state.user) {
+                    url = '/api/comentarios/' + this.comentEdit;
+                } else {
+                    if (this.credenciais.email && this.credenciais.codigo) {
+                        url = '/api/comentarios/' + this.comentEdit + '?codigo=' + this.credenciais.codigo + '&email=' + this.credenciais.email;
+                    } else {
+                        this.introduzirEmail = true;
+                        this.dialogCode = true;
+                        return;
+                    }
+                }
+                console.log(url);
+                axios.delete(url).then(response => {
+
+                    this.toastPopUp("success", "Comentario Eliminado!");
+                    this.getComentarios();
+                }).catch(error => {
+                    if (error.response.data.message == "Codigo introduzido invalido!") {
+                        this.credenciais.codigo = null;
+                        this.eliminarComentario(comentarioId);
+                    } else {
+                        this.toastErrorApi(error);
+                    }
+                    this.toastErrorApi(error);
+                });
+            },
+
+            gerarCodigo(email = this.meuComentario.userEmail) {
+                console.log(email);
                 this.isLoading = true;
-                axios.post('/api/forums/generateAccessCode', {'user_email': this.meuComentario.userEmail}).then(response => {
+                this.sendingEmail = true;
+                axios.post('/api/forums/generateAccessCode', {'user_email': email}).then(response => {
+                    this.introduzirEmail = false;
+                    this.sendingEmail = false;
+
                 }).catch(error => {
                     //this.dialogCode = false;
                     this.toastErrorApi(error);
                 })
-            },
+            }
+            ,
             verificarCodigo(funcao = 0) {
                 this.verificandoCredenciais = true;
                 axios.post('/api/forums/compararCodigo', {
@@ -409,11 +469,18 @@
                     'codigo': this.credenciais.codigo
                 }).then(response => {
                     this.verificandoCredenciais = false;
+
+                    this.$cookies.set("credentials", this.credenciais, "1d");
                     if (funcao == 1) { //registar comentario
                         this.dialogCode = false;
                         this.credenciais.email = this.meuComentario.userEmail;
-                        this.$cookies.set("credentials", this.credenciais, "1d");
                         this.saveComentario();
+                    }
+                    else if (funcao == 2) {//editar comentario
+
+                    }
+                    else if (funcao == 3) {//eliminar comentario
+                        this.eliminarComentario();
                     }
                     return true;
                 }).catch(error => {
@@ -421,7 +488,8 @@
                     this.credenciais.codigo = null;
                     return false;
                 })
-            },
+            }
+            ,
             like(comentario) {
                 if (this.meuDislikes.includes(comentario.id)) {
                     this.dislike(comentario);
@@ -455,7 +523,8 @@
                             this.meuLikes.push(comentario.id);
                         }
                     });
-            },
+            }
+            ,
             dislike(comentario) {
                 if (this.meuLikes.includes(comentario.id)) {
                     this.like(comentario);
@@ -507,8 +576,8 @@
                         return parseInt(item, 10);
                     });
                 }
-
             },
+
             updateCookies(like, incrementar, comentarioId) {
                 let cookieName = this.forum.titulo.replace(/\s/g, "").concat("%" + this.forum.id);
 
@@ -567,14 +636,15 @@
                 return "far fa-thumbs-down";
             },
 
-            showDenuncia(comentarioId){
+            showDenuncia(comentarioId) {
                 this.comentEdit = comentarioId;
                 this.$refs.denunciarModal.show = true;
+            }
+            ,
 
-            },
 
-
-        },
+        }
+        ,
         computed: {
             hasErrors: function () {
                 var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -584,14 +654,15 @@
                 }
                 return false;
             }
-        },
-        watch:{
-            fabId(){
+        }
+        ,
+        watch: {
+            fabId() {
                 this.fab = this.fabId == 0;
-               // console.log(this.fab + "-"+ this.fabId);
+                // console.log(this.fab + "-"+ this.fabId);
             }
 
-    }
+        }
 
     }
 </script>
