@@ -175,9 +175,9 @@
                                                               :value="meuComentario.comentario"
                                                               v-model="meuComentario.comentario"></ckeditor>
                                                 </div>
-                                                <div v-if="meuComentario.comentario">
+                                                <div v-if="meuComentario.comentario && operacao<2">
                                                     <v-spacer></v-spacer>
-                                                    <v-btn v-if="!sendingComentario" @click="saveComentario"
+                                                    <v-btn v-if="!sendingRequest" @click="saveComentario"
                                                            color="success" :disabled="hasErrors">Publicar
                                                     </v-btn>
                                                     <loader style="padding: 10px" v-else color="green"
@@ -205,9 +205,19 @@
         <v-dialog
             v-model="dialogCode"
             width="450px"
+            persistent
         >
             <v-card>
-                <v-card-title class="headline">Verificação de email</v-card-title>
+                <v-layout>
+                    <v-card-title class="headline">
+                        <span>Verificação de email</span>
+                    </v-card-title>
+                    <v-spacer></v-spacer>
+                    <v-btn icon flat @click="dialogCode=false; operacao=0">
+                        <v-icon>close</v-icon>
+                    </v-btn>
+                </v-layout>
+
                 <v-card-text v-if="introduzirEmail">
                     <span>Apenas o criador deste comentario poderá edita-lo ou elimina-lo.Introduza o seu email de modo a poder conprovar a sua identidade</span>
                     <v-layout>
@@ -219,7 +229,9 @@
                                       clearable
                                       :disabled="sendingEmail"
                         />
-                        <v-btn v-if="!sendingEmail" color="warning" round flat @click="gerarCodigo(credenciais.email)">Enviar</v-btn>
+                        <v-btn v-if="!sendingEmail" color="warning" round flat @click="gerarCodigo(credenciais.email)">
+                            Enviar
+                        </v-btn>
                         <loader style="padding: 10px" v-else color="green"
                                 size="32px"></loader>
                     </v-layout>
@@ -232,18 +244,18 @@
                                   label="Código de acesso"
                                   :rules="[v => !!v || 'Código obrigatório']"
                                   clearable
-                                  :disabled="sendingComentario"
+                                  :disabled="sendingRequest"
                     />
                 </v-card-text>
 
-                <v-card-actions v-if="!verificandoCredenciais && !introduzirEmail">
+                <v-card-actions v-if="!sendingRequest && !introduzirEmail">
                     <v-spacer></v-spacer>
 
                     <v-btn
                         color="green darken-1"
                         text
                         flat round
-                        @click="gerarCodigo"
+                        @click="gerarCodigo(credenciais.email)"
                     >
                         Reenviar email
                     </v-btn>
@@ -251,7 +263,7 @@
                     <v-btn
                         color="orange darken-1"
                         text flat round
-                        @click="verificarCodigo(1)"
+                        @click="verificarCodigo"
                         :disabled="!credenciais.codigo"
                     >
                         Enviar
@@ -286,15 +298,15 @@
                 meuComentario: {},
                 meuLikes: [],
                 meuDislikes: [],
-                sendingComentario: false,
-                verificandoCredenciais: false,
+                sendingRequest: false,
                 credenciais: {},
                 fab: false,
                 fabId: 0,
                 dialogCode: false,
                 comentEdit: 0,
                 introduzirEmail: false,
-                sendingEmail:false,
+                sendingEmail: false,
+                operacao: 0,
 
                 editor: ClassicEditor,
                 editorConfig: {
@@ -383,15 +395,17 @@
             },
 
             saveComentario() {
+                this.operacao = 1;
                 if (this.meuComentario.userEmail && (!this.credenciais.codigo || this.credenciais.email != this.meuComentario.userEmail)) {
                     this.dialogCode = true;
+                    this.credenciais.email = this.meuComentario.userEmail;
                     this.credenciais.codigo = null;
                     this.introduzirEmail = false;
                     this.gerarCodigo();
                     return;
                 }
 
-                this.sendingComentario = true;
+                this.sendingRequest = true;
                 if (this.$store.state.user) {
                     this.meuComentario.userEmail = this.$store.state.user.email;
                 } else {
@@ -400,12 +414,13 @@
                 axios.post('/api/forums/' + this.forum.id + '/comentarios', this.meuComentario)
                     .then(response => {
                         this.getComentarios();
-                        this.sendingComentario = false;
+                        this.sendingRequest = false;
                         this.meuComentario = {};
                         this.toastPopUp('success', 'Comentario criado!');
+                        this.operacao = 0;
                     })
                     .catch(error => {
-                        this.sendingComentario = false;
+                        this.sendingRequest = false;
                         console.log(error);
                         if (error.response.data.message == "Codigo introduzido invalido!") {
                             this.credenciais.codigo = null;
@@ -416,6 +431,8 @@
                     });
             },
             eliminarComentario(comentarioId = 0) {
+                this.operacao = 3;
+
                 if (comentarioId != 0) {
                     this.comentEdit = comentarioId;
                 }
@@ -432,59 +449,72 @@
                         return;
                     }
                 }
-                console.log(url);
+                this.sendingRequest = true;
                 axios.delete(url).then(response => {
-
+                    this.operacao = 0;
+                    this.dialogCode = false;
+                    setTimeout(function(){
+                        this.sendingRequest = false;
+                    }.bind(this), 500);
                     this.toastPopUp("success", "Comentario Eliminado!");
                     this.getComentarios();
                 }).catch(error => {
+                    this.sendingRequest = false;
                     if (error.response.data.message == "Codigo introduzido invalido!") {
                         this.credenciais.codigo = null;
+                        this.eliminarComentario(comentarioId);
+                    } else if (error.response.data.message == "Operacao negada! O utilizador nao é o criador deste comentario") {
+                        this.credenciais.email = "";
                         this.eliminarComentario(comentarioId);
                     } else {
                         this.toastErrorApi(error);
                     }
-                    this.toastErrorApi(error);
                 });
             },
 
-            gerarCodigo(email = this.meuComentario.userEmail) {
-                console.log(email);
+            gerarCodigo(email = this.credenciais.email) {
                 this.isLoading = true;
                 this.sendingEmail = true;
-                axios.post('/api/forums/generateAccessCode', {'user_email': email}).then(response => {
+                let url;
+                if (this.operacao == 1) {
+                    url = '/api/forums/generateAccessCode';
+                } else {
+                    url = '/api/comentarios/' + this.comentEdit + '/compararEmails';
+                }
+
+                axios.post(url, {'user_email': email}).then(response => {
                     this.introduzirEmail = false;
                     this.sendingEmail = false;
-
+                    this.credenciais.codigo = "";
                 }).catch(error => {
-                    //this.dialogCode = false;
+                    this.sendingEmail = false;
                     this.toastErrorApi(error);
                 })
             }
             ,
-            verificarCodigo(funcao = 0) {
-                this.verificandoCredenciais = true;
+            verificarCodigo() {
+                this.sendingRequest = true;
                 axios.post('/api/forums/compararCodigo', {
-                    'user_email': this.meuComentario.userEmail,
+                    'user_email': this.credenciais.email,
                     'codigo': this.credenciais.codigo
                 }).then(response => {
-                    this.verificandoCredenciais = false;
-
                     this.$cookies.set("credentials", this.credenciais, "1d");
-                    if (funcao == 1) { //registar comentario
+                    if (this.operacao == 1) { //registar comentario
                         this.dialogCode = false;
                         this.credenciais.email = this.meuComentario.userEmail;
                         this.saveComentario();
                     }
-                    else if (funcao == 2) {//editar comentario
+                    else if (this.operacao == 2) {//editar comentario
 
                     }
-                    else if (funcao == 3) {//eliminar comentario
+                    else if (this.operacao == 3) {//eliminar comentario
                         this.eliminarComentario();
+                    } else {
+                        this.sendingRequest = false;
                     }
                     return true;
                 }).catch(error => {
-                    this.verificandoCredenciais = false;
+                    this.sendingRequest = false;
                     this.credenciais.codigo = null;
                     return false;
                 })
@@ -660,6 +690,12 @@
             fabId() {
                 this.fab = this.fabId == 0;
                 // console.log(this.fab + "-"+ this.fabId);
+            },
+            dialogCode() {
+
+                if (!this.dialogCode && this.$cookies.isKey("credentials")) {
+                    this.credenciais = this.$cookies.get("credentials");
+                }
             }
 
         }

@@ -156,28 +156,40 @@ class ForumControllerAPI extends Controller
         return response()->json(null, 200);
     }
 
-    public function compararEmails(Request $request, $id)
+    public function compararEmails(Request $request,$tipo, $id)
     {
         $request->validate([
                 'user_email' => 'required|email']
         );
-        $forum = Forum::findOrFail($id);
-        if ($forum->user_email != $request->user_email) {
+        if ($tipo == "forums") {
+            $forum = Forum::findOrFail($id);
+            if ($forum->user_email != $request->user_email) {
+                if (!$request->user('api')) {
+                    return abort(403, "O email inserido não corresponde ao email que criou o fórum");
+                }
+                if ($request->user('api')->tipo == 'admin' && $request->has('tipo') && $request->tipo == 'eliminar') {
+                    return response()->json(null, 200);
+                }
+                return abort(403, "Esse fórum não foi criado por si");
+            }
             if (!$request->user('api')) {
-                return abort(403, "O email inserido não corresponde ao email que criou o fórum");
+                return $this->generateAccessCode($request);
             }
             if ($request->user('api')->tipo == 'admin' && $request->has('tipo') && $request->tipo == 'eliminar') {
-                return response()->json(null, 200);
+                return response()->json(['tipo' => 'forumDoAdmin'], 200);
             }
-            return abort(403, "Esse fórum não foi criado por si");
+            return response()->json(null, 200);
         }
-        if (!$request->user('api')) {
+        else{
+            $comment = Comentario::findOrFail($id);
+            if ($comment->user_email == null){
+                return abort(400, "Este comentario nao tem email associado");
+            }
+            if ($comment->user_email != $request->user_email){
+                return abort(403, "O email inserido nao correspode ao do criador deste comentario");
+            }
             return $this->generateAccessCode($request);
         }
-        if ($request->user('api')->tipo == 'admin' && $request->has('tipo') && $request->tipo == 'eliminar') {
-            return response()->json(['tipo' => 'forumDoAdmin'], 200);
-        }
-        return response()->json(null, 200);
     }
 
     public function updateForum($id, Request $request)

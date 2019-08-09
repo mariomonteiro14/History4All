@@ -42,7 +42,7 @@ Route::post('forums/denunciar/{tipo}/{id}', 'ForumControllerAPI@denuncia');
 
 ///Apenas se o user nao estiver autenticado
 Route::post('forums/generateAccessCode', 'ForumControllerAPI@generateAccessCode');
-Route::post('forums/{id}/compararEmails', 'ForumControllerAPI@compararEmails');
+Route::post('{tipo}/{id}/compararEmails', 'ForumControllerAPI@compararEmails');
 Route::post('forums/compararCodigo', 'ForumControllerAPI@compararCodigo');
 
 //////////////////////////////////////////////////////////////////////////////////////////////
