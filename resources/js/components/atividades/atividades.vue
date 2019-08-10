@@ -109,13 +109,13 @@
                                         </v-container>
                                     </v-img>
                                     <v-card-title>
-                                        <strong v-if="atividade.coordenador.escola">
+                                        <strong v-if="atividade.coordenador && atividade.coordenador.escola">
                                             {{atividade.coordenador.escola[0]}}
                                         </strong>
                                         <v-spacer></v-spacer>
 
 
-                                    <div v-if="atividade.coordenador.id == $store.state.user.id">
+                                    <div v-if="atividade.coordenador && atividade.coordenador.id == $store.state.user.id">
                                         <v-divider vertical></v-divider>
                                             <v-btn icon color="warning" @click="editar(atividade.id)">
                                                 <v-icon small>edit</v-icon>

@@ -172,11 +172,11 @@ class ForumControllerAPI extends Controller
                 }
                 return abort(403, "Esse fórum não foi criado por si");
             }
-            if (!$request->user('api')) {
-                return $this->generateAccessCode($request);
-            }
-            if ($request->user('api')->tipo == 'admin' && $request->has('tipo') && $request->tipo == 'eliminar') {
+            if ($request->user('api') && $request->user('api')->tipo == 'admin' && $request->has('tipo') && $request->tipo == 'eliminar') {
                 return response()->json(['tipo' => 'forumDoAdmin'], 200);
+            }
+            if (!$request->user('api') && !$request->codigo) {
+                return $this->generateAccessCode($request);
             }
             return response()->json(null, 200);
         }
@@ -287,28 +287,27 @@ class ForumControllerAPI extends Controller
     public function destroyForum(Request $request, $id)
     {
         $forum = Forum::findOrFail($id);
-        if (!$request->header('Authorization')) {
+        if (!$request->user('api')) {
             if (!$request->has("user_email") || !$request->has("codigo")) {
-                return abort(400, "necessita de provar ser o criador do forum");
+                return abort(400, "necessita de provar ser o criador do fórum");
+            }
+            if ($request->user_email != $forum->user_email){
+                return abort(403, "Operação negada! O utilizador não é o criador deste fórum");
             }
             if (!HistoricoGerenciadorCodigos::where('email', $request->user_email)->where('codigo', $request->codigo)->first()) {
-                return abort(401, "Codigo introduzido invalido!");
+                return abort(401, "Código introduzido invalido!");
             }
         } else {
-            $autorizado = DB::table('oauth_access_tokens')->where('user_id', $request->user_id)->where('id', $request->header('Authorization'))->where('expires_at', '>', new Carbon())->first();
-            if (!$autorizado) {
-                return abort(403, "Autenticação inválida");
-            }
-            $user = User::findOrFail($autorizado->user_id);
+            $user = User::findOrFail($request->user('api')->id);
             if ($forum->user_email != $user->email && $user->tipo != 'admin') {
-                return abort(403, "Não tens permissões para eliminar este forum");
+                return abort(403, "Não tens permissões para eliminar este fórum");
             }
         }
 
         if (isset($user) && $user->tipo == 'admin' && $forum->user_email != $user->email) {
             $mensagem = '<p>O seu fórum ' . $forum->titulo . ' foi apagado por um dos adminsistradores do site</p>';
             if ($request->has('justificaçao')) {
-                $mensagem = '<p>O seu fórum <b>' . $forum->titulo . '</b> foi apagado por um dos adminsistradores do site com a seguinte justificaçao:</p><p>' .
+                $mensagem = '<p>O seu fórum <b>' . $forum->titulo . '</b> foi apagado por um dos adminsistradores do site com a seguinte justificação:</p><p>' .
                     $request->justificaçao . '</p>';
             }
             Mail::to($forum->user_email)->send(new MensagemEmail(null, 'Fórum elimindado no History4All', $mensagem));
@@ -324,18 +323,18 @@ class ForumControllerAPI extends Controller
 
         if (!$request->user('api')) {
             if (!$request->has("email") || !$request->has("codigo")) {
-                return abort(400, "necessita de provar ser o criador do forum");
+                return abort(400, "necessita de provar ser o criador do comentário");
             }
             if ($request->email != $comment->user_email){
-                return abort(403, "Operacao negada! O utilizador nao é o criador deste comentario");
+                return abort(403, "Operação negada! O utilizador não é o criador deste comentário");
             }
             if (!HistoricoGerenciadorCodigos::where('email', $request->email)->where('codigo', $request->codigo)->first()) {
-                return abort(401, "Codigo introduzido invalido!");
+                return abort(401, "Código introduzido invalido!");
             }
         } else {
             $user = User::findOrFail($request->user('api')->id);
             if ($comment->user_email != $user->email && $user->tipo != 'admin') {
-                return abort(403, "nao tens permissoes para eliminar este forum");
+                return abort(403, "não tens permissões para eliminar este comentário");
             }
         }
 

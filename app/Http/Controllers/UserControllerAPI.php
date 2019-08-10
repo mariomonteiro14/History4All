@@ -81,14 +81,6 @@ class UserControllerAPI extends Controller
         return new UserResource($user);
     }
 
-    public function getUserToken(Request $request)
-    {
-        $user = Auth::user();
-        return response()->json([
-            'data' => $user->token()->id
-        ], 201);
-    }
-
     public function editProfile(Request $request)
     {
         $user = User::findOrFail(Auth::id());

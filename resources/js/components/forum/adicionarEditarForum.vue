@@ -7,7 +7,7 @@
                     <div class="container box">
                         <div class="modal-header">
                             <h5 class="modal-title" id="addForumModal">{{getTitle()}}</h5>
-                            <button type="button" @click="cancel()" class="close" data-dismiss="modal"
+                            <button type="button" v-on:click.prevent="cancel" class="close" data-dismiss="modal"
                                     aria-label="Close" :disabled="isLoading">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -210,9 +210,9 @@
                 }
                 axios.post('/api/forums', this.forum).then(response => {
                     this.toastPopUp("success", "Fórum Criado!");
+                    this.$emit('credenciais', this.forum.user_email, this.forum.codigo);
                     this.$emit('getFor');
                     $('#addForumModal').modal('hide');
-                    this.cleanForm();
                     this.$emit('clean');
                     this.isLoading= false;
                 }).catch(error => {
@@ -223,10 +223,10 @@
             update() {
                 this.isLoading= true;
                 axios.put('/api/forums/' + this.forum.id, this.forum).then(response => {
+                    this.$emit('credenciais', this.forum.email, this.forum.codigo);
                     this.toastPopUp("success", "Fórum atualizado!");
-                    this.cleanForm();
-                    this.$emit('clean');
                     this.$emit('getFor');
+                    this.$emit('clean');
                     $('#addForumModal').modal('hide');
                     this.isLoading= false;
                 }).catch(error => {
@@ -235,11 +235,11 @@
                 });
             },
             cancel: function () {
-                this.cleanForm();
                 this.$emit('clean');
                 $('#addForumModal').modal('hide');
             },
             cleanForm: function () {
+                console.log("add edit clean");
                 this.forum.id = undefined;
                 this.forum.titulo = "";
                 this.forum.descricao = "";
