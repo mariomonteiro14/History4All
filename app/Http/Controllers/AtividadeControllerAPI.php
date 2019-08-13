@@ -381,9 +381,9 @@ class AtividadeControllerAPI extends Controller
             $notif->fill([
                 'user_id' => $atividade->coordenador,
                 'mensagem' => "Um aluno submeteu um novo testemunho na atividade " . $atividade->titulo . ".",
-                'de' => "Aluno",
+                'remetente' => "Aluno",
                 'data' => date("Y-m-d H:i:s"),
-                'nova' => "1",
+                'lida' => "1",
                 'link' => "atividade/" . $atividade->id
             ]);
             $notif->save();
@@ -422,9 +422,9 @@ class AtividadeControllerAPI extends Controller
                 $notif->fill([
                     'user_id' => $atividade->coordenador,
                     'mensagem' => "Um aluno alterou um testemunho na atividade " . $atividade->titulo . ".",
-                    'de' => "Aluno",
+                    'remetente' => "Aluno",
                     'data' => date("Y-m-d H:i:s"),
-                    'nova' => "1",
+                    'lida' => "1",
                     'link' => "atividade/" . $atividade->id
                 ]);
                 $notif->save();
@@ -446,9 +446,9 @@ class AtividadeControllerAPI extends Controller
         $notif->fill([
             'user_id' => $user_id,
             'mensagem' => "O seu testemunho na atividade " . $atividade->titulo . " foi confirmado.",
-            'de' => "Coordenador da atividade " . $atividade->titulo,
+            'remetente' => "Coordenador da atividade " . $atividade->titulo,
             'data' => date("Y-m-d H:i:s"),
-            'nova' => "1",
+            'lida' => "1",
             'link' => "atividade/" . $atividade->id
         ]);
         $notif->save();
@@ -468,9 +468,9 @@ class AtividadeControllerAPI extends Controller
             $notif->fill([
                 'user_id' => $user_id,
                 'mensagem' => "O seu testemunho na atividade " . $atividade->titulo . " foi recusado.",
-                'de' => "Coordenador da atividade " . $atividade->titulo,
+                'remetente' => "Coordenador da atividade " . $atividade->titulo,
                 'data' => date("Y-m-d H:i:s"),
-                'nova' => "1",
+                'lida' => "1",
                 'link' => "atividade/" . $atividade->id
             ]);
             $notif->save();

@@ -74,7 +74,7 @@
                     return;
                 }
                 axios.post('/api/notificacoes', {
-                    'de': (this.atividadeId ? 'coordenador da atividade: ' + this.atividadeTitulo :
+                    'remetente': (this.atividadeId ? 'coordenador da atividade: ' + this.atividadeTitulo :
                         this.$store.state.user.tipo + ' ' + this.$store.state.user.nome),
                     'users': this.usersSelected,
                     'mensagem': this.mensagem,
