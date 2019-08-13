@@ -18,7 +18,7 @@ class Forum extends Model
     protected $dates = ['created_at', 'updated_at', 'deleted_at'];
 
     protected $fillable = [
-        'id', 'titulo', 'descricao', 'user_email', 'show_email'
+        'id', 'titulo', 'descricao', 'user_email'
     ];
 
     public function comentarios()

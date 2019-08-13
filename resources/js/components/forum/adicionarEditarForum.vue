@@ -68,21 +68,6 @@
                                             clearable
                                             required
                                 ></v-text-field>
-                                <v-switch
-                                    v-model="forum.show_email" :false-value="false" :true-value="true"
-                                    :label="forum.show_email ? 'Email visivel': 'Email não visivel'"
-                                    color="primary"
-                                >
-                                    <template v-slot:append>
-                                        <v-tooltip right v-if="!forum.show_email">
-                                            <template v-slot:activator="{ on }">
-                                                <v-icon v-on="on">help</v-icon>
-                                            </template>
-                                            Os visitantes não conseguem ver o seu email
-                                        </v-tooltip>
-                                    </template>
-                                </v-switch>
-                                <v-flex xs12 sm2></v-flex>
                             </v-layout>
 
                         </v-container>
@@ -244,7 +229,6 @@
                 this.forum.titulo = "";
                 this.forum.descricao = "";
                 this.forum.user_email = "";
-                this.forum.show_email = false;
                 this.forum.patrimonios = [];
             },
         },
@@ -263,11 +247,8 @@
                 if (Object.entries(novo).length === 0 && novo.constructor === Object){
                     this.cleanForm();
                 }
-                if (novo.user_email && (anterior && anterior.id != novo.id || !anterior)){
-                    this.forum.show_email = true;
-                }
-                if (this.$store.state.user && !this.forum.user_email){
-                    this.forum.user_email = this.$store.state.user.email;
+                if (this.$store.state.user && novo.constructor === Object && !novo.user_email){
+                    novo.user_email = this.$store.state.user.email;
                 }
             }
         }

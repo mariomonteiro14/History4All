@@ -60,12 +60,55 @@
                         <td class="text-xs-left" @click="showForum(props.item)">{{ props.item.numComentarios }}</td>
                         <td class="text-xs-left" @click="showForum(props.item)">{{ new Date(props.item.data_ultima_atualizacao_comentario).toLocaleString() }}</td>
                         <td class="justify-left layout px-0">
-                            <v-btn flat icon @click="editarForumConfirmacao(props.item, 'editar')">
-                                <v-icon color="warning" medium>edit</v-icon>
-                            </v-btn>
-                            <v-btn flat icon  @click.stop="editarForumConfirmacao(props.item, 'eliminar')">
-                                <v-icon color="error" medium>delete_forever</v-icon>
-                            </v-btn>
+                            <v-speed-dial
+                                direction="left"
+                                v-model="fab"
+                            >
+                                <template v-slot:activator>
+                                    <v-btn
+                                        color="blue darken-2"
+                                        dark
+                                        :flat="!(fabId == props.item.id && fab)"
+                                        small
+                                        fab
+                                        @click="changeFabId(props.item.id)"
+                                        :color="(fabId == props.item.id && fab)?'blue-grey lighten-5':''"
+                                    >
+                                        <v-icon color=grey v-if="fabId == props.item.id && fab">
+                                            close
+                                        </v-icon>
+                                        <v-icon color="grey" v-else>fas fa-ellipsis-v</v-icon>
+                                    </v-btn>
+                                </template>
+                                <v-card v-show="fabId==props.item.id" color="green lighten-4">
+                                    <v-layout>
+                                        <v-btn
+                                            small
+                                            text
+                                            color="warning"
+                                            @click="editarForumConfirmacao(props.item, 'editar')"
+                                        >
+                                            editar
+                                        </v-btn>
+                                        <v-btn
+                                            small
+                                            class="white--text"
+                                            color="red"
+                                            @click="editarForumConfirmacao(props.item, 'eliminar')"
+                                        >
+                                            Eliminar
+                                        </v-btn>
+                                        <v-btn
+                                            small
+                                            class="white--text"
+                                            color="indigo"
+                                            @click="showDenuncia(props.item.id)"
+                                        >
+                                            Denunciar
+                                        </v-btn>
+                                    </v-layout>
+                                </v-card>
+                            </v-speed-dial>
                         </td>
                     </tr>
                 </template>
@@ -179,15 +222,18 @@
             </v-dialog>
         </v-layout>
         <br><br>
+        <denuncia-dialog ref="denunciarModal" :isForum="true" :id="forumAtual"></denuncia-dialog>
     </div>
 </template>
 
 <script>
     import AddEditForum from './adicionarEditarForum.vue'
+    import DenunciaModal from './denunciarModal';
     
     export default {
         components: {
             'forum-add-edit': AddEditForum,
+            'denuncia-dialog': DenunciaModal,
         },
         created() {
             this.getForums();
@@ -236,7 +282,9 @@
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'
                 ],
                 emailEnviado: false,
-                dialogPodeContinuar: false
+                dialogPodeContinuar: false,
+                fab: false,
+                fabId: 0
             }
         },
         methods: {
@@ -341,7 +389,6 @@
                     "titulo": "",
                     "descricao": "",
                     "user_email": "",
-                    "show_email": false,
                     "patrimonios": []
                 });
             },
@@ -376,7 +423,19 @@
                     this.isLoading= false;
                     this.toastErrorApi(error);
                 })
-            }
+            },
+            showDenuncia(forumId) {
+                this.forumAtual = forumId;
+                this.$refs.denunciarModal.show = true;
+            },
+            changeFabId(id) {
+                if (!this.fab && this.fabId == id) {
+                    this.fabId = 0;
+                }
+                if (this.fabId != id) {
+                    this.fabId = id;
+                }
+            },
         },
         computed: {
             filteredForums() {

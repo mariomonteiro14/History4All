@@ -46,7 +46,6 @@ class ForumControllerAPI extends Controller
 
     public function storeForum(Request $request)
     {
-        $request->show_email = filter_var($request->show_email, FILTER_VALIDATE_BOOLEAN);
         $request->validate([
             'titulo' => 'required|string',
             'descricao' => 'required|string',
@@ -66,8 +65,7 @@ class ForumControllerAPI extends Controller
         $forum = new Forum([
             'titulo' => $request->titulo,
             'descricao' => $request->descricao,
-            'user_email' => $request->user_email,
-            'show_email' => $request->show_email ? 1 : 0
+            'user_email' => $request->user_email
         ]);
         $forum->save();
 
@@ -194,8 +192,6 @@ class ForumControllerAPI extends Controller
 
     public function updateForum($id, Request $request)
     {
-
-        $request->show_email = filter_var($request->show_email, FILTER_VALIDATE_BOOLEAN);
         $request->validate([
             'titulo' => 'required|string',
             'descricao' => 'required|string',
@@ -215,8 +211,7 @@ class ForumControllerAPI extends Controller
         $forum->fill([
             'titulo' => $request->titulo,
             'descricao' => $request->descricao,
-            'user_email' => $request->user_email,
-            'show_email' => $request->show_email ? 1 : 0
+            'user_email' => $request->user_email
         ]);
         $forum->save();
 
@@ -372,9 +367,9 @@ class ForumControllerAPI extends Controller
         $notif->fill([
             'user_id' => $admin->id,
             'mensagem' => $mensagem,
-            'de' => "Denuncia",
+            'remetente' => "Denuncia",
             'data' => date("Y-m-d H:i:s"),
-            'nova' => "1",
+            'lida' => "1",
             'link' => $link
         ]);
         $notif->save();

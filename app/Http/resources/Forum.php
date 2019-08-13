@@ -20,7 +20,7 @@ class Forum extends JsonResource
             'id' => $this->id,
             'titulo' => $this->titulo,
             'descricao' => $this->descricao,
-            'user_email' => $this->show_email ? $this->user_email : null,
+            'user_email' => $this->user_email,
             'patrimonios' => $patrimonios->exists() ? ShortPatrimonio::collection($patrimonios->get()->pluck('patrimonio')) : [],
             'numComentarios' => $this->comentarios()->count(),
             'data_criado' => $this->created_at,

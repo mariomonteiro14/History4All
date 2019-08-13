@@ -115,10 +115,9 @@
                                                                 text
                                                                 color="warning"
                                                             >
-                                                                editar
+                                                                Editar
                                                             </v-btn>
                                                             <v-btn
-                                                                v-if="props.item.hasEmail || ($store.state.user && $store.state.user.tipo=='admin')"
                                                                 small
                                                                 class="white--text"
                                                                 color="red"
@@ -127,7 +126,6 @@
                                                                 Eliminar
                                                             </v-btn>
                                                             <v-btn
-                                                                v-if="!($store.state.user && $store.state.user.tipo == 'admin')"
                                                                 small
                                                                 class="white--text"
                                                                 color="indigo"

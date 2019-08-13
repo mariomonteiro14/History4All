@@ -17,18 +17,18 @@ class Controller extends BaseController
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
     public function notificacaoEEmail($user, $notificacaoMensagem, $assunto, $emailMensagem, $link){
-        $de = User::findOrFail(Auth::id());
+        $remetente = User::findOrFail(Auth::id());
         $notificacao = new Notificacao();
         $notificacao->fill([
             'user_id' => $user->id,
             'mensagem' => $notificacaoMensagem,
-            'de' => $de->tipo . " " . $de->nome,
+            'remetente' => $remetente->tipo . " " . $remetente->nome,
             'data' => date("Y-m-d H:i:s"),
-            'nova' => '1',
+            'lida' => '1',
             'link' => $link
         ]);
         $notificacao->save();
-        Mail::to($user->email)->send(new MensagemEmail($de, $assunto, $emailMensagem));
+        Mail::to($user->email)->send(new MensagemEmail($remetente, $assunto, $emailMensagem));
         
         //Mail::send('emails.hello', $data, function($message) use ($data) { $message->from($data['email'] , $data['first_name']);
         //$message->to($user->email, $user->nome)->subject($notificacaoMensagem); });

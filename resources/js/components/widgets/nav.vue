@@ -74,7 +74,7 @@
                         data-backdrop="static">
                     <v-btn icon flat slot="activator">
                         <v-badge color="red" overlap>
-                            <span slot="badge">{{novasNotificacoes}}</span>
+                            <span slot="badge">{{numNotificacoesNaoLidas}}</span>
                             <v-icon medium>notifications</v-icon>
                         </v-badge>
                     </v-btn>
@@ -84,7 +84,7 @@
                      aria-labelledby="dropdownNotificacoes"
                      style="max-height:400px; max-width:75vh;">
                     <div style="width: 70vh;">
-                        <v-btn flat v-if="novasNotificacoes > 0" @click="notificacoesLidas" color="blue">Marcar todas
+                        <v-btn flat v-if="numNotificacoesNaoLidas > 0" @click="notificacoesLidas" color="blue">Marcar todas
                             como lidas
                         </v-btn>
                         <v-data-table v-show="this.$store.state.user"
@@ -100,9 +100,9 @@
                             </template>
                             <template v-slot:items="props"
                                       style="width: 100%; display: inline-block; able-layout: fixed;">
-                                <tr :style="[props.item.nova === 1 ? {'backgroundColor' : 'DarkSalmon'} : {}]">
+                                <tr :style="[props.item.lida === 1 ? {'backgroundColor' : 'DarkSalmon'} : {}]">
                                     <td style=" overflow: hidden; display: inline; white-space: normal;">
-                                        <span>{{props.item.de}} - {{formatarData(props.item.data)}}</span>
+                                        <span>{{props.item.remetente}} - {{formatarData(props.item.data)}}</span>
                                         <v-spacer></v-spacer>
                                         <div style="padding-left: 20px">
                                             <strong>
@@ -114,7 +114,7 @@
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on }">
                                                 <v-icon v-on="on" class="material-icons"
-                                                        v-if="props.item.nova === 1"
+                                                        v-if="props.item.lida === 1"
                                                         size="21px" @click="marcarNotificacaoLida(props.item)">
                                                     &#9711
                                                 </v-icon>
@@ -124,7 +124,7 @@
                                                     check_circle
                                                 </v-icon>
                                             </template>
-                                            <span v-if="props.item.nova === 1">marcar como lida</span>
+                                            <span v-if="props.item.lida === 1">marcar como lida</span>
                                             <span v-else>marcar como não lida</span>
                                         </v-tooltip>
                                         <v-spacer></v-spacer>
@@ -223,7 +223,7 @@
             loader_color: '#ffffff',
             loader_size: '30px',
             notificacoes: [],
-            novasNotificacoes: 0
+            numNotificacoesNaoLidas: 0
         }),
         computed: {
             toolbarColor() {
@@ -281,10 +281,10 @@
                 this.isLoading = !this.isLoading;
             },
             notificacoesLidas() {
-                if (this.novasNotificacoes > 0) {
+                if (this.numNotificacoesNaoLidas > 0) {
                     axios.put('/api/me/notificacoes').then(response => {
                         this.notificacoes = response.data.data;
-                        this.novasNotificacoes = 0;
+                        this.numNotificacoesNaoLidas = 0;
                     }).catch(error => {
                         this.toastErrorApi(error);
                     });
@@ -297,8 +297,8 @@
                 axios.get('/api/me/notificacoes')
                     .then(response => {
                         this.notificacoes = response.data.data;
-                        this.novasNotificacoes =
-                            this.notificacoes.filter(notificacao => notificacao.nova === 1).length;
+                        this.numNotificacoesNaoLidas =
+                            this.notificacoes.filter(notificacao => notificacao.lida === 1).length;
                     }).catch(error => {
                     this.toastErrorApi(error);
                     this.isLoading = false;
@@ -311,24 +311,24 @@
             },
             //colocar notificaçao como lida
             marcarNotificacaoLida(notificacao) {
-                this.novasNotificacoes--;
-                notificacao.nova = 0;
+                this.numNotificacoesNaoLidas--;
+                notificacao.lida = 0;
                 axios.put('/api/me/notificacoes/' + notificacao.id + '/lida').then(response => {
                 }).catch(error => {
                     this.toastErrorApi(error);
-                    this.novasNotificacoes++;
-                    notificacao.nova = 1;
+                    this.numNotificacoesNaoLidas++;
+                    notificacao.lida = 1;
                 });
             },
             //colocar notificaçao como nao lida
             marcarNotificacaoNaoLida(notificacao) {
-                this.novasNotificacoes++;
-                notificacao.nova = 1;
+                this.numNotificacoesNaoLidas++;
+                notificacao.lida = 1;
                 axios.put('/api/me/notificacoes/' + notificacao.id + '/naolida').then(response => {
                 }).catch(error => {
                     this.toastErrorApi(error);
-                    this.novasNotificacoes--;
-                    notificacao.nova = 0;
+                    this.numNotificacoesNaoLidas--;
+                    notificacao.lida = 0;
                 });
             },
         },
@@ -343,7 +343,7 @@
         sockets: {
             novaNotificacao(mensagem) {
                 this.notificacoes.unshift(mensagem);
-                this.novasNotificacoes++;
+                this.numNotificacoesNaoLidas++;
             },
             atualizarNotificacoes() {
                 this.getNotificacoes();

@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use App\User;
 use DateTime;
 
-define('YOUR_SERVER_URL', 'http://h4a.local/');
+define('YOUR_SERVER_URL', 'http://history4all.test/');
 // Check "oauth_clients" table for next 2 values:
 define('CLIENT_ID', '2');
 define('CLIENT_SECRET', '9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
@@ -354,9 +354,9 @@ class UserControllerAPI extends Controller
         $notificacao->fill([
             'user_id' => $para->id,
             'mensagem' => $mensagem,
-            'de' => "",
+            'remetente' => "",
             'data' => date("Y-m-d H:i:s"),
-            'nova' => '1',
+            'lida' => '1',
             'link' => null
         ]);
         $notificacao->save();
@@ -365,7 +365,7 @@ class UserControllerAPI extends Controller
     public function notificacoes(Request $request)
     {
         return response()->json([
-            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data', 'link')->orderBy('data', 'desc')->get()
+            'data' => Notificacao::where('user_id', Auth::id())->orderBy('data', 'desc')->get()
         ]);
     }
 
@@ -374,7 +374,7 @@ class UserControllerAPI extends Controller
         $request->validate([
             'users' => 'required',
             'mensagem' => 'required|min:1',
-            'de' => 'required'
+            'remetente' => 'required'
         ]);
 
         if (!$request->has('users') || sizeof($request->get('users')) < 1) {
@@ -392,9 +392,9 @@ class UserControllerAPI extends Controller
             $notificacao->fill([
                 'user_id' => $userId,
                 'mensagem' => $request->mensagem,
-                'de' => $request->de,
+                'remetente' => $request->de,
                 'data' => date("Y-m-d H:i:s"),
-                'nova' => '1',
+                'lida' => '1',
                 'link' => $request->link
             ]);
             $notificacao->save();
@@ -404,14 +404,14 @@ class UserControllerAPI extends Controller
 
     public function updateNotificacoes(Request $request)
     {
-        $notificacoes = Notificacao::where('user_id', Auth::id())->where('nova', 1)->get();
+        $notificacoes = Notificacao::where('user_id', Auth::id())->where('lida', 1)->get();
         foreach ($notificacoes as $notificacao) {
-            $notificacao->nova = 0;
+            $notificacao->lida = 0;
             $notificacao->save();
         };
 
         return response()->json([
-            'data' => Notificacao::where('user_id', Auth::id())->select('id', 'mensagem', 'nova', 'de', 'data', 'link')->orderBy('data', 'desc')->get()
+            'data' => Notificacao::where('user_id', Auth::id())->orderBy('data', 'desc')->get()
         ], 201);
     }
 
@@ -422,7 +422,7 @@ class UserControllerAPI extends Controller
         if ($notificacao->user_id != Auth::id()){
             abort(403, 'A notificação que está a tentar alterar não é a sua');
         }
-        $notificacao->nova = 1;
+        $notificacao->lida = 1;
         $notificacao->save();
         return response()->json(null, 200);
     }
@@ -433,7 +433,7 @@ class UserControllerAPI extends Controller
         if ($notificacao->user_id != Auth::id()){
             abort(403, 'A notificação que está a tentar alterar não é a sua');
         }
-        $notificacao->nova = 0;
+        $notificacao->lida = 0;
         $notificacao->save();
         return response()->json(null, 200);
     }

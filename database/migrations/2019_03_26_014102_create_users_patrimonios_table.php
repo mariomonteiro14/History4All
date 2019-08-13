@@ -67,9 +67,9 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->bigInteger('user_id')->unsigned();//destinatário
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('mensagem');
-            $table->string('de');
+            $table->string('remetente');
             $table->dateTime('data');
-            $table->boolean('nova');
+            $table->boolean('lida');
             $table->string('link')->nullable();
         });
 
@@ -148,7 +148,6 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->string('titulo');
             $table->longText('descricao');
             $table->string('user_email');
-            $table->boolean('show_email');
             $table->softDeletes();
             $table->timestamps();
         });
