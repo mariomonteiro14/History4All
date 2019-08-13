@@ -2,238 +2,304 @@
     <div id="app">
         <br><br><br><br>
         <v-app id="inspire">
-            <v-progress-linear v-if="isLoadingForum" v-slot:progress :color="colorDefault"
-                               indeterminate></v-progress-linear>
 
+            <div style="position:fixed; top:15%">
+                <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                        <v-btn large color="indigo" v-on="on" icon @click="$router.go(-1)">
+                            <v-icon color="white">fa fa-arrow-left</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Voltar</span>
+                </v-tooltip>
+                <br>
+                <br>
+                <v-tooltip bottom v-if="forum.id && !isLoadingForum && !isLoadingComentarios">
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" color="green" icon v-scroll-to="'#addComment'">
+                            <v-icon color="white">edit</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Escrever Comentário</span>
+                </v-tooltip>
+                <br>
+                <br>
+                <v-tooltip bottom v-if="!isLoadingForum && !isLoadingComentarios && forumsRelacionados.length>0">
+                    <template v-slot:activator="{ on }">
+                        <v-btn v-on="on" color="red lighten-1" icon v-scroll-to="'#relatedForums'">
+                            <v-icon small color="white">fas fa-link</v-icon>
+                        </v-btn>
+                    </template>
+                    <span>Forums Relacionados</span>
+                </v-tooltip>
+            </div>
 
-            <v-layout v-else align-content-center>
-                <v-flex xs12 sm10 offset-sm1>
-                    <v-card>
-                        <v-card-text>
-                            <h2>
-                                <strong>{{forum.titulo}}</strong>
-                            </h2>
-                            <br>
-                            <div style="font-size: 25px" v-html="forum.descricao"></div>
-                            <br>
-                            <div>
-                                <span>patrimonios relacionados:</span>
-                                <v-layout>
-                                    <h5 v-for="(patrimonio, index) in forum.patrimonios" :key="index"
-                                        class="blue--text font-weight-light">
-                                        <a @click="$router.push('/patrimonio/'+ patrimonio.id)">
-                                            {{patrimonio.nome}}&nbsp &nbsp
-                                        </a>
-                                    </h5>
-                                </v-layout>
+            <v-layout align-content-center>
+                <v-flex xs12 sm12>
+                    <v-container offset-sm1 v-if="!forum.id || isLoadingForum">
+                        <v-progress-linear v-if="isLoadingForum" v-slot:progress :color="colorDefault"
+                                           indeterminate></v-progress-linear>
+                        <v-alert  v-else-if="!forum.id && !isLoadingForum" :value="true" color="error" icon="warning">
+                            Forum nao encontrado :(
+                        </v-alert>
+                    </v-container>
+                    <v-flex v-else-if="!isLoadingForum" xs12 sm10 offset-sm1>
+                        <v-card>
+                            <v-card-text>
+                                <h2>
+                                    <strong>{{forum.titulo}}</strong>
+                                </h2>
+                                <br>
+                                <div style="font-size: 25px" v-html="forum.descricao"></div>
+                                <br>
+                                <div>
+                                    <span>patrimonios relacionados:</span>
+                                    <v-layout>
+                                        <h5 v-for="(patrimonio, index) in forum.patrimonios" :key="index"
+                                            class="blue--text font-weight-light">
+                                            <a @click="$router.push('/patrimonio/'+ patrimonio.id)">
+                                                {{patrimonio.nome}}&nbsp &nbsp
+                                            </a>
+                                        </h5>
+                                    </v-layout>
+                                </div>
+                            </v-card-text>
+                            <div v-if="isLoadingComentarios">
+                                <v-progress-linear v-slot:progress :color="colorDefault"
+                                                   indeterminate></v-progress-linear>
                             </div>
-                        </v-card-text>
-                        <div v-if="isLoadingComentarios">
-                            <v-progress-linear v-slot:progress :color="colorDefault"
-                                               indeterminate></v-progress-linear>
-                        </div>
-                        <div v-else>
-                            <v-card>
-                                <v-card-text>
-                                    <h4>Comentários:</h4><br>
-                                    <div v-if="comentarios.length == 0">
-                                        <v-card-text>
-                                            <center>
-                                                <h3>
-                                                    <span> 0 comentários</span>
-                                                </h3>
-                                            </center>
-                                        </v-card-text>
-                                    </div>
-                                    <v-data-table v-else :headers="headers" class="elevation-1" :items=comentarios
-                                                  hide-headers :pagination.sync="pagination"
-                                                  :loading="isLoadingComentarios">
-                                        <template v-slot:items="props">
-                                            <tr :class="(operacao == 2 && comentEdit == props.item.id && showEditForm) ? 'green lighten-4' : ''">
-                                                <td class="text-md-left"
-                                                    v-if="!(operacao == 2 && comentEdit == props.item.id)">
-                                                    <br>
-                                                    <center>
-                                                        <h3 :class="props.item.likes - props.item.dislikes < 0 ? 'error--text' : 'green--text'">
-                                                            {{classificacao(props.item)}}</h3>
-                                                    </center>
-                                                    <v-layout>
-                                                        <v-flex sm6>
-                                                            <center>
-                                                                <v-btn flat icon @click="like(props.item)">
-                                                                    <v-icon color="green">{{likeIcon(props.item.id)}}
-                                                                    </v-icon>
-                                                                </v-btn>
-                                                                <span class="green--text">{{props.item.likes}}</span>
-                                                            </center>
-                                                        </v-flex>
-                                                        <v-spacer></v-spacer>
-                                                        <v-flex sm6>
-                                                            <center>
-                                                                <v-btn flat icon @click="dislike(props.item)">
-                                                                    <v-icon color="red" class="far">
-                                                                        {{dislikeIcon(props.item.id)}}
-                                                                    </v-icon>
-                                                                </v-btn>
-                                                                <span class="error--text">{{props.item.dislikes}}</span>
-                                                            </center>
-                                                        </v-flex>
+                            <div v-else>
+                                <v-card>
+                                    <v-card-text>
+                                        <h4>Comentários:</h4><br>
+                                        <div v-if="comentarios.length == 0">
+                                            <v-card-text>
+                                                <center>
+                                                    <h3>
+                                                        <span> 0 comentários</span>
+                                                    </h3>
+                                                </center>
+                                            </v-card-text>
+                                        </div>
+                                        <v-data-table v-else :headers="headers" class="elevation-1" :items=comentarios
+                                                      hide-headers :pagination.sync="pagination"
+                                                      :loading="isLoadingComentarios">
+                                            <template v-slot:items="props">
+                                                <tr :class="(operacao == 2 && comentEdit == props.item.id && showEditForm) ? 'green lighten-4' : ''">
+                                                    <td class="text-md-left"
+                                                        v-if="!(operacao == 2 && comentEdit == props.item.id)">
+                                                        <br>
+                                                        <center>
+                                                            <h3 :class="props.item.likes - props.item.dislikes < 0 ? 'error--text' : 'green--text'">
+                                                                {{classificacao(props.item)}}</h3>
+                                                        </center>
+                                                        <v-layout>
+                                                            <v-flex sm6>
+                                                                <center>
+                                                                    <v-btn flat icon @click="like(props.item)">
+                                                                        <v-icon color="green">
+                                                                            {{likeIcon(props.item.id)}}
+                                                                        </v-icon>
+                                                                    </v-btn>
+                                                                    <span
+                                                                        class="green--text">{{props.item.likes}}</span>
+                                                                </center>
+                                                            </v-flex>
+                                                            <v-spacer></v-spacer>
+                                                            <v-flex sm6>
+                                                                <center>
+                                                                    <v-btn flat icon @click="dislike(props.item)">
+                                                                        <v-icon color="red" class="far">
+                                                                            {{dislikeIcon(props.item.id)}}
+                                                                        </v-icon>
+                                                                    </v-btn>
+                                                                    <span
+                                                                        class="error--text">{{props.item.dislikes}}</span>
+                                                                </center>
+                                                            </v-flex>
+                                                        </v-layout>
+                                                    </td>
+                                                    <td class="text-xs-left" v-else></td>
+                                                    <td v-if="operacao == 2 && comentEdit == props.item.id && showEditForm">
+                                                        <div style="padding-bottom: 10px; padding-top: 10px">
+                                                            <ckeditor :editor="editor" :config="editorConfig"
+                                                                      :value="meuComentario.comentario"
+                                                                      v-model="meuComentario.comentario"></ckeditor>
+                                                        </div>
+
+                                                    </td>
+                                                    <td v-else class="text-lg-center"
+                                                        style="padding-bottom: 10px; padding-top: 10px">
+                                                        <div style="overflow: hidden;font-size: 15px;"
+                                                             v-html="props.item.comentario"></div>
+                                                        <v-layout style="padding-right: 20px">
+                                                            <v-spacer></v-spacer>
+                                                            <span class="grey--text">{{props.item.data}}</span>
+                                                        </v-layout>
+                                                    </td>
+                                                    <loader v-if="sendingRequest && props.item.id == comentEdit"
+                                                            style="padding: 10px" color="green"
+                                                            size="32px"></loader>
+                                                    <v-layout column
+                                                              v-else-if="operacao == 2 && comentEdit == props.item.id && showEditForm">
+                                                        <v-btn
+                                                            icon
+                                                            text
+                                                            color="error"
+                                                            @click="cancelEdit"
+                                                        >
+                                                            <v-icon>close</v-icon>
+                                                        </v-btn>
+                                                        <v-btn
+                                                            icon
+                                                            text
+                                                            color="success"
+                                                            @click="saveEdit"
+                                                        >
+                                                            <v-icon>check</v-icon>
+                                                        </v-btn>
                                                     </v-layout>
-                                                </td>
-                                                <td class="text-xs-left" v-else></td>
-                                                <td v-if="operacao == 2 && comentEdit == props.item.id && showEditForm">
-                                                    <div style="padding-bottom: 10px; padding-top: 10px">
+                                                    <v-speed-dial v-else
+                                                                  direction="left"
+                                                                  v-model="fab"
+                                                    >
+                                                        <template v-slot:activator>
+                                                            <v-btn
+                                                                color="blue darken-2"
+                                                                dark
+                                                                :flat="!(fabId == props.item.id && fab)"
+                                                                small
+                                                                fab
+                                                                @click="changeFabId(props.item.id)"
+                                                                :color="(fabId == props.item.id && fab)?'blue-grey lighten-5':''"
+                                                            >
+                                                                <v-icon color=grey v-if="fabId == props.item.id && fab">
+                                                                    close
+                                                                </v-icon>
+                                                                <v-icon color="grey" v-else>fas fa-ellipsis-v</v-icon>
+                                                            </v-btn>
+                                                        </template>
+                                                        <v-card v-show="fabId==props.item.id" color="green lighten-4">
+                                                            <v-layout>
+                                                                <v-btn
+                                                                    v-if="props.item.hasEmail || ($store.state.user && $store.state.user.tipo=='admin')"
+                                                                    small
+                                                                    text
+                                                                    color="warning"
+                                                                    @click="showEdit(props.item)"
+                                                                >
+                                                                    Editar
+                                                                </v-btn>
+                                                                <v-btn
+                                                                    v-if="props.item.hasEmail || ($store.state.user && $store.state.user.tipo=='admin')"
+                                                                    small
+                                                                    class="white--text"
+                                                                    color="red"
+                                                                    @click="eliminarComentario(props.item.id)"
+                                                                >
+                                                                    Eliminar
+                                                                </v-btn>
+                                                                <v-btn
+                                                                    v-if="!$store.state.user || ($store.state.user && $store.state.user.tipo!='admin')"
+                                                                    small
+                                                                    class="white--text"
+                                                                    color="indigo"
+                                                                    @click="showDenuncia(props.item.id)"
+                                                                >
+                                                                    Denunciar
+                                                                </v-btn>
+                                                            </v-layout>
+                                                        </v-card>
+                                                    </v-speed-dial>
+                                                </tr>
+                                            </template>
+                                        </v-data-table>
+
+                                        <br>
+                                        <br>
+                                        <!--ESCREVER COMENTARIO-->
+                                        <v-card-text>
+                                            <v-card sm10 offset-sm1 id="addComment">
+                                                <v-card-text>
+                                                    <div>
+                                                        <h4>
+                                                            Escrever comentário:
+                                                        </h4>
+                                                    </div>
+                                                    <div v-if="!$store.state.user">
+                                                        <v-text-field id="inputEmail"
+                                                                      v-model="meuComentario.userEmail"
+                                                                      label="O seu email"
+                                                                      :rules="[(v) =>  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido']"
+                                                                      clearable
+                                                                      :disabled="sendingRequest && operacao==1"
+                                                        >
+                                                            <template v-slot:append>
+                                                                <v-tooltip bottom>
+                                                                    <template v-slot:activator="{ on }">
+                                                                        <v-icon v-on="on">help</v-icon>
+                                                                    </template>
+                                                                    <span>O seu email será utilizado apenas para proteger o seu comentario.</span>
+                                                                </v-tooltip>
+                                                            </template>
+                                                        </v-text-field>
+                                                    </div>
+                                                    <br>
+                                                    <div>
                                                         <ckeditor :editor="editor" :config="editorConfig"
                                                                   :value="meuComentario.comentario"
-                                                                  v-model="meuComentario.comentario"></ckeditor>
+                                                                  v-model="meuComentario.comentario"
+                                                                  :disabled="sendingRequest || operacao > 1"></ckeditor>
                                                     </div>
-
-                                                </td>
-                                                <td v-else class="text-lg-center"
-                                                    style="padding-bottom: 10px; padding-top: 10px">
-                                                    <div style="overflow: hidden;font-size: 15px;"
-                                                         v-html="props.item.comentario"></div>
-                                                    <v-layout style="padding-right: 20px">
+                                                    <div v-if="meuComentario.comentario && operacao<2">
                                                         <v-spacer></v-spacer>
-                                                        <span class="grey--text">{{props.item.data}}</span>
-                                                    </v-layout>
-                                                </td>
-                                                <loader v-if="sendingRequest && props.item.id == comentEdit"
-                                                        style="padding: 10px" color="green"
-                                                        size="32px"></loader>
-                                                <v-layout column
-                                                          v-else-if="operacao == 2 && comentEdit == props.item.id && showEditForm">
-                                                    <v-btn
-                                                        icon
-                                                        text
-                                                        color="error"
-                                                        @click="cancelEdit"
-                                                    >
-                                                        <v-icon>close</v-icon>
-                                                    </v-btn>
-                                                    <v-btn
-                                                        icon
-                                                        text
-                                                        color="success"
-                                                        @click="saveEdit"
-                                                    >
-                                                        <v-icon>check</v-icon>
-                                                    </v-btn>
-                                                </v-layout>
-                                                <v-speed-dial v-else
-                                                              direction="left"
-                                                              v-model="fab"
-                                                >
-                                                    <template v-slot:activator>
-                                                        <v-btn
-                                                            color="blue darken-2"
-                                                            dark
-                                                            :flat="!(fabId == props.item.id && fab)"
-                                                            small
-                                                            fab
-                                                            @click="changeFabId(props.item.id)"
-                                                            :color="(fabId == props.item.id && fab)?'blue-grey lighten-5':''"
-                                                        >
-                                                            <v-icon color=grey v-if="fabId == props.item.id && fab">
-                                                                close
-                                                            </v-icon>
-                                                            <v-icon color="grey" v-else>fas fa-ellipsis-v</v-icon>
+                                                        <v-btn v-if="!sendingRequest" @click="saveComentario"
+                                                               color="success" :disabled="hasErrors">Publicar
                                                         </v-btn>
-                                                    </template>
-                                                    <v-card v-show="fabId==props.item.id" color="green lighten-4">
-                                                        <v-layout>
-                                                            <v-btn
-                                                                v-if="props.item.hasEmail || ($store.state.user && $store.state.user.tipo=='admin')"
-                                                                small
-                                                                text
-                                                                color="warning"
-                                                                @click="showEdit(props.item)"
-                                                            >
-                                                                Editar
-                                                            </v-btn>
-                                                            <v-btn
-                                                                small
-                                                                class="white--text"
-                                                                color="red"
-                                                                @click="eliminarComentario(props.item.id)"
-                                                            >
-                                                                Eliminar
-                                                            </v-btn>
-                                                            <v-btn
-                                                                small
-                                                                class="white--text"
-                                                                color="indigo"
-                                                                @click="showDenuncia(props.item.id)"
-                                                            >
-                                                                Denunciar
-                                                            </v-btn>
-                                                        </v-layout>
-                                                    </v-card>
-                                                </v-speed-dial>
-                                            </tr>
-                                        </template>
-                                    </v-data-table>
-
-                                    <br>
-                                    <br>
-                                    <!--ESCREVER COMENTARIO-->
-                                    <v-card-text>
-                                        <v-card sm10 offset-sm1>
-                                            <v-card-text>
-                                                <div>
-                                                    <h4>
-                                                        Escrever comentário:
-                                                    </h4>
-                                                </div>
-                                                <div v-if="!$store.state.user">
-                                                    <v-text-field id="inputEmail"
-                                                                  v-model="meuComentario.userEmail"
-                                                                  label="O seu email"
-                                                                  :rules="[(v) =>  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido']"
-                                                                  clearable
-                                                    >
-                                                        <template v-slot:append>
-                                                            <v-tooltip bottom>
-                                                                <template v-slot:activator="{ on }">
-                                                                    <v-icon v-on="on">help</v-icon>
-                                                                </template>
-                                                                <span>O seu email será utilizado apenas para proteger o seu comentario.</span>
-                                                            </v-tooltip>
-                                                        </template>
-                                                    </v-text-field>
-                                                </div>
-                                                <br>
-                                                <div>
-                                                    <ckeditor :editor="editor" :config="editorConfig"
-                                                              :value="meuComentario.comentario"
-                                                              v-model="meuComentario.comentario"></ckeditor>
-                                                </div>
-                                                <div v-if="meuComentario.comentario && operacao<2">
-                                                    <v-spacer></v-spacer>
-                                                    <v-btn v-if="!sendingRequest" @click="saveComentario"
-                                                           color="success" :disabled="hasErrors">Publicar
-                                                    </v-btn>
-                                                    <loader style="padding: 10px" v-else color="green"
-                                                            size="32px"></loader>
-                                                </div>
-                                            </v-card-text>
-                                        </v-card>
+                                                        <loader style="padding: 10px" v-else color="green"
+                                                                size="32px"></loader>
+                                                    </div>
+                                                </v-card-text>
+                                            </v-card>
+                                        </v-card-text>
                                     </v-card-text>
-                                </v-card-text>
-                            </v-card>
-                        </div>
-                    </v-card>
+                                </v-card>
+                            </div>
+                        </v-card>
+                    </v-flex>
+                    <br>
+                    <v-flex id="relatedForums" sx12 sm10 offset-sm1
+                            v-if="forumsRelacionados.length > 0 && !isLoadingForum">
+                        <v-card color="lime lighten-4">
+                            <v-card-text>
+                                <h4>Forums Relacionados:</h4>
+                                <v-data-table class="elevation-1" :items=forumsRelacionados
+                                              hide-headers hide-actions>
+                                    <template v-slot:items="props">
+                                        <tr>
+                                            <div style="padding:15px">
+                                                <a @click="$router.push('/forums/' + props.item.id)">{{props.item.titulo}}</a>
+                                            </div>
+                                        </tr>
+                                    </template>
+
+                                </v-data-table>
+                                <center>
+                                    <div style="padding:15px">
+                                        <v-btn flat round class="indigo--text" @click="$router.push('/forums')">
+                                            <v-icon>fas fa-plus-circle</v-icon>
+                                            &nbsp Outros Forums
+                                        </v-btn>
+                                    </div>
+                                </center>
+                            </v-card-text>
+
+                        </v-card>
+                    </v-flex>
                 </v-flex>
             </v-layout>
         </v-app>
-        <v-layout align-content-center>
-            <v-flex xs1 sm7 offset-sm1>
-                <v-btn class="primary--text subheading" round flat @click="$router.go(-1)">
-                    <v-icon>fa fa-arrow-left</v-icon>
-                    &nbsp Voltar
-                </v-btn>
-            </v-flex>
-        </v-layout>
+
         <br>
         <v-dialog
             v-model="dialogCode"
@@ -246,7 +312,7 @@
                         <span>Verificação de email</span>
                     </v-card-title>
                     <v-spacer></v-spacer>
-                    <v-btn icon flat @click="dialogCode=false; operacao=0">
+                    <v-btn icon flat @click="cancelEdit">
                         <v-icon>close</v-icon>
                     </v-btn>
                 </v-layout>
@@ -326,6 +392,7 @@
             return {
                 forum: {},
                 comentarios: [],
+                forumsRelacionados: [],
                 isLoadingForum: {},
                 isLoadingComentarios: {},
                 meuComentario: {},
@@ -378,6 +445,7 @@
         mounted() {
             this.getForum();
             this.getComentarios();
+            this.getForumsRelacionados();
             if (this.$cookies.isKey("credentials")) {
                 this.credenciais = this.$cookies.get("credentials")
             } else {
@@ -397,6 +465,16 @@
                     })
                     .catch(error => {
                         this.isLoadingForum = false;
+                        this.toastErrorApi(error);
+                    });
+            },
+            getForumsRelacionados() {
+                this.forumsRelacionados = [];
+                axios.get('/api/forumsRelacionados?forum_id=' + this.id)
+                    .then(response => {
+                        this.forumsRelacionados = response.data.data;
+                    })
+                    .catch(error => {
                         this.toastErrorApi(error);
                     });
             },
@@ -522,7 +600,7 @@
                     request = {'comentario': this.meuComentario.comentario}
                 }
                 this.sendingRequest = true;
-                console.log(request);
+                //console.log(request);
                 axios.put('/api/comentarios/' + this.comentEdit, request).then(response => {
                     this.getComentarios();
                     this.cancelEdit();
@@ -757,11 +835,11 @@
             },
             showEdit(comentario) {
                 this.cancelEdit();
-                this.meuComentario = comentario;
                 this.comentEdit = comentario.id;
                 this.operacao = 2;
 
                 if (this.$store.state.user && this.$store.state.user.tipo == "admin") {
+                    this.meuComentario = comentario;
                     this.showEditForm = true;
                 } else {
                     let email;
@@ -780,6 +858,7 @@
                         'user_email': email,
                         'generateCode': false
                     }).then(response => {
+                        this.meuComentario = comentario;
                         if (!this.$store.state.user) {
                             if (this.credenciais.codigo) {
                                 this.verificarCodigo(1);
@@ -800,6 +879,7 @@
                             this.introduzirEmail = true;
                             this.dialogCode = true;
                             this.sendingRequest = false;
+                            this.meuComentario = comentario;
 
                         } else {
                             this.sendingRequest = false;
@@ -810,13 +890,14 @@
 
             },
             cancelEdit() {
+                this.dialogCode = false;
                 this.comentEdit = 0;
                 this.meuComentario = {};
                 this.operacao = 0;
                 this.fabId = 0;
                 this.showEditForm = false;
                 this.sendingRequest = false;
-            }
+            },
 
 
         }
@@ -843,9 +924,11 @@
                     if (this.$cookies.isKey("credentials")) {
                         this.credenciais = this.$cookies.get("credentials");
                     }
-                    this.comentEdit = 0;
-                    this.meuComentario = {};
                 }
+            }, id() {
+                this.getForum();
+                this.getComentarios();
+                this.getForumsRelacionados();
             }
 
         }

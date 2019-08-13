@@ -29,6 +29,7 @@ Route::post('forums', 'ForumControllerAPI@storeForum');
 Route::get('forums/{id}', 'ForumControllerAPI@forum');
 Route::put('forums/{id}', 'ForumControllerAPI@updateForum');
 Route::delete('forums/{id}', 'ForumControllerAPI@destroyForum');
+Route::get('forumsRelacionados', 'ForumControllerAPI@forumsRelacionados');
 
 Route::get('forums/{id}/comentarios', 'ForumControllerAPI@comments');
 Route::post('forums/{id}/comentarios', 'ForumControllerAPI@storeComment');
@@ -44,6 +45,7 @@ Route::post('forums/denunciar/{tipo}/{id}', 'ForumControllerAPI@denuncia');
 Route::post('forums/generateAccessCode', 'ForumControllerAPI@generateAccessCode');
 Route::post('{tipo}/{id}/compararEmails', 'ForumControllerAPI@compararEmails');
 Route::post('forums/compararCodigo', 'ForumControllerAPI@compararCodigo');
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 ///

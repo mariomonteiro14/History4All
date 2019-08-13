@@ -103,6 +103,7 @@
                                             class="white--text"
                                             color="indigo"
                                             @click="showDenuncia(props.item.id)"
+                                            v-if="!$store.state.user || ($store.state.user && $store.state.user.tipo!='admin')"
                                         >
                                             Denunciar
                                         </v-btn>
@@ -229,7 +230,7 @@
 <script>
     import AddEditForum from './adicionarEditarForum.vue'
     import DenunciaModal from './denunciarModal';
-    
+
     export default {
         components: {
             'forum-add-edit': AddEditForum,

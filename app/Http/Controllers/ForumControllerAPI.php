@@ -43,6 +43,24 @@ class ForumControllerAPI extends Controller
         return response()->json(['data' => ComentarioResource::collection($forum->comentarios()->orderByRaw('(likes - dislikes) DESC')->get())]);
     }
 
+    public function forumsRelacionados( Request $request){
+        $request->validate(['forum_id' => 'required|numeric']);
+
+        $forum = Forum::findOrFail($request->forum_id);
+
+        $patrimonios_id = ForumPatrimonios::where('forum_id', $forum->id)->pluck('patrimonio_id');
+        $forums_id =         ForumPatrimonios::whereIn('patrimonio_id', $patrimonios_id)->where('forum_id', '<>', $forum->id)->pluck('forum_id');
+
+        $forums = Forum::select('id','titulo')->whereIn('id', $forums_id)->get()->sortByDesc(function($forum)
+        {
+            return $forum->comentarios()->count();
+        });
+        return response()->json([
+            'data' => $forums
+        ]);
+
+    }
+
 
     public function storeForum(Request $request)
     {
@@ -141,7 +159,7 @@ class ForumControllerAPI extends Controller
         $novoRegisto->fill([
             'email' => $request->user_email,
             'codigo' => $random,
-            'data' => new Carbon()
+            'data' => date("Y-m-d H:i:s")
         ]);
 
         //enviar email com $random para $request->email

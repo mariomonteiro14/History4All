@@ -74,7 +74,8 @@
         computed: {
             url(){
                 //console.log(this.$route.name);
-                if (this.$route.name == "patrimoniosShow" || this.$route.name == "patrimonios" ) {
+                if (this.$route.name == "patrimoniosShow" || this.$route.name == "patrimonios" ||
+                    this.$route.name == "forums" || this.$route.name == "showForum" ) {
                     return  window.location.href;
                 }else{
                     return 'http://142.93.219.146/';
