@@ -29,10 +29,10 @@ Route::post('forums', 'ForumControllerAPI@storeForum');
 Route::get('forums/{id}', 'ForumControllerAPI@forum');
 Route::put('forums/{id}', 'ForumControllerAPI@updateForum');
 Route::delete('forums/{id}', 'ForumControllerAPI@destroyForum');
+
 Route::get('forums/{id}/comentarios', 'ForumControllerAPI@comments');
 Route::post('forums/{id}/comentarios', 'ForumControllerAPI@storeComment');
-//Route::put('comentarios/{id}', 'ForumControllerAPI@updateComment');
-Route::get('forums/{id}/comentarios', 'ForumControllerAPI@comments');
+Route::put('comentarios/{id}', 'ForumControllerAPI@updateComment');
 Route::put('comentarios/{id}/incrementLike', 'ForumControllerAPI@incrementLike');
 Route::put('comentarios/{id}/decrementLike', 'ForumControllerAPI@decrementLike');
 Route::put('comentarios/{id}/incrementDislike', 'ForumControllerAPI@incrementDislike');

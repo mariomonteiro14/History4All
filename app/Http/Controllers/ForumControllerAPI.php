@@ -124,6 +124,7 @@ class ForumControllerAPI extends Controller
             'codigo' => 'required|string',
             'user_email' => 'required|email',
         ]);
+
         if (!HistoricoGerenciadorCodigos::where('email', $request->user_email)->where('codigo', $request->codigo)->first()) {
             return abort(403, "Codigo introduzido invalido!");
         }
@@ -182,13 +183,26 @@ class ForumControllerAPI extends Controller
         }
         else{
             $comment = Comentario::findOrFail($id);
+            if ($request->user('api')){
+                $user = User::findOrFail($request->user('api')->id);
+                if ($user->tipo == "admin" || $user->email == $comment->user_email){
+                    return response()->json(null, 200);
+                }else{
+                    return abort(403, "Esse comentario não foi criado por si");
+
+                }
+            }
             if ($comment->user_email == null){
                 return abort(400, "Este comentario nao tem email associado");
             }
             if ($comment->user_email != $request->user_email){
                 return abort(403, "O email inserido nao correspode ao do criador deste comentario");
             }
-            return $this->generateAccessCode($request);
+
+            if ($request->has('generateCode') && $request->generateCode == true) {
+                return $this->generateAccessCode($request);
+            }
+            return response()->json(null, 200);
         }
     }
 
@@ -245,7 +259,29 @@ class ForumControllerAPI extends Controller
 
     public function updateComment($id, Request $request)
     {
+        $request->validate(['comentario' => 'required|string']);
 
+        $comment = Comentario::findOrFail($id);
+
+        if (!$request->user('api')) {
+            if (!$request->has("email") || !$request->has("codigo")) {
+                return abort(400, "necessita de provar ser o criador do comentário");
+            }
+            if ($request->email != $comment->user_email){
+                return abort(403, "Operação negada! O utilizador não é o criador deste comentário");
+            }
+            if (!HistoricoGerenciadorCodigos::where('email', $request->email)->where('codigo', $request->codigo)->first()) {
+                return abort(401, "Código introduzido invalido!");
+            }
+        } else {
+            $user = User::findOrFail($request->user('api')->id);
+            if ($comment->user_email != $user->email && $user->tipo != 'admin') {
+                return abort(403, "não tens permissões para eliminar este comentário");
+            }
+        }
+        $comment->comentario = $request->comentario;
+        $comment->save();
+        return response()->json($comment, 200);
     }
 
     public function incrementLike($id, Request $request)

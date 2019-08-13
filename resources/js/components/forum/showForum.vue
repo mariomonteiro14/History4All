@@ -49,8 +49,9 @@
                                                   hide-headers :pagination.sync="pagination"
                                                   :loading="isLoadingComentarios">
                                         <template v-slot:items="props">
-                                            <tr>
-                                                <td class="text-md-left">
+                                            <tr :class="(operacao == 2 && comentEdit == props.item.id && showEditForm) ? 'green lighten-4' : ''">
+                                                <td class="text-md-left"
+                                                    v-if="!(operacao == 2 && comentEdit == props.item.id)">
                                                     <br>
                                                     <center>
                                                         <h3 :class="props.item.likes - props.item.dislikes < 0 ? 'error--text' : 'green--text'">
@@ -79,7 +80,17 @@
                                                         </v-flex>
                                                     </v-layout>
                                                 </td>
-                                                <td class="text-lg-center">
+                                                <td class="text-xs-left" v-else></td>
+                                                <td v-if="operacao == 2 && comentEdit == props.item.id && showEditForm">
+                                                    <div style="padding-bottom: 10px; padding-top: 10px">
+                                                        <ckeditor :editor="editor" :config="editorConfig"
+                                                                  :value="meuComentario.comentario"
+                                                                  v-model="meuComentario.comentario"></ckeditor>
+                                                    </div>
+
+                                                </td>
+                                                <td v-else class="text-lg-center"
+                                                    style="padding-bottom: 10px; padding-top: 10px">
                                                     <div style="overflow: hidden;font-size: 15px;"
                                                          v-html="props.item.comentario"></div>
                                                     <v-layout style="padding-right: 20px">
@@ -87,9 +98,31 @@
                                                         <span class="grey--text">{{props.item.data}}</span>
                                                     </v-layout>
                                                 </td>
-                                                <v-speed-dial
-                                                    direction="left"
-                                                    v-model="fab"
+                                                <loader v-if="sendingRequest && props.item.id == comentEdit"
+                                                        style="padding: 10px" color="green"
+                                                        size="32px"></loader>
+                                                <v-layout column
+                                                          v-else-if="operacao == 2 && comentEdit == props.item.id && showEditForm">
+                                                    <v-btn
+                                                        icon
+                                                        text
+                                                        color="error"
+                                                        @click="cancelEdit"
+                                                    >
+                                                        <v-icon>close</v-icon>
+                                                    </v-btn>
+                                                    <v-btn
+                                                        icon
+                                                        text
+                                                        color="success"
+                                                        @click="saveEdit"
+                                                    >
+                                                        <v-icon>check</v-icon>
+                                                    </v-btn>
+                                                </v-layout>
+                                                <v-speed-dial v-else
+                                                              direction="left"
+                                                              v-model="fab"
                                                 >
                                                     <template v-slot:activator>
                                                         <v-btn
@@ -114,6 +147,7 @@
                                                                 small
                                                                 text
                                                                 color="warning"
+                                                                @click="showEdit(props.item)"
                                                             >
                                                                 editar
                                                             </v-btn>
@@ -144,6 +178,7 @@
 
                                     <br>
                                     <br>
+                                    <!--ESCREVER COMENTARIO-->
                                     <v-card-text>
                                         <v-card sm10 offset-sm1>
                                             <v-card-text>
@@ -307,6 +342,7 @@
                 introduzirEmail: false,
                 sendingEmail: false,
                 operacao: 0,
+                showEditForm: false,
 
                 editor: ClassicEditor,
                 editorConfig: {
@@ -453,36 +489,79 @@
                 axios.delete(url).then(response => {
                     this.operacao = 0;
                     this.dialogCode = false;
-                    setTimeout(function(){
+                    setTimeout(function () {
                         this.sendingRequest = false;
                     }.bind(this), 500);
                     this.toastPopUp("success", "Comentario Eliminado!");
                     this.getComentarios();
                 }).catch(error => {
                     this.sendingRequest = false;
-                    if (error.response.data.message == "Codigo introduzido invalido!") {
+                    if (!this.$store.state.user) {
+                        if (error.response.data.message == "Código introduzido invalido!") {
+                            this.credenciais.codigo = null;
+                            this.eliminarComentario(comentarioId);
+                        } else if (error.response.data.message == "Operação negada! O utilizador não é o criador deste comentário") {
+                            this.credenciais.email = "";
+                            this.eliminarComentario(comentarioId);
+                        } else {
+                            this.toastErrorApi(error);
+                        }
+                    } else {
+                        this.toastErrorApi(error);
+                    }
+                });
+            },
+            saveEdit() {
+                let request;
+
+                if (!this.$store.state.user) {
+                    request = {
+                        'comentario': this.meuComentario.comentario,
+                        'email': this.credenciais.email,
+                        'codigo': this.credenciais.codigo
+                    }
+                } else {
+                    request = {'comentario': this.meuComentario.comentario}
+                }
+                this.sendingRequest = true;
+                console.log(request);
+                axios.put('/api/comentarios/' + this.comentEdit, request).then(response => {
+                    this.getComentarios();
+                    this.cancelEdit();
+                    this.sendingRequest = false;
+                }).catch(error => {
+                    this.sendingRequest = false;
+                    if (error.response.data.message == "Código introduzido invalido!") {
                         this.credenciais.codigo = null;
-                        this.eliminarComentario(comentarioId);
-                    } else if (error.response.data.message == "Operacao negada! O utilizador nao é o criador deste comentario") {
+                        this.saveEdit(comentarioId);
+                    } else if (error.response.data.message == "Operação negada! O utilizador não é o criador deste comentário") {
                         this.credenciais.email = "";
                         this.eliminarComentario(comentarioId);
                     } else {
                         this.toastErrorApi(error);
                     }
                 });
+
             },
 
             gerarCodigo(email = this.credenciais.email) {
                 this.isLoading = true;
                 this.sendingEmail = true;
-                let url;
+                let url, request;
                 if (this.operacao == 1) {
                     url = '/api/forums/generateAccessCode';
+                    request = {'user_email': email};
                 } else {
                     url = '/api/comentarios/' + this.comentEdit + '/compararEmails';
+                    request = {'user_email': email, 'generateCode': true};
+                    if (this.operacao == 2) {
+                        if (this.credenciais.codigo) {
+                            request = {'user_email': email, 'generateCode': false}
+                        }
+                    }
                 }
 
-                axios.post(url, {'user_email': email}).then(response => {
+                axios.post(url, request).then(response => {
                     this.introduzirEmail = false;
                     this.sendingEmail = false;
                     this.credenciais.codigo = "";
@@ -492,8 +571,9 @@
                 })
             }
             ,
-            verificarCodigo() {
+            verificarCodigo(aux = 0) {
                 this.sendingRequest = true;
+
                 axios.post('/api/forums/compararCodigo', {
                     'user_email': this.credenciais.email,
                     'codigo': this.credenciais.codigo
@@ -505,6 +585,9 @@
                         this.saveComentario();
                     }
                     else if (this.operacao == 2) {//editar comentario
+                        this.sendingRequest = false;
+                        this.dialogCode = false;
+                        this.showEditForm = true;
 
                     }
                     else if (this.operacao == 3) {//eliminar comentario
@@ -516,6 +599,11 @@
                 }).catch(error => {
                     this.sendingRequest = false;
                     this.credenciais.codigo = null;
+                    if (this.operacao == 2 && aux == 1) {
+                        this.credenciais.codigo = "";
+                        this.dialogCode = true;
+                        this.introduzirEmail = true;
+                    }
                     return false;
                 })
             }
@@ -607,7 +695,6 @@
                     });
                 }
             },
-
             updateCookies(like, incrementar, comentarioId) {
                 let cookieName = this.forum.titulo.replace(/\s/g, "").concat("%" + this.forum.id);
 
@@ -669,8 +756,69 @@
             showDenuncia(comentarioId) {
                 this.comentEdit = comentarioId;
                 this.$refs.denunciarModal.show = true;
+            },
+            showEdit(comentario) {
+                this.cancelEdit();
+                this.meuComentario = comentario;
+                this.comentEdit = comentario.id;
+                this.operacao = 2;
+
+                if (this.$store.state.user && this.$store.state.user.tipo == "admin") {
+                    this.showEditForm = true;
+                } else {
+                    let email;
+
+                    if (this.$store.state.user) {
+                        email = this.$store.state.user.email
+                    } else if (this.credenciais.email) {
+                        email = this.credenciais.email;
+                    } else {
+                        this.introduzirEmail = true;
+                        this.dialogCode = true;
+                        return;
+                    }
+                    this.sendingRequest = true;
+                    axios.post('/api/comentarios/' + comentario.id + '/compararEmails', {
+                        'user_email': email,
+                        'generateCode': false
+                    }).then(response => {
+                        if (!this.$store.state.user) {
+                            if (this.credenciais.codigo) {
+                                this.verificarCodigo(1);
+                            } else {
+                                console.log("nao tem codigo");
+                                this.sendingRequest = false;
+                                this.dialogCode = true;
+                                this.introduzirEmail = true;
+                            }
+                        } else {
+                            this.sendingRequest = false;
+                            this.showEditForm = true;
+                        }
+                    }).catch(error => {
+                        if (!this.$store.state.user) {
+                            this.credenciais.email = "";
+                            this.credenciais.codigo = null;
+                            this.introduzirEmail = true;
+                            this.dialogCode = true;
+                            this.sendingRequest = false;
+
+                        } else {
+                            this.sendingRequest = false;
+                            this.toastErrorApi(error);
+                        }
+                    });
+                }
+
+            },
+            cancelEdit() {
+                this.comentEdit = 0;
+                this.meuComentario = {};
+                this.operacao = 0;
+                this.fabId = 0;
+                this.showEditForm = false;
+                this.sendingRequest = false;
             }
-            ,
 
 
         }
@@ -693,8 +841,12 @@
             },
             dialogCode() {
 
-                if (!this.dialogCode && this.$cookies.isKey("credentials")) {
-                    this.credenciais = this.$cookies.get("credentials");
+                if (!this.dialogCode) {
+                    if (this.$cookies.isKey("credentials")) {
+                        this.credenciais = this.$cookies.get("credentials");
+                    }
+                    this.comentEdit = 0;
+                    this.meuComentario = {};
                 }
             }
 
