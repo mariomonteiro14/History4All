@@ -423,7 +423,7 @@ class ForumControllerAPI extends Controller
             'mensagem' => $mensagem,
             'remetente' => "Denuncia",
             'data' => date("Y-m-d H:i:s"),
-            'lida' => "1",
+            'lida' => "0",
             'link' => $link
         ]);
         $notif->save();
