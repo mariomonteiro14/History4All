@@ -383,7 +383,7 @@ class AtividadeControllerAPI extends Controller
                 'mensagem' => "Um aluno submeteu um novo testemunho na atividade " . $atividade->titulo . ".",
                 'remetente' => "Aluno",
                 'data' => date("Y-m-d H:i:s"),
-                'lida' => "1",
+                'lida' => "0",
                 'link' => "atividade/" . $atividade->id
             ]);
             $notif->save();
@@ -424,7 +424,7 @@ class AtividadeControllerAPI extends Controller
                     'mensagem' => "Um aluno alterou um testemunho na atividade " . $atividade->titulo . ".",
                     'remetente' => "Aluno",
                     'data' => date("Y-m-d H:i:s"),
-                    'lida' => "1",
+                    'lida' => "0",
                     'link' => "atividade/" . $atividade->id
                 ]);
                 $notif->save();
@@ -448,7 +448,7 @@ class AtividadeControllerAPI extends Controller
             'mensagem' => "O seu testemunho na atividade " . $atividade->titulo . " foi confirmado.",
             'remetente' => "Coordenador da atividade " . $atividade->titulo,
             'data' => date("Y-m-d H:i:s"),
-            'lida' => "1",
+            'lida' => "0",
             'link' => "atividade/" . $atividade->id
         ]);
         $notif->save();
@@ -470,7 +470,7 @@ class AtividadeControllerAPI extends Controller
                 'mensagem' => "O seu testemunho na atividade " . $atividade->titulo . " foi recusado.",
                 'remetente' => "Coordenador da atividade " . $atividade->titulo,
                 'data' => date("Y-m-d H:i:s"),
-                'lida' => "1",
+                'lida' => "0",
                 'link' => "atividade/" . $atividade->id
             ]);
             $notif->save();

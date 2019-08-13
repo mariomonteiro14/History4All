@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Auth;
 use App\User;
 use DateTime;
 
-define('YOUR_SERVER_URL', 'http://history4all.test/');
+define('YOUR_SERVER_URL', 'http://h4a.local/');
 // Check "oauth_clients" table for next 2 values:
 define('CLIENT_ID', '2');
 define('CLIENT_SECRET', '9lAzFCSTCUbsnn8WlWYJozLOIdT2givB9TmF03FJ');
@@ -356,7 +356,7 @@ class UserControllerAPI extends Controller
             'mensagem' => $mensagem,
             'remetente' => "",
             'data' => date("Y-m-d H:i:s"),
-            'lida' => '1',
+            'lida' => '0',
             'link' => null
         ]);
         $notificacao->save();
@@ -394,7 +394,7 @@ class UserControllerAPI extends Controller
                 'mensagem' => $request->mensagem,
                 'remetente' => $request->de,
                 'data' => date("Y-m-d H:i:s"),
-                'lida' => '1',
+                'lida' => '0',
                 'link' => $request->link
             ]);
             $notificacao->save();
@@ -404,9 +404,9 @@ class UserControllerAPI extends Controller
 
     public function updateNotificacoes(Request $request)
     {
-        $notificacoes = Notificacao::where('user_id', Auth::id())->where('lida', 1)->get();
+        $notificacoes = Notificacao::where('user_id', Auth::id())->where('lida', 0)->get();
         foreach ($notificacoes as $notificacao) {
-            $notificacao->lida = 0;
+            $notificacao->lida = 1;
             $notificacao->save();
         };
 
@@ -422,7 +422,7 @@ class UserControllerAPI extends Controller
         if ($notificacao->user_id != Auth::id()){
             abort(403, 'A notificação que está a tentar alterar não é a sua');
         }
-        $notificacao->lida = 1;
+        $notificacao->lida = 0;
         $notificacao->save();
         return response()->json(null, 200);
     }
@@ -433,7 +433,7 @@ class UserControllerAPI extends Controller
         if ($notificacao->user_id != Auth::id()){
             abort(403, 'A notificação que está a tentar alterar não é a sua');
         }
-        $notificacao->lida = 0;
+        $notificacao->lida = 1;
         $notificacao->save();
         return response()->json(null, 200);
     }

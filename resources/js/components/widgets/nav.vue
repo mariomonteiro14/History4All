@@ -100,7 +100,7 @@
                             </template>
                             <template v-slot:items="props"
                                       style="width: 100%; display: inline-block; able-layout: fixed;">
-                                <tr :style="[props.item.lida === 1 ? {'backgroundColor' : 'DarkSalmon'} : {}]">
+                                <tr :style="[props.item.lida === 0 ? {'backgroundColor' : 'DarkSalmon'} : {}]">
                                     <td style=" overflow: hidden; display: inline; white-space: normal;">
                                         <span>{{props.item.remetente}} - {{formatarData(props.item.data)}}</span>
                                         <v-spacer></v-spacer>
@@ -114,7 +114,7 @@
                                         <v-tooltip bottom>
                                             <template v-slot:activator="{ on }">
                                                 <v-icon v-on="on" class="material-icons"
-                                                        v-if="props.item.lida === 1"
+                                                        v-if="props.item.lida === 0"
                                                         size="21px" @click="marcarNotificacaoLida(props.item)">
                                                     &#9711
                                                 </v-icon>
@@ -124,7 +124,7 @@
                                                     check_circle
                                                 </v-icon>
                                             </template>
-                                            <span v-if="props.item.lida === 1">marcar como lida</span>
+                                            <span v-if="props.item.lida === 0">marcar como lida</span>
                                             <span v-else>marcar como não lida</span>
                                         </v-tooltip>
                                         <v-spacer></v-spacer>
@@ -298,7 +298,7 @@
                     .then(response => {
                         this.notificacoes = response.data.data;
                         this.numNotificacoesNaoLidas =
-                            this.notificacoes.filter(notificacao => notificacao.lida === 1).length;
+                            this.notificacoes.filter(notificacao => notificacao.lida === 0).length;
                     }).catch(error => {
                     this.toastErrorApi(error);
                     this.isLoading = false;
@@ -312,23 +312,23 @@
             //colocar notificaçao como lida
             marcarNotificacaoLida(notificacao) {
                 this.numNotificacoesNaoLidas--;
-                notificacao.lida = 0;
+                notificacao.lida = 1;
                 axios.put('/api/me/notificacoes/' + notificacao.id + '/lida').then(response => {
                 }).catch(error => {
                     this.toastErrorApi(error);
                     this.numNotificacoesNaoLidas++;
-                    notificacao.lida = 1;
+                    notificacao.lida = 0;
                 });
             },
             //colocar notificaçao como nao lida
             marcarNotificacaoNaoLida(notificacao) {
                 this.numNotificacoesNaoLidas++;
-                notificacao.lida = 1;
+                notificacao.lida = 0;
                 axios.put('/api/me/notificacoes/' + notificacao.id + '/naolida').then(response => {
                 }).catch(error => {
                     this.toastErrorApi(error);
                     this.numNotificacoesNaoLidas--;
-                    notificacao.lida = 0;
+                    notificacao.lida = 1;
                 });
             },
         },
