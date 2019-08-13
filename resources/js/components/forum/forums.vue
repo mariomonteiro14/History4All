@@ -335,9 +335,13 @@
                         }
                         this.emailConfirmado();
                     }).catch(error => {
-                        this.cleanForumAtual();
                         this.isLoading= false;
                         this.toastErrorApi(error);
+                        if (!this.$store.state.user){
+                            this.dialogCode = true;
+                        } else{
+                            this.cleanForumAtual();
+                        }
                     });
                 } else{
                     this.dialogCode = true;//confirmação de email
