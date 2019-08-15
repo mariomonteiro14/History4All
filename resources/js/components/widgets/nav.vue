@@ -269,7 +269,10 @@
                     this.toastPopUp("success", "Saiu da sua conta com sucesso!");
                     this.notificacoes = [];
                     this.$socket.emit('user_exit', this.$store.state.user);
-                    this.$router.push({name: 'index'});
+                    if (!(this.$route.name == "patrimoniosShow" || this.$route.name == "patrimonios" ||
+                        this.$route.name == "forums" || this.$route.name == "showForum" || this.$route.name == "index")) {
+                        this.$router.push({name: 'index'});
+                    }
                 }).catch(error => {
                     this.$store.commit('clearUserAndToken');
                     this.toastPopUp("error", "Erro ao sair");

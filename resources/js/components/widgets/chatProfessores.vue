@@ -9,7 +9,7 @@
         <v-app v-else id="inspire">
             <v-card>
                 <v-layout>
-                    <v-flex sm9 fluid>
+                    <v-flex sm8 fluid>
                         <v-card flat>
                             <v-card-text>
                                 <div>
@@ -102,8 +102,9 @@
 
                                             <v-list-tile-content>
                                                 <v-list-tile-title class="indigo--text darken-4">
-                                                    <a @click="$router.push('/users/'+ professor.id)">
-                                                        {{professor.nome}}
+                                                    <span v-if="professor.id == $store.state.user.id">Eu</span>
+                                                    <a v-else @click="$router.push('/users/'+ professor.id)">
+                                                        {{getPrimeiroUltimoNome(professor.nome)}}
                                                     </a>
                                                 </v-list-tile-title>
                                             </v-list-tile-content>

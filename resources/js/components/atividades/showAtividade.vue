@@ -226,8 +226,8 @@
                                             </v-card-actions>
                                         </v-card>
                                     </v-flex>
-                                    <v-divider vertical></v-divider>
-                                    <v-flex d-flex xs12 sm3 fluid class="justify-right">
+                                    <v-divider v-if="atividade.chat" vertical></v-divider>
+                                    <v-flex d-flex xs12 :class="atividade.chat ? 'sm3': 'sm12'" fluid class="justify-right">
                                         <v-card flat>
                                             <v-card-text>
                                                 <h5 class="orange--text font-weight-light">
@@ -253,8 +253,9 @@
 
                                                             <v-list-tile-content>
                                                                 <v-list-tile-title class="indigo--text darken-4">
-                                                                    <a @click="$router.push('/users/'+ aluno.id)">
-                                                                        {{aluno.nome}}
+                                                                    <span v-if="aluno.id == $store.state.user.id">Eu</span>
+                                                                    <a v-else @click="$router.push('/users/'+ aluno.id)">
+                                                                        {{atividade.chat ? getPrimeiroUltimoNome(aluno.nome) : aluno.nome}}
                                                                     </a>
                                                                 </v-list-tile-title>
                                                             </v-list-tile-content>
