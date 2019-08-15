@@ -96,7 +96,7 @@
                                                         <v-icon v-else class="indigo--text" small>far fa-user</v-icon>
                                                     </v-avatar>
                                                     <br>
-                                                    <h5 class="align-center" v-if="aluno.id != $store.state.user.id">{{aluno.nome}}</h5>
+                                                    <h5 class="align-center" v-if="aluno.id != $store.state.user.id">{{getPrimeiroUltimoNome(aluno.nome)}}</h5>
                                                     <h5 class="align-center" v-else>Eu</h5>
                                                 </a>
                                             </div>

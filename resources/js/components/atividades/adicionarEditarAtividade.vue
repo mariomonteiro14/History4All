@@ -282,6 +282,15 @@
                                                     Selecionar alunos que participarão na atividade
                                                 </v-tooltip>
                                             </template>
+                                            <template v-slot:selection="{ item, index }">
+                                                <v-chip v-if="index <= 4">
+                                                    <span>{{ getPrimeiroUltimoNome(item.nome) }}</span>
+                                                </v-chip>
+                                                <span
+                                                    v-if="index === 5"
+                                                    class="grey--text caption"
+                                                >(+{{ atividade.participantes.length - 5 }} outros)</span>
+                                            </template>
                                         </v-combobox>
                                     </div>
                                     <br>

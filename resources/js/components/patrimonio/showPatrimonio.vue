@@ -2,14 +2,33 @@
     <div id="app">
         <br><br><br><br>
         <v-app id="inspire">
-            <div v-if="isLoadingPatrimonio">
-            <br><br><br>
-            <v-progress-linear  v-slot:progress :color="colorDefault"
-                               indeterminate></v-progress-linear>
-            </div>
-            <v-layout v-else align-content-center>
-                <v-flex xs12 sm7 offset-sm3>
-                    <v-card>
+            <v-layout align-content-center>
+                <v-flex offset-sm1 sm1 style="position:fixed; top:15%">
+                    <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                            <v-btn large color="indigo" v-on="on" icon @click="$router.go(-1)">
+                                <v-icon color="white">fa fa-arrow-left</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Voltar</span>
+                    </v-tooltip>
+                    <br>
+                    <br>
+                    <v-tooltip bottom  v-if="patrimonio.id && $store.state.user && $store.state.user.tipo === 'professor'">
+                        <template v-slot:activator="{ on }">
+                            <v-btn color="green" icon large v-on="on"
+                                   data-toggle="modal" data-target="#adicionarImagemModal">
+                                <v-icon color="white">fa-upload</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Adicionar Imagens</span>
+                    </v-tooltip>
+                </v-flex>
+
+                <v-flex xs12 sm8 offset-sm2>
+                    <v-progress-linear  v-if="isLoadingPatrimonio" v-slot:progress :color="colorDefault"
+                                        indeterminate></v-progress-linear>
+                    <v-card v-else>
                         <v-img v-if="patrimonio.imagens && patrimonio.imagens.length >0"
                                :src="getPatrimonioPhoto(patrimonio.imagens[0].foto)"
                                aspect-ratio="2.5"
@@ -29,11 +48,6 @@
                                    @click="showGallery=!showGallery">
                                 Galeria
                             </v-btn>
-                            <v-btn flat color="green"
-                                   v-if="patrimonio.id && $store.state.user && $store.state.user.tipo === 'professor'"
-                                   data-toggle="modal" data-target="#adicionarImagemModal">
-                                Adicionar Imagens
-                            </v-btn>
                         </v-card-actions>
 
                     </v-card>
@@ -42,7 +56,7 @@
             <br>
             <v-layout v-if="showGallery">
 
-                <v-flex xs12 sm7 offset-sm3>
+                <v-flex xs12 sm8 offset-sm2>
                     <v-card>
                         <v-container grid-list-sm fluid>
                             <v-layout row wrap>
@@ -73,14 +87,7 @@
                 </v-flex>
             </v-layout>
         </v-app>
-        <v-layout align-content-center>
-            <v-flex xs1 sm7 offset-sm3>
-                <v-btn class="primary--text subheading" round flat @click="$router.go(-1)">
-                    <v-icon>fa fa-arrow-left</v-icon>
-                    &nbsp Voltar
-                </v-btn>
-            </v-flex>
-        </v-layout>
+
         <div class="modal fade" id="adicionarImagemModal" tabindex="-1" role="dialog" aria-labelledby="contactModal"
              data-keyboard="false" data-backdrop="static" aria-hidden="true">
             <div class="modal-dialog" role="document">

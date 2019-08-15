@@ -31,9 +31,12 @@
                                 item-text="nome"
                                 item-value="email"
                                 class="input-group--focused"
+                                :messages="[(escola.professores && escola.professores.length > 0)
+                                            || 'Não existem professores associados a esta escola. Crie a turma sem associar professor ou registe um professor antes de criar a turma.']"
                                 clearable
                                 ref="selectProfessor"
                                 @click="selProfAberto=true"
+                                :disabled="!(escola.professores && escola.professores.length > 0)"
                             >
                                 <template slot="item" slot-scope="data" v-if="data.item">
 
@@ -46,6 +49,7 @@
 
                                 </template>
                             </v-select>
+
                         </div>
 
                         <div @click="setOpenList('ciclo')">
@@ -53,7 +57,6 @@
                                 label="Ciclo"
                                 v-model="turma.ciclo"
                                 :items="ciclos"
-                                :rules="[v => !!v || 'Ciclo é obrigatório']"
                                 class="input-group--focused"
                                 clearable
                                 ref="selectCiclo"
@@ -113,12 +116,12 @@
     export default {
         props: ['escola', 'turma'],
 
-       /* created() {
-            this.getAlunos();
-            if (this.$store.state.user.tipo != "professor") {
-                this.getProfessores();
-            }
-        },*/
+        /* created() {
+             this.getAlunos();
+             if (this.$store.state.user.tipo != "professor") {
+                 this.getProfessores();
+             }
+         },*/
         data: function () {
             return {
                 ciclos: ['1º ciclo', '2º ciclo', '3º ciclo', 'secundário'],
@@ -129,7 +132,7 @@
                 selProfAberto: false,
                 selCicloAberto: false,
                 selAlunosAberto: false,
-                isLoading:false,
+                isLoading: false,
             };
         },
         methods: {

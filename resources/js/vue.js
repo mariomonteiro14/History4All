@@ -156,6 +156,13 @@ var common = {
         getUserPhoto(url){
             return "/storage/profiles/" + url;
         },
+        getPrimeiroUltimoNome(nome){
+            let array = nome.split(' ');
+            if (array.length == 1){
+                return nome;
+            }
+            return array[0] + " " + array.pop();
+        },
         getPatrimonioPhoto(url){
             return "/storage/patrimonios/" + url;
         },
