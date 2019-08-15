@@ -128,7 +128,6 @@ class AtividadeControllerAPI extends Controller
             if ($request->chat['assunto'] && $request->chat['assunto'] != "") {
                 $chat->assunto = $request->chat['assunto'];
             }
-            $chat->privado = 1;
             $chat->save();
             $atividade->chat_id = $chat->id;
         }
@@ -189,7 +188,6 @@ class AtividadeControllerAPI extends Controller
         if (!$atividade->chat_id && $request->get('chatExist')) {//cria
             $chat = new Chat();
             $chat->assunto = $request->chat['assunto'];
-            $chat->privado = $request->get('visibilidade') != 'publico';
             $chat->save();
             $atividade->chat_id = $chat->id;
         } else if ($atividade->chat_id && $request->get('chatExist')) {//atualiza

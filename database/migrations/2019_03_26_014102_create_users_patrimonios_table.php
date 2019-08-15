@@ -15,7 +15,6 @@ class CreateUsersPatrimoniosTable extends Migration
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->increments('id');
-            $table->boolean('privado')->default(true);
             $table->string('assunto')->nullable();
         });
 

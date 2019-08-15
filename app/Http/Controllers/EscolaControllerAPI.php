@@ -79,7 +79,6 @@ class EscolaControllerAPI extends Controller
         $escola->fill($request->all());
 
         $chat = new Chat();
-        $chat->privado = 1;
         $chat->assunto = "Chat dos professores";
         $chat->save();
 

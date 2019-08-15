@@ -18,7 +18,7 @@ class Chat extends Model
 
     public $timestamps = false;
     protected $fillable = [
-        'privado', 'assunto'
+        'assunto'
     ];
 
     public function atividade(){
