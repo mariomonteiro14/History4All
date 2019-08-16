@@ -15,7 +15,7 @@ class CreateUsersPatrimoniosTable extends Migration
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('assunto')->nullable();
+            $table->string('assunto', 100)->nullable();
         });
 
         Schema::create('chat_mensagens', function (Blueprint $table) {
@@ -37,7 +37,7 @@ class CreateUsersPatrimoniosTable extends Migration
 
         Schema::create('turmas', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('nome');
+            $table->string('nome', 9);
             $table->bigInteger('professor_id')->unsigned()->nullable();
             $table->integer('escola_id')->unsigned();
             $table->foreign('escola_id')->references('id')->on('escolas')->onDelete('cascade');
@@ -102,7 +102,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->foreign('coordenador')->references('id')->on('users')->onDelete('set null');
             $table->integer('chat_id')->unsigned()->nullable();
             $table->foreign('chat_id')->references('id')->on('chats')->onDelete('set null');
-            $table->date('dataInicio')->nullable();
+            $table->date('dataInicio');
             $table->date('dataFinal')->nullable();
         });
 

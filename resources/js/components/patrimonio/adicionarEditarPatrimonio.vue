@@ -17,7 +17,9 @@
                             <v-text-field id="inputNome"
                                           v-model="patrimonio.nome"
                                           label="Nome"
-                                          :rules="[v => !!v || 'Nome é obrigatório']"
+                                          :rules="[v => !!v || 'Nome é obrigatório',
+                                            v => v && v.length <= 255 || 'máximo 255 caracteres']"
+                                          counter="255"
                                           required
                             ></v-text-field>
                         </div>
@@ -323,7 +325,8 @@
         },
         computed: {
             hasErrors: function () {
-                return !this.patrimonio.nome || !this.patrimonio.ciclo || !this.patrimonio.epoca || !this.patrimonio.distrito || !this.patrimonio.descricao;
+                return !this.patrimonio.nome || this.patrimonio.nome.length > 255 || !this.patrimonio.ciclo || !this.patrimonio.epoca ||
+                    !this.patrimonio.distrito || !this.patrimonio.descricao;
             },
         }
     };

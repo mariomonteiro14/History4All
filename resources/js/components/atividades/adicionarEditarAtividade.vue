@@ -18,14 +18,14 @@
                         <v-stepper v-model="stepper">
                             <v-stepper-header>
                                 <v-stepper-step
-                                    :complete="atividade.titulo && atividade.descricao &&
-                                                atividade.descricao.length >=25 && atividade.visibilidade &&
-                                                tipoSelected && !(tipoSelected == 'outro' && !outroTipo)"
+                                    :complete="atividade.titulo && atividade.titulo.length <= 255 && atividade.descricao &&
+                                                atividade.descricao.length >=25 && atividade.visibilidade && visibilidades.includes(atividade.visibilidade) &&
+                                                tipoSelected && (tipoSelected != 'outro' || outroTipo && outroTipo.length <= 255)"
                                     editable
                                     step="1"
-                                    :rules="[() => stepper == 1 || (stepper > 1 && atividade.titulo && (atividade.descricao &&
-                                    atividade.descricao.length >=25) && atividade.visibilidade &&
-                                    tipoSelected && !(tipoSelected == 'outro' && !outroTipo))]"
+                                    :rules="[() => stepper == 1 || (stepper > 1 && atividade.titulo && atividade.titulo.length <= 255 && atividade.descricao &&
+                                                atividade.descricao.length >=25 && atividade.visibilidade && visibilidades.includes(atividade.visibilidade) &&
+                                                tipoSelected && (tipoSelected != 'outro' || outroTipo && outroTipo.length <= 255))]"
                                 >
                                     Descrição
                                 </v-stepper-step>
@@ -43,11 +43,14 @@
                                 <v-divider></v-divider>
 
                                 <v-stepper-step
-                                    :complete="atividade.participantes && atividade.participantes.length > 0"
+                                    :complete="atividade.participantes && atividade.participantes.length > 0 &&
+                                             (!temGrupo || (temGrupo && numeroElementos > 1 && numeroElementos < 7)) &&
+                                             (!chatExist || chatExist && chatAssunto.length <= 100)"
                                     editable
                                     step="3"
                                     :rules="[() => stepper < 4 || (atividade.participantes && atividade.participantes.length > 0 && stepper == 4 &&
-                                             (!temGrupo || (temGrupo && numeroElementos > 1 && numeroElementos < 7)))]"
+                                             (!temGrupo || (temGrupo && numeroElementos > 1 && numeroElementos < 7)) &&
+                                             (!chatExist || chatExist && chatAssunto.length <= 100))]"
                                 >
                                     Selecionar participante(s)
                                 </v-stepper-step>
@@ -70,7 +73,9 @@
                                             <v-text-field id="inputTitulo"
                                                           v-model="atividade.titulo"
                                                           label="Título"
-                                                          :rules="[v => !!v || 'Titulo é obrigatório']"
+                                                          :rules="[v => !!v || 'Titulo é obrigatório',
+                                                            v => v && v.length <= 255 || 'máximo 255 caracteres']"
+                                                          counter="255"
                                                           required
                                                           clearable
                                             >
@@ -112,7 +117,8 @@
                                                     label="Tipo"
                                                     v-model="tipoSelected"
                                                     :items="tipos"
-                                                    :rules="[v => !!v || 'Tipo de atividade é obrigatória']"
+                                                    :rules="[v => !!v || 'Tipo de atividade é obrigatória',
+                                                        v => !!tipos.includes(v) || 'valor inválido']"
                                                     class="input-group--focused"
                                                     required
                                                     clearable
@@ -135,7 +141,9 @@
                                                 <v-text-field id="inputTipoOutro"
                                                               v-model="outroTipo"
                                                               label="Indique o tipo da atividade"
-                                                              :rules="[v => !!v || 'Tipo é obrigatório']"
+                                                              :rules="[v => !!v || 'Tipo é obrigatório',
+                                                                v => v && v.length <= 255 || 'máximo 255 caracteres']"
+                                                              counter="255"
                                                               clearable
                                                               required
                                                 ></v-text-field>
@@ -148,7 +156,8 @@
                                             label="Visibilidade"
                                             v-model="atividade.visibilidade"
                                             :items="visibilidades"
-                                            :rules="[v => !!v || 'Visibilidade é obrigatória']"
+                                            :rules="[v => !!v || 'Visibilidade é obrigatória',
+                                                v => !!visibilidades.includes(v) || 'valor inválido']"
                                             class="input-group--focused"
                                             required
                                             clearable
@@ -238,6 +247,7 @@
                                 <v-stepper-content step="3">
                                     <div @click="setOpenList('alunos')">
                                         <v-combobox
+                                            v-if="turmas.length > 0"
                                             v-model="turmasSelecionadas"
                                             :items="turmas"
                                             item-text="nome"
@@ -348,6 +358,7 @@
                                                 id="inputChatAssunto"
                                                 v-model="chatAssunto"
                                                 label="Assunto"
+                                                :rules="[v => v && v.length <= 100 || 'máximo 255 caracteres']"
                                                 counter="100"
                                                 clearable
                                             >
@@ -490,11 +501,10 @@
 
 <script>
     export default {
-        props: ['atividade'],
+        props: ['atividade', 'alunos', 'turmas'],
         created() {
             //this.getTipos();
             if (this.$store.state.user.tipo === 'professor') {
-                this.getAlunos();
                 this.getPatrimonios();
             }
         },
@@ -504,9 +514,7 @@
                 tipoSelected: '',
                 outroTipo: '',
                 visibilidades: ['privado', 'visivel para a escola', 'publico'],
-                alunos: [],
                 patrimonios: [],
-                turmas: [],
                 turmasSelecionadas: [],
                 selTipoAberto: false,
                 selVisibilidadeAberto: false,
@@ -599,15 +607,6 @@
                 this.dataFinal = null;
                 this.closeLists();
             },
-            getAlunos(url = '/api/me/escola') {
-                axios.get(url)
-                    .then(response => {
-                        this.alunos = response.data.data.alunos;
-                        this.turmas = response.data.data.turmas.filter(turma => turma.alunos.length > 0);
-                    }).catch(error => {
-                    this.toastErrorApi(error);
-                });
-            },
             getPatrimonios(url = '/api/patrimonios') {
                 axios.get(url)
                     .then(response => {
@@ -661,14 +660,15 @@
         },
         computed: {
             hasErrors: function () {
-                if (!this.atividade.titulo || (!this.atividade.descricao ||
-                    this.atividade.descricao.length < 25) || !this.atividade.visibilidade ||
-                    !this.tipoSelected || (this.tipoSelected == 'outro' && !this.outroTipo)) {
+                if (!this.atividade.titulo || this.atividade.titulo.length > 255 || (!this.atividade.descricao ||
+                    this.atividade.descricao.length < 25) || !this.atividade.visibilidade || !this.visibilidades.includes(this.atividade.visibilidade) ||
+                    !this.tipoSelected || this.tipoSelected == 'outro' && (!this.outroTipo || this.outroTipo.length > 255)) {
                     return true;
                 }
                 this.atividade.patrimonios;
                 this.atividade.participantes;
-                if (!this.atividade.patrimonios || this.atividade.patrimonios.length == 0 || !this.atividade.participantes || this.atividade.participantes.length == 0) {
+                if (!this.atividade.patrimonios || this.atividade.patrimonios.length == 0 || !this.atividade.participantes || this.atividade.participantes.length == 0 ||
+                    this.chatExist && this.chatAssunto.length > 100) {
                     return true;
                 }
 

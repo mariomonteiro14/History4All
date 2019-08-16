@@ -22,6 +22,8 @@
                                 color="green"
                                 placeholder="Outro..."
                                 v-model="outro"
+                                :rules="[v => v && v.length <= 209 || 'máximo 209 caracteres']"
+                                counter="209"
                                 regular
                                 size="250px"
                                 :disabled="isSending"
@@ -43,7 +45,7 @@
                            color="green"
                            text flat
                            @click="registarDenuncia()"
-                           :disabled="denuncia.length < 3 || (denuncia=='outro' && outro.length < 4)"
+                           :disabled="denuncia.length < 3 || denuncia=='outro' && (outro.length < 4 || outro.length > 209)"
                     >
                         Enviar
                     </v-btn>

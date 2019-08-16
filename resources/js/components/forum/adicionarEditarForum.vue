@@ -18,7 +18,9 @@
                                     <v-text-field id="inputTitulo"
                                                 v-model="forum.titulo"
                                                 label="Titulo"
-                                                :rules="[v => !!v || 'Titulo é obrigatório']"
+                                                :rules="[v => !!v || 'Titulo é obrigatório',
+                                                  v => v && v.length <= 9 || 'máximo 9 caracteres']"
+                                                counter="9"
                                                 required
                                     ></v-text-field>
                                 </v-flex>
@@ -236,10 +238,10 @@
             hasErrors: function () {
                 this.forum.patrimonios;
                 if (this.$store.state.user){
-                    return !this.forum.titulo || !this.forum.descricao || !this.forum.patrimonios || (this.forum.patrimonios && this.forum.patrimonios.length == 0);
+                    return !this.forum.titulo || this.forum.titulo.length > 9 || !this.forum.descricao || !this.forum.patrimonios || (this.forum.patrimonios && this.forum.patrimonios.length == 0);
                 }
                 let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return !this.forum.titulo || !this.forum.descricao || !re.test(String(this.forum.user_email).toLowerCase()) || this.forum.patrimonios && this.forum.patrimonios.length == 0;
+                return !this.forum.titulo || this. forum.titulo.length > 9 || !this.forum.descricao || !re.test(String(this.forum.user_email).toLowerCase()) || this.forum.patrimonios && this.forum.patrimonios.length == 0;
             }
         },
         watch: {

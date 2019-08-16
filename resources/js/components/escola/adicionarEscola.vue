@@ -18,7 +18,9 @@
                             <v-text-field id="inputNome"
                                           v-model="escola.nome"
                                           label="Nome"
-                                          :rules="[v => !!v || 'Nome é obrigatório']"
+                                          :rules="[v => !!v || 'Nome é obrigatório',
+                                            v => v && v.length <= 255 || 'máximo 255 caracteres']"
+                                          counter="255"
                                           required
                             ></v-text-field>
                         </div>
@@ -115,7 +117,7 @@
 
         computed: {
             hasErrors: function () {
-                if (!this.escola.nome || !this.escola.distrito) {
+                if (!this.escola.nome || this.escola.nome.length > 255 || !this.escola.distrito) {
                     return true;
                 }
                 return false;

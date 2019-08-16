@@ -25,7 +25,7 @@
                             ></v-select>
                         </v-flex>
                         <v-spacer></v-spacer>
-                        <v-btn round v-if="$store.state.user.tipo=='professor'" color="success" data-toggle="modal"
+                        <v-btn round v-if="$store.state.user.tipo=='professor' && alunos.length > 0" color="success" data-toggle="modal"
                                data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
                              <v-icon>add</v-icon> &nbsp Atividade
                         </v-btn>
@@ -152,7 +152,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <atividade-add-edit :atividade="atividadeAtual" v-on:atualizar="atualizar()"></atividade-add-edit>
+        <atividade-add-edit :atividade="atividadeAtual" :alunos="alunos" :turmas="turmas" v-on:atualizar="atualizar()"></atividade-add-edit>
     </div>
 </template>
 
@@ -166,6 +166,9 @@
         created() {
             if (this.$store.state.user.tipo == 'admin') {
                 this.tipoDePesquisaSelected = 'Publicas';
+            }
+            if(this.$store.state.user.tipo=='professor'){
+                this.getAlunos();
             }
             this.getAtividades();
         },
@@ -186,6 +189,9 @@
                 tipoDePesquisaSelected: 'Minhas Atividades',
                 minhasAtividades: ['Todas', 'Pendentes', 'Concluídas'],
                 minhasAtividadesSelected: 'Todas',
+
+                alunos: [],
+                turmas: [],
 
                 atividadeAApagar: null,
                 dialog: false,
@@ -258,7 +264,16 @@
                     'participantes': [],
                     'visibilidade': "",
                 };
-            }
+            },
+            getAlunos(url = '/api/me/escola') {
+                axios.get(url)
+                    .then(response => {
+                        this.alunos = response.data.data.alunos;
+                        this.turmas = response.data.data.turmas.filter(turma => turma.alunos.length > 0);
+                    }).catch(error => {
+                    this.toastErrorApi(error);
+                });
+            },
         },
         computed: {
             filteredAtividades() {

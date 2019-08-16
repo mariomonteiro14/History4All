@@ -18,7 +18,9 @@
                             <v-text-field id="inputNome"
                                           v-model="turma.nome"
                                           label="Nome"
-                                          :rules="[v => !!v || 'Nome é obrigatório']"
+                                          :rules="[v => !!v || 'Nome é obrigatório',
+                                            v => v && v.length <= 255 || 'máximo 255 caracteres']"
+                                          counter="255"
                                           required
                             ></v-text-field>
                         </div>
@@ -235,7 +237,7 @@
 
         computed: {
             hasErrors: function () {
-                if (!this.turma.nome || !this.turma.ciclo) {
+                if (!this.turma.nome || this.turma.nome.length > 255 || !this.turma.ciclo) {
                     return true;
                 }
                 return false;

@@ -17,7 +17,9 @@
                             <v-text-field id="inputNome"
                                           v-model="user.nome"
                                           label="Nome"
-                                          :rules="[v => !!v || 'Nome é obrigatório']"
+                                          :rules="[v => !!v || 'Nome é obrigatório',
+                                            v => v && v.length <= 255 || 'máximo 255 caracteres']"
+                                          counter="255"
                                           required
                             ></v-text-field>
                         </div>
@@ -189,7 +191,7 @@
                 }
             },
             hasErrors: function () {
-                if (!this.user.nome || !this.user.email || !this.user.tipo) {
+                if (!this.user.nome || this.user.nome.length > 255 || !this.user.email || !this.user.tipo) {
                     return true;
                 }
                 var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

@@ -360,6 +360,7 @@ class UserControllerAPI extends Controller
             'link' => null
         ]);
         $notificacao->save();
+        return response()->json(null, 200);
     }
 
     public function notificacoes(Request $request)
