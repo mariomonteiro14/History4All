@@ -500,16 +500,17 @@
                         </v-card>
                     </v-flex>
                 </v-layout>
+                <v-layout align-content-center>
+                    <v-flex xs12 sm12 md12>
+                        <v-btn class="primary--text subheading" round flat @click="$router.go(-1)">
+                            <v-icon>fa fa-arrow-left</v-icon>
+                            &nbsp Voltar
+                        </v-btn>
+                    </v-flex>
+                </v-layout>
             </v-container>
         </v-app>
-        <v-layout align-content-center>
-            <v-flex xs12 sm12 md12>
-                <v-btn class="primary--text subheading" round flat @click="$router.go(-1)">
-                    <v-icon>fa fa-arrow-left</v-icon>
-                    &nbsp Voltar
-                </v-btn>
-            </v-flex>
-        </v-layout>
+
         <br>
         <div class="modal fade" id="mostrarPatrimoniosModal" tabindex="-1" role="dialog"
              aria-labelledby="mostrarPatrimoniosModal"

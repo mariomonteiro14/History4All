@@ -247,7 +247,7 @@
                                 <v-stepper-content step="3">
                                     <div @click="setOpenList('alunos')">
                                         <v-combobox
-                                            v-if="turmas.length > 0"
+                                            v-if="turmas && turmas.length > 0"
                                             v-model="turmasSelecionadas"
                                             :items="turmas"
                                             item-text="nome"
@@ -395,7 +395,7 @@
                                     </v-layout>
                                 </v-stepper-content>
 
-                                <v-stepper-content step="4">
+                                <v-stepper-content step="4" >
                                     <p>Duração:</p>
                                     <v-radio-group v-model="duracao" row>
                                         <v-radio color="primary" label="1 dia" :value="1"></v-radio>
@@ -501,11 +501,16 @@
 
 <script>
     export default {
-        props: ['atividade', 'alunos', 'turmas'],
+        props: ['atividade'],
         created() {
             //this.getTipos();
             if (this.$store.state.user.tipo === 'professor') {
                 this.getPatrimonios();
+                this.getAlunos();
+            }else{
+                console.log("nao pode aceder ao formulario");
+                $('#addAtividadeModal').modal('hide');
+
             }
         },
         data: function () {
@@ -526,6 +531,8 @@
                 numeroElementos: 2,
                 isLoading: false,
                 stepper: 1,
+                alunos: [],
+                turmas:[],
 
                 duracao: 1,
                 dataInicio: null,
@@ -597,6 +604,8 @@
                 this.atividade.patrimonios = [];
                 this.atividade.chat = null;
                 this.atividade.tipo = null;
+                this.temGrupo = false;
+                this.numeroElementos = 2;
                 this.tipoSelected = '';
                 this.outroTipo = '';
                 this.chatAssunto = "";
@@ -611,6 +620,15 @@
                 axios.get(url)
                     .then(response => {
                         this.patrimonios = response.data.data;
+                    }).catch(error => {
+                    this.toastErrorApi(error);
+                });
+            },
+            getAlunos(url = '/api/me/escola') {
+                axios.get(url)
+                    .then(response => {
+                        this.alunos = response.data.data.alunos;
+                        this.turmas = response.data.data.turmas.filter(turma => turma.alunos.length > 0);
                     }).catch(error => {
                     this.toastErrorApi(error);
                 });
