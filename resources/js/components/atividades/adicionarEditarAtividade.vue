@@ -45,12 +45,12 @@
                                 <v-stepper-step
                                     :complete="atividade.participantes && atividade.participantes.length > 0 &&
                                              (!temGrupo || (temGrupo && numeroElementos > 1 && numeroElementos < 7)) &&
-                                             (!chatExist || chatExist && chatAssunto.length <= 100)"
+                                             (!chatExist || !chatAssunto || (chatAssunto && chatAssunto.length <= 100))"
                                     editable
                                     step="3"
                                     :rules="[() => stepper < 4 || (atividade.participantes && atividade.participantes.length > 0 && stepper == 4 &&
                                              (!temGrupo || (temGrupo && numeroElementos > 1 && numeroElementos < 7)) &&
-                                             (!chatExist || chatExist && chatAssunto.length <= 100))]"
+                                             (!chatExist || !chatAssunto || (chatAssunto && chatAssunto.length <= 100)))]"
                                 >
                                     Selecionar participante(s)
                                 </v-stepper-step>
@@ -668,7 +668,7 @@
                 this.atividade.patrimonios;
                 this.atividade.participantes;
                 if (!this.atividade.patrimonios || this.atividade.patrimonios.length == 0 || !this.atividade.participantes || this.atividade.participantes.length == 0 ||
-                    this.chatExist && this.chatAssunto.length > 100) {
+                    this.chatExist && this.chatAssunto &&  this.chatAssunto.length > 100) {
                     return true;
                 }
 
