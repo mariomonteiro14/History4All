@@ -25,8 +25,8 @@
                             ></v-select>
                         </v-flex>
                         <v-spacer></v-spacer>
-                        <v-btn round v-if="$store.state.user.tipo=='professor' && $refs.addEditAtividade && $refs.addEditAtividade.alunos.length > 0" color="success" data-toggle="modal"
-                               data-target="#addAtividadeModal" @click="resetAtividadeAtual()">
+                        <v-btn round v-if="$store.state.user.tipo=='professor' && $refs.addEditAtividade && ($refs.addEditAtividade.alunos.length > 0 || $refs.addEditAtividade.isLoadingAlunos)" color="success" data-toggle="modal"
+                               data-target="#addAtividadeModal" @click="resetAtividadeAtual()" :disabled="$refs.addEditAtividade && $refs.addEditAtividade.isLoadingAlunos">
                              <v-icon>add</v-icon> &nbsp Atividade
                         </v-btn>
                     </v-layout>

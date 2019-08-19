@@ -230,7 +230,9 @@
                                                         <v-text-field id="inputEmail"
                                                                       v-model="meuComentario.userEmail"
                                                                       label="O seu email"
-                                                                      :rules="[(v) =>  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido']"
+                                                                      :rules="[
+                                                                      (v) => !!v || 'email obrigatório',
+                                                                      (v) =>  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido']"
                                                                       clearable
                                                                       :disabled="sendingRequest && operacao==1"
                                                         >
@@ -904,9 +906,12 @@
         ,
         computed: {
             hasErrors: function () {
+                if (!this.$store.state.user && (!this.meuComentario.userEmail || this.meuComentario.userEmail.length==0)){
+                    return true;
+                }
                 var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
                 if ((this.meuComentario.userEmail && !re.test(String(this.meuComentario.userEmail).toLowerCase())) ||
-                    !this.meuComentario.comentario || this.meuComentario.comentario.length <= 5) {
+                    !this.meuComentario.comentario || this.meuComentario.comentario.length <= 15) {
                     return true;
                 }
                 return false;

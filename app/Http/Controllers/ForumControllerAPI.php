@@ -103,7 +103,7 @@ class ForumControllerAPI extends Controller
     {
         $request->validate([
             'comentario' => 'required|string',
-            'userEmail' => 'nullable|email',
+            'userEmail' => 'required|email',
         ]);
         $forum = Forum::findOrFail($id);
 

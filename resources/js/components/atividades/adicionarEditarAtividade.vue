@@ -505,8 +505,8 @@
         created() {
             //this.getTipos();
             if (this.$store.state.user.tipo === 'professor') {
-                this.getPatrimonios();
                 this.getAlunos();
+                this.getPatrimonios();
             }else{
                 console.log("nao pode aceder ao formulario");
                 $('#addAtividadeModal').modal('hide');
@@ -539,6 +539,7 @@
                 dataFinal: null,
                 menu1: false,
                 menu2: false,
+                isLoadingAlunos: false,
             };
         },
         methods: {
@@ -625,11 +626,14 @@
                 });
             },
             getAlunos(url = '/api/me/escola') {
+                this.isLoadingAlunos= true;
                 axios.get(url)
                     .then(response => {
                         this.alunos = response.data.data.alunos;
                         this.turmas = response.data.data.turmas.filter(turma => turma.alunos.length > 0);
+                        this.isLoadingAlunos= false;
                     }).catch(error => {
+                    this.isLoadingAlunos= false;
                     this.toastErrorApi(error);
                 });
             },
