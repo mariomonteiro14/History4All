@@ -393,7 +393,7 @@ class UserControllerAPI extends Controller
             $notificacao->fill([
                 'user_id' => $userId,
                 'mensagem' => $request->mensagem,
-                'remetente' => $request->de,
+                'remetente' => $request->remetente,
                 'data' => date("Y-m-d H:i:s"),
                 'lida' => '0',
                 'link' => $request->link
