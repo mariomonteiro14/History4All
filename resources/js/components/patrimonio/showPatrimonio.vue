@@ -14,7 +14,19 @@
                     </v-tooltip>
                     <br>
                     <br>
-                    <v-tooltip bottom  v-if="patrimonio.id && $store.state.user && $store.state.user.tipo === 'professor'">
+                    <v-tooltip bottom v-if="patrimonio.imagens && patrimonio.imagens.length > 1">
+                        <template v-slot:activator="{ on }">
+                            <v-btn color="warning" icon large v-on="on" v-scroll-to="'#btnGallery'"
+                                   @click="showGallery=true">
+                                <v-icon color="white">far fa-image</v-icon>
+                            </v-btn>
+                        </template>
+                        <span>Galeria</span>
+                    </v-tooltip>
+                    <br>
+                    <br>
+                    <v-tooltip bottom
+                               v-if="patrimonio.id && $store.state.user && $store.state.user.tipo === 'professor'">
                         <template v-slot:activator="{ on }">
                             <v-btn color="green" icon large v-on="on"
                                    data-toggle="modal" data-target="#adicionarImagemModal">
@@ -26,8 +38,13 @@
                 </v-flex>
 
                 <v-flex xs12 sm8 offset-sm2>
-                    <v-progress-linear  v-if="isLoadingPatrimonio" v-slot:progress :color="colorDefault"
-                                        indeterminate></v-progress-linear>
+                    <v-progress-linear v-if="isLoadingPatrimonio" v-slot:progress :color="colorDefault"
+                                       indeterminate></v-progress-linear>
+                    <v-container v-else-if="!patrimonio.id">
+                        <v-alert :value="true" color="error" icon="warning">
+                            Património não encontrado :(
+                        </v-alert>
+                    </v-container>
                     <v-card v-else>
                         <v-img v-if="patrimonio.imagens && patrimonio.imagens.length >0"
                                :src="getPatrimonioPhoto(patrimonio.imagens[0].foto)"
@@ -45,7 +62,7 @@
                         </v-card-title>
                         <v-card-actions>
                             <v-btn flat color="orange" v-if="patrimonio.imagens && patrimonio.imagens.length > 1"
-                                   @click="showGallery=!showGallery">
+                                   @click="showGallery=!showGallery" id="btnGallery">
                                 Galeria
                             </v-btn>
                         </v-card-actions>
