@@ -585,6 +585,7 @@
                             this.toastErrorApi(error);
                         }
                     } else {
+                        this.operacao = 0;
                         this.toastErrorApi(error);
                     }
                 });
@@ -875,16 +876,16 @@
                             this.showEditForm = true;
                         }
                     }).catch(error => {
+                        this.sendingRequest = false;
                         if (!this.$store.state.user) {
                             this.credenciais.email = "";
                             this.credenciais.codigo = null;
                             this.introduzirEmail = true;
                             this.dialogCode = true;
-                            this.sendingRequest = false;
                             this.meuComentario = comentario;
 
                         } else {
-                            this.sendingRequest = false;
+                            this.operacao = 0;
                             this.toastErrorApi(error);
                         }
                     });

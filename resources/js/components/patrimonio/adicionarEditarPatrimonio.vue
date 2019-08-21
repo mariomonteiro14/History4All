@@ -182,7 +182,7 @@
                 if (this.removeImagesSelected.length == 0) {
                     return "Selecione imagens para remover"
                 }
-                if (this.removeImagesSelected.length == 0) {
+                if (this.removeImagesSelected.length == 1) {
                     return "1 imagem a remover";
                 }
                 return this.removeImagesSelected.length + " imagens a remover";
