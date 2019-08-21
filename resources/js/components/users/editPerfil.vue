@@ -52,7 +52,7 @@
                             ></v-text-field>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" v-if="user.password">
                             <v-text-field id="inputPasswordConf"
                                           v-model="passwordConf"
                                           label="Confirmar Password"
@@ -70,7 +70,7 @@
                         <br>
                     </div>
                     <div v-if="!isLoading" class="modal-footer">
-                            <button class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Registar
+                            <button class="btn btn-info" v-on:click.prevent="save" :disabled="hasErrors">Guardar
                             </button>
                             <button flat class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
@@ -99,9 +99,14 @@
 
 <script>
     export default {
+
+        mounted() {
+            this.user = Object.assign({}, this.$store.state.user);
+            delete this.user.password;
+        },
         data: function () {
             return {
-                user: Object.assign({}, this.$store.state.user),
+                user: {},
                 emailConf: '',
                 passwordConf: '',
                 foto: '',
@@ -133,6 +138,12 @@
 
             cancel: function () {
                 $('#editProfileModal').modal('hide');
+                this.user = Object.assign({}, this.$store.state.user);
+                delete this.user.password;
+                this.emailConf = '';
+                this.passwordConf= '';
+                this.foto= '';
+                this.isLoading= false;
             },
             handleFile: function (e) {
                 let files = e.target.files || e.dataTransfer.files;
