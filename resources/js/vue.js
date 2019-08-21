@@ -58,7 +58,7 @@ const routes = [
     //{ path: '/escola/turmas', name: 'turmas',component: require('./components/escola/turmas.vue').default},
     { path: '/users/alterarEmail/:token/:email', name: 'alterarEmail',component: require('./components/users/alterarEmail.vue').default,props: true},
     //{ path: '/professores/chat', name: 'chatProfessores',component: require('./components/widgets/chatProfessores.vue').default},
-    { path: '/professores/gestor', name: 'professorGestor',component: require('./components/users/professorGestor.vue').default, props: true},
+    { path: '/professores/gestor/:tab', name: 'professorGestor',component: require('./components/users/professorGestor.vue').default, props: true},
     { path: '/alunos/escola', name: 'alunosGestor',component: require('./components/users/alunoGestor.vue').default, props: true},
     { path: '/forums', name: 'forums',component: require('./components/forum/forums.vue').default},
     { path: '/forums/:id', name: 'showForum',component: require('./components/forum/showForum.vue').default, props: true},

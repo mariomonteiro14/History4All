@@ -18,7 +18,7 @@
 
                         <!-- TURMAS -->
                         <turmas :is-loading-turmas="isLoadingTurmas" :myEscola="myEscola"
-                                v-if="tabSelecionada == 1"></turmas>
+                                v-on:atualizarEscola="atualizarEscola" v-if="tabSelecionada == 1"></turmas>
 
                         <!--PROFESSORES CHAT-->
                         <professores-chat :professores="myEscola.professores" v-if="tabSelecionada == 2"></professores-chat>
@@ -58,9 +58,7 @@
         },
 
         mounted() {
-            if (this.tab && this.tab > 0 && this.tab <3 ) {
-                this.tabSelecionada = this.tab;
-            }
+            this.atualizarTabSelecionada();
             this.getMyEscola();
             this.getMyEscolaEstatisticas();
         },
@@ -93,6 +91,55 @@
                     this.isLoadingEstatisticas = false;
                 });
 
+            },
+            atualizarTabSelecionada(){
+                if (this.tab && (this.tab == 'escola' || this.tab == 'turmas' || this.tab == 'professores')) {
+                    switch (this.tab){
+                        case 'escola': {
+                            this.tabSelecionada = 0;
+                            if (!this.myEscola || !this.myEscola.nome){
+                                this.getMyEscola();
+                            }
+                            break;
+                        }
+                        case 'turmas': {
+                            this.tabSelecionada = 1;
+                            if (!this.escolaEstatisticas){
+                                this.getMyEscolaEstatisticas();
+                            }
+                            break;
+                        }
+                        default: {
+                            this.tabSelecionada = 2;
+                        }
+                    };
+                }
+            },
+            atualizarEscola(escola){
+                this.myEscola = escola;
+            }
+        },
+        watch: {
+            tab() {
+                this.atualizarTabSelecionada();
+            },
+            tabSelecionada() {
+                switch (this.tabSelecionada){
+                    case 0: {
+                        this.$router.push({ name: 'professorGestor', params: {tab: 'escola' }});
+                        break;
+                    }
+                    case 1: {
+                        this.$router.push({ name: 'professorGestor', params: {tab: 'turmas' }});
+                        break;
+                    }
+                    case  2: {
+                        this.$router.push({ name: 'professorGestor', params: {tab: 'professores' }});
+                        break;
+                    }
+                    default: {
+                    }
+                };
             }
         }
     }

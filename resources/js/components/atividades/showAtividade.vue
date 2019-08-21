@@ -774,7 +774,6 @@
                     let me = this.$store.state.user;
                     this.atividade.participantes.forEach(function (element) {
                         if (element.id == me.id) {
-                            console.log
                             participa = true;
                             return;
                         }

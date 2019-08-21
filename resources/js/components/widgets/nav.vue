@@ -42,15 +42,15 @@
                         right
                         variant="Success" class="m-2">
                 <template slot="button-content">Minha Escola</template>
-                <b-dropdown-item @click="$router.push({ name: 'professorGestor', params: {tab: 0 }})">
+                <b-dropdown-item @click="$router.push({ name: 'professorGestor', params: {tab: 'escola' }})">
                     <v-icon> &nbsp home</v-icon>
                     Minha Escola
                 </b-dropdown-item>
-                <b-dropdown-item @click="$router.push({ name: 'professorGestor', params: {tab: 1 }})">
+                <b-dropdown-item @click="$router.push({ name: 'professorGestor', params: {tab: 'turmas' }})">
                     <v-icon>group</v-icon>
                     &nbsp Gerir Turmas | Alunos
                 </b-dropdown-item>
-                <b-dropdown-item @click="$router.push({ name: 'professorGestor', params: {tab: 2 }})">
+                <b-dropdown-item @click="$router.push({ name: 'professorGestor', params: {tab: 'professores' }})">
                     <v-icon>far fa-comments</v-icon>
                     &nbsp Professores | Chat
                 </b-dropdown-item>

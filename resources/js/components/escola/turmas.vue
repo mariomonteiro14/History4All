@@ -53,7 +53,7 @@
                 </v-container>
 
                 <v-data-table :headers="headers" :items="filteredTurmas" :search="search" class="elevation-1"
-                              :pagination.sync="pagination" :loading="isLoadingTurmas">
+                              :pagination.sync="pagination" :loading="isLoading">
                     <template v-slot:items="props">
                         <tr class="alert-primary">
                             <td class="text-xs-left"><strong>{{props.item.nome}}</strong></td>
@@ -106,7 +106,7 @@
                         </tr>
                     </template>
                     <template v-slot:no-data>
-                        <v-alert v-if="!isLoadingTurmas" :value="true" color="error" icon="warning">
+                        <v-alert v-if="!isLoading" :value="true" color="error" icon="warning">
                             Não existem turmas :(
                         </v-alert>
                     </template>
@@ -129,7 +129,7 @@
         </v-dialog>
         <lista-alunos v-on:atualizar="getMyEscola" :titulo="'Turma ' + turmaAtual.nome + ' - Alunos'"
                       :users="turmaAtual.alunos"></lista-alunos>
-        <criar-editar-turma ref="addEditTurma" v-bind:escola="myEscola" :turma="turmaAtual"
+        <criar-editar-turma ref="addEditTurma" v-bind:escola="escola" :turma="turmaAtual"
                             v-on:getEscolas="atualizarDados"></criar-editar-turma>
         <criar-aluno ref="addAluno" :user="userForm" v-on:getUsers="atualizarDados"></criar-aluno>
         <enviar-notificacao ref="enviarNotificacaoModal" :atividadeTitulo="null" :atividadeId="null"
@@ -153,7 +153,10 @@
             'enviar-notificacao': enviarNotificacao
         },
         mounted() {
-            this.getMyEscola();
+            !this.myEscola ? this.getMyEscola() : this.escola = this.myEscola;
+            if (this.isLoadingTurmas != undefined){
+                this.isLoading = this.isLoadingTurmas;
+            }
         },
         data() {
             return {
@@ -189,6 +192,8 @@
                     escola: this.$store.state.user.escola[0],
                     turma: '',
                 },
+                escola: {},
+                isLoading: true
             }
         },
         methods: {
@@ -196,15 +201,15 @@
                 this.isLoading = true;
                 axios.get(url)
                     .then(response => {
-                        this.myEscola = response.data.data;
-                        this.isLoadingTurmas = false;
+                        this.$emit('atualizarEscola', response.data.data);
+                        this.isLoading = false;
                     }).catch(error => {
                         if (error.response.status == 404){
                             this.toastPopUp("error", 'Não existem turmas na sua escola');
                         } else{
                             this.toastPopUp("error", `${error.response.data.message}`);
                         }
-                        this.isLoadingTurmas = false;
+                        this.isLoading = false;
                 });
             },
             showTurmaAlunos(turma) {
@@ -250,12 +255,23 @@
         },
         computed: {
             filteredTurmas() {
-                return this.myEscola.turmas.filter((i) => {
+                if (!this.escola || Object.entries(this.escola).length === 0 || Object.entries(this.escola.turmas).length === 0 ){
+                    return;
+                }
+                return this.escola.turmas.filter((i) => {
                     return (this.ciclosSelected.length === 0 || this.ciclosSelected.indexOf(i.ciclo) !== -1)
                         && (this.search === "" || i.nome.includes(this.search))
                         && (this.tipoSelected === "Todas" || i.professor.length === 0 ||
                             i.professor[0].email === this.$store.state.user.email);
                 });
+            }
+        },
+        watch: {
+            isLoadingTurmas() {
+                this.isLoading = this.isLoadingTurmas;
+            },
+            myEscola(){
+                !this.myEscola ? this.getMyEscola() : this.escola = this.myEscola;
             }
         }
     }
