@@ -117,6 +117,7 @@
             },
             atualizarEscola(escola){
                 this.myEscola = escola;
+                this.getMyEscolaEstatisticas();
             }
         },
         watch: {

@@ -113,7 +113,7 @@
         methods: {
 
             save: function () {
-                console.log(this.user);
+                //console.log(this.user);
                 this.isLoading = true;
                 axios.post('/api/users', this.user).then(response => {
                     this.toastPopUp("success", "Utilizador Criado!");

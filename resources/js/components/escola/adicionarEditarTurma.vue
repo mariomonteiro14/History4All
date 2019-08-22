@@ -164,7 +164,7 @@
                     this.turma.professor = this.turma.professor.email;
                 }
                 this.isLoading = true;
-                console.log(this.turma);
+                //console.log(this.turma);
 
                 axios.put('/api/escolas/turmas/' + this.turma.id, this.turma).then(response => {
                     this.toastPopUp("success", "Turma Atualizada!");
