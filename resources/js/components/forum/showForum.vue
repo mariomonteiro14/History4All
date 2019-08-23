@@ -218,7 +218,7 @@
                                         <br>
                                         <br>
                                         <!--ESCREVER COMENTARIO-->
-                                        <v-card-text>
+                                        <v-card-text v-show="operacao!=2">
                                             <v-card sm10 offset-sm1 id="addComment">
                                                 <v-card-text>
                                                     <div>
@@ -320,7 +320,7 @@
                 </v-layout>
 
                 <v-card-text v-if="introduzirEmail">
-                    <span>Apenas o criador deste comentario poderá edita-lo ou elimina-lo.Introduza o seu email de modo a poder conprovar a sua identidade</span>
+                    <span>Apenas o criador deste comentario poderá edita-lo ou elimina-lo. Introduza o seu email de modo a poder conprovar a sua identidade</span>
                     <v-layout>
                         <v-text-field class="text-sm-left"
                                       v-model="credenciais.email"
@@ -376,6 +376,19 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <v-dialog persistent v-model="dialogDelete" width="450px">
+            <v-card>
+                <v-card-title><h4>Confirmar</h4></v-card-title>
+                <v-card-text>
+                    <span>Tem a certeza que deseja eliminar este comentário?</span>
+                </v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn flat round color="red" @click="dialogDelete = false">Não</v-btn>
+                    <v-btn flat round color="green" @click="eliminarComentario(comentEdit)">Sim</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
         <denuncia-dialog ref="denunciarModal" :isForum="false" :id="comentEdit"></denuncia-dialog>
     </div>
 
@@ -410,6 +423,7 @@
                 sendingEmail: false,
                 operacao: 0,
                 showEditForm: false,
+                dialogDelete: false,
 
                 editor: ClassicEditor,
                 editorConfig: {
@@ -553,20 +567,34 @@
                 let url;
 
                 if (this.$store.state.user) {
-                    url = '/api/comentarios/' + this.comentEdit;
+                    if (this.dialogDelete) {
+                        url = '/api/comentarios/' + this.comentEdit;
+                    }else{
+                        this.dialogDelete = true;
+                        return;
+                    }
                 } else {
                     if (this.credenciais.email && this.credenciais.codigo) {
-                        url = '/api/comentarios/' + this.comentEdit + '?codigo=' + this.credenciais.codigo + '&email=' + this.credenciais.email;
+                        if (this.dialogDelete) {
+                            url = '/api/comentarios/' + this.comentEdit + '?codigo=' + this.credenciais.codigo + '&email=' + this.credenciais.email;
+                        }else{
+                            this.sendingRequest = false;
+                            this.dialogCode = false;
+                            this.dialogDelete = true;
+                            return;
+                        }
                     } else {
                         this.introduzirEmail = true;
                         this.dialogCode = true;
                         return;
                     }
                 }
+                this.dialogDelete = false;
                 this.sendingRequest = true;
                 axios.delete(url).then(response => {
                     this.operacao = 0;
                     this.dialogCode = false;
+                    this.comentEdit = 0;
                     setTimeout(function () {
                         this.sendingRequest = false;
                     }.bind(this), 500);
