@@ -155,18 +155,33 @@
         <v-layout justify-center>
             <v-dialog v-model="dialogCode" width="450px">
                     <v-card>
-                        <v-card-title class="headline">Verificação de email</v-card-title>
+                        <v-layout>
+                            <v-card-title class="headline">Verificação de email</v-card-title>
+                            <v-spacer></v-spacer>
+                            <v-btn icon flat @click="fecharVerificacao">
+                                <v-icon>close</v-icon>
+                            </v-btn>
+                        </v-layout>
                         <v-card-text>
                             <v-container>
                                 <v-layout class="form-group" row align-center>
-                                    <v-text-field id="inputEmail"
+                                    <v-text-field v-if="!emailEnviado"
                                         v-model="email"
                                         label="Email"
                                         :rules="emailRules"
                                         clearable
                                         required
-                                    ></v-text-field>
-                                    <v-text-field class="text-sm-left" v-if="emailEnviado"
+                                    >
+                                        <template v-slot:append v-if="!email">
+                                            <v-tooltip left>
+                                                <template v-slot:activator="{ on }">
+                                                    <v-icon v-on="on">help</v-icon>
+                                                </template>
+                                                Insira o seu email caso seja o criador do fórum. Será enviado um email de confirmação
+                                            </v-tooltip>
+                                        </template>
+                                    </v-text-field>
+                                    <v-text-field class="text-sm-left" v-else
                                         v-model="codigo"
                                         label="Código de acesso"
                                         :rules="[v => !!v || 'Código é obrigatório']"
@@ -205,13 +220,6 @@
                                 :disabled="!codigo"
                             >
                                 Confirmar código
-                            </v-btn>
-                            <v-btn
-                                color="red darken-1"
-                                text flat
-                                @click="dialogCode = false"
-                            >
-                                Cancelar
                             </v-btn>
                         </v-card-actions>
                         <v-card-actions v-else>
@@ -422,8 +430,8 @@
                     this.credenciais.email = this.email;
                     this.credenciais.codigo = this.codigo;
                     this.$cookies.set("credentials", {'email': this.email, 'codigo': this.codigo}, "1d");
+                    this.fecharVerificacao();
                     this.emailConfirmado();
-                    this.dialogCode = false;
                 }).catch(error => {
                     this.isLoading= false;
                     this.toastErrorApi(error);
@@ -441,6 +449,11 @@
                     this.fabId = id;
                 }
             },
+            fecharVerificacao(){
+                this.dialogCode = false;
+                this.emailEnviado = false;
+                this.codigo = "";
+            }
         },
         computed: {
             filteredForums() {

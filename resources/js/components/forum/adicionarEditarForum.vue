@@ -19,8 +19,8 @@
                                                 v-model="forum.titulo"
                                                 label="Titulo"
                                                 :rules="[v => !!v || 'Titulo é obrigatório',
-                                                  v => v && v.length <= 9 || 'máximo 9 caracteres']"
-                                                counter="9"
+                                                  v => v && v.length <= 255 || 'máximo 255 caracteres']"
+                                                counter="255"
                                                 required
                                     ></v-text-field>
                                 </v-flex>
