@@ -605,6 +605,7 @@
                 this.atividade.patrimonios = [];
                 this.atividade.chat = null;
                 this.atividade.tipo = null;
+                this.turmasSelecionadas = [];
                 this.temGrupo = false;
                 this.numeroElementos = 2;
                 this.tipoSelected = '';

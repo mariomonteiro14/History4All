@@ -28,7 +28,6 @@
                         </v-flex>
                     </v-layout>
                 </v-container>
-                </v-container>
 
                 <v-data-table :headers="headers" :items="patrimonios" :search="search" class="elevation-1"
                               :pagination.sync="pagination" :loading="isLoading">
