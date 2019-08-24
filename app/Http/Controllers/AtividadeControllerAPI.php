@@ -170,10 +170,10 @@ class AtividadeControllerAPI extends Controller
     {
         $request->validate([
             'titulo' => 'required|min:3',
-            'descricao' => 'required|min:25',
+            'descricao' => 'required|min:10:max:1000',
             'tipo' => 'required',
-            'numeroElementos' => 'required|numeric|digits_between:1,99',
-            'visibilidade' => 'required',
+            'numeroElementos' => 'required|numeric|digits_between:1,6',
+            'visibilidade' => 'required|string',
             'dataInicio' => 'required',
             'dataFinal' => 'nullable',
         ]);
