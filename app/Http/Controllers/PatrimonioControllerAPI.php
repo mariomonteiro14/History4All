@@ -61,9 +61,9 @@ class PatrimonioControllerAPI extends Controller
         $request->validate([
             'nome' => 'required|min:3|max:255',
             'descricao' => 'required|min:30|max:10000',
-            'distrito' => 'required',
-            'epoca' => 'required',
-            'ciclo' => 'required',
+            'distrito' => 'required|string|in:Aveiro,Beja,Braga,Bragança,Castelo Branco,Coimbra,Évora,Faro,Guarda,Leiria,Lisboa,Portalegre,Porto,Santarém,Setúbal,Viana do Castelo,Vila Real,Viseu,Açores,Madeira',
+            'epoca' => 'required|string|in:pré-história,idade antiga,idade média,idade contemporânea',
+            'ciclo' => 'required|string|in:1º ciclo,2º ciclo,3º ciclo,secundário',
             'imagens.*' => 'nullable|file|mimes:jpeg,bmp,png,jpg',
             'novas_imagens.*' => 'nullable|file|mimes:jpeg,bmp,png,jpg',
             'eliminar_imagens.*' => 'nullable',
@@ -105,9 +105,9 @@ class PatrimonioControllerAPI extends Controller
         $request->validate([
             'nome' => 'required|min:3|max:255',
             'descricao' => 'required|min:30|max:10000',
-            'distrito' => 'required',
-            'epoca' => 'required',
-            'ciclo' => 'required',
+            'distrito' => 'required|string|in:Aveiro,Beja,Braga,Bragança,Castelo Branco,Coimbra,Évora,Faro,Guarda,Leiria,Lisboa,Portalegre,Porto,Santarém,Setúbal,Viana do Castelo,Vila Real,Viseu,Açores,Madeira',
+            'epoca' => 'required|string|in:pré-história,idade antiga,idade média,idade contemporânea',
+            'ciclo' => 'required|string|in:1º ciclo,2º ciclo,3º ciclo,secundário',
             'imagens.*' => 'nullable|file|mimes:jpeg,bmp,png,jpg'
         ]);
 

@@ -605,7 +605,7 @@
             enviarNotificacao() {
                 $('#enviarNotificacaoModal').modal('show');
             },
-            participar() {
+            /*participar() {
                 axios.post('/api/atividades/' + this.id + '/participar', {'user_id': this.$store.state.user.id}).then(response => {
                     if (this.atividade.chat) {
                         this.$socket.emit('user_enter_chat', this.$store.state.user, this.atividade.chat.id);
@@ -614,7 +614,7 @@
                 }).catch(error => {
                     this.toastErrorApi(error);
                 })
-            },
+            },*/
             enviarMensagem() {
                 let chatMensagem = {
                     'chat_id': this.atividade.chat.id,

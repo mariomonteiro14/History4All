@@ -72,7 +72,7 @@ class EscolaControllerAPI extends Controller
 
         $request->validate([
             'nome' => 'required|min:3|max:255',
-            'distrito' => 'required',
+            'distrito' => 'required|string|in:Aveiro,Beja,Braga,Bragança,Castelo Branco,Coimbra,Évora,Faro,Guarda,Leiria,Lisboa,Portalegre,Porto,Santarém,Setúbal,Viana do Castelo,Vila Real,Viseu,Açores,Madeira',
         ]);
 
         $escola = new Escola();
@@ -93,7 +93,7 @@ class EscolaControllerAPI extends Controller
     {
         $request->validate([
             'nome' => 'required|min:1|max:9',
-            'ciclo' => 'required',
+            'ciclo' => 'required|string|in:1º ciclo,2º ciclo,3º ciclo,secundário',
             'professor' => 'nullable|email',
         ]);
 
@@ -136,7 +136,7 @@ class EscolaControllerAPI extends Controller
     {
         $request->validate([
             'nome' => 'required|min:1|max:9',
-            'ciclo' => 'required',
+            'ciclo' => 'required|string|in:1º ciclo,2º ciclo,3º ciclo,secundário',
             'professor' => 'nullable|email',
         ]);
 

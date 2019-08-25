@@ -102,11 +102,11 @@ class AtividadeControllerAPI extends Controller
         $request->validate([
             'titulo' => 'required|min:3',
             'descricao' => 'required|min:10:max:1000',
-            'tipo' => 'required',
+            'tipo' => 'required|string',
             'numeroElementos' => 'required|numeric|digits_between:1,6',
-            'visibilidade' => 'required|string',
-            'dataInicio' => 'required',
-            'dataFinal' => 'nullable',
+            'visibilidade' => 'required|string|in:privado,publico,visivel para a escola',
+            'dataInicio' => 'required|date|date_format:Y-m-d',
+            'dataFinal' => 'nullable|date|date_format:Y-m-d',
         ]);
         if (Auth::user()->tipo !== "professor") {
             abort(403, 'Unauthorized action.');
@@ -171,11 +171,11 @@ class AtividadeControllerAPI extends Controller
         $request->validate([
             'titulo' => 'required|min:3',
             'descricao' => 'required|min:10:max:1000',
-            'tipo' => 'required',
+            'tipo' => 'required|string',
             'numeroElementos' => 'required|numeric|digits_between:1,6',
-            'visibilidade' => 'required|string',
-            'dataInicio' => 'required',
-            'dataFinal' => 'nullable',
+            'visibilidade' => 'required|string|in:privado,publico,visivel para a escola',
+            'dataInicio' => 'required|date|date_format:Y-m-d',
+            'dataFinal' => 'nullable|date|date_format:Y-m-d',
         ]);
 
         $atividade = Atividade::findOrFail($id);
