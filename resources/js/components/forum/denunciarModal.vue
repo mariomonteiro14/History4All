@@ -22,8 +22,8 @@
                                 color="green"
                                 placeholder="Outro..."
                                 v-model="outro"
-                                :rules="[v => v && v.length <= 209 || 'máximo 209 caracteres']"
-                                counter="209"
+                                :rules="[v => !!v || 'campo obrigatório', v => v.length <= 150 || 'máximo 150 caracteres']"
+                                counter="150"
                                 regular
                                 size="250px"
                                 :disabled="isSending"
@@ -43,9 +43,9 @@
 
                     <v-btn v-if="!isSending"
                            color="green"
-                           text flat
+                           text flat round
                            @click="registarDenuncia()"
-                           :disabled="denuncia.length < 3 || denuncia=='outro' && (outro.length < 4 || outro.length > 209)"
+                           :disabled="denuncia.length < 3 || denuncia=='outro' && (outro.length < 4 || outro.length > 150)"
                     >
                         Enviar
                     </v-btn>

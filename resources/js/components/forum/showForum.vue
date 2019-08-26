@@ -328,6 +328,7 @@
                                       :rules="[v => !!v || 'Email obrigatório',
                                         (v) =>  /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido']"
                                       clearable
+                                      @keyup.enter="!credenciais.email || gerarCodigo(credenciais.email)"
                                       :disabled="sendingEmail"
                         />
                         <v-btn v-if="!sendingEmail" color="warning" round flat @click="gerarCodigo(credenciais.email)">
@@ -345,6 +346,7 @@
                                   label="Código de acesso"
                                   :rules="[v => !!v || 'Código obrigatório']"
                                   clearable
+                                  @keyup.enter="!credenciais.codigo || verificarCodigo()"
                                   :disabled="sendingRequest"
                     />
                 </v-card-text>
@@ -376,6 +378,7 @@
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <!--DIALOG PARA CONFIRMAÇAO DE ELIMINAÇAO DE COMENTARIO-->
         <v-dialog persistent v-model="dialogDelete" width="450px">
             <v-card>
                 <v-card-title><h4>Confirmar</h4></v-card-title>
@@ -384,11 +387,12 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-spacer></v-spacer>
-                    <v-btn flat round color="red" @click="dialogDelete = false">Não</v-btn>
-                    <v-btn flat round color="green" @click="eliminarComentario(comentEdit)">Sim</v-btn>
+                    <v-btn flat round color="red" @click="confirmadoDelete = false, dialogDelete = false">Não</v-btn>
+                    <v-btn flat round color="green" @click="confirmadoDelete = true, eliminarComentario(comentEdit)">Sim</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
+
         <denuncia-dialog ref="denunciarModal" :isForum="false" :id="comentEdit"></denuncia-dialog>
     </div>
 
@@ -424,6 +428,7 @@
                 operacao: 0,
                 showEditForm: false,
                 dialogDelete: false,
+                confirmadoDelete: false,
 
                 editor: ClassicEditor,
                 editorConfig: {
@@ -567,7 +572,7 @@
                 let url;
 
                 if (this.$store.state.user) {
-                    if (this.dialogDelete) {
+                    if (this.confirmadoDelete) {
                         url = '/api/comentarios/' + this.comentEdit;
                     }else{
                         this.dialogDelete = true;
@@ -575,7 +580,7 @@
                     }
                 } else {
                     if (this.credenciais.email && this.credenciais.codigo) {
-                        if (this.dialogDelete) {
+                        if (this.confirmadoDelete) {
                             url = '/api/comentarios/' + this.comentEdit + '?codigo=' + this.credenciais.codigo + '&email=' + this.credenciais.email;
                         }else{
                             this.sendingRequest = false;
@@ -594,6 +599,7 @@
                 axios.delete(url).then(response => {
                     this.operacao = 0;
                     this.dialogCode = false;
+                    this.confirmadoDelete = false;
                     this.comentEdit = 0;
                     setTimeout(function () {
                         this.sendingRequest = false;
@@ -710,6 +716,9 @@
                         this.credenciais.codigo = "";
                         this.dialogCode = true;
                         this.introduzirEmail = true;
+                    }
+                    if (!this.introduzirEmail){
+                        this.toastErrorApi(error);
                     }
                     return false;
                 })

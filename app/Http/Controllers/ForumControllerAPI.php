@@ -43,16 +43,16 @@ class ForumControllerAPI extends Controller
         return response()->json(['data' => ComentarioResource::collection($forum->comentarios()->orderByRaw('(likes - dislikes) DESC')->get())]);
     }
 
-    public function forumsRelacionados( Request $request){
+    public function forumsRelacionados(Request $request)
+    {
         $request->validate(['forum_id' => 'required|numeric']);
 
         $forum = Forum::findOrFail($request->forum_id);
 
         $patrimonios_id = ForumPatrimonios::where('forum_id', $forum->id)->pluck('patrimonio_id');
-        $forums_id =         ForumPatrimonios::whereIn('patrimonio_id', $patrimonios_id)->where('forum_id', '<>', $forum->id)->pluck('forum_id');
+        $forums_id = ForumPatrimonios::whereIn('patrimonio_id', $patrimonios_id)->where('forum_id', '<>', $forum->id)->pluck('forum_id');
 
-        $forums = Forum::select('id','titulo')->whereIn('id', $forums_id)->get()->sortByDesc(function($forum)
-        {
+        $forums = Forum::select('id', 'titulo')->whereIn('id', $forums_id)->get()->sortByDesc(function ($forum) {
             return $forum->comentarios()->count();
         });
         return response()->json([
@@ -112,7 +112,7 @@ class ForumControllerAPI extends Controller
 
         if (!$request->user('api') && $request->has('userEmail')) {
             //confirmar codigo
-            if(!$request->has('codigo')){
+            if (!$request->has('codigo')) {
                 return abort(403, "Necessario verificar email");
             }
             if (!HistoricoGerenciadorCodigos::where('email', $request->userEmail)->where('codigo', $request->codigo)->first()) {
@@ -128,7 +128,7 @@ class ForumControllerAPI extends Controller
         $comment->save();
 
         Mail::to($forum->user_email)->send(new MensagemEmail(null, 'Novo comentario dum forum do History4All',
-            '<p>Foi adicionado um novo comentario no forum:'.$forum->titulo.' (criado por si).</p><br><a href="http://142.93.219.146/forums/'.$forum->id.'">Ir para '.$forum->titulo.'</a>' ));
+            '<p>Foi adicionado um novo comentario no forum:' . $forum->titulo . ' (criado por si).</p><br><a href="http://142.93.219.146/forums/' . $forum->id . '">Ir para ' . $forum->titulo . '</a>'));
 
         return response()->json(new ComentarioResource($comment), 201);
 
@@ -173,7 +173,7 @@ class ForumControllerAPI extends Controller
         return response()->json(null, 200);
     }
 
-    public function compararEmails(Request $request,$tipo, $id)
+    public function compararEmails(Request $request, $tipo, $id)
     {
         $request->validate([
                 'user_email' => 'required|email']
@@ -196,22 +196,21 @@ class ForumControllerAPI extends Controller
                 return $this->generateAccessCode($request);
             }
             return response()->json(null, 200);
-        }
-        else{
+        } else {
             $comment = Comentario::findOrFail($id);
-            if ($request->user('api')){
+            if ($request->user('api')) {
                 $user = User::findOrFail($request->user('api')->id);
-                if ($user->tipo == "admin" || $user->email == $comment->user_email){
+                if ($user->tipo == "admin" || $user->email == $comment->user_email) {
                     return response()->json(null, 200);
-                }else{
+                } else {
                     return abort(403, "Esse comentario não foi criado por si");
 
                 }
             }
-            if ($comment->user_email == null){
+            if ($comment->user_email == null) {
                 return abort(400, "Este comentario nao tem email associado");
             }
-            if ($comment->user_email != $request->user_email){
+            if ($comment->user_email != $request->user_email) {
                 return abort(403, "O email inserido nao correspode ao do criador deste comentario");
             }
 
@@ -280,7 +279,7 @@ class ForumControllerAPI extends Controller
             if (!$request->has("email") || !$request->has("codigo")) {
                 return abort(400, "necessita de provar ser o criador do comentário");
             }
-            if ($request->email != $comment->user_email){
+            if ($request->email != $comment->user_email) {
                 return abort(403, "Operação negada! O utilizador não é o criador deste comentário");
             }
             if (!HistoricoGerenciadorCodigos::where('email', $request->email)->where('codigo', $request->codigo)->first()) {
@@ -340,7 +339,7 @@ class ForumControllerAPI extends Controller
             if (!$request->has("user_email") || !$request->has("codigo")) {
                 return abort(400, "necessita de provar ser o criador do fórum");
             }
-            if ($request->user_email != $forum->user_email){
+            if ($request->user_email != $forum->user_email) {
                 return abort(403, "Operação negada! O utilizador não é o criador deste fórum");
             }
             if (!HistoricoGerenciadorCodigos::where('email', $request->user_email)->where('codigo', $request->codigo)->first()) {
@@ -374,7 +373,7 @@ class ForumControllerAPI extends Controller
             if (!$request->has("email") || !$request->has("codigo")) {
                 return abort(400, "necessita de provar ser o criador do comentário");
             }
-            if ($request->email != $comment->user_email){
+            if ($request->email != $comment->user_email) {
                 return abort(403, "Operação negada! O utilizador não é o criador deste comentário");
             }
             if (!HistoricoGerenciadorCodigos::where('email', $request->email)->where('codigo', $request->codigo)->first()) {
@@ -392,28 +391,36 @@ class ForumControllerAPI extends Controller
         return response()->json(null, 201);
     }
 
-    public function denuncia(Request $request, $tipo, $id){
-        $request->validate(['denuncia' => 'required|string']);
+    public function denuncia(Request $request, $tipo, $id)
+    {
+        $request->validate(['denuncia' => 'required|string|max:150']);
 
         $mensagem = "";
-        $link="";
-        if ($tipo == "forum"){
-           $forum = Forum::findOrFail($id);
+        $link = "";
+        if ($tipo == "forum") {
+            $forum = Forum::findOrFail($id);
 
-           $mensagem = "Um utilizador denunciou o forum: ". $forum->titulo ." Motivo: " . $request->denuncia . ".";
-           $link = "forums/" . $id;
+            $mensagem = "Um utilizador denunciou o forum: " . $forum->titulo . " Motivo: " . $request->denuncia . ".";
+            if (strlen($mensagem) > 255) {
+                $mensagem = "Um utilizador denunciou o forum: (id:" . $forum->id . "). Motivo: " . $request->denuncia . ".";
+            }
+
+            $link = "forums/" . $id;
 
 
-        }else if($tipo == "comentario"){
+        } else if ($tipo == "comentario") {
             $comentario = Comentario::findOrFail($id);
 
             $forum = $comentario->forum()->first();
 
-            $mensagem = "Um utilizador denunciou um comentario (id:".$id.") no forum: ". $forum->titulo ." Motivo: " . $request->denuncia . ".";
+            $mensagem = "Um utilizador denunciou um comentario (id:" . $id . ") no forum: " . $forum->titulo . " Motivo: " . $request->denuncia . ".";
+            if (strlen($mensagem) > 255) {
+                $mensagem = "Um utilizador denunciou um comentario (id:" . $id . ") num forum (id:" . $forum->id . "): Motivo: " . $request->denuncia . ".";
+            }
             $link = "forums/" . $forum->id;
 
-        }else{
-            return(abort(403, "Essa rota nao existe"));
+        } else {
+            return (abort(403, "Essa rota nao existe"));
         }
 
         $admin = User::where('tipo', 'admin')->first();
