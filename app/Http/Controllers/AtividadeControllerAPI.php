@@ -100,9 +100,9 @@ class AtividadeControllerAPI extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'titulo' => 'required|min:3',
+            'titulo' => 'required|string|min:3:max:255',
             'descricao' => 'required|min:10:max:1000',
-            'tipo' => 'required|string',
+            'tipo' => 'required|string|max:255',
             'numeroElementos' => 'required|numeric|digits_between:1,6',
             'visibilidade' => 'required|string|in:privado,publico,visivel para a escola',
             'dataInicio' => 'required|date|date_format:Y-m-d',
@@ -169,9 +169,9 @@ class AtividadeControllerAPI extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'titulo' => 'required|min:3',
+            'titulo' => 'required|string|min:3:max:255',
             'descricao' => 'required|min:10:max:1000',
-            'tipo' => 'required|string',
+            'tipo' => 'required|string|max:255',
             'numeroElementos' => 'required|numeric|digits_between:1,6',
             'visibilidade' => 'required|string|in:privado,publico,visivel para a escola',
             'dataInicio' => 'required|date|date_format:Y-m-d',

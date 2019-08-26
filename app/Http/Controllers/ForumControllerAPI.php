@@ -65,7 +65,7 @@ class ForumControllerAPI extends Controller
     public function storeForum(Request $request)
     {
         $request->validate([
-            'titulo' => 'required|string',
+            'titulo' => 'required|string|min:1:max:255',
             'descricao' => 'required|string',
             'user_email' => 'required|email',
             'patrimonios' => 'required'
@@ -225,7 +225,7 @@ class ForumControllerAPI extends Controller
     public function updateForum($id, Request $request)
     {
         $request->validate([
-            'titulo' => 'required|string',
+            'titulo' => 'required|string|min:1:max:255',
             'descricao' => 'required|string',
             'user_email' => 'required|email',
             'patrimonios' => 'required'

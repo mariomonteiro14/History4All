@@ -65,7 +65,7 @@ class CreateUsersPatrimoniosTable extends Migration
             $table->increments('id');
             $table->bigInteger('user_id')->unsigned();//destinatário
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('mensagem');
+            $table->string('mensagem', 500);
             $table->string('remetente');
             $table->dateTime('data');
             $table->boolean('lida');

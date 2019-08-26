@@ -18,7 +18,9 @@
                             <v-textarea id="inputMensagem"
                                     v-model="mensagem"
                                     label="mensagem"
-                                    :rules="[v => !!v || 'Mensagem é obrigatória']"
+                                    :rules="[v => !!v || 'Mensagem é obrigatória',
+                                        v => v && v.length <= 500 || 'máximo 500 caracteres']"
+                                    counter="500"
                                     required
                             ></v-textarea>
                         </div>
@@ -112,7 +114,7 @@
         },
         computed: {
             hasErrors: function () {
-                return this.mensagem.length === 0 || this.usersSelected.length === 0;
+                return this.mensagem.length === 0 || this.mensagem.length > 500 || this.usersSelected.length === 0;
             },
             getTitle() {
                 return !this.atividadeId ? 'Notificação para todos os alunos da turma' :
