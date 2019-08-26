@@ -3,7 +3,7 @@
         <v-app id="inspire">
             <br><br><br><br><br>
             <forum-add-edit :forum="forumAtual" :patrimonios="patrimonios" v-on:getFor="getForums()"
-                v-on:credenciais="setCredenciais" v-on:clean="cleanForumAtual"></forum-add-edit>
+                            v-on:credenciais="setCredenciais" v-on:clean="cleanForumAtual"></forum-add-edit>
             <h3>Fórum</h3>
             <br>
             <v-card append float py-0>
@@ -45,8 +45,9 @@
                             </v-flex>
                             <v-spacer></v-spacer>
                             <v-btn round color="success" data-toggle="modal"
-                                data-target="#addForumModal">
-                                <v-icon>add</v-icon> &nbsp Fórum
+                                   data-target="#addForumModal">
+                                <v-icon>add</v-icon>
+                                &nbsp Fórum
                             </v-btn>
                         </v-layout>
                     </v-container>
@@ -58,7 +59,9 @@
                     <tr>
                         <td class="text-xs-left" @click="showForum(props.item)"><b>{{ props.item.titulo }}</b></td>
                         <td class="text-xs-left" @click="showForum(props.item)">{{ props.item.numComentarios }}</td>
-                        <td class="text-xs-left" @click="showForum(props.item)">{{ new Date(props.item.data_ultima_atualizacao_comentario).toLocaleString() }}</td>
+                        <td class="text-xs-left" @click="showForum(props.item)">{{ new
+                            Date(props.item.data_ultima_atualizacao_comentario).toLocaleString() }}
+                        </td>
                         <td class="justify-left layout px-0">
                             <v-speed-dial
                                 direction="left"
@@ -115,8 +118,9 @@
                 </template>
             </v-data-table>
             <!--ELIMINAR-->
-            <div class="modal fade" id="elimianarForumModal" tabindex="-1" role="dialog" aria-labelledby="elimianarForumModal"
-                aria-hidden="true" data-keyboard="false" data-backdrop="static" max-with="500">
+            <div class="modal fade" id="elimianarForumModal" tabindex="-1" role="dialog"
+                 aria-labelledby="elimianarForumModal"
+                 aria-hidden="true" data-keyboard="false" data-backdrop="static" max-with="500">
                 <div class="modal-dialog modal-xl" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -128,7 +132,8 @@
                         </div>
                         <v-card>
                             <v-card-title>Tem a certeza que que apagar o fórum?</v-card-title>
-                            <v-container fluid grid-list-md v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin' && !this.forumDoAdmin">
+                            <v-container fluid grid-list-md
+                                         v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin' && !this.forumDoAdmin">
                                 <v-layout row wrap>
                                     <v-flex xs12 sm9 d-flex>
                                         <v-textarea
@@ -141,10 +146,13 @@
                             </v-container>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="red darken-1" flat="flat" @click="fecharEliminarModal()" :disabled="isLoading">
+                                <v-btn color="red darken-1" flat="flat" @click="fecharEliminarModal()"
+                                       :disabled="isLoading">
                                     Não
                                 </v-btn>
-                                <v-btn color="green darken-1" flat="flat" @click="eliminar()" :disabled="isLoading">Sim</v-btn>
+                                <v-btn color="green darken-1" flat="flat" @click="eliminar()" :disabled="isLoading">
+                                    Sim
+                                </v-btn>
                             </v-card-actions>
                         </v-card>
                     </div>
@@ -154,18 +162,21 @@
         <!--CONFIRMAÇÃO EMAIL-->
         <v-layout justify-center>
             <v-dialog v-model="dialogCode" width="450px">
-                    <v-card>
-                        <v-layout>
-                            <v-card-title class="headline">Verificação de email</v-card-title>
-                            <v-spacer></v-spacer>
-                            <v-btn icon flat @click="fecharVerificacao">
-                                <v-icon>close</v-icon>
-                            </v-btn>
-                        </v-layout>
-                        <v-card-text>
-                            <v-container>
-                                <v-layout class="form-group" row align-center>
-                                    <v-text-field v-if="!emailEnviado"
+                <v-card>
+                    <v-layout>
+                        <v-card-title class="headline">Verificação de email</v-card-title>
+                        <v-spacer></v-spacer>
+                        <v-btn icon flat @click="fecharVerificacao">
+                            <v-icon>close</v-icon>
+                        </v-btn>
+                    </v-layout>
+                    <v-card-text>
+                        <v-container>
+                            <v-layout class="form-group" row align-center>
+                                <div v-if="!emailEnviado">
+                                    <span>Apenas o criador deste forum poderá edita-lo ou elimina-lo. Introduza o seu email de modo a poder conprovar a sua identidade</span>
+
+                                    <v-text-field
                                         v-model="email"
                                         label="Email"
                                         :rules="emailRules"
@@ -177,16 +188,20 @@
                                                 <template v-slot:activator="{ on }">
                                                     <v-icon v-on="on">help</v-icon>
                                                 </template>
-                                                Insira o seu email caso seja o criador do fórum. Será enviado um email de confirmação
+                                                Inserir o seu email.
                                             </v-tooltip>
                                         </template>
                                     </v-text-field>
-                                    <v-text-field class="text-sm-left" v-else
-                                        v-model="codigo"
-                                        label="Código de acesso"
-                                        :rules="[v => !!v || 'Código é obrigatório']"
-                                        clearable
-                                        :disabled="isLoading"
+                                </div>
+                                <div v-else>
+                                    <span>Foi enviado um email para o endereço inserido. Introduza o codigo presente nesse email para concluir
+                        o processo.</span>
+                                    <v-text-field class="text-sm-left"
+                                                  v-model="codigo"
+                                                  label="Código de acesso"
+                                                  :rules="[v => !!v || 'Código é obrigatório']"
+                                                  clearable
+                                                  :disabled="isLoading"
                                     >
                                         <template v-slot:append v-if="!codigo">
                                             <v-tooltip left>
@@ -197,37 +212,39 @@
                                             </v-tooltip>
                                         </template>
                                     </v-text-field>
-                                </v-layout>
-                            </v-container>
-                        </v-card-text>
-                        <v-card-actions v-if="!isLoading">
-                            <v-spacer></v-spacer>
-                            <v-btn color="green darken-1" flat text @click="gerarCodigo" :disabled="isLoading">{{!emailEnviado ? 'Enviar' : 'Reenviar'}} código
-                                <template v-slot:append v-if="!codigo">
-                                    <v-tooltip left>
-                                        <template v-slot:activator="{ on }">
-                                            <v-icon v-on="on">help</v-icon>
-                                        </template>
-                                        Clique aqui para reenviar o email com o código
-                                    </v-tooltip>
-                                </template>
-                            </v-btn>
-                            <v-btn
-                                color="orange darken-1"
-                                text flat
-                                @click="confirmarCodigo"
-                                v-if="emailEnviado"
-                                :disabled="!codigo"
-                            >
-                                Confirmar código
-                            </v-btn>
-                        </v-card-actions>
-                        <v-card-actions v-else>
-                            <v-spacer></v-spacer>
-                            <loader style="padding: 10px" color="green"
-                                    size="32px"></loader>
-                        </v-card-actions>
-                    </v-card>
+                                </div>
+                            </v-layout>
+                        </v-container>
+                    </v-card-text>
+                    <v-card-actions v-if="!isLoading">
+                        <v-spacer></v-spacer>
+                        <v-btn color="green darken-1" flat text @click="gerarCodigo" :disabled="isLoading">
+                            {{!emailEnviado ? 'Enviar' : 'Reenviar'}} código
+                            <template v-slot:append v-if="!codigo">
+                                <v-tooltip left>
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon v-on="on">help</v-icon>
+                                    </template>
+                                    Clique aqui para reenviar o email com o código
+                                </v-tooltip>
+                            </template>
+                        </v-btn>
+                        <v-btn
+                            color="orange darken-1"
+                            text flat
+                            @click="confirmarCodigo"
+                            v-if="emailEnviado"
+                            :disabled="!codigo"
+                        >
+                            Confirmar código
+                        </v-btn>
+                    </v-card-actions>
+                    <v-card-actions v-else>
+                        <v-spacer></v-spacer>
+                        <loader style="padding: 10px" color="green"
+                                size="32px"></loader>
+                    </v-card-actions>
+                </v-card>
             </v-dialog>
         </v-layout>
         <br><br>
@@ -250,7 +267,7 @@
             if (this.$cookies.isKey("credentials")) {
                 this.credenciais = this.$cookies.get("credentials");
             }
-            if (this.$store.state.user){
+            if (this.$store.state.user) {
                 this.credenciais.email = this.$store.state.user.email;
             }
         },
@@ -298,74 +315,74 @@
         },
         methods: {
             getForums() {
-                this.isLoading= true;
+                this.isLoading = true;
                 axios.get('/api/forums')
                     .then(response => {
                         this.forums = response.data.data;
-                        this.isLoading= false;
+                        this.isLoading = false;
                     })
                     .catch(error => {
                         this.toastErrorApi(error);
-                        this.isLoading= false;
+                        this.isLoading = false;
                     });
             },
-            getPatrimonios(){
-                this.isLoading= true;
+            getPatrimonios() {
+                this.isLoading = true;
                 axios.get('/api/patrimoniosShort')
                     .then(response => {
                         this.patrimonios = response.data.data;
-                        this.isLoading= false;
+                        this.isLoading = false;
                     })
                     .catch(error => {
                         this.toastErrorApi(error);
-                        this.isLoading= false;
+                        this.isLoading = false;
                     });
             },
             showForum(forum) {
                 this.$router.push({path: '/forums/' + forum.id, params: {'forum': forum}});
             },
-            editarForumConfirmacao(forum, tipo){
+            editarForumConfirmacao(forum, tipo) {
                 this.forumAtual = Object.assign({}, forum);
                 this.forumAtual.email = this.credenciais.email;
                 this.forumAtual.codigo = this.credenciais.codigo;
                 this.confirmacaoTipo = tipo;
-                if (this.$store.state.user || this.credenciais.codigo){
+                if (this.$store.state.user || this.credenciais.codigo) {
                     let dados = {
                         'user_email': this.credenciais.email,
                         'codigo': this.credenciais.codigo,
                         'tipo': tipo
                     }
-                    this.isLoading= true;
+                    this.isLoading = true;
                     axios.post('/api/forums/' + forum.id + '/compararEmails', dados).then(response => {
-                        this.isLoading= false;
-                        if (response.data.tipo && response.data.tipo == 'forumDoAdmin'){
+                        this.isLoading = false;
+                        if (response.data.tipo && response.data.tipo == 'forumDoAdmin') {
                             this.forumDoAdmin = true;
                         }
                         this.emailConfirmado();
                     }).catch(error => {
-                        this.isLoading= false;
+                        this.isLoading = false;
                         this.toastErrorApi(error);
-                        if (!this.$store.state.user){
+                        if (!this.$store.state.user) {
                             this.dialogCode = true;
-                        } else{
+                        } else {
                             this.cleanForumAtual();
                         }
                     });
-                } else{
+                } else {
                     this.dialogCode = true;//confirmação de email
                 }
             },
-            eliminar(){
-                this.isLoading= true;
+            eliminar() {
+                this.isLoading = true;
                 let url = '/api/forums/' + this.forumAtual.id + '?codigo=' + this.credenciais.codigo + '&user_email=' + this.credenciais.email;
-                if (this.$store.state.user){
+                if (this.$store.state.user) {
                     url = '/api/forums/' + this.forumAtual.id;
-                    if (this.$store.state.user.tipo == 'admin' && this.justificaçao.length > 0){
+                    if (this.$store.state.user.tipo == 'admin' && this.justificaçao.length > 0) {
                         url = '/api/forums/' + this.forumAtual.id + '?justificaçao=' + this.justificaçao;
                     }
                 }
                 axios.delete(url).then(response => {
-                    this.isLoading= false;
+                    this.isLoading = false;
                     this.justificaçao = '';
                     this.forumDoAdmin = false;
                     this.cleanForumAtual();
@@ -374,27 +391,27 @@
                     this.getForums();
                 }).catch(error => {
                     this.forumDoAdmin = false;
-                    this.isLoading= false;
+                    this.isLoading = false;
                     this.toastErrorApi(error);
                 });
             },
-            fecharEliminarModal(){
+            fecharEliminarModal() {
                 this.cleanForumAtual();
                 this.forumDoAdmin = false;
                 $('#elimianarForumModal').modal('hide');
             },
-            emailConfirmado(){
+            emailConfirmado() {
                 this.dialogPodeContinuar = true;
-                if (this.confirmacaoTipo == 'editar'){
+                if (this.confirmacaoTipo == 'editar') {
                     this.forumDoAdmin = false;
                     this.forumAtual.email = this.credenciais.email;
                     this.forumAtual.codigo = this.credenciais.codigo;
                     $('#addForumModal').modal('show');
-                } else{
+                } else {
                     $('#elimianarForumModal').modal('show');
                 }
             },
-            cleanForumAtual(){
+            cleanForumAtual() {
                 this.$cookies.set("credentials", this.credenciais, "1d");
                 this.dialogPodeContinuar = false;
                 this.forumAtual = Object.assign({}, {
@@ -405,35 +422,38 @@
                     "patrimonios": []
                 });
             },
-            setCredenciais(email, codigo){
+            setCredenciais(email, codigo) {
                 this.credenciais.email = email;
                 this.credenciais.codigo = codigo;
                 this.$cookies.set("credentials", this.credenciais, "1d");
             },
-            gerarCodigo(){
-                if (this.$store.state.user && !this.credenciais.email){
+            gerarCodigo() {
+                if (this.$store.state.user && !this.credenciais.email) {
                     this.credenciais.email = this.$store.state.user.email;
                 }
-                this.isLoading= true;
+                this.isLoading = true;
                 axios.post('/api/forums/' + this.forumAtual.id + '/compararEmails', {'user_email': this.email}).then(response => {
                     this.toastPopUp("success", "Enviámos-lhe um email com o código de acesso");
                     this.emailEnviado = true;
-                    this.isLoading= false;
+                    this.isLoading = false;
                 }).catch(error => {
-                    this.isLoading= false;
+                    this.isLoading = false;
                     this.toastErrorApi(error);
                 })
             },
             confirmarCodigo() {
-                axios.post('/api/forums/compararCodigo', {'user_email': this.email, 'codigo': this.codigo}).then(response => {
-                    this.isLoading= false;
+                axios.post('/api/forums/compararCodigo', {
+                    'user_email': this.email,
+                    'codigo': this.codigo
+                }).then(response => {
+                    this.isLoading = false;
                     this.credenciais.email = this.email;
                     this.credenciais.codigo = this.codigo;
                     this.$cookies.set("credentials", {'email': this.email, 'codigo': this.codigo}, "1d");
                     this.fecharVerificacao();
                     this.emailConfirmado();
                 }).catch(error => {
-                    this.isLoading= false;
+                    this.isLoading = false;
                     this.toastErrorApi(error);
                 })
             },
@@ -449,7 +469,7 @@
                     this.fabId = id;
                 }
             },
-            fecharVerificacao(){
+            fecharVerificacao() {
                 this.dialogCode = false;
                 this.emailEnviado = false;
                 this.codigo = "";
@@ -464,8 +484,8 @@
             }
         },
         watch: {
-            dialogCode (){
-                if (this.dialogCode == false && !this.dialogPodeContinuar && (this.confirmacaoTipo == "eliminar" || !this.credenciais.codigo || !this.credenciais.email)){
+            dialogCode() {
+                if (this.dialogCode == false && !this.dialogPodeContinuar && (this.confirmacaoTipo == "eliminar" || !this.credenciais.codigo || !this.credenciais.email)) {
                     this.cleanForumAtual();
                 }
             }

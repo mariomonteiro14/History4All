@@ -13,77 +13,95 @@
                             </button>
                         </div>
                         <v-container>
-                            <v-layout class="form-group" row align-center>
-                                <v-flex xs12 sm4>
-                                    <v-text-field id="inputTitulo"
-                                                v-model="forum.titulo"
-                                                label="Titulo"
-                                                :rules="[v => !!v || 'Titulo é obrigatório',
+                            <div class="form-group">
+                                <v-text-field id="inputTitulo"
+                                              v-model="forum.titulo"
+                                              label="Titulo"
+                                              :rules="[v => !!v || 'Titulo é obrigatório',
                                                   v => v && v.length <= 255 || 'máximo 255 caracteres']"
-                                                counter="255"
-                                                required
-                                    ></v-text-field>
-                                </v-flex>
-                                <v-flex xs12 sm2></v-flex>
-                                <v-flex xs12 sm4>
-                                    <v-combobox
-                                        v-model="forum.patrimonios"
-                                        :items="patrimonios"
-                                        item-text="nome"
-                                        label="Patrimonios associados"
-                                        multiple
-                                        chips
-                                        class="input-group--focused custom"
-                                        deletable-chips
-                                        :rules="[v => v.length != 0 || 'Patrimónios são obrigatórios']"
-                                        hide-no-data
-                                        required
-                                        pa-0="" ma-0=""
-                                        @input="forum.patrimonios = validarInputComboBox(forum.patrimonios)"
-                                    >
-                                        <template v-slot:append v-if="forum.patrimonios && forum.patrimonios.length == 0">
-                                            <v-tooltip left>
-                                                <template v-slot:activator="{ on }">
-                                                    <v-icon v-on="on">help</v-icon>
-                                                </template>
-                                                Escolher patrimónios relacionados com o fórum
-                                            </v-tooltip>
-                                        </template>
+                                              counter="255"
+                                              clearable
+                                              required
+                                >
+                                    <template v-slot:append v-if="!forum.titulo">
+                                        <v-tooltip left>
+                                            <template v-slot:activator="{ on }">
+                                                <v-icon v-on="on">help</v-icon>
+                                            </template>
+                                            <span>Assunto ou topico de discussão</span>
+                                        </v-tooltip>
+                                    </template>
+                                </v-text-field>
+                            </div>
+                            <div class="form-group">
+                                <v-combobox
+                                    v-model="forum.patrimonios"
+                                    :items="patrimonios"
+                                    item-text="nome"
+                                    label="Patrimonios associados"
+                                    multiple
+                                    chips
+                                    outlined
+                                    deletable-chips
+                                    :rules="[v => v.length != 0 || 'Patrimónios são obrigatórios']"
+                                    hide-no-data
+                                    required
+                                    @input="forum.patrimonios = validarInputComboBox(forum.patrimonios)"
+                                >
+                                    <template v-slot:append v-if="forum.patrimonios && forum.patrimonios.length == 0">
+                                        <v-tooltip left>
+                                            <template v-slot:activator="{ on }">
+                                                <v-icon v-on="on">help</v-icon>
+                                            </template>
+                                            Escolher patrimónios relacionados com o fórum
+                                        </v-tooltip>
+                                    </template>
 
-                                        <template v-slot:selection="{ item, index }">
-                                            <v-chip v-if="index === 0">
-                                                <span>{{ item.nome }}</span>
-                                            </v-chip>
-                                            <span
-                                                v-if="index === 1"
-                                                class="grey--text caption"
-                                            >(+{{ forum.patrimonios.length - 1 }} outros)</span>
-                                        </template>
-                                    </v-combobox>
-                                </v-flex>
-                            </v-layout>
-                            <v-layout class="form-group" row align-center>
+                                    <template v-slot:selection="{ item, index }">
+                                        <v-chip v-if="index <= 2">
+                                            <span>{{ item.nome }}</span>
+                                        </v-chip>
+                                        <span
+                                            v-if="index === 3"
+                                            class="grey--text caption"
+                                        >(+{{ forum.patrimonios.length - 3 }} outros)</span>
+                                    </template>
+                                </v-combobox>
+                            </div>
+                            <div class="form-group">
                                 <v-text-field id="inputEmail" v-if="!this.$store.state.user && isCreated()"
-                                            v-model="forum.user_email"
-                                            label="Email"
-                                            :rules="emailRules"
-                                            clearable
-                                            required
-                                ></v-text-field>
-                            </v-layout>
+                                              v-model="forum.user_email"
+                                              label="Email"
+                                              :rules="emailRules"
+                                              clearable
+                                              filled
+                                              required
+                                >
+                                    <template v-slot:append v-if="!forum.user_email">
+                                        <v-tooltip left>
+                                            <template v-slot:activator="{ on }">
+                                                <v-icon v-on="on">help</v-icon>
+                                            </template>
+                                            <span>Introduza o seu email de forma a confirmar a sua identidade</span>
+                                        </v-tooltip>
+                                    </template>
+                                </v-text-field>
+                            </div>
 
+                            <div class="form-group">
+                                <label for="descricaoInput" class="red--text"
+                                       v-if="!forum.descricao || forum.descricao.length == 0">Descrição
+                                    (obrigatório)</label>
+                                <label for="descricaoInput" class="grey--text" v-else>Descrição</label>
+                                <ckeditor id="descricaoInput" :editor="editor" :config="editorConfig"
+                                          :value="forum.descricao"
+                                          v-model="forum.descricao" required></ckeditor>
+                            </div>
                         </v-container>
-                        <div class="grey--text">
-                            Descrição
-                        </div>
-                        <div id="app">
-                            <ckeditor :editor="editor" :config="editorConfig" :value="forum.descricao"
-                                    v-model="forum.descricao" required></ckeditor>
-                        </div>
                     </div>
 
                     <div v-if="!isLoading" class="modal-footer">
-                        <div class="grey--text" v-if="!this.$store.state.user && emailEnviado">
+                        <div class="grey" v-if="!this.$store.state.user && emailEnviado">
                             <v-btn class="btn btn-success" @click="gerarCodigo">Reenviar código por email
                                 <template v-slot:append v-if="!forum.codigo">
                                     <v-tooltip left>
@@ -96,10 +114,10 @@
                             </v-btn>
                             Verifique o seu email
                             <v-text-field class="text-sm-left"
-                                v-model="forum.codigo"
-                                label="Código de acesso"
-                                :rules="[v => !!v || 'Código de acesso']"
-                                clearable
+                                          v-model="forum.codigo"
+                                          label="Código de acesso"
+                                          :rules="[v => !!v || 'Código de acesso']"
+                                          clearable
                             >
                                 <template v-slot:append v-if="!forum.codigo">
                                     <v-tooltip left>
@@ -113,8 +131,12 @@
                         </div>
                         <div>
                             <button v-if="isCreated()" class="btn btn-info" v-on:click.prevent="save"
-                                :disabled="hasErrors || !this.$store.state.user && emailEnviado && !forum.codigo">Registar</button>
-                            <button v-else class="btn btn-info" v-on:click.prevent="update" :disabled="hasErrors">Guardar</button>
+                                    :disabled="hasErrors || !this.$store.state.user && emailEnviado && !forum.codigo">
+                                Registar
+                            </button>
+                            <button v-else class="btn btn-info" v-on:click.prevent="update" :disabled="hasErrors">
+                                Guardar
+                            </button>
                         </div>
                         <button class="btn btn-danger" v-on:click.prevent="cancel">Cancelar</button>
                     </div>
@@ -149,7 +171,7 @@
                     },
                 },
                 emailRules: [
-                    (v) => !!v || 'email é obrigatório',
+                    (v) => !!v || 'Email é obrigatório',
                     (v) => /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'email tem de ser valido'
                 ],
                 rules: {
@@ -167,33 +189,36 @@
             getTitle() {
                 return this.isCreated() ? "Adicionar Fórum" : "Editar Fórum";
             },
-            getPatrimonios(){
-                this.isLoading= true;
+            getPatrimonios() {
+                this.isLoading = true;
                 axios.get('/api/patrimoniosShort')
                     .then(response => {
                         this.patrimonios = response.data.data;
-                        this.isLoading= false;
+                        this.isLoading = false;
                     })
                     .catch(error => {
                         this.toastErrorApi(error);
-                        this.isLoading= false;
+                        this.isLoading = false;
                     });
             },
-            gerarCodigo(){
+            gerarCodigo() {
                 axios.post('/api/forums/generateAccessCode', this.forum).then(response => {
                     this.toastPopUp("success", "Enviámos-lhe um email com o código de acesso");
                     this.emailEnviado = true;
-                    this.isLoading= false;
+                    this.isLoading = false;
                 }).catch(error => {
-                    this.isLoading= false;
+                    this.isLoading = false;
                     this.toastErrorApi(error);
                 })
             },
             save: function () {
-                this.isLoading= true;
-                if (!this.$store.state.user && !this.emailEnviado){
+                this.isLoading = true;
+                if (!this.$store.state.user && !this.emailEnviado) {
                     this.gerarCodigo();
                     return;
+                }
+                if(this.$store.state.user){
+                    this.forum.user_email = this.$store.state.user.email;
                 }
                 axios.post('/api/forums', this.forum).then(response => {
                     this.toastPopUp("success", "Fórum Criado!");
@@ -201,23 +226,23 @@
                     this.$emit('getFor');
                     $('#addForumModal').modal('hide');
                     this.$emit('clean');
-                    this.isLoading= false;
+                    this.isLoading = false;
                 }).catch(error => {
-                    this.isLoading= false;
+                    this.isLoading = false;
                     this.toastErrorApi(error);
                 });
             },
             update() {
-                this.isLoading= true;
+                this.isLoading = true;
                 axios.put('/api/forums/' + this.forum.id, this.forum).then(response => {
                     this.$emit('credenciais', this.forum.email, this.forum.codigo);
                     this.toastPopUp("success", "Fórum atualizado!");
                     this.$emit('getFor');
                     this.$emit('clean');
                     $('#addForumModal').modal('hide');
-                    this.isLoading= false;
+                    this.isLoading = false;
                 }).catch(error => {
-                    this.isLoading= false;
+                    this.isLoading = false;
                     this.toastErrorApi(error);
                 });
             },
@@ -237,19 +262,19 @@
         computed: {
             hasErrors: function () {
                 this.forum.patrimonios;
-                if (this.$store.state.user){
-                    return !this.forum.titulo || this.forum.titulo.length > 9 || !this.forum.descricao || !this.forum.patrimonios || (this.forum.patrimonios && this.forum.patrimonios.length == 0);
+                if (this.$store.state.user) {
+                    return !this.forum.titulo || this.forum.titulo.length > 255 || !this.forum.descricao || !this.forum.patrimonios || (this.forum.patrimonios && this.forum.patrimonios.length == 0);
                 }
                 let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-                return !this.forum.titulo || this. forum.titulo.length > 9 || !this.forum.descricao || !re.test(String(this.forum.user_email).toLowerCase()) || this.forum.patrimonios && this.forum.patrimonios.length == 0;
+                return !this.forum.titulo || this.forum.titulo.length > 255 || !this.forum.descricao || !re.test(String(this.forum.user_email).toLowerCase()) || this.forum.patrimonios && this.forum.patrimonios.length == 0;
             }
         },
         watch: {
-            forum(novo, anterior){
-                if (Object.entries(novo).length === 0 && novo.constructor === Object){
+            forum(novo, anterior) {
+                if (Object.entries(novo).length === 0 && novo.constructor === Object) {
                     this.cleanForm();
                 }
-                if (this.$store.state.user && novo.constructor === Object && !novo.user_email){
+                if (this.$store.state.user && novo.constructor === Object && !novo.user_email) {
                     novo.user_email = this.$store.state.user.email;
                 }
             }

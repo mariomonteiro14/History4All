@@ -338,8 +338,8 @@
                     </v-layout>
                 </v-card-text>
                 <v-card-text v-else>
-                    Foi enviado um email para o endereço inserido. Introduza o codigo presente nesse email para concluir
-                    o processo.
+                    <span>Foi enviado um email para o endereço inserido. Introduza o codigo presente nesse email para concluir
+                        o processo.</span>
                     <v-text-field class="text-sm-left"
                                   v-model="credenciais.codigo"
                                   label="Código de acesso"
