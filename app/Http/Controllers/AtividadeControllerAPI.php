@@ -282,6 +282,9 @@ class AtividadeControllerAPI extends Controller
             $ids = AtividadeParticipantes::where('atividade_id', $id)->get()->pluck('user_id')->toArray();
 
             $notificacaoMensagem = "As especificações da atividade " . $request->titulo . " foram alteradas, " . $alteracoesFormatadas;
+            if (strlen($notificacaoMensagem) > 500){
+                $notificacaoMensagem = "As especificações da atividade " . $request->titulo . " foram alteradas";
+            }
             $assunto = "A atividade " . $request->titulo . " foi alterada";
             $emailMensagem = "<h3>As especificações da atividade " . $request->titulo . " foram alteradas</h3><p>A atividade 
                 é coordenada pelo(a) porfessor(a) " . $coordenador->nome . " e passou a ter as seguintes configurações: " .

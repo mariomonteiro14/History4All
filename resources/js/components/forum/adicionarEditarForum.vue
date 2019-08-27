@@ -22,6 +22,7 @@
                                               counter="255"
                                               clearable
                                               required
+                                              :disabled="emailEnviado"
                                 >
                                     <template v-slot:append v-if="!forum.titulo">
                                         <v-tooltip left>
@@ -47,6 +48,7 @@
                                     hide-no-data
                                     required
                                     @input="forum.patrimonios = validarInputComboBox(forum.patrimonios)"
+                                    :disabled="emailEnviado"
                                 >
                                     <template v-slot:append v-if="forum.patrimonios && forum.patrimonios.length == 0">
                                         <v-tooltip left>
@@ -95,6 +97,7 @@
                                 <label for="descricaoInput" class="grey--text" v-else>Descrição</label>
                                 <ckeditor id="descricaoInput" :editor="editor" :config="editorConfig"
                                           :value="forum.descricao"
+                                          :disabled="emailEnviado"
                                           v-model="forum.descricao" required></ckeditor>
                             </div>
                         </v-container>
@@ -102,7 +105,7 @@
 
                     <div v-if="!isLoading" class="modal-footer">
                         <div class="grey" v-if="!this.$store.state.user && emailEnviado">
-                            <v-btn class="btn btn-success" @click="gerarCodigo">Reenviar código por email
+                            <v-btn class="btn btn-success" @click="gerarCodigo">Reenviar código
                                 <template v-slot:append v-if="!forum.codigo">
                                     <v-tooltip left>
                                         <template v-slot:activator="{ on }">
@@ -213,29 +216,41 @@
             },
             save: function () {
                 this.isLoading = true;
-                if (!this.$store.state.user && !this.emailEnviado) {
+                if (!this.$store.state.user && !this.emailEnviado && 
+                    (!this.$cookies.isKey("credentials") || this.$cookies.get("credentials")['email'] != this.forum.user_email)) {
                     this.gerarCodigo();
                     return;
                 }
-                if(this.$store.state.user){
+                if (this.$store.state.user){
                     this.forum.user_email = this.$store.state.user.email;
+                } else{
+                    if (this.$cookies.isKey("credentials") && !this.forum.codigo){
+                        this.forum.codigo = this.$cookies.get("credentials")['codigo'];
+                    }
                 }
                 axios.post('/api/forums', this.forum).then(response => {
                     this.toastPopUp("success", "Fórum Criado!");
+                    this.emailEnviado = false;
                     this.$emit('credenciais', this.forum.user_email, this.forum.codigo);
+                    this.$cookies.set("credentials", {'email': this.forum.user_email, 'codigo': this.forum.codigo}, "1d");
                     this.$emit('getFor');
                     $('#addForumModal').modal('hide');
                     this.$emit('clean');
                     this.isLoading = false;
                 }).catch(error => {
                     this.isLoading = false;
-                    this.toastErrorApi(error);
+                    if (!this.emailEnviado && this.$cookies.isKey("credentials") && this.$cookies.get("credentials")['email'] == this.forum.user_email) {
+                        this.gerarCodigo();
+                    } else {
+                        this.toastErrorApi(error);
+                    }
                 });
             },
             update() {
                 this.isLoading = true;
                 axios.put('/api/forums/' + this.forum.id, this.forum).then(response => {
-                    this.$emit('credenciais', this.forum.email, this.forum.codigo);
+                    this.$emit('credenciais', this.forum.user_email, this.forum.codigo);
+                    this.$cookies.set("credentials", {'email': this.forum.user_email, 'codigo': this.forum.codigo}, "1d");
                     this.toastPopUp("success", "Fórum atualizado!");
                     this.$emit('getFor');
                     this.$emit('clean');
@@ -248,15 +263,16 @@
             },
             cancel: function () {
                 this.$emit('clean');
+                this.emailEnviado = false;
                 $('#addForumModal').modal('hide');
             },
             cleanForm: function () {
-                console.log("add edit clean");
                 this.forum.id = undefined;
                 this.forum.titulo = "";
                 this.forum.descricao = "";
                 this.forum.user_email = "";
                 this.forum.patrimonios = [];
+                this.emailEnviado = false;
             },
         },
         computed: {

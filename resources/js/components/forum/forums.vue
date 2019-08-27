@@ -358,7 +358,7 @@
                         if (response.data.tipo && response.data.tipo == 'forumDoAdmin') {
                             this.forumDoAdmin = true;
                         }
-                        this.emailConfirmado();
+                        this.confirmarCodigo();
                     }).catch(error => {
                         this.isLoading = false;
                         this.toastErrorApi(error);
@@ -412,7 +412,6 @@
                 }
             },
             cleanForumAtual() {
-                this.$cookies.set("credentials", this.credenciais, "1d");
                 this.dialogPodeContinuar = false;
                 this.forumAtual = Object.assign({}, {
                     "id": undefined,
@@ -423,9 +422,11 @@
                 });
             },
             setCredenciais(email, codigo) {
-                this.credenciais.email = email;
-                this.credenciais.codigo = codigo;
-                this.$cookies.set("credentials", this.credenciais, "1d");
+                if (email && codigo){
+                    this.credenciais.email = email;
+                    this.credenciais.codigo = codigo;
+                    this.$cookies.set("credentials", this.credenciais, "1d");
+                }
             },
             gerarCodigo() {
                 if (this.$store.state.user && !this.credenciais.email) {
@@ -443,16 +444,15 @@
             },
             confirmarCodigo() {
                 axios.post('/api/forums/compararCodigo', {
-                    'user_email': this.email,
-                    'codigo': this.codigo
+                    'user_email': this.email || this.credenciais.email,
+                    'codigo': this.codigo || this.credenciais.codigo
                 }).then(response => {
                     this.isLoading = false;
-                    this.credenciais.email = this.email;
-                    this.credenciais.codigo = this.codigo;
-                    this.$cookies.set("credentials", {'email': this.email, 'codigo': this.codigo}, "1d");
+                    this.setCredenciais(this.email || this.credenciais.email, this.codigo || this.credenciais.codigo);
                     this.fecharVerificacao();
                     this.emailConfirmado();
                 }).catch(error => {
+                    this.dialogCode = true;
                     this.isLoading = false;
                     this.toastErrorApi(error);
                 })
@@ -472,7 +472,6 @@
             fecharVerificacao() {
                 this.dialogCode = false;
                 this.emailEnviado = false;
-                this.codigo = "";
             }
         },
         computed: {
