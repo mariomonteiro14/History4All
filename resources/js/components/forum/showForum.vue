@@ -39,7 +39,7 @@
                     <v-container offset-sm1 v-if="!forum.id || isLoadingForum">
                         <v-progress-linear v-if="isLoadingForum" v-slot:progress :color="colorDefault"
                                            indeterminate></v-progress-linear>
-                        <v-alert  v-else-if="!forum.id && !isLoadingForum" :value="true" color="error" icon="warning">
+                        <v-alert v-else-if="!forum.id && !isLoadingForum" :value="true" color="error" icon="warning">
                             Forum nao encontrado :(
                         </v-alert>
                     </v-container>
@@ -86,7 +86,7 @@
                                                       :loading="isLoadingComentarios">
                                             <template v-slot:items="props">
                                                 <tr :class="(operacao == 2 && comentEdit == props.item.id && showEditForm) ? 'green lighten-4' : ''">
-                                                    <td class="text-md-left"
+                                                    <td class="text-md-left" style="width:13%"
                                                         v-if="!(operacao == 2 && comentEdit == props.item.id)">
                                                         <br>
                                                         <center>
@@ -119,8 +119,9 @@
                                                             </v-flex>
                                                         </v-layout>
                                                     </td>
-                                                    <td class="text-xs-left" v-else></td>
-                                                    <td v-if="operacao == 2 && comentEdit == props.item.id && showEditForm">
+                                                    <td class="text-xs-left" style="width:13%" v-else></td>
+                                                    <td v-if="operacao == 2 && comentEdit == props.item.id && showEditForm"
+                                                        style="width:80%">
                                                         <div style="padding-bottom: 10px; padding-top: 10px">
                                                             <ckeditor :editor="editor" :config="editorConfig"
                                                                       :value="meuComentario.comentario"
@@ -129,7 +130,7 @@
 
                                                     </td>
                                                     <td v-else class="text-lg-center"
-                                                        style="padding-bottom: 10px; padding-top: 10px">
+                                                        style="padding-bottom: 10px; padding-top: 10px; width:82%">
                                                         <div style="overflow: hidden;font-size: 15px;"
                                                              v-html="props.item.comentario"></div>
                                                         <v-layout style="padding-right: 20px">
@@ -388,7 +389,9 @@
                 <v-card-actions>
                     <v-spacer></v-spacer>
                     <v-btn flat round color="red" @click="confirmadoDelete = false, dialogDelete = false">Não</v-btn>
-                    <v-btn flat round color="green" @click="confirmadoDelete = true, eliminarComentario(comentEdit)">Sim</v-btn>
+                    <v-btn flat round color="green" @click="confirmadoDelete = true, eliminarComentario(comentEdit)">
+                        Sim
+                    </v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -514,9 +517,15 @@
             classificacao(comentario) {
                 let classif = comentario.likes - comentario.dislikes;
                 if (classif > 0) {
-                    return "+" + classif;
+                    return "+" + this.kFormatar(classif);
                 }
-                return classif;
+                return this.kFormatar(classif);
+            },
+            kFormatar(num) {
+                if(Math.abs(num) < 1000){
+                    return num;
+                }
+                return Math.abs(num) < 1000000 ? Math.sign(num) * ((Math.abs(num) / 1000).toFixed(1)) + 'k' : Math.sign(num) * ((Math.abs(num) / 1000000).toFixed(1)) + 'M';
             },
             changeFabId(id) {
                 if (!this.fab && this.fabId == id) {
@@ -574,7 +583,7 @@
                 if (this.$store.state.user) {
                     if (this.confirmadoDelete) {
                         url = '/api/comentarios/' + this.comentEdit;
-                    }else{
+                    } else {
                         this.dialogDelete = true;
                         return;
                     }
@@ -582,7 +591,7 @@
                     if (this.credenciais.email && this.credenciais.codigo) {
                         if (this.confirmadoDelete) {
                             url = '/api/comentarios/' + this.comentEdit + '?codigo=' + this.credenciais.codigo + '&email=' + this.credenciais.email;
-                        }else{
+                        } else {
                             this.sendingRequest = false;
                             this.dialogCode = false;
                             this.dialogDelete = true;
@@ -696,14 +705,12 @@
                         this.dialogCode = false;
                         this.credenciais.email = this.meuComentario.userEmail;
                         this.saveComentario();
-                    }
-                    else if (this.operacao == 2) {//editar comentario
+                    } else if (this.operacao == 2) {//editar comentario
                         this.sendingRequest = false;
                         this.dialogCode = false;
                         this.showEditForm = true;
 
-                    }
-                    else if (this.operacao == 3) {//eliminar comentario
+                    } else if (this.operacao == 3) {//eliminar comentario
                         this.eliminarComentario();
                     } else {
                         this.sendingRequest = false;
@@ -717,7 +724,7 @@
                         this.dialogCode = true;
                         this.introduzirEmail = true;
                     }
-                    if (!this.introduzirEmail){
+                    if (!this.introduzirEmail) {
                         this.toastErrorApi(error);
                     }
                     return false;
@@ -944,7 +951,7 @@
         ,
         computed: {
             hasErrors: function () {
-                if (!this.$store.state.user && (!this.meuComentario.userEmail || this.meuComentario.userEmail.length==0)){
+                if (!this.$store.state.user && (!this.meuComentario.userEmail || this.meuComentario.userEmail.length == 0)) {
                     return true;
                 }
                 var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
