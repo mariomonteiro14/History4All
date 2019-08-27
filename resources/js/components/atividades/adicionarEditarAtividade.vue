@@ -186,7 +186,14 @@
                                             </template>
                                             <span>Separador Seguinte</span>
                                         </v-tooltip>
-                                        <v-btn color="teal lighten-5" @click="stepper=4">fim</v-btn>
+                                        <v-tooltip right>
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn icon flat v-on="on" color="primary" @click="stepper = 4">
+                                                    <v-icon>fa fa-angle-double-right</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Fim</span>
+                                        </v-tooltip>
                                     </v-layout>
                                 </v-stepper-content>
 
@@ -238,8 +245,14 @@
                                             </template>
                                             <span>Separador Seguinte</span>
                                         </v-tooltip>
-
-                                        <v-btn color="teal lighten-5" @click="stepper=4">fim</v-btn>
+                                        <v-tooltip right>
+                                            <template v-slot:activator="{ on }">
+                                                <v-btn icon flat v-on="on" color="primary" @click="stepper = 4">
+                                                    <v-icon>fa fa-angle-double-right</v-icon>
+                                                </v-btn>
+                                            </template>
+                                            <span>Fim</span>
+                                        </v-tooltip>
                                     </v-layout>
                                 </v-stepper-content>
 
