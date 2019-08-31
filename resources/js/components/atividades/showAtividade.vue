@@ -32,7 +32,7 @@
                                         </v-card>
                                         </v-flex>
                                         <v-flex xs12 sm2>
-                                            <v-btn icon v-if="$store.state.user.id==atividade.coordenador.id" flat data-toggle="modal"
+                                            <v-btn icon v-if="atividade.coordenador && $store.state.user.id==atividade.coordenador.id" flat data-toggle="modal"
                                                    data-target="#addAtividadeModal" @click="atividadeBackup = Object.assign({}, atividade)">
                                                 <v-icon color="warning">edit</v-icon>
                                             </v-btn>
@@ -84,20 +84,22 @@
                                 <v-divider></v-divider>
                                 <br>
                                 <v-layout>
-                                    <v-flex>
-                                        <span class="font-weight-light grey--text">Escola:</span>
-                                        <h5>{{atividade.coordenador.escola[0]}}</h5>
-                                    </v-flex>
-                                    <v-flex>
-                                        <span class="font-weight-light grey--text">Coordenador:</span>
-                                        <h5 class="indigo--text darken-4">
-                                            <a @click="$router.push('/users/'+ atividade.coordenador.id)">
-                                                {{atividade.coordenador.nome}}
-                                            </a>
-                                        </h5>
-                                    </v-flex>
-                                    <v-spacer></v-spacer>
-                                    <v-spacer></v-spacer>
+                                    <div v-if="atividade.coordenador">
+                                        <v-flex>
+                                            <span class="font-weight-light grey--text">Escola:</span>
+                                            <h5{{atividade.coordenador.escola[0]}}</h5>
+                                        </v-flex>
+                                        <v-flex>
+                                            <span class="font-weight-light grey--text">Coordenador:</span>
+                                            <h5 class="indigo--text darken-4">
+                                                <a @click="$router.push('/users/'+ atividade.coordenador.id)">
+                                                    {{atividade.coordenador.nome}}
+                                                </a>
+                                            </h5>
+                                        </v-flex>
+                                        <v-spacer></v-spacer>
+                                        <v-spacer></v-spacer>
+                                    </div>
                                     <v-flex>
 
                                         <v-btn flat round @click="showDetails = !showDetails">Mais Informações
@@ -263,7 +265,7 @@
                                                     </v-list>
 
                                                 </v-flex>
-                                                <v-btn v-if="atividade.coordenador.id === $store.state.user.id" color="orange"
+                                                <v-btn v-if="atividade.coordenador && atividade.coordenador.id === $store.state.user.id" color="orange"
                                                        round class="white--text" @click="enviarNotificacao">
                                                     Notificar &nbsp
                                                     <v-icon small>send</v-icon>
@@ -363,7 +365,7 @@
                                 <v-container fluid grid-list-sm v-if="testemunhosNaoValidados.length > 0">
                                     <v-card>
                                         <v-card-title primary-title>
-                                            <div v-if="atividade.coordenador.id == $store.state.user.id">
+                                            <div v-if="atividade.coordenador && atividade.coordenador.id == $store.state.user.id">
                                                 <h4>Validar Testemunhos:</h4>
                                             </div>
                                             <div v-else>
@@ -418,7 +420,7 @@
                                                         ></v-rating>
                                                     </td>
                                                     <td class="text-xs-right" v-if="props.item.user_id == $store.state.user.id ||
-                                                    ($store.state.user.id === atividade.coordenador.id && props.item.confirmado === 0)">
+                                                    (atividade.coordenador && $store.state.user.id === atividade.coordenador.id && props.item.confirmado === 0)">
                                                         <v-btn
                                                             v-if="!(myTestemunho.user_id && myTestemunho.user_id == props.item.user_id) &&
                                                          props.item.user_id == $store.state.user.id"
@@ -440,7 +442,7 @@
                                                             <v-icon small>close</v-icon>
                                                         </v-btn>
                                                         <v-btn
-                                                            v-if="atividade.coordenador.id == $store.state.user.id && props.item.confirmado === 0"
+                                                            v-if="atividade.coordenador && atividade.coordenador.id == $store.state.user.id && props.item.confirmado === 0"
                                                             icon color="success"
                                                             @click="confirmarTestemunho(props.item)">
                                                             <v-icon small>check</v-icon>
@@ -646,13 +648,15 @@
                     axios.post('/api/atividade/' + this.atividade.id + '/testemunho', this.myTestemunho).then(response => {
                         this.myTestemunho = {rate: 3};
                         this.showEscrever = false;
-                        if (this.$store.state.user.id === this.atividade.coordenador.id) {
+                        if (this.atividade.coordenador && this.$store.state.user.id === this.atividade.coordenador.id) {
                             this.toastPopUp("success", "Testemunho registado");
                         } else {
                             this.toastPopUp("success", "Testemunho registado, ficará visivel assim que o coordenador da atividade o validar");
                         }
                         this.getTestemunhos();
-                        this.$socket.emit('atualizar_notificacoes', this.atividade.coordenador.id);
+                        if (this.atividade.coordenador){
+                            this.$socket.emit('atualizar_notificacoes', this.atividade.coordenador.id);
+                        }
                     }).catch(error => {
                         this.loadingTestemunho = false;
                         this.toastErrorApi(error);
@@ -671,13 +675,15 @@
                 axios.put('/api/atividade/' + this.atividade.id + '/testemunho', this.myTestemunho).then(response => {
                     this.myTestemunho = {rate: 3};
                     this.getTestemunhos();
-                    if (this.$store.state.user.id === this.atividade.coordenador.id) {
+                    if (this.atividade.coordenador && this.$store.state.user.id === this.atividade.coordenador.id) {
                         this.toastPopUp("success", "Testemunho atualizado");
                     } else {
                         this.toastPopUp("success", "Testemunho atualizado, ficará visivel assim que o coordenador da atividade o validar");
                     }
                     this.loadingTestemunho = false;
-                    this.$socket.emit('atualizar_notificacoes', this.atividade.coordenador.id);
+                    if (this.atividade.coordenador){
+                        this.$socket.emit('atualizar_notificacoes', this.atividade.coordenador.id);
+                    }
                 }).catch(error => {
                     this.loadingTestemunho = false;
                     this.toastErrorApi(error);
@@ -784,7 +790,7 @@
                         });
                     }
                 }
-                if (this.$store.state.user.id == this.atividade.coordenador.id) {
+                if (this.atividade.coordenador && this.$store.state.user.id == this.atividade.coordenador.id) {
                     return this.testemunhos.filter((i) => {
                         return (i.confirmado == 0);
                     });
@@ -793,7 +799,7 @@
             },
             participa() {
                 let me = this.$store.state.user;
-                if (this.atividade.coordenador.email === me.email) {
+                if (this.atividade.coordenador && this.atividade.coordenador.email === me.email) {
                     return true;
                 }
                 let resp = false;
