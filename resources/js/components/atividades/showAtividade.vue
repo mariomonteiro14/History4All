@@ -239,7 +239,8 @@
                                                 </h5>
 
                                                 <v-divider></v-divider>
-                                                <v-flex style="max-height:350px; min-height:100px; overflow-y:auto">
+                                                <v-flex sx11
+                                                        style="max-height:380px; min-height:250px; overflow-y:auto">
                                                     <v-list class="form-group" subheader>
 
                                                         <v-list-tile

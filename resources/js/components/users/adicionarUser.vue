@@ -1,6 +1,5 @@
 <template>
     <div @focusout="closeLists">
-        <!-- Modal Add Order-->
         <div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModal"
              aria-hidden="true" data-keyboard="false" data-backdrop="static">
             <div class="modal-dialog" role="document">
@@ -40,7 +39,7 @@
                                 :items="userTipos"
                                 :rules="[v => !!v || 'Tipo é obrigatório']"
                                 class="input-group--focused"
-                                required
+                                clearable
                             ></v-select>
                         </div>
 
@@ -135,6 +134,7 @@
             cleanForm: function () {
                 this.user.nome = "";
                 this.user.email = "";
+                this.user.tipo = "";
                 if (this.$store.state.user.tipo == "admin") {
                     this.user.escola = "";
                 }
@@ -150,7 +150,9 @@
 
             setOpenList() {
                 setTimeout(() => {
-                    if ((this.$refs.selectT && this.$refs.selectT.isMenuActive == true) || (this.$refs.selectE && this.$refs.selectE.isMenuActive == true) || (this.$refs.selectA && this.$refs.selectA.isMenuActive == true)) {
+                    if ((this.$refs.selectT && this.$refs.selectT.isMenuActive == true) ||
+                        (this.$refs.selectE && this.$refs.selectE.isMenuActive == true) ||
+                        (this.$refs.selectA && this.$refs.selectA.isMenuActive == true)) {
                         setTimeout(() => {
                             this.selAberto = true;
                         }, 30);

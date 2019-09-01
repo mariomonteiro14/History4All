@@ -24,12 +24,12 @@ class Controller extends BaseController
             'mensagem' => $notificacaoMensagem,
             'remetente' => $remetente->tipo . " " . $remetente->nome,
             'data' => date("Y-m-d H:i:s"),
-            'lida' => '1',
+            'lida' => '0',
             'link' => $link
         ]);
         $notificacao->save();
         Mail::to($user->email)->send(new MensagemEmail($remetente, $assunto, $emailMensagem));
-        
+
         //Mail::send('emails.hello', $data, function($message) use ($data) { $message->from($data['email'] , $data['first_name']);
         //$message->to($user->email, $user->nome)->subject($notificacaoMensagem); });
     }

@@ -263,7 +263,10 @@ class AtividadeControllerAPI extends Controller
         if ($atividade->dataInicio != $request->dataInicio) {
             array_push($alteracoes, "a data inicial passou a ser " . date('d-m-Y', strtotime($request->dataInicio)));
         }
-        if ($atividade->dataFinal != $request->dataFinal) {
+        if ($atividade->dataFinal != null && (!$request->has('dataFinal') || $request->dataFinal == null)){
+            array_push($alteracoes, "a data final foi removida. Desta a forma a atividade terá a duração de um dia.");
+        }
+       else if ($atividade->dataFinal != $request->dataFinal) {
             array_push($alteracoes, "a data limite passou a ser " . date('d-m-Y', strtotime($request->dataFinal)));
         }
         if (count($alteracoes) > 0) {
@@ -431,7 +434,7 @@ class AtividadeControllerAPI extends Controller
                 $notif->save();
             }
         }
-        return response()->json($confirmado, 201);
+        return response()->json(null, 201);
     }
 
     public function confirmarTestemunho(Request $request, $id, $user_id)
