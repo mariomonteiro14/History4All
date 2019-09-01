@@ -133,7 +133,7 @@
                         <v-card>
                             <v-card-title>Tem a certeza que que apagar o fórum?</v-card-title>
                             <v-container fluid grid-list-md
-                                         v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin' && !this.forumDoAdmin">
+                                         v-if="this.$store.state.user && this.$store.state.user.tipo === 'admin' && forumAtual.user_email != this.$store.state.user.email">
                                 <v-layout row wrap>
                                     <v-flex xs12 sm9 d-flex>
                                         <v-textarea
@@ -299,7 +299,6 @@
                 confirmacaoTipo: '',
                 patrimoniosSelected: [],
                 patrimonios: [],
-                forumDoAdmin: false,
                 justificaçao: '',
                 isLoading: true,
                 dialogCode: false,
@@ -342,6 +341,7 @@
                 this.$router.push({path: '/forums/' + forum.id, params: {'forum': forum}});
             },
             editarForumConfirmacao(forum, tipo) {
+                this.atualizarCredenciais();
                 this.forumAtual = Object.assign({}, forum);
                 this.forumAtual.email = this.credenciais.email;
                 this.forumAtual.codigo = this.credenciais.codigo;
@@ -355,10 +355,11 @@
                     this.isLoading = true;
                     axios.post('/api/forums/' + forum.id + '/compararEmails', dados).then(response => {
                         this.isLoading = false;
-                        if (response.data.tipo && response.data.tipo == 'forumDoAdmin') {
-                            this.forumDoAdmin = true;
+                        if (!this.$store.state.user){
+                            this.confirmarCodigo();
+                        } else{
+                            this.emailConfirmado();
                         }
-                        this.confirmarCodigo();
                     }).catch(error => {
                         this.isLoading = false;
                         this.toastErrorApi(error);
@@ -374,7 +375,7 @@
             },
             eliminar() {
                 this.isLoading = true;
-                let url = '/api/forums/' + this.forumAtual.id + '?codigo=' + this.credenciais.codigo + '&user_email=' + this.credenciais.email;
+                let url = '/api/forums/' + this.forumAtual.id + '?codigo=' + this.credenciais.codigo + '&user_email=' + this.credenciais.email || this.$store.state.user;
                 if (this.$store.state.user) {
                     url = '/api/forums/' + this.forumAtual.id;
                     if (this.$store.state.user.tipo == 'admin' && this.justificaçao.length > 0) {
@@ -384,7 +385,6 @@
                 axios.delete(url).then(response => {
                     this.isLoading = false;
                     this.justificaçao = '';
-                    this.forumDoAdmin = false;
                     this.cleanForumAtual();
                     $('#elimianarForumModal').modal('hide');
                     this.toastPopUp("success", "Fórum Apagado!");
@@ -397,13 +397,11 @@
             },
             fecharEliminarModal() {
                 this.cleanForumAtual();
-                this.forumDoAdmin = false;
                 $('#elimianarForumModal').modal('hide');
             },
             emailConfirmado() {
                 this.dialogPodeContinuar = true;
                 if (this.confirmacaoTipo == 'editar') {
-                    this.forumDoAdmin = false;
                     this.forumAtual.email = this.credenciais.email;
                     this.forumAtual.codigo = this.credenciais.codigo;
                     $('#addForumModal').modal('show');
@@ -429,9 +427,7 @@
                 }
             },
             gerarCodigo() {
-                if (this.$store.state.user && !this.credenciais.email) {
-                    this.credenciais.email = this.$store.state.user.email;
-                }
+                this.atualizarCredenciais();
                 this.isLoading = true;
                 axios.post('/api/forums/' + this.forumAtual.id + '/compararEmails', {'user_email': this.email}).then(response => {
                     this.toastPopUp("success", "Enviámos-lhe um email com o código de acesso");
@@ -472,6 +468,11 @@
             fecharVerificacao() {
                 this.dialogCode = false;
                 this.emailEnviado = false;
+            },
+            atualizarCredenciais(){
+                if (this.$store.state.user && !this.credenciais.email) {
+                    this.credenciais.email = this.$store.state.user.email;
+                }
             }
         },
         computed: {

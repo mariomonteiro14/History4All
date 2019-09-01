@@ -184,13 +184,11 @@ class ForumControllerAPI extends Controller
                 if (!$request->user('api')) {
                     return abort(403, "O email inserido não corresponde ao email que criou o fórum");
                 }
-                if ($request->user('api')->tipo == 'admin' && $request->has('tipo') && $request->tipo == 'eliminar') {
+                $user = User::findOrFail($request->user('api')->id);
+                if ($user->tipo == 'admin' && $request->has('tipo') && $request->tipo == 'eliminar'){
                     return response()->json(null, 200);
                 }
                 return abort(403, "Esse fórum não foi criado por si");
-            }
-            if ($request->user('api') && $request->user('api')->tipo == 'admin' && $request->has('tipo') && $request->tipo == 'eliminar') {
-                return response()->json(['tipo' => 'forumDoAdmin'], 200);
             }
             if (!$request->user('api') && !$request->codigo) {
                 return $this->generateAccessCode($request);
