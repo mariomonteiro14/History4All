@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Atividade;
 use App\Escola;
 use App\Mail\ContactarAdmin;
 use App\Mail\InserirPassword;
@@ -280,6 +281,11 @@ class UserControllerAPI extends Controller
                 foreach ($turmas as $turma) {
                     $turma->professor_id = null;
                     $turma->save();
+                }
+                $atividades = Atividade::where('coordenador', $user->id)->get();
+                foreach ($atividades as $atividade) {
+                    $atividade->coordenador = null;
+                    $atividade->save();
                 }
                 $user->escola_id = $escola->id;
             }
